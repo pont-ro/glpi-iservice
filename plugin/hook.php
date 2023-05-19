@@ -1,7 +1,8 @@
 <?php
 /**
  * Install all necessary elements for the plugin
- * @param array $args Arguments passed from CLI
+ *
+ * @param  array $args Arguments passed from CLI
  *
  * @return boolean
  */

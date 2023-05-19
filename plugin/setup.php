@@ -46,7 +46,7 @@ function plugin_version_iservice(): array
             'glpi'   => [
                 'min' => '10.0',
                 'max' => '10.1',
-                'plugins'=> ['fields', 'formcreator'],
+                'plugins' => ['fields', 'formcreator'],
             ],
         ],
     ];
