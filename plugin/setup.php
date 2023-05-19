@@ -73,9 +73,9 @@ function plugin_iservice_check_prerequisites(): bool
  */
 function plugin_iservice_check_config(bool $verbose = false): bool
 {
-    if (true) { // Your configuration check
+//    if (true) { // Your configuration check
         return true;
-    }
+//    }
 
 //    if ($verbose) {
 //        echo "Installed, but not configured";
