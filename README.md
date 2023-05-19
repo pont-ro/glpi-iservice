@@ -1,3 +1,3 @@
 # Setup
 
-See the setup instructions [here](setup/README.md)
+See the setup instructions for the DEV, TEST and PROD environments [here](setup/README.md)
