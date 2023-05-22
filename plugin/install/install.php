@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Formcreator. If not, see <http://www.gnu.org/licenses/>.
  * ---------------------------------------------------------------------
+ *
  * @copyright Copyright © 2011 - 2021 Teclib'
  * @license   http://www.gnu.org/licenses/gpl.txt GPLv3+
  * @link      https://github.com/pluginsGLPI/formcreator/
@@ -32,6 +33,7 @@
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access this file directly");
 }
+
 class PluginIserviceInstall
 {
     const ASSETS_TO_CHANGE = [
