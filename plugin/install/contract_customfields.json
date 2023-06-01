@@ -1,0 +1,142 @@
+[
+    {
+        "name": "included_services_header_field",
+        "old_name": "inclus_contract",
+        "label": [
+            "Included services",
+            "Servicii incluse în contract"
+        ],
+        "type": "header",
+        "ranking": "10",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "copy_price_bk_field",
+        "old_name": "tarif_cop_bl",
+        "label": [
+            "Black copy price",
+            "Tarif copie black"
+        ],
+        "type": "number",
+        "ranking": "20",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "copy_price_col_field",
+        "old_name": "tarif_cop_col1",
+        "label": [
+            "Color copy price",
+            "Tarif copie color"
+        ],
+        "type": "number",
+        "ranking": "30",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "included_copies_bk_field",
+        "old_name": "cop_bl_inclus",
+        "label": [
+            "Included black copies",
+            "Copii black incluse"
+        ],
+        "type": "number",
+        "ranking": "40",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "included_copies_col_field",
+        "old_name": "cop_col_inclus",
+        "label": [
+            "Included color copies",
+            "Copii color incluse"
+        ],
+        "type": "number",
+        "ranking": "50",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "included_copy_value_field",
+        "old_name": "val_cop_inclus",
+        "label": [
+            "Included copy value",
+            "Valoare copii incluse"
+        ],
+        "type": "number",
+        "ranking": "60",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "calculation_mode_header_field",
+        "old_name": "mod_calc",
+        "label": [
+            "Calculation mode",
+            "Mod de calcul"
+        ],
+        "type": "header",
+        "ranking": "80",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "monthly_fee_field",
+        "old_name": "tarif_lunar1",
+        "label": [
+            "Monthly fee",
+            "Tarif lunar"
+        ],
+        "type": "number",
+        "ranking": "90",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "currency_field",
+        "old_name": "curs",
+        "label": [
+            "Currency",
+            "Curs de calcul"
+        ],
+        "type": "number",
+        "ranking": "100",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "copy_price_divider_field",
+        "old_name": "divizor_pu",
+        "label": [
+            "Copy price divider",
+            "Divizor PU copie"
+        ],
+        "type": "number",
+        "ranking": "110",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    }
+]

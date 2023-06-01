@@ -3,7 +3,7 @@
 define('ISERVICE_VERSION', '0.0.1');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
-    define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iService");
+    define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
 }
 
 if (!defined("GLPI_PLUGIN_DOC_DIR")) {
@@ -11,7 +11,7 @@ if (!defined("GLPI_PLUGIN_DOC_DIR")) {
 }
 
 if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
-    define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iService");
+    define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iservice");
 }
 
 /**
@@ -23,10 +23,10 @@ function plugin_init_iservice(): void
 {
     global $PLUGIN_HOOKS;
 
-    // required!
+    // Required!
     $PLUGIN_HOOKS['csrf_compliant']['iService'] = true;
 
-    // some code here, like call to Plugin::registerClass(), populating PLUGIN_HOOKS, ...
+    // Some code here, like call to Plugin::registerClass(), populating PLUGIN_HOOKS, ...
 }
 
 /**
@@ -59,7 +59,7 @@ function plugin_version_iservice(): array
  */
 function plugin_iservice_check_prerequisites(): bool
 {
-    // do what the checks you want
+    // Do what checks you want.
     return true;
 }
 
@@ -73,15 +73,15 @@ function plugin_iservice_check_prerequisites(): bool
  */
 function plugin_iservice_check_config(bool $verbose = false): bool
 {
-//    if (true) { // Your configuration check
+    if (file_exists(PLUGIN_ISERVICE_DIR . '/install/install.php')) {
         return true;
-//    }
+    }
 
-//    if ($verbose) {
-//        echo "Installed, but not configured";
-//    }
-//
-//    return false;
+    if ($verbose) {
+        echo "Installed, but not configured";
+    }
+
+    return false;
 }
 
 /**
