@@ -40,6 +40,7 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginIserviceInstall
 {
+
     public function install(): bool
     {
         $result = OverwriteAssetsInstallStep::do();
@@ -56,4 +57,5 @@ class PluginIserviceInstall
     {
         return true;
     }
+
 }

@@ -208,6 +208,7 @@ class AddCustomFieldsInstallStep
             if (!is_array($fieldData['label'])) {
                 $fieldData['label'] = [$fieldData['label']];
             }
+
             $labelTranslations  = $fieldData['label'];
             $fieldData['label'] = array_shift($labelTranslations);
 
@@ -215,7 +216,6 @@ class AddCustomFieldsInstallStep
                 'name'                        => $fieldData['name'],
                 'plugin_fields_containers_id' => $containerData['id'],
             ]);
-
 
             if (count($fields) === 0) {
                 $fieldData['id'] = $field->add($fieldData);
@@ -228,6 +228,7 @@ class AddCustomFieldsInstallStep
             $result = $result && self::updateFiledLabelTranslations($labelTranslations, $fieldData['id']);
             $result = $result && self::addOrUpdateFieldDropdownValues($fieldData['dropdown_values'] ?? [], $fieldData['name']);
         }
+
         return $result;
     }
 
@@ -258,6 +259,7 @@ class AddCustomFieldsInstallStep
             if (!is_array($dropdownValueData)) {
                 $dropdownValueData = ['name' => $dropdownValueData];
             }
+
             $dropdownValueData['_no_message'] = true;
 
             $dropdowns = $dropdown->find([

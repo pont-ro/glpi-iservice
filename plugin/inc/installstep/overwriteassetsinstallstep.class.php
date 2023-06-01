@@ -16,8 +16,7 @@ class OverwriteAssetsInstallStep
         'pics/logos/logo-GLPI-250-grey.png',
         'pics/logos/logo-GLPI-250-white.png',
     ];
-
-
+    
     public static function do(): bool
     {
         $result = true;
@@ -40,4 +39,5 @@ class OverwriteAssetsInstallStep
             }
         }
     }
+
 }
