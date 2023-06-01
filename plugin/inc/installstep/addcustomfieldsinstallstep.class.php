@@ -1,0 +1,277 @@
+<?php
+
+namespace GlpiPlugin\Iservice\InstallStep;
+
+use Glpi\Toolbox\Sanitizer;
+use PluginFieldsContainer;
+use PluginFieldsField;
+use PluginFieldsLabelTranslation;
+use Session;
+
+class AddCustomFieldsInstallStep
+{
+    const CLEANUP_ON_UNINSTALL = false;
+
+    const CONTAINERS = [
+        [
+            'name'      => 'printercustomfield',
+            'label'     => 'Printer Custom Fields',
+            'itemtypes' => ['Printer'],
+            'type'      => 'tab',
+            'subtype'   => null,
+            'is_active' => '1',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/printer_customfields.json',
+        ],
+        [
+            'name'      => 'ticketcustomfield',
+            'label'     => 'Ticket Custom Fields',
+            'itemtypes' => ['Ticket'],
+            'type'      => 'tab',
+            'subtype'   => null,
+            'is_active' => '1',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/ticket_customfields.json',
+        ],
+        [
+            'name'      => 'suppliercustomfield',
+            'label'     => 'Supplier Custom Fields',
+            'itemtypes' => ['Supplier'],
+            'type'      => 'tab',
+            'subtype'   => null,
+            'is_active' => '1',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/supplier_customfields.json',
+        ],
+        [
+            'name'      => 'contractcustomfield',
+            'label'     => 'Contract Custom Fields',
+            'itemtypes' => ['Contract'],
+            'type'      => 'tab',
+            'subtype'   => null,
+            'is_active' => '1',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/contract_customfields.json',
+        ],
+        [
+            'name'      => 'cartridgecustomfield',
+            'label'     => 'Cartridge Custom Fields',
+            'itemtypes' => ['CartridgeItem'],
+            'type'      => 'tab',
+            'subtype'   => null,
+            'is_active' => '1',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/cartridge_customfields.json',
+        ],
+        [
+            'name'      => 'printermodelcustomfield',
+            'label'     => 'Printer Model Custom Fields',
+            'itemtypes' => ['PrinterModel'],
+            'type'      => 'tab',
+            'subtype'   => null,
+            'is_active' => '1',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/printermodel_customfields.json',
+        ]
+    ];
+
+    public static function do(): bool
+    {
+        $result = true;
+
+        foreach (self::CONTAINERS as $container) {
+            $result = $result && self::addOrUpdateContainer($container);
+        }
+
+        if ($result) {
+            Session::addMessageAfterRedirect(__('Custom fields updated', 'iservice'), true, INFO, true);
+        } else {
+            Session::addMessageAfterRedirect(__('Error while updating custom fields', 'iservice'), true, ERROR, true);
+        }
+
+        return $result;
+    }
+
+    public static function undo(): void
+    {
+        if (!self::CLEANUP_ON_UNINSTALL) {
+            return;
+        }
+
+        foreach (self::CONTAINERS as $container) {
+            self::removeContainer($container);
+        }
+    }
+
+    private static function addOrUpdateContainer(array $containerData): bool
+    {
+        $result                       = true;
+        $containerData['_no_message'] = true;
+
+        $container  = new PluginFieldsContainer();
+        $containers = $container->find([
+            'itemtypes' => self::encodeItemTypes($containerData['itemtypes']),
+        ]);
+
+        if (count($containers) === 0) {
+            $containerData['id'] = $container->add($containerData);
+        } else {
+            $containerData['id']        = array_shift($containers)['id'];
+            $containerData['itemtypes'] = self::encodeItemTypes($containerData['itemtypes']);
+            $result                     = $container->update($containerData);
+        }
+
+        return $result && self::addOrUpdateContainerFields($containerData);
+    }
+
+    private static function removeContainer(array $containerData): void
+    {
+        $container  = new PluginFieldsContainer();
+        $containers = $container->find([
+            'itemtypes' => self::encodeItemTypes($containerData['itemtypes']),
+        ]);
+        foreach ($containers as $con) {
+            $container->delete(
+                [
+                    '_no_message' => true,
+                    'purge'       => 1,
+                    'id'          => $con['id']
+                ],
+                1
+            );
+        }
+    }
+
+    private static function encodeItemTypes(string|array $itemTypes): string
+    {
+        if (!is_array($itemTypes)) {
+            $itemTypes = [$itemTypes];
+        }
+
+        return Sanitizer::dbEscape(json_encode($itemTypes));
+    }
+
+    private static function updateFieldLabelTranslation(mixed $fieldData): bool
+    {
+        $translation  = new PluginFieldsLabelTranslation();
+        $translations = $translation->find(
+            [
+                'itemtype' => 'PluginFieldsField',
+                'items_id' => $fieldData['id'],
+            ],
+            [
+                'id',
+            ]
+        );
+
+        return $translation->update([
+            'id'    => array_shift($translations)['id'],
+            'label' => $fieldData['label'],
+        ]);
+    }
+
+    private static function updateFiledLabelTranslations(array $labelTranslations, int $id): bool
+    {
+        $result        = true;
+        $translation   = new PluginFieldsLabelTranslation();
+        $labelLanguage = 'ro_RO';
+
+        foreach ($labelTranslations as $labelTranslation) {
+            $translations = $translation->find([
+                'itemtype' => 'PluginFieldsField',
+                'items_id' => $id,
+                'language' => $labelLanguage,
+            ]);
+
+            if (count($translations) === 0) {
+                $result = $result && $translation->add([
+                    'itemtype' => 'PluginFieldsField',
+                    'items_id' => $id,
+                    'language' => $labelLanguage,
+                    'label'    => $labelTranslation,
+                ]);
+            } else {
+                $result = $result && $translation->update([
+                    'id'    => array_shift($translations)['id'],
+                    'label' => $labelTranslation,
+                ]);
+            }
+        }
+
+        return $result;
+    }
+
+    private static function addOrUpdateContainerFields(array $containerData): bool
+    {
+        $result = true;
+        $field  = new PluginFieldsField();
+
+        $fieldsData = self::getFieldsData($containerData['fields']);
+        foreach ($fieldsData as $fieldData) {
+            $fieldData['_no_message']                 = true;
+            $fieldData['plugin_fields_containers_id'] = $containerData['id'];
+
+            if (!is_array($fieldData['label'])) {
+                $fieldData['label'] = [$fieldData['label']];
+            }
+            $labelTranslations  = $fieldData['label'];
+            $fieldData['label'] = array_shift($labelTranslations);
+
+            $fields = $field->find([
+                'name'                        => $fieldData['name'],
+                'plugin_fields_containers_id' => $containerData['id'],
+            ]);
+
+
+            if (count($fields) === 0) {
+                $fieldData['id'] = $field->add($fieldData);
+            } else {
+                $fieldData['id'] = array_shift($fields)['id'];
+                $result          = $result && $field->update($fieldData);
+                $result          = $result && self::updateFieldLabelTranslation($fieldData);
+            }
+
+            $result = $result && self::updateFiledLabelTranslations($labelTranslations, $fieldData['id']);
+            $result = $result && self::addOrUpdateFieldDropdownValues($fieldData['dropdown_values'] ?? [], $fieldData['name']);
+        }
+        return $result;
+    }
+
+    private static function getFieldsData(string|array $fieldsData): array
+    {
+        if (is_array($fieldsData)) {
+            return $fieldsData;
+        }
+
+        if (is_file($fieldsData)) {
+            return json_decode(file_get_contents($fieldsData), true);
+        }
+
+        return [];
+    }
+
+    private static function addOrUpdateFieldDropdownValues(array $dropdownValues, string $dropdownName): bool
+    {
+        if (empty($dropdownValues)) {
+            return true;
+        }
+
+        $result        = true;
+        $dropdownClass = 'PluginFields' . ucfirst($dropdownName) . 'Dropdown';
+        $dropdown      = new $dropdownClass();
+
+        foreach ($dropdownValues as $dropdownValueData) {
+            if (!is_array($dropdownValueData)) {
+                $dropdownValueData = ['name' => $dropdownValueData];
+            }
+            $dropdownValueData['_no_message'] = true;
+
+            $dropdowns = $dropdown->find([
+                'name' => $dropdownValueData['name'],
+            ]);
+
+            if (count($dropdowns) === 0) {
+                $result = $result && $dropdown->add($dropdownValueData);
+            } else {
+                $dropdownValueData['id'] = array_shift($dropdowns)['id'];
+                $result                  = $result && $dropdown->update($dropdownValueData);
+            }
+        }
+
+        return $result;
+    }
+}

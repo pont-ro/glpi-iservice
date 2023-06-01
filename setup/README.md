@@ -36,13 +36,13 @@ README.md
 ```
 7. Since the deployment contains the plugin files in a `plugin` folder, this must be rsync-ed to the plugins folder of the Glpi installation. To do this, add the following post-deploy script:
 ```
-sudo rsync -a [deployment_path]/plugin/ [webroot]/plugins/iService
-sudo chown -R [user:group] [webroot]/plugins/iService
+sudo rsync -a [deployment_path]/plugin/ [webroot]/plugins/iservice
+sudo chown -R [user:group] [webroot]/plugins/iservice
 ```
 example:
 ```
-sudo rsync -a ~/iService3-deploy/staging/plugin/ /var/www/clients/client1/web15/web/plugins/iService
-sudo chown -R web15:client1 /var/www/clients/client1/web15/web/plugins/iService
+sudo rsync -a ~/iService3-deploy/staging/plugin/ /var/www/clients/client1/web15/web/plugins/iservice
+sudo chown -R web15:client1 /var/www/clients/client1/web15/web/plugins/iservice
 ```
 
 ## Deploy with DeployBot

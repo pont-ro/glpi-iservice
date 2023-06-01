@@ -1,0 +1,208 @@
+[
+    {
+        "name": "invoicing_data_header_field",
+        "old_name": "part_date_fac",
+        "label": [
+            "Invoicing data",
+            "Date facturare"
+        ],
+        "type": "header",
+        "ranking": "10",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "uic_field",
+        "old_name": "part_cui",
+        "label": [
+            "Unic identification code",
+            "Cod fiscal"
+        ],
+        "type": "text",
+        "ranking": "20",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "crn_field",
+        "old_name": "part_regcom",
+        "label": [
+            "Commercial Register Number",
+            "Număr Registru Comerț"
+        ],
+        "type": "text",
+        "ranking": "30",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "part_cont1",
+        "label": "Cont Banca1",
+        "type": "text",
+        "ranking": "13",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "delivery_data_header_field",
+        "old_name": "part_date_livr",
+        "label": [
+            "Delivery/Service data",
+            "Date livrare/prestație"
+        ],
+        "type": "header",
+        "ranking": "40",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "intervention_sheet_model_field",
+        "old_name": "model",
+        "label": [
+            "Intervention sheet model",
+            "Model fișă de intervenție"
+        ],
+        "type": "text",
+        "ranking": "50",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "hmarfa_code_field",
+        "old_name": "cod_hmarfa",
+        "label": [
+            "Hmarfa code",
+            "Cod Partener hMarfa"
+        ],
+        "type": "text",
+        "ranking": "60",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "address_field",
+        "old_name": "part_adr_post",
+        "label": [
+            "Postal Address",
+            "Adresă poștală"
+        ],
+        "type": "textarea",
+        "ranking": "70",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "email_for_invoices_field",
+        "old_name": "part_email_f1",
+        "label": [
+            "Email for invoices",
+            "Email pentru trimis facturi"
+        ],
+        "type": "textarea",
+        "ranking": "80",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "payment_deadline_field",
+        "old_name": "part_zile_scad",
+        "label": [
+            "Payment deadline",
+            "Termen de plată"
+        ],
+        "type": "number",
+        "ranking": "90",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "cm_field",
+        "old_name": "cartridge_management",
+        "label": [
+            "Cartridge management",
+            "Management cartușe"
+        ],
+        "type": "yesno",
+        "ranking": "100",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "magic_link_header_field",
+        "old_name": "magic_link_header",
+        "label": [
+            "Magic link",
+            "Link magic"
+        ],
+        "type": "header",
+        "ranking": "110",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "magic_link_field",
+        "old_name": "magic_link",
+        "label": [
+            "Magic link",
+            "Link magic"
+        ],
+        "type": "text",
+        "ranking": "120",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "group_field",
+        "old_name": "groupfield",
+        "label": [
+            "Partner group",
+            "Grup firme"
+        ],
+        "type": "text",
+        "ranking": "10001",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "force_location_parent_field",
+        "old_name": "forcelocationparentfield",
+        "label": [
+            "Force location parent",
+            "Locație tată-fiu obligatoriu"
+        ],
+        "type": "yesno",
+        "ranking": "130",
+        "default_value": "nu",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    }
+]

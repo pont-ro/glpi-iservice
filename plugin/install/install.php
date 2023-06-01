@@ -29,6 +29,10 @@
  * @link      http://plugins.glpi-project.org/#/plugin/formcreator
  * ---------------------------------------------------------------------
  */
+namespace GlpiPlugin\iService;
+
+use GlpiPlugin\iService\InstallStep\AddCustomFieldsInstallStep;
+use GlpiPlugin\iService\InstallStep\OverwriteAssetsInstallStep;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access this file directly");
@@ -36,54 +40,20 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginIserviceInstall
 {
-    const ASSETS_TO_CHANGE = [
-        'pics/favicon.ico',
-        'pics/logos/logo-G-100-black.png',
-        'pics/logos/logo-G-100-grey.png',
-        'pics/logos/logo-G-100-white.png',
-        'pics/logos/logo-GLPI-100-black.png',
-        'pics/logos/logo-GLPI-100-grey.png',
-        'pics/logos/logo-GLPI-100-white.png',
-        'pics/logos/logo-GLPI-250-black.png',
-        'pics/logos/logo-GLPI-250-grey.png',
-        'pics/logos/logo-GLPI-250-white.png',
-    ];
-
     public function install(): bool
     {
-        $this->overwriteAssets();
-
-        return true;
+        $result = OverwriteAssetsInstallStep::do();
+        return $result && AddCustomFieldsInstallStep::do();
     }
 
     public function uninstall(): void
     {
-        $this->revertAssets();
+        AddCustomFieldsInstallStep::undo();
+        OverwriteAssetsInstallStep::undo();
     }
 
     public function isPluginInstalled(): bool
     {
         return true;
     }
-
-    private function overwriteAssets(): void
-    {
-        foreach (self::ASSETS_TO_CHANGE as $fileName) {
-            if (!file_exists(GLPI_ROOT . "/$fileName.iSb")) {
-                rename(GLPI_ROOT . "/$fileName", GLPI_ROOT . "/$fileName.iSb");
-                copy(PLUGIN_ISERVICE_DIR . "/assets/$fileName", GLPI_ROOT . "/$fileName");
-            }
-        }
-    }
-
-    private function revertAssets(): void
-    {
-        foreach (self::ASSETS_TO_CHANGE as $fileName) {
-            if (file_exists(GLPI_ROOT . "/$fileName.iSb")) {
-                unlink(GLPI_ROOT . "/$fileName");
-                rename(GLPI_ROOT . "/$fileName.iSb", GLPI_ROOT . "/$fileName");
-            }
-        }
-    }
-
 }

@@ -3,7 +3,7 @@
 define('ISERVICE_VERSION', '0.0.1');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
-    define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iService");
+    define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
 }
 
 if (!defined("GLPI_PLUGIN_DOC_DIR")) {
@@ -11,7 +11,7 @@ if (!defined("GLPI_PLUGIN_DOC_DIR")) {
 }
 
 if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
-    define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iService");
+    define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iservice");
 }
 
 /**

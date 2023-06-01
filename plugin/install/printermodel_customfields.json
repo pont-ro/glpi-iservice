@@ -1,0 +1,13 @@
+[
+    {
+        "name": "em_field",
+        "old_name": "emfield",
+        "label": ["EM Compatible", "Compatibil EM"],
+        "type": "yesno",
+        "ranking": "1",
+        "default_value": "0",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    }
+]
