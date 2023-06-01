@@ -103,9 +103,11 @@ class AddCustomFieldsInstallStep
         $containerData['_no_message'] = true;
 
         $container  = new PluginFieldsContainer();
-        $containers = $container->find([
-            'itemtypes' => self::encodeItemTypes($containerData['itemtypes']),
-        ]);
+        $containers = $container->find(
+            [
+                'itemtypes' => self::encodeItemTypes($containerData['itemtypes']),
+            ]
+        );
 
         if (count($containers) === 0) {
             $containerData['id'] = $container->add($containerData);
@@ -121,9 +123,11 @@ class AddCustomFieldsInstallStep
     private static function removeContainer(array $containerData): void
     {
         $container  = new PluginFieldsContainer();
-        $containers = $container->find([
-            'itemtypes' => self::encodeItemTypes($containerData['itemtypes']),
-        ]);
+        $containers = $container->find(
+            [
+                'itemtypes' => self::encodeItemTypes($containerData['itemtypes']),
+            ]
+        );
         foreach ($containers as $con) {
             $container->delete(
                 [
@@ -158,10 +162,12 @@ class AddCustomFieldsInstallStep
             ]
         );
 
-        return $translation->update([
-            'id'    => array_shift($translations)['id'],
-            'label' => $fieldData['label'],
-        ]);
+        return $translation->update(
+            [
+                'id'    => array_shift($translations)['id'],
+                'label' => $fieldData['label'],
+            ]
+        );
     }
 
     private static function updateFiledLabelTranslations(array $labelTranslations, int $id): bool
@@ -171,24 +177,30 @@ class AddCustomFieldsInstallStep
         $labelLanguage = 'ro_RO';
 
         foreach ($labelTranslations as $labelTranslation) {
-            $translations = $translation->find([
-                'itemtype' => 'PluginFieldsField',
-                'items_id' => $id,
-                'language' => $labelLanguage,
-            ]);
-
-            if (count($translations) === 0) {
-                $result = $result && $translation->add([
+            $translations = $translation->find(
+                [
                     'itemtype' => 'PluginFieldsField',
                     'items_id' => $id,
                     'language' => $labelLanguage,
-                    'label'    => $labelTranslation,
-                ]);
+                ]
+            );
+
+            if (count($translations) === 0) {
+                $result = $result && $translation->add(
+                    [
+                        'itemtype' => 'PluginFieldsField',
+                        'items_id' => $id,
+                        'language' => $labelLanguage,
+                        'label'    => $labelTranslation,
+                    ]
+                );
             } else {
-                $result = $result && $translation->update([
-                    'id'    => array_shift($translations)['id'],
-                    'label' => $labelTranslation,
-                ]);
+                $result = $result && $translation->update(
+                    [
+                        'id'    => array_shift($translations)['id'],
+                        'label' => $labelTranslation,
+                    ]
+                );
             }
         }
 
@@ -212,10 +224,12 @@ class AddCustomFieldsInstallStep
             $labelTranslations  = $fieldData['label'];
             $fieldData['label'] = array_shift($labelTranslations);
 
-            $fields = $field->find([
-                'name'                        => $fieldData['name'],
-                'plugin_fields_containers_id' => $containerData['id'],
-            ]);
+            $fields = $field->find(
+                [
+                    'name'                        => $fieldData['name'],
+                    'plugin_fields_containers_id' => $containerData['id'],
+                ]
+            );
 
             if (count($fields) === 0) {
                 $fieldData['id'] = $field->add($fieldData);
@@ -262,9 +276,11 @@ class AddCustomFieldsInstallStep
 
             $dropdownValueData['_no_message'] = true;
 
-            $dropdowns = $dropdown->find([
-                'name' => $dropdownValueData['name'],
-            ]);
+            $dropdowns = $dropdown->find(
+                [
+                    'name' => $dropdownValueData['name'],
+                ]
+            );
 
             if (count($dropdowns) === 0) {
                 $result = $result && $dropdown->add($dropdownValueData);
@@ -276,4 +292,5 @@ class AddCustomFieldsInstallStep
 
         return $result;
     }
+
 }

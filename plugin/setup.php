@@ -59,7 +59,7 @@ function plugin_version_iservice(): array
  */
 function plugin_iservice_check_prerequisites(): bool
 {
-    // Do what checks you want
+    // Do what checks you want.
     return true;
 }
 
