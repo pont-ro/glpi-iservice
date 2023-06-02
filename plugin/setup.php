@@ -24,9 +24,15 @@ function plugin_init_iservice(): void
     global $PLUGIN_HOOKS;
 
     // Required!
-    $PLUGIN_HOOKS['csrf_compliant']['iService'] = true;
+    $PLUGIN_HOOKS['csrf_compliant']['iservice'] = true;
 
-    // Some code here, like call to Plugin::registerClass(), populating PLUGIN_HOOKS, ...
+    if (Session::getLoginUserID() && Plugin::isPluginActive('fields')) {
+        // Add link in plugin page.
+        $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.php';
+
+        // Add entry to configuration menu.
+        $PLUGIN_HOOKS["menu_toadd"]['iservice'] = ['config' => 'PluginIserviceMenu'];
+    }
 }
 
 /**

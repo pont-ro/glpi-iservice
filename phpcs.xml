@@ -26,10 +26,7 @@
     <rule ref="PEAR">
         <exclude name="PEAR.NamingConventions.ValidFunctionName"/>
         <exclude name="PEAR.NamingConventions.ValidVariableName"/>
-        <exclude name="PEAR.Commenting.ClassComment"/>
-        <exclude name="PEAR.Commenting.FileComment"/>
-        <exclude name="PEAR.Commenting.FunctionComment"/>
-        <exclude name="PEAR.Commenting.InlineComment"/>
+        <exclude name="PEAR.Commenting"/>
     </rule>
 
     <!-- Include some sniffs from other standards that don't conflict with PEAR -->
@@ -37,7 +34,6 @@
     <rule ref="Squiz.ControlStructures.ControlSignature"/>
     <rule ref="Squiz.Commenting.EmptyCatchComment"/>
     <rule ref="Squiz.Commenting.InlineComment"/>
-    <rule ref="Squiz.Commenting.VariableComment"/>
     <rule ref="Squiz.Scope.MethodScope"/>
     <rule ref="Squiz.WhiteSpace.ControlStructureSpacing"/>
     <rule ref="Squiz.WhiteSpace.OperatorSpacing">
