@@ -32,6 +32,7 @@
 namespace GlpiPlugin\iService;
 
 use GlpiPlugin\iService\InstallStep\AddCustomFieldsInstallStep;
+use GlpiPlugin\iService\InstallStep\CreateTablesInstallStep;
 use GlpiPlugin\iService\InstallStep\OverwriteAssetsInstallStep;
 
 if (!defined('GLPI_ROOT')) {
@@ -44,12 +45,14 @@ class PluginIserviceInstall
     public function install(): bool
     {
         $result = OverwriteAssetsInstallStep::do();
+        $result = $result && CreateTablesInstallStep::do();
         return $result && AddCustomFieldsInstallStep::do();
     }
 
     public function uninstall(): void
     {
         AddCustomFieldsInstallStep::undo();
+        CreateTablesInstallStep::undo();
         OverwriteAssetsInstallStep::undo();
     }
 

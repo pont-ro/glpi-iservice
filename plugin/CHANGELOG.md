@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
--
+- Added config page to the plugin
+- Added custom fields creation to the plugin
 
 ## [0.0.1] - 2023.04.28
 

@@ -26,10 +26,7 @@
     <rule ref="PEAR">
         <exclude name="PEAR.NamingConventions.ValidFunctionName"/>
         <exclude name="PEAR.NamingConventions.ValidVariableName"/>
-        <exclude name="PEAR.Commenting.ClassComment"/>
-        <exclude name="PEAR.Commenting.FileComment"/>
-        <exclude name="PEAR.Commenting.FunctionComment"/>
-        <exclude name="PEAR.Commenting.InlineComment"/>
+        <exclude name="PEAR.Commenting"/>
     </rule>
 
     <!-- Include some sniffs from other standards that don't conflict with PEAR -->
