@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="row g-3 justify-content-evenly">
+        <div class="mt-0 col-12 col-lg-6 col-xxl-3">
+            <label for="old_host"></label>
+            <input class="full-width" disabled="disabled" id="old_host" name="old_host" type="text" value="localhost">
+        </div>
+        <div class="mt-0 col-12 col-lg-6 col-xxl-3">
+            <label for="old_db"></label>
+            <input class="full-width" disabled="disabled" id="old_db" name="old_db" type="text" value="c1iservice_v2test">
+        </div>
+        <div class="mt-0 col-12 col-lg-6 col-xxl-3">
+            <label for="old_user"></label>
+            <input class="full-width" disabled="disabled" id="old_user" name="old_user" type="text" value="c1iservice">
+        </div>
+        <div class="mt-0 col-12 col-lg-6 col-xxl-3">
+            <label for="old_pass"></label>
+            <input class="full-width" disabled="disabled" id="old_pass" name="old_pass" type="password" value="c1iservice.Password">
+        </div>
+    </div>
+
+    <div class="center my-3">
+        <a class="btn btn-primary me-2" href="#" id="import-button">
+            <i class="fas fa-upload"></i>
+            <span onclick="importFromOldIservice('{{ url_base }}');">{{ _x('button', 'Import') }}</span>
+        </a>
+    </div>
+
+    <div class="row g-3 justify-content-evenly">
+        {% for import_group_id, import_group in import_groups %}
+            <div class="col-12 col-lg-6 col-xxl-3">
+                <div class="card">
+                    <h3 class="mb-0">
+                    <label class="card-header">
+                        <input checked="checked" class="form-check-input card-mass-checkbox" id="{{ import_group_id }}" onclick="cardMassCheckboxClick($(this));" type="checkbox"/>
+                        <i class="mx-1 {{ import_group['icon'] }}"></i>
+                        {{ import_group['title'] }}
+                    </label>
+                    </h3>
+                    <div class="list-group list-group-flush">
+                        {% for item_id, item in import_group['items'] %}
+                            <label class="list-group-item list-group-item-action">
+                                <input checked="checked" class="form-check-input to-process" data-itemtype="{{ item['itemtype'] }}" onclick="adjustCardMassCheckbox($(this).closest('.card'));" id="{{ import_group_id }}_{{ item_id }}" type="checkbox"/>
+                                <i class="import-result float-end p-05 fas"></i>
+                                {{ item['label'] }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

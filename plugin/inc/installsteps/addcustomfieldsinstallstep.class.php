@@ -1,6 +1,6 @@
 <?php
 
-namespace GlpiPlugin\Iservice\InstallStep;
+namespace GlpiPlugin\Iservice\InstallSteps;
 
 use Glpi\Toolbox\Sanitizer;
 use PluginFieldsContainer;
@@ -20,7 +20,7 @@ class AddCustomFieldsInstallStep
             'type'      => 'tab',
             'subtype'   => null,
             'is_active' => '1',
-            'fields'    => PLUGIN_ISERVICE_DIR . '/install/printer_customfields.json',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/printer_customfields.json',
         ],
         [
             'name'      => 'ticketcustomfield',
@@ -29,7 +29,7 @@ class AddCustomFieldsInstallStep
             'type'      => 'tab',
             'subtype'   => null,
             'is_active' => '1',
-            'fields'    => PLUGIN_ISERVICE_DIR . '/install/ticket_customfields.json',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/ticket_customfields.json',
         ],
         [
             'name'      => 'suppliercustomfield',
@@ -38,7 +38,7 @@ class AddCustomFieldsInstallStep
             'type'      => 'tab',
             'subtype'   => null,
             'is_active' => '1',
-            'fields'    => PLUGIN_ISERVICE_DIR . '/install/supplier_customfields.json',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/supplier_customfields.json',
         ],
         [
             'name'      => 'contractcustomfield',
@@ -47,7 +47,7 @@ class AddCustomFieldsInstallStep
             'type'      => 'tab',
             'subtype'   => null,
             'is_active' => '1',
-            'fields'    => PLUGIN_ISERVICE_DIR . '/install/contract_customfields.json',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/contract_customfields.json',
         ],
         [
             'name'      => 'cartridgecustomfield',
@@ -56,7 +56,7 @@ class AddCustomFieldsInstallStep
             'type'      => 'tab',
             'subtype'   => null,
             'is_active' => '1',
-            'fields'    => PLUGIN_ISERVICE_DIR . '/install/cartridge_customfields.json',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/cartridge_customfields.json',
         ],
         [
             'name'      => 'printermodelcustomfield',
@@ -65,7 +65,7 @@ class AddCustomFieldsInstallStep
             'type'      => 'tab',
             'subtype'   => null,
             'is_active' => '1',
-            'fields'    => PLUGIN_ISERVICE_DIR . '/install/printermodel_customfields.json',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/printermodel_customfields.json',
         ]
     ];
 

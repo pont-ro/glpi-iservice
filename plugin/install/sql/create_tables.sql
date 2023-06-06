@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `glpi_plugin_iservice_configs`
 (
-    `id`    int(11)      NOT NULL AUTO_INCREMENT,
+    `id`    int UNSIGNED NOT NULL AUTO_INCREMENT,
     `name`  varchar(150) NOT NULL,
     `value` text,
     PRIMARY KEY (`id`),

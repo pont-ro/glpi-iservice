@@ -31,9 +31,9 @@
  */
 namespace GlpiPlugin\iService;
 
-use GlpiPlugin\iService\InstallStep\AddCustomFieldsInstallStep;
-use GlpiPlugin\iService\InstallStep\CreateTablesInstallStep;
-use GlpiPlugin\iService\InstallStep\OverwriteAssetsInstallStep;
+use GlpiPlugin\iService\InstallSteps\AddCustomFieldsInstallStep;
+use GlpiPlugin\iService\InstallSteps\CreateTablesInstallStep;
+use GlpiPlugin\iService\InstallSteps\OverwriteAssetsInstallStep;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access this file directly");

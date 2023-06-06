@@ -1,16 +1,16 @@
 <?php
-namespace GlpiPlugin\Iservice\InstallStep;
+namespace GlpiPlugin\Iservice\InstallSteps;
 
 class CreateTablesInstallStep
 {
 
-    const CLEANUP_ON_UNINSTALL = false;
+    const CLEANUP_ON_UNINSTALL = true;
 
     public static function do(): bool
     {
         global $DB;
 
-        $DB->runFile(GLPI_ROOT . '/plugins/iservice/install/sql/create_tables.sql');
+        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql');
         return true;
     }
 
@@ -22,7 +22,7 @@ class CreateTablesInstallStep
 
         global $DB;
 
-        $DB->runFile(GLPI_ROOT . '/plugins/iservice/install/sql/delete_tables.sql');
+        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/delete_tables.sql');
     }
 
 }
