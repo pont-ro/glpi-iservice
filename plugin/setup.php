@@ -1,5 +1,7 @@
 <?php
 
+use GlpiPlugin\Iservice\Utils\HtaccessChecker;
+
 define('ISERVICE_VERSION', '0.0.1');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
@@ -31,6 +33,8 @@ function plugin_init_iservice(): void
 
     // Required!
     $PLUGIN_HOOKS['csrf_compliant']['iservice'] = true;
+
+    HtaccessChecker::check();
 
     if (Session::getLoginUserID() && Plugin::isPluginActive('iservice')) {
         // Add link in plugin page.
