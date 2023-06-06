@@ -28,7 +28,6 @@ function plugin_init_iservice(): void
     // Required!
     $PLUGIN_HOOKS['csrf_compliant']['iservice'] = true;
 
-    // Force https!
     HtaccessChecker::check();
 
     if (Session::getLoginUserID() && Plugin::isPluginActive('iservice')) {
