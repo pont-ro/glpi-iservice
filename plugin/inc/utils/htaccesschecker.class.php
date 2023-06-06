@@ -9,6 +9,7 @@ class HtaccessChecker
     {
         self::forceHttps();
     }
+
     public static function forceHttps(): void
     {
         $rule = <<<EOT
