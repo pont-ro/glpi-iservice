@@ -1,3 +1,4 @@
+/* exported importFromOldIservice */
 function importFromOldIservice(url_base)
 {
     let importButton = $('#import-button');
@@ -50,6 +51,7 @@ function importFirstItemFromOldIservice(url_base)
 
 }
 
+/* exported cardMassCheckboxClick */
 function cardMassCheckboxClick(element)
 {
     element.closest('.card').find('.list-group-item-action .form-check-input').prop('checked', element.is(':checked'));
