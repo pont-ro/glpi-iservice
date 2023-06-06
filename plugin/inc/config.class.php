@@ -1,5 +1,7 @@
 <?php
 
+use Glpi\Application\View\TemplateRenderer;
+
 class PluginIserviceConfig extends CommonDBTM
 {
 
@@ -19,7 +21,6 @@ class PluginIserviceConfig extends CommonDBTM
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): array
     {
-
         switch ($item->getType()) {
             case __CLASS__:
                 return [
@@ -42,7 +43,15 @@ class PluginIserviceConfig extends CommonDBTM
 
     public function showFormImport(CommonGLPI $item): bool
     {
-        echo "Import";
+        global $CFG_PLUGIN_ISERVICE;
+
+        echo TemplateRenderer::getInstance()->render(
+            '@iservice/pages/admin/import.html.twig',
+            [
+                'url_base' => $CFG_PLUGIN_ISERVICE['root_doc'],
+                'import_groups' => include __DIR__ . '/import.config.php',
+            ]
+        );
 
         return true;
     }

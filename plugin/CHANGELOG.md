@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+- EXL-274 Added import tab to the config page
 - Added config page to the plugin
 - Added custom fields creation to the plugin
 
