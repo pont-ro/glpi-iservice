@@ -1,5 +1,7 @@
 <?php
 
+use GlpiPlugin\Iservice\Utils\ForceHttps;
+
 define('ISERVICE_VERSION', '0.0.1');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
@@ -26,12 +28,19 @@ function plugin_init_iservice(): void
     // Required!
     $PLUGIN_HOOKS['csrf_compliant']['iservice'] = true;
 
-    if (Session::getLoginUserID() && Plugin::isPluginActive('fields')) {
+    // Force https
+    ForceHttps::do();
+
+    if (Session::getLoginUserID() && Plugin::isPluginActive('iservice')) {
         // Add link in plugin page.
         $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.php';
 
         // Add entry to configuration menu.
         $PLUGIN_HOOKS["menu_toadd"]['iservice'] = ['config' => 'PluginIserviceMenu'];
+
+        $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
+
+        $PLUGIN_HOOKS['add_javascript']['iservice'] = "js/import.js";
     }
 }
 
