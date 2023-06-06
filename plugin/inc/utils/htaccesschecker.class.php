@@ -2,10 +2,14 @@
 
 namespace GlpiPlugin\Iservice\Utils;
 
-class ForceHttps
+class HtaccessChecker
 {
 
-    public static function do(): void
+    public static function check(): void
+    {
+        self::forceHttps();
+    }
+    public static function forceHttps(): void
     {
         $rule = <<<EOT
             RewriteEngine On
@@ -28,13 +32,12 @@ class ForceHttps
 
         if ($fileContent !== false && strpos($fileContent, $rule) === false) {
             // Append the rule to the file.
-            $fileContent .= PHP_EOL . '# iService required lines start';
-            $fileContent .= PHP_EOL . $rule;
-            $fileContent .= PHP_EOL . '# iService required lines end' . PHP_EOL;
+            $fileContent .= PHP_EOL . PHP_EOL . $rule;
 
             file_put_contents($htaccessFile, $fileContent);
-        } else {
-            echo "Failed to read the .htaccess file.";
+
+            // Reload the page.
+            header('Location: ' . $_SERVER['REQUEST_URI']);
         }
 
     }
