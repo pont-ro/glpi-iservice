@@ -42,8 +42,6 @@ function plugin_init_iservice(): void
         $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
 
         $PLUGIN_HOOKS['add_javascript']['iservice'] = "js/import.js";
-
-        // Ensure .htaccess has what it needs
     }
 }
 
