@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+- Added htaccess based redirect to https (EXL-285)
 - Added config page to the plugin
 - Added custom fields creation to the plugin
 
