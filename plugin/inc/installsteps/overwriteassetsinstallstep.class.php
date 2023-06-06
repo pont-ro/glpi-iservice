@@ -1,5 +1,5 @@
 <?php
-namespace GlpiPlugin\Iservice\InstallStep;
+namespace GlpiPlugin\Iservice\InstallSteps;
 
 class OverwriteAssetsInstallStep
 {
