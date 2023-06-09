@@ -8,9 +8,10 @@ class RedefineMenus
         'config',
         'assets.content.allassets',
     ];
+
     public static function redefine($menus): array
     {
-        $activeProfile = $_SESSION['glpiactiveprofile']['id'] ?? null;
+        $activeProfile        = $_SESSION['glpiactiveprofile']['id'] ?? null;
         $superAdminProfileIds = \Profile::getSuperAdminProfilesId();
 
         if (in_array($activeProfile, $superAdminProfileIds)) {
@@ -26,7 +27,7 @@ class RedefineMenus
 
     public static function removeMenuItem(&$menus, $item): void
     {
-        $keys = explode('.', $item);
+        $keys    = explode('.', $item);
         $current = &$menus;
         foreach ($keys as $subKey) {
             if (isset($current[$subKey])) {
@@ -40,4 +41,5 @@ class RedefineMenus
             }
         }
     }
+
 }
