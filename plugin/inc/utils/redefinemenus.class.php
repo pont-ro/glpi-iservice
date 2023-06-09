@@ -11,9 +11,9 @@ class RedefineMenus
     public static function redefine($menus): array
     {
         $activeProfile = $_SESSION['glpiactiveprofile']['id'] ?? null;
-        $superAdminProfileId = \Profile::getSuperAdminProfilesId();
+        $superAdminProfileIds = \Profile::getSuperAdminProfilesId();
 
-        if (in_array($activeProfile, $superAdminProfileId)) {
+        if (in_array($activeProfile, $superAdminProfileIds)) {
             return $menus;
         }
 

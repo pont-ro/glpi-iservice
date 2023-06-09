@@ -25,7 +25,7 @@ function plugin_iservice_uninstall(): void
     $install->uninstall();
 }
 
-function redefine_menus_hook($menus)
+function plugin_iservice_redefine_menus($menus)
 {
     return RedefineMenus::redefine($menus);
 }

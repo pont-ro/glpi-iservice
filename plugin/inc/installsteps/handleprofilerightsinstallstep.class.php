@@ -10,17 +10,16 @@ class HandleProfileRightsInstallStep
     {
         global $DB;
 
-        $table = 'glpi_profilerights';
-        $superAdminProfileId = \Profile::getSuperAdminProfilesId();
-        $rightsValues = include __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'rights.config.php';
-        $result = false;
+        $table                = 'glpi_profilerights';
+        $superAdminProfileIds = \Profile::getSuperAdminProfilesId();
+        $rightsValues         = include PLUGIN_ISERVICE_DIR . '/inc/rights.config.php';
 
-        if (!self::backupTable($table)) {
+        if (!self::createTableRestoreScript($table)) {
             return false;
         }
 
         foreach ($rightsValues as $rightName => $rightValue) {
-            $result = $DB->update(
+            if (!$DB->update(
                 $table,
                 [
                     'rights' => $rightValue,
@@ -28,17 +27,16 @@ class HandleProfileRightsInstallStep
                 [
                     'WHERE'  => [
                         'name' => $rightName,
-                        'profiles_id' => ['!=', $superAdminProfileId],
+                        'NOT' => ['profiles_id' => $superAdminProfileIds],
                     ],
                 ]
-            );
-
-            if ($result === false) {
+            )
+            ) {
                 return false;
             }
         }
 
-        return $result;
+        return true;
     }
 
     public static function undo(): void
@@ -47,35 +45,32 @@ class HandleProfileRightsInstallStep
             return;
         }
 
-        global $DB;
+        self::runTableRestoreScript('glpi_profilerights');
 
-        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/glpi_profilerights_original.sql');
     }
 
-    public static function backupTable($tableName): bool
+    public static function createTableRestoreScript($tableName): bool
     {
         global $DB;
-        $iterator =  $DB->request($tableName);
 
-        if (!$iterator) {
-            return false;
-        }
+        $outputFile = PLUGIN_ISERVICE_DIR . "/install/sql/" . $tableName . "_original.sql";
 
-        $sql = "TRUNCATE TABLE " . $tableName . ";\n";
-        foreach ($iterator as $row) {
-            $columns = implode(', ', array_keys($row));
-            $values = implode(', ', array_map(function ($value) use ($DB) {
-                return $DB->quote($value);
-            }, $row));
-            $sql .= "INSERT INTO $tableName ($columns) VALUES ($values);\n";
-        }
+        $command = "mysqldump -h $DB->dbhost -u $DB->dbuser -p$DB->dbpassword $DB->dbdefault $tableName> $outputFile";
 
-        $outputFile = PLUGIN_ISERVICE_DIR . '/install/sql/' . $tableName . '_original.sql';
-        if (file_put_contents($outputFile, $sql) !== false) {
-            return true;
-        }
+        exec($command, $output, $returnVar);
 
-        return false;
+        return $returnVar === 0;
+    }
+
+    public static function runTableRestoreScript($tableName): bool
+    {
+        global $DB;
+
+        $scriptPath = PLUGIN_ISERVICE_DIR . "/install/sql/" . $tableName . "_original.sql";
+        $command    = "mysql -h $DB->dbhost -u $DB->dbuser -p$DB->dbpassword $DB->dbdefault < $scriptPath";
+        exec($command, $output, $returnVar);
+
+        return $returnVar === 0;
     }
 
 }
