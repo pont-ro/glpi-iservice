@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+- EXL-284 - Clean up unnecessary menu items
 - EXL-285 - Added htaccess based redirect to https 
 - EXL-274 - Added import tab to the config page
 - EXL-274 - config page to the plugin

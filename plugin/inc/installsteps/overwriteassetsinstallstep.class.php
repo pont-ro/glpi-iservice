@@ -15,6 +15,8 @@ class OverwriteAssetsInstallStep
         'pics/logos/logo-GLPI-250-black.png',
         'pics/logos/logo-GLPI-250-grey.png',
         'pics/logos/logo-GLPI-250-white.png',
+        'templates/layout/parts/profile_selector.html.twig',
+        'templates/layout/parts/user_header.html.twig',
     ];
 
     public static function do(): bool

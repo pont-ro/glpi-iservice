@@ -1,6 +1,7 @@
 <?php
 
 use GlpiPlugin\iService\PluginIserviceInstall;
+use GlpiPlugin\Iservice\Utils\RedefineMenus;
 
 /**
  * Install all necessary elements for the plugin
@@ -22,4 +23,9 @@ function plugin_iservice_uninstall(): void
     include_once __DIR__ . '/install/install.php';
     $install = new PluginIserviceInstall();
     $install->uninstall();
+}
+
+function plugin_iservice_redefine_menus($menus)
+{
+    return RedefineMenus::redefine($menus);
 }
