@@ -18,12 +18,7 @@ class HtaccessChecker
             RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
             EOT;
 
-        $currentDir = basename(getcwd());
-        if ($currentDir == 'glpi') {
-            $htaccessFile = '.htaccess';
-        } else {
-            $htaccessFile = '../.htaccess';
-        }
+        $htaccessFile = GLPI_ROOT . '/.htaccess';
 
         if (file_exists($htaccessFile)) {
             $fileContent = file_get_contents($htaccessFile);
