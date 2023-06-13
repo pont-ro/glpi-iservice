@@ -23,7 +23,13 @@ if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
  */
 function plugin_init_iservice(): void
 {
+    global $CFG_GLPI;
     global $PLUGIN_HOOKS;
+    global $CFG_PLUGIN_ISERVICE;
+
+    $CFG_PLUGIN_ISERVICE = [
+        'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice"
+    ];
 
     // Required!
     $PLUGIN_HOOKS['csrf_compliant']['iservice'] = true;
@@ -32,10 +38,16 @@ function plugin_init_iservice(): void
 
     if (Session::getLoginUserID() && Plugin::isPluginActive('iservice')) {
         // Add link in plugin page.
-        $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.php';
+        $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.form.php';
 
         // Add entry to configuration menu.
         $PLUGIN_HOOKS["menu_toadd"]['iservice'] = ['config' => 'PluginIserviceMenu'];
+
+        $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
+
+        $PLUGIN_HOOKS['add_javascript']['iservice'] = "js/import.js";
+
+        $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
     }
 }
 

@@ -31,9 +31,10 @@
  */
 namespace GlpiPlugin\iService;
 
-use GlpiPlugin\iService\InstallStep\AddCustomFieldsInstallStep;
-use GlpiPlugin\iService\InstallStep\CreateTablesInstallStep;
-use GlpiPlugin\iService\InstallStep\OverwriteAssetsInstallStep;
+use GlpiPlugin\iService\InstallSteps\AddCustomFieldsInstallStep;
+use GlpiPlugin\iService\InstallSteps\CreateTablesInstallStep;
+use GlpiPlugin\iService\InstallSteps\OverwriteAssetsInstallStep;
+use GlpiPlugin\iService\InstallSteps\HandleProfileRightsInstallStep;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access this file directly");
@@ -46,7 +47,8 @@ class PluginIserviceInstall
     {
         $result = OverwriteAssetsInstallStep::do();
         $result = $result && CreateTablesInstallStep::do();
-        return $result && AddCustomFieldsInstallStep::do();
+        $result = $result && AddCustomFieldsInstallStep::do();
+        return $result && HandleProfileRightsInstallStep::do();
     }
 
     public function uninstall(): void
@@ -54,6 +56,7 @@ class PluginIserviceInstall
         AddCustomFieldsInstallStep::undo();
         CreateTablesInstallStep::undo();
         OverwriteAssetsInstallStep::undo();
+        HandleProfileRightsInstallStep::undo();
     }
 
     public function isPluginInstalled(): bool
