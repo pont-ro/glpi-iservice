@@ -4,8 +4,10 @@ use Glpi\Application\View\TemplateRenderer;
 
 class PluginIserviceConfig extends CommonDBTM
 {
-    private const LOCAL_CONFIG_FILE   = PLUGIN_ISERVICE_DIR . '/config/local.php';
-    private const DEFAULT_CONFIG_FILE = PLUGIN_ISERVICE_DIR . '/config/config.php';
+    private const LOCAL_CONFIG_FILE     = PLUGIN_ISERVICE_DIR . '/config/local.php';
+    private const DEFAULT_CONFIG_FILE   = PLUGIN_ISERVICE_DIR . '/config/config.php';
+    private static array $localConfig   = [];
+    private static array $defaultConfig = [];
 
     public static $rightname = 'config';
 
@@ -74,7 +76,7 @@ class PluginIserviceConfig extends CommonDBTM
         return true;
     }
 
-    public static function getConfigValue(string $name)
+    public static function getConfigValue(string $name): ?string
     {
         $value = self::getValueFromSession($name);
 
@@ -85,38 +87,38 @@ class PluginIserviceConfig extends CommonDBTM
         $value = self::getValueFromDatabase($name);
 
         if ($value !== null && $value != 'N/A') {
-            self::setValueToSession($name, $value);
+            self::setValueInSession($name, $value);
             return $value;
         }
 
-        $value = self::getValueFromConfigFile($name, self::LOCAL_CONFIG_FILE);
+        $value = self::getValueFromConfigFile($name, self::getLocalConfig());
 
         if ($value !== null) {
-            self::setValueToSession($name, $value);
+            self::setValueInSession($name, $value);
             return $value;
         }
 
-        $value = self::getValueFromConfigFile($name, self::DEFAULT_CONFIG_FILE);
+        $value = self::getValueFromConfigFile($name, self::getDefaultConfig());
 
         if ($value !== null) {
-            self::setValueToSession($name, $value);
+            self::setValueInSession($name, $value);
             return $value;
         }
 
         return null;
     }
 
-    public static function getValueFromSession(string $name)
+    public static function getValueFromSession(string $name): ?string
     {
         return $_SESSION['plugin']['iservice']['config'][$name] ?? null;
     }
 
-    public static function setValueToSession(string $name, $value)
+    public static function setValueInSession(string $name, $value): void
     {
         $_SESSION['plugin']['iservice']['config'][$name] = $value;
     }
 
-    public static function getValueFromDatabase(string $name)
+    public static function getValueFromDatabase(string $name): ?string
     {
         $config = new self();
         $config->getFromDBByCrit(
@@ -125,16 +127,12 @@ class PluginIserviceConfig extends CommonDBTM
             ]
         );
 
-        if ($config->getField('value') !== null) {
-            return $config->getField('value');
-        }
+        return $config->getField('value') ?? null;
     }
 
-    public static function getValueFromConfigFile(string $name, string $file)
+    public static function getValueFromConfigFile(string $name, array $fileConfig): ?string
     {
-        $localConfig = include $file;
-
-        return $localConfig[$name] ?? null;
+        return $fileConfig[$name] ?? null;
     }
 
     public static function handleConfigValues(): void
@@ -146,10 +144,10 @@ class PluginIserviceConfig extends CommonDBTM
         $valuesFromDB = (new self)->find();
         $valuesFromDB = array_combine(array_column($valuesFromDB, 'name'), array_column($valuesFromDB, 'value')) ?? [];
 
-        $valuesFromLocalConfig = include self::LOCAL_CONFIG_FILE ?? [];
-        $valuesFromMainConfig  = include self::DEFAULT_CONFIG_FILE ?? [];
+        $valuesFromLocalConfig   = self::getLocalConfig();
+        $valuesFromDefaultConfig = self::getDefaultConfig();
 
-        $configArray = array_merge($valuesFromMainConfig, $valuesFromLocalConfig, $valuesFromDB);
+        $configArray = array_merge($valuesFromDefaultConfig, $valuesFromLocalConfig, $valuesFromDB);
 
         $_SESSION['plugin']['iservice']['config'] = $configArray;
         self::overrideConfig($configArray);
@@ -178,6 +176,7 @@ class PluginIserviceConfig extends CommonDBTM
                         'name' => $configName,
                     ]
                 );
+
                 $config->update(
                     [
                         $config->getIndexName() => $config->getID(),
@@ -187,6 +186,24 @@ class PluginIserviceConfig extends CommonDBTM
                 );
             }
         }
+    }
+
+    public static function getLocalConfig(): array
+    {
+        if (empty(self::$localConfig)) {
+            self::$localConfig = include self::LOCAL_CONFIG_FILE ?? [];
+        }
+
+        return self::$localConfig;
+    }
+
+    public static function getDefaultConfig(): array
+    {
+        if (empty(self::$defaultConfig)) {
+            self::$defaultConfig = include self::DEFAULT_CONFIG_FILE ?? [];
+        }
+
+        return self::$defaultConfig;
     }
 
 }
