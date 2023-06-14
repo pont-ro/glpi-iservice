@@ -91,14 +91,14 @@ class PluginIserviceConfig extends CommonDBTM
             return $value;
         }
 
-        $value = self::getValueFromConfigFile($name, self::getLocalConfig());
+        $value = self::getValueFromArray($name, self::getLocalConfig());
 
         if ($value !== null) {
             self::setValueInSession($name, $value);
             return $value;
         }
 
-        $value = self::getValueFromConfigFile($name, self::getDefaultConfig());
+        $value = self::getValueFromArray($name, self::getDefaultConfig());
 
         if ($value !== null) {
             self::setValueInSession($name, $value);
@@ -127,10 +127,10 @@ class PluginIserviceConfig extends CommonDBTM
             ]
         );
 
-        return $config->getField('value') ?? null;
+        return $config?->getField('value');
     }
 
-    public static function getValueFromConfigFile(string $name, array $fileConfig): ?string
+    public static function getValueFromArray(string $name, array $fileConfig): ?string
     {
         return $fileConfig[$name] ?? null;
     }
@@ -176,6 +176,10 @@ class PluginIserviceConfig extends CommonDBTM
                         'name' => $configName,
                     ]
                 );
+
+                if (empty($config->fields)) {
+                    continue;
+                }
 
                 $config->update(
                     [
