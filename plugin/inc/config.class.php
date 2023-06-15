@@ -194,8 +194,9 @@ class PluginIserviceConfig extends CommonDBTM
 
     public static function getLocalConfig(): array
     {
-        if (empty(self::$localConfig)) {
-            self::$localConfig = include self::LOCAL_CONFIG_FILE ?? [];
+        if (empty(self::$localConfig) && file_exists(self::LOCAL_CONFIG_FILE)) {
+            $content = include self::LOCAL_CONFIG_FILE;
+            self::$localConfig = is_array($content) ? $content : [];
         }
 
         return self::$localConfig;
@@ -203,8 +204,9 @@ class PluginIserviceConfig extends CommonDBTM
 
     public static function getDefaultConfig(): array
     {
-        if (empty(self::$defaultConfig)) {
-            self::$defaultConfig = include self::DEFAULT_CONFIG_FILE ?? [];
+        if (empty(self::$defaultConfig) && file_exists(self::DEFAULT_CONFIG_FILE)) {
+            $content = include self::DEFAULT_CONFIG_FILE;
+            self::$defaultConfig = is_array($content) ? $content : [];
         }
 
         return self::$defaultConfig;
