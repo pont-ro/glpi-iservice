@@ -9,3 +9,14 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_iservice_configs`
 
 INSERT INTO `glpi_plugin_iservice_configs` (`name`, `value`)
 VALUES ('version', '0');
+
+CREATE TABLE IF NOT EXISTS `glpi_plugin_iservice_importmappings`
+(
+    `id`       int UNSIGNED NOT NULL AUTO_INCREMENT,
+    `itemtype` varchar(255) NOT NULL,
+    `items_id` int UNSIGNED NOT NULL,
+    `old_id`   int UNSIGNED NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `item` (`itemtype`, `items_id`),
+    UNIQUE INDEX `old_item` (`itemtype`, `old_id`)
+);

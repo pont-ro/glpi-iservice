@@ -29,8 +29,11 @@ function importFirstItemFromOldIservice(url_base)
 
     let resultElement = elementToProcess.closest('.list-group-item-action').find('.import-result');
     let itemType      = elementToProcess.data('itemtype');
-    let ajaxUrl       = url_base + '/ajax/import.php?itemtype=' + itemType;
-
+    let ajaxUrl       = url_base + '/ajax/import.php?itemType=' + itemType
+        + '&oldDBHost=' + $('#old-host').val()
+        + '&oldDBName=' + $('#old-db').val()
+        + '&oldDBUser=' + $('#old-user').val()
+        + '&oldDBPassword=' + $('#old-pass').val()
     resultElement.addClass('fa-spinner fa-pulse');
 
     $.get(
@@ -44,6 +47,7 @@ function importFirstItemFromOldIservice(url_base)
                 importFirstItemFromOldIservice(url_base);
             } else {
                 resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
+                resultElement.attr('title', data)
                 $('#import-button').removeClass('disabled');
             }
         }
