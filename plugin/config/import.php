@@ -4,12 +4,13 @@ return [
         'icon' => 'fa-fw ti ti-settings',
         'title' => __('Various data', 'iservice'),
         'items' => [
-            'location' => [
-                'itemtype' => 'Location',
-                'label' => _n('Location', 'Locations', Session::getPluralNumber()),
+            'reminder' => [
+                'itemtype' => 'Reminder',
+                'label' => _n('Reminder', 'Reminders', Session::getPluralNumber()),
             ],
         ]
     ],
+    /*
     'printers' => [
         'icon' => 'fa-fw ti ti-printer',
         'title' => _n('Printer', 'Printers', Session::getPluralNumber()),
@@ -24,4 +25,5 @@ return [
             ],
         ]
     ]
+    /**/
 ];

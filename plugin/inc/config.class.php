@@ -53,7 +53,7 @@ class PluginIserviceConfig extends CommonDBTM
             '@iservice/pages/admin/import.html.twig',
             [
                 'url_base' => $CFG_PLUGIN_ISERVICE['root_doc'],
-                'import_groups' => include __DIR__ . '/import.config.php',
+                'import_groups' => include PLUGIN_ISERVICE_DIR . '/config/import.php',
             ]
         );
 

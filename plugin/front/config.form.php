@@ -1,11 +1,5 @@
 <?php
-if (strpos(realpath(getcwd()), 'iService\plugin') > 0) {
-    global $CFG_GLPI;
-    $CFG_GLPI['root_doc'] = '';
-    include "../../glpi/inc/includes.php";
-} else {
-    include "../../../inc/includes.php";
-}
+require "../inc/includes.php";
 
 Html::header(
     __("iService", "iservice"),
