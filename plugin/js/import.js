@@ -35,6 +35,7 @@ function importFirstItemFromOldIservice(url_base)
         + '&oldDBUser=' + $('#old-user').val()
         + '&oldDBPassword=' + $('#old-pass').val()
     resultElement.addClass('fa-spinner fa-pulse');
+    resultElement.attr('title', '...');
 
     $.get(
         ajaxUrl,
@@ -44,10 +45,20 @@ function importFirstItemFromOldIservice(url_base)
 
             if (data === 'OK') {
                 resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
+                resultElement.attr('title', '');
                 importFirstItemFromOldIservice(url_base);
             } else {
                 resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
-                resultElement.attr('title', data)
+
+                let resultText = data;
+                try {
+                    resultText = JSON.parse(data);
+                    resultText = resultText.join("\n");
+                } catch (e) {
+                    console.log(e);
+                }
+
+                resultElement.attr('title', resultText);
                 $('#import-button').removeClass('disabled');
             }
         }

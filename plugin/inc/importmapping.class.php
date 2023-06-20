@@ -21,15 +21,7 @@ class PluginIserviceImportMapping extends CommonDBChild
 
     public function findForOldItemID(string $itemType, int $oldId): array
     {
-        $result = $this->find(
-            [
-                'itemtype' => $itemType,
-                'old_id'   => $oldId,
-            ],
-            [],
-            1
-        );
-
+        $result = $this->find(['itemtype' => $itemType, 'old_id'   => $oldId], [], 1);
         return count($result) ? array_shift($result) : [];
     }
 
