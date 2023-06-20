@@ -24,13 +24,16 @@ class PluginIserviceDownload extends CommonDBTM {
         self::DOWNLOAD_TYPE_PARTNER_CONTACTED => array(),
     );
 
-    function __construct($download_type) {
+    function __construct() {
+        $this->paths = array();
+    }
+
+    public function setDownloadType($download_type) {
         if (array_key_exists($download_type, self::$settings)) {
             $this->download_type = $download_type;
         } else {
             $this->download_type = null;
         }
-        $this->paths = array();
     }
 
     function exists($id) {

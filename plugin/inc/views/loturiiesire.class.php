@@ -1,16 +1,43 @@
 <?php
 
-// Imported from iService2, needs refactoring.
-class PluginIserviceView_Loturi_Iesire extends PluginIserviceView {
-    
-    static $order = 30;
-    
-    static function getName() {
-        return 'Loturi de ieșire';
+namespace GlpiPlugin\Iservice\Views;
+
+use \Session;
+
+// Imported from iService2, needs refactoring. Original file: "Loturi_Iesire.php".
+class LoturiIesire extends View
+{
+
+    public static $order = 30;
+
+    public static $rightname = 'entity';
+
+    public static function getMenuName(): string
+    {
+        return self::getName();
     }
 
-    protected function getSettings() {
-        return array(
+    public static function getMenuContent(): array
+    {
+        if (!Session::haveRight(self::$rightname, READ)) {
+            return [];
+        }
+
+        return [
+            'title' => self::getMenuName(),
+            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
+            'icon'  => 'fa-fw ti ti-transfer-out',
+        ];
+    }
+
+    public static function getName(): string
+    {
+        return __('Loturi de ieșire', 'iservice');
+    }
+
+    protected function getSettings(): array
+    {
+        return [
             'name' => self::getName(),
             'query' => "
                 SELECT
@@ -45,111 +72,111 @@ class PluginIserviceView_Loturi_Iesire extends PluginIserviceView {
                     AND ((p.serial IS NULL AND '[printer_serial]' = '%%') or p.serial LIKE '[printer_serial]')
                 ",
             'default_limit' => 25,
-            'filters' => array(
-                'start_date' => array(
+            'filters' => [
+                'start_date' => [
                     'type' => 'date',
                     'caption' => 'Data factură',
                     'format' => 'Y-m-d',
                     'empty_value' => '2000-01-01',
                     'pre_widget' => "{$this->getWidgets()[self::WIDGET_LAST_6_MONTH]} {$this->getWidgets()[self::WIDGET_LAST_MONTH]} {$this->getWidgets()[self::WIDGET_THIS_MONTH]} ",
-                ),
-                'end_date' => array(
+                ],
+                'end_date' => [
                     'type' => 'date',
                     'caption' => ' - ',
                     'format' => 'Y-m-d',
                     'empty_value' => date('Y-m-d'),
-                ),
-                'nrfac' => array(
+                ],
+                'nrfac' => [
                     'type' => 'text',
                     'caption' => 'Nrfac',
                     'format' => '%%%s%%',
                     'header' => 'nrfac',
-                ),
-                'tehnician' => array(
+                ],
+                'tehnician' => [
                     'type' => 'text',
                     'caption' => 'Tehnician',
                     'format' => '%%%s%%',
                     'header' => 'tehnician',
-                ),
-                'nume_client' => array(
+                ],
+                'nume_client' => [
                     'type' => 'text',
                     'caption' => 'Client',
                     'format' => '%%%s%%',
                     'header' => 'Denumire_Client',
-                ),
-                'codmat' => array(
+                ],
+                'codmat' => [
                     'type' => 'text',
                     'caption' => 'Cod mat',
                     'format' => '%%%s%%',
                     'header' => 'Cod',
-                ),
-                'denum_art' => array(
+                ],
+                'denum_art' => [
                     'type' => 'text',
                     'caption' => 'Articol',
                     'format' => '%%%s%%',
                     'header' => 'Denumire_Articol',
-                ),
-                'descr' => array(
+                ],
+                'descr' => [
                     'type' => 'text',
                     'format' => '%%%s%%',
                     'header' => 'Descriere',
-                ),
-                'printer_serial' => array(
+                ],
+                'printer_serial' => [
                     'type' => 'text',
                     'caption' => 'Serie aparat',
                     'format' => '%%%s%%',
                     'header' => 'printer_serial',
-                ),
-            ),
-            'columns' => array(
-                'nrfac' => array(
+                ],
+            ],
+            'columns' => [
+                'nrfac' => [
                     'title' => 'Nrfac'
-                ),
-                'Data_Fact' => array(
+                ],
+                'Data_Fact' => [
                     'title' => 'Data facturii',
                     'default_sort' => 'DESC',
                     'style' => 'white-space: nowrap',
-                ),
-                'tehnician' => array(
+                ],
+                'tehnician' => [
                     'title' => 'Tehnician',
-                ),
-                'Denumire_Client' => array(
+                ],
+                'Denumire_Client' => [
                     'title' => 'Denumire client',
-                ),
-                'Cod' => array(
+                ],
+                'Cod' => [
                     'title' => 'Cod material',
-                ),
-                'Denumire_Articol' => array(
+                ],
+                'Denumire_Articol' => [
                     'title' => 'Denumire articol',
-                ),
-                'printer_serial' => array(
+                ],
+                'printer_serial' => [
                     'title' => 'Serie aparat',
-                ),
-                'Descriere' => array(
+                ],
+                'Descriere' => [
                     'title' => 'Descriere',
-                ),
-                'Proc' => array(
+                ],
+                'Proc' => [
                     'title' => 'Proc',
                     'align' => 'right',
                     'format' => '%.2f',
-                ),
-                'Cant' => array(
+                ],
+                'Cant' => [
                     'title' => 'Cant',
                     'align' => 'center',
-                ),
-                'Pret_Liv' => array(
+                ],
+                'Pret_Liv' => [
                     'title' => 'Preț liv',
                     'align' => 'right',
                     'format' => '%.2f',
-                ),
-                'Adaos' => array(
+                ],
+                'Adaos' => [
                     'title' => 'Adaos',
                     'align' => 'right',
                     'format' => '%.2f',
                     'total' => true,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
 }

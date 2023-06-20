@@ -1,16 +1,43 @@
 <?php
 
-// Imported from iService2, needs refactoring.
-class PluginIserviceView_Foaie_de_Parcurs extends PluginIserviceView {
+namespace GlpiPlugin\Iservice\Views;
 
-    static $order = 60;
+use \Session;
 
-    static function getName() {
-        return 'Foaie de parcurs';
+// Imported from iService2, needs refactoring. Original file: "Foaie_de_Parcurs.class.php".
+class FoaieDeParcurs extends View
+{
+
+    public static $order = 60;
+
+    public static $rightname = 'entity';
+
+    public static function getMenuName(): string
+    {
+        return self::getName();
     }
 
-    protected function getSettings() {
-        return array(
+    public static function getMenuContent(): array
+    {
+        if (!Session::haveRight(self::$rightname, READ)) {
+            return [];
+        }
+
+        return [
+            'title' => self::getMenuName(),
+            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
+            'icon'  => 'fa-fw ti ti-road',
+        ];
+    }
+
+    public static function getName(): string
+    {
+        return __('Foaie de parcurs', 'iservice');
+    }
+
+    protected function getSettings(): array
+    {
+        return [
             'name' => self::getName(),
             'query' => "
                         SELECT
@@ -25,7 +52,7 @@ class PluginIserviceView_Foaie_de_Parcurs extends PluginIserviceView {
                             , '________' AS Km_Oras
                             , '________' AS KM_P 
                         FROM glpi_tickets t
-                        LEFT JOIN glpi_plugin_fields_ticketcustomfields tcf ON tcf.items_id = t.id and tcf.itemtype = 'Ticket'
+                        LEFT JOIN glpi_plugin_fields_ticketticketcustomfields tcf ON tcf.items_id = t.id and tcf.itemtype = 'Ticket'
                         LEFT JOIN glpi_tickets_users tu ON tu.tickets_id = t.id AND tu.type = 2
                         LEFT JOIN glpi_suppliers_tickets ts ON ts.tickets_id = t.id
                         LEFT JOIN glpi_users u ON u.id = tu.users_id
@@ -33,98 +60,98 @@ class PluginIserviceView_Foaie_de_Parcurs extends PluginIserviceView {
                         LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id and it.itemtype = 'Printer'
                         LEFT JOIN glpi_printers p ON p.ID = it.items_id
                         LEFT JOIN glpi_locations l ON l.id = t.locations_id
-                        WHERE t.is_deleted = 0 AND t.status in (" . implode(',', array(Ticket::SOLVED, Ticket::CLOSED)) . ")
+                        WHERE t.is_deleted = 0 AND t.status in (" . implode(',', [\Ticket::SOLVED, \Ticket::CLOSED]) . ")
                           AND data_luc >= '[start_date]'
                           AND data_luc <= '[end_date]'
                             AND CAST(t.id AS CHAR) LIKE '[tichet]'
                             AND e.name LIKE '[partener]'
                             AND ((p.name is null AND '[aparat]' = '%%') OR p.name LIKE '[aparat]')
                             AND ((l.name is null AND '[locatie]' = '%%') OR l.name LIKE '[locatie]')
-                            AND (tcf.fara_deplasare is null or not tcf.fara_deplasare = 1)
+                            AND (tcf.no_travel is null or not tcf.no_travel = 1)
                             [atribuit]
 								",
             'default_limit' => 50,
-            'filters' => array(
-                'start_date' => array(
+            'filters' => [
+                'start_date' => [
                     'type' => self::FILTERTYPE_DATE,
                     'caption' => 'Data efectivă',
                     'format' => 'Y-m-d 00:00:00',
                     'empty_value' => date("Y-m-01"),
                     'pre_widget' => "{$this->getWidgets()[self::WIDGET_LAST_MONTH]} {$this->getWidgets()[self::WIDGET_THIS_MONTH]} ",
-                ),
-                'end_date' => array(
+                ],
+                'end_date' => [
                     'type' => 'date',
                     'caption' => ' - ',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date("Y-m-t"),
-                ),
-                'atribuit' => array(
+                ],
+                'atribuit' => [
                     'type' => 'user',
                     'caption' => 'Tehnician',
                     'format' => 'AND u.ID = %d',
                     'header' => 'Atribuit',
-                ),
-                'tichet' => array(
+                ],
+                'tichet' => [
                     'type' => 'text',
                     'caption' => 'Tichet',
                     'format' => '%%%s%%',
                     'style' => 'width: 4em;',
                     'header' => 'Nr_ticket',
-                ),
-                'partener' => array(
+                ],
+                'partener' => [
                     'type' => 'text',
                     'caption' => 'Partener',
                     'format' => '%%%s%%',
                     'header' => 'Partener',
-                ),
-                'aparat' => array(
+                ],
+                'aparat' => [
                     'type' => 'text',
                     'caption' => 'Aparat',
                     'format' => '%%%s%%',
                     'header' => 'Aparat',
-                ),
-                'locatie' => array(
+                ],
+                'locatie' => [
                     'type' => 'text',
                     'caption' => 'Locatie',
                     'format' => '%%%s%%',
                     'header' => 'Locatie_Aparat',
-                ),
-            ),
-            'columns' => array(
-                'Nr_ticket' => array(
+                ],
+            ],
+            'columns' => [
+                'Nr_ticket' => [
                     'title' => 'Nr ticket',
-                ),
-                'Data_efectiva' => array(
+                ],
+                'Data_efectiva' => [
                     'title' => 'Data efectiva',
                     'default_sort' => 'DESC',
                     'style' => 'white-space: nowrap;'
-                ),
-                'Atribuit' => array(
+                ],
+                'Atribuit' => [
                     'title' => 'Atribuit',
-                ),
-                'Title' => array(
+                ],
+                'Title' => [
                     'title' => 'Titlu',
-                ),
-                'Partener' => array(
+                ],
+                'Partener' => [
                     'title' => 'Partener',
-                ),
-                'Adresa_Partener' => array(
+                ],
+                'Adresa_Partener' => [
                     'title' => 'Adresa Partener',
-                ),
-                'Aparat' => array(
+                ],
+                'Aparat' => [
                     'title' => 'Aparat',
-                ),
-                'Locatie_Aparat' => array(
+                ],
+                'Locatie_Aparat' => [
                     'title' => 'Locatie aparat',
-                ),
-                'Km_Oras' => array(
+                ],
+                'Km_Oras' => [
                     'title' => 'Km&nbsp;oras',
-                ),
-                'KM_P' => array(
+                ],
+                'KM_P' => [
                     'title' => 'KM&nbsp;P',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
 }

@@ -1,16 +1,45 @@
 <?php
 
-// Imported from iService2, needs refactoring.
-class PluginIserviceView_Loturi_Stoc extends PluginIserviceView {
+namespace GlpiPlugin\Iservice\Views;
 
-    static $order = 40;
+use \Session;
+use \PluginIserviceConsumable_Model;
+use \PluginIserviceCommon;
 
-    static function getName() {
-        return 'Loturi de stoc';
+// Imported from iService2, needs refactoring. Original file: "Loturi_Stoc.php".
+class LoturiStoc extends View
+{
+
+    public static $order = 40;
+
+    public static $rightname = 'entity';
+
+    public static function getMenuName(): string
+    {
+        return self::getName();
     }
 
-    static function getModelNamesDisplay($row_data) {
-        $model_names = explode('<br>', $row_data['model_names']);
+    public static function getMenuContent(): array
+    {
+        if (!Session::haveRight(self::$rightname, READ)) {
+            return [];
+        }
+
+        return [
+            'title' => self::getMenuName(),
+            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
+            'icon'  => 'fa-fw ti ti-building-warehouse',
+        ];
+    }
+
+    public static function getName(): string
+    {
+        return __('Loturi de stoc', 'iservice');
+    }
+
+    static function getModelNamesDisplay($row_data): string
+    {
+        $model_names     = explode('<br>', $row_data['model_names']);
         $consumable_data = [];
         foreach ($model_names as $model_name) {
             $data = explode(':', $model_name, 2);
@@ -22,25 +51,27 @@ class PluginIserviceView_Loturi_Stoc extends PluginIserviceView {
         return PluginIserviceConsumable_Model::showForConsumable($row_data['Cod_Articol'], $consumable_data, true);
     }
 
-    static function getMinimumStockDisplay($row_data) {
+    static function getMinimumStockDisplay($row_data): string
+    {
         if (empty($row_data['minimum_stock'])) {
             $row_data['minimum_stock'] = 0;
         }
 
         global $CFG_PLUGIN_ISERVICE;
         $sanitized_consumable_id = PluginIserviceCommon::getHtmlSanitizedValue($row_data['Cod_Articol']);
-        $result = "<a id='min-stock-link-$row_data[__row_id__]' class='clickable min-stock-link-$sanitized_consumable_id' onclick='$(\"#min-stock-span-$row_data[__row_id__]\").show();$(this).hide();'>{$row_data['minimum_stock']}</a>";
-        $result .= "<span id='min-stock-span-$row_data[__row_id__]' style='display:none; white-space: nowrap;'>";
-        $result .= "<input id='min-stock-edit-$row_data[__row_id__]' class='min-stock-edit-$sanitized_consumable_id' style='width:2em;' type='text' value='$row_data[minimum_stock]' />&nbsp;";
-        $result .= "<i class='fa fa-check-circle' onclick='manageItemViaAjax(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageConsumable.php?operation=set_min_stock\", \"$row_data[Cod_Articol]\", \"$sanitized_consumable_id\", \"min-stock\", \"$row_data[__row_id__]\", \"\");' style='color:green'></i>&nbsp;";
-        $result .= "<i class='fa fa-times' onclick='$(\"#min-stock-link-$row_data[__row_id__]\").show();$(\"#min-stock-span-$row_data[__row_id__]\").hide();'></i>";
-        $result .= "</span>";
+        $result                  = "<a id='min-stock-link-$row_data[__row_id__]' class='clickable min-stock-link-$sanitized_consumable_id' onclick='$(\"#min-stock-span-$row_data[__row_id__]\").show();$(this).hide();'>{$row_data['minimum_stock']}</a>";
+        $result                 .= "<span id='min-stock-span-$row_data[__row_id__]' style='display:none; white-space: nowrap;'>";
+        $result                 .= "<input id='min-stock-edit-$row_data[__row_id__]' class='min-stock-edit-$sanitized_consumable_id' style='width:2em;' type='text' value='$row_data[minimum_stock]' />&nbsp;";
+        $result                 .= "<i class='fa fa-check-circle' onclick='manageItemViaAjax(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageConsumable.php?operation=set_min_stock\", \"$row_data[Cod_Articol]\", \"$sanitized_consumable_id\", \"min-stock\", \"$row_data[__row_id__]\", \"\");' style='color:green'></i>&nbsp;";
+        $result                 .= "<i class='fa fa-times' onclick='$(\"#min-stock-link-$row_data[__row_id__]\").show();$(\"#min-stock-span-$row_data[__row_id__]\").hide();'></i>";
+        $result                 .= "</span>";
 
         return $result;
     }
 
-    protected function getSettings() {
-        return array(
+    protected function getSettings(): array
+    {
+        return [
             'name' => self::getName(),
             'query' => "
                 SELECT
@@ -79,25 +110,25 @@ class PluginIserviceView_Loturi_Stoc extends PluginIserviceView {
                     [gest]
                 ",
             'default_limit' => 25,
-            'filters' => array(
-                'gest' => array(
+            'filters' => [
+                'gest' => [
                     'type' => 'select',
                     'caption' => 'Gestiune',
-                    'options' => array(
+                    'options' => [
                         '' => 'oricare',
                         'MR' => 'MR',
                         'MR2' => 'MR2',
-                    ),
+                    ],
                     'format' => "AND l.gest = '%s'",
                     'header' => 'Gest',
-                ),
-                'denum' => array(
+                ],
+                'denum' => [
                     'type' => 'text',
                     'caption' => 'Denumire articol',
                     'format' => '%%%s%%',
                     'header' => 'Denumire',
-                ),
-                'stoc' => array(
+                ],
+                'stoc' => [
                     'type' => 'int',
                     'caption' => 'Stoc',
                     'format' => '%d',
@@ -106,32 +137,32 @@ class PluginIserviceView_Loturi_Stoc extends PluginIserviceView {
                     'style' => 'text-align:right;width:2em;',
                     'header' => 'Stoc',
                     'header_caption' => '> ',
-                ),
-                'cod' => array(
+                ],
+                'cod' => [
                     'type' => 'text',
                     'caption' => 'Cod articol',
                     'format' => '%%%s%%',
                     'header' => 'Cod_Articol',
-                ),
-                'tip' => array(
+                ],
+                'tip' => [
                     'type' => 'text',
                     'caption' => 'Tip aparat',
                     'format' => '%%%s%%',
                     'header' => 'Grupa',
-                ),
-                'obs' => array(
+                ],
+                'obs' => [
                     'type' => 'text',
                     'caption' => 'Observații',
                     'format' => '%%%s%%',
                     'header' => 'Observatii',
-                ),
-                'model_names' => array(
+                ],
+                'model_names' => [
                     'type' => 'text',
                     'caption' => 'Modele compatibile',
                     'format' => '%%%s%%',
                     'header' => 'model_names',
-                ),
-                'minimum_stock' => array(
+                ],
+                'minimum_stock' => [
                     'type' => 'int',
                     'format' => '%d',
                     'default' => -1,
@@ -139,67 +170,67 @@ class PluginIserviceView_Loturi_Stoc extends PluginIserviceView {
                     'style' => 'text-align:right;width:2em;',
                     'header' => 'minimum_stock',
                     'header_caption' => '> ',
-                ),
-            ),
-            'columns' => array(
-                'Nr_receptie' => array(
+                ],
+            ],
+            'columns' => [
+                'Nr_receptie' => [
                     'title' => 'Nr recepție',
-                ),
-                'Data_Receptie' => array(
+                ],
+                'Data_Receptie' => [
                     'title' => 'Data recepție',
                     'style' => 'white-space: nowrap;',
                     'default_sort' => 'DESC',
-                ),
-                'Cod_Articol' => array(
+                ],
+                'Cod_Articol' => [
                     'title' => 'Cod articol',
-                ),
-                'Denumire' => array(
+                ],
+                'Denumire' => [
                     'title' => 'Denumire',
-                ),
-                'Gest' => array(
+                ],
+                'Gest' => [
                     'title' => 'Gest',
-                ),
-                'model_names' => array(
+                ],
+                'model_names' => [
                     'title' => 'Modele compatibile',
                     'align' => 'center',
                     'format' => 'function:default', // this will call PluginIserviceView_Loturi_Stoc::getModelNamesDisplay($row);
-                ),
-                'Grupa' => array(
+                ],
+                'Grupa' => [
                     'title' => 'Grupa',
-                ),
-                'Pret_unitar' => array(
+                ],
+                'Pret_unitar' => [
                     'title' => 'Preț unitar',
                     'align' => 'right',
                     'format' => '%.2f',
-                ),
-                'Intrat' => array(
+                ],
+                'Intrat' => [
                     'title' => 'Intrat',
                     'align' => 'center',
-                ),
-                'Iesit' => array(
+                ],
+                'Iesit' => [
                     'title' => 'Ieșit',
                     'align' => 'center',
-                ),
-                'Stoc' => array(
+                ],
+                'Stoc' => [
                     'title' => 'Stoc',
                     'align' => 'center',
-                ),
-                'minimum_stock' => array(
+                ],
+                'minimum_stock' => [
                     'title' => 'Stoc minim',
                     'align' => 'center',
                     'format' => 'function:default' // this will call PluginIserviceView_Loturi_Stoc::getMinimumStockDisplay($row);
-                ),
-                'Valoare' => array(
+                ],
+                'Valoare' => [
                     'title' => 'Valoare',
                     'align' => 'right',
                     'format' => '%.2f',
                     'total' => true,
-                ),
-                'Observatii' => array(
+                ],
+                'Observatii' => [
                     'title' => 'Observații',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
 }

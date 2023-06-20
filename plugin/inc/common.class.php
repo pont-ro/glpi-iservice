@@ -9,44 +9,48 @@ if (!defined('INPUT_REQUEST')) {
     define('INPUT_REQUEST', 99);
 }
 
-class PluginIserviceCommon {
+class PluginIserviceCommon
+{
 
     const RESPONSE_OK = 'OK';
     const RESPONSE_KO = 'KO';
 
-    protected static $exchangeRateService = null;
+    protected static $exchangeRateService       = null;
     public static $lastExchangeRateServiceError = null;
 
-    public static function getInputVariable($variable_name, $default_value = NULL, $input_type = INPUT_REQUEST) {
-        $get_result = filter_input(INPUT_GET, $variable_name);
+    public static function getInputVariable($variable_name, $default_value = null, $input_type = INPUT_REQUEST)
+    {
+        $get_result  = filter_input(INPUT_GET, $variable_name);
         $post_result = filter_input(INPUT_POST, $variable_name);
         switch ($input_type) {
-            case INPUT_GET:
-                return $get_result ?? $default_value;
-            case INPUT_POST:
-                return $post_result ?? $default_value;
-            case INPUT_REQUEST:
-                return $get_result ?? $post_result ?? $default_value;
-            default:
-                return null;
+        case INPUT_GET:
+            return $get_result ?? $default_value;
+        case INPUT_POST:
+            return $post_result ?? $default_value;
+        case INPUT_REQUEST:
+            return $get_result ?? $post_result ?? $default_value;
+        default:
+            return null;
         }
     }
 
-    public static function getArrayInputVariable($variable_name, $default_value = NULL, $input_type = INPUT_REQUEST) {
+    public static function getArrayInputVariable($variable_name, $default_value = null, $input_type = INPUT_REQUEST)
+    {
         if ($default_value !== null && !is_array($default_value)) {
             return null;
         }
-        $get_result = filter_input(INPUT_GET, $variable_name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
+        $get_result  = filter_input(INPUT_GET, $variable_name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         $post_result = filter_input(INPUT_POST, $variable_name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         switch ($input_type) {
-            case INPUT_GET:
-                return $get_result ?? $default_value;
-            case INPUT_POST:
-                return $post_result ?? $default_value;
-            case INPUT_REQUEST:
-                return ($get_result === NULL && $post_result === NULL) ? $default_value : array_merge((array) $get_result, (array) $post_result);
-            default:
-                return null;
+        case INPUT_GET:
+            return $get_result ?? $default_value;
+        case INPUT_POST:
+            return $post_result ?? $default_value;
+        case INPUT_REQUEST:
+            return ($get_result === null && $post_result === null) ? $default_value : array_merge((array) $get_result, (array) $post_result);
+        default:
+            return null;
         }
     }
 
@@ -66,22 +70,26 @@ class PluginIserviceCommon {
         if (empty($profiles)) {
             return false;
         }
+
         if (!is_array($profiles)) {
             if (func_num_args() > 1) {
                 $profiles = func_get_args();
             } else {
-                $profiles = array($profiles);
+                $profiles = [$profiles];
             }
         }
+
         return in_array($_SESSION["glpiactiveprofile"]["name"], $profiles);
     }
 
-    public static function getQueryResult($query, $id_field = 'id') {
+    public static function getQueryResult($query, $id_field = 'id'): array
+    {
         global $DB;
         $query_result = [];
         if (false === ($result = $DB->query($query)) || !$DB->numrows($result)) {
             return $query_result;
         }
+
         while ($data = $DB->fetchAssoc($result)) {
             if (isset($data[$id_field])) {
                 $query_result[$data[$id_field]] = $data;
@@ -89,17 +97,21 @@ class PluginIserviceCommon {
                 $query_result[] = $data;
             }
         }
+
         return $query_result;
     }
 
-    public static function getHtmlSanitizedValue($value) {
+    public static function getHtmlSanitizedValue($value): string
+    {
         return preg_replace('((?![\w\-]).)', '-', trim($value));
     }
 
-    public static function getItemsIdFromInput($input, $itemtype, $empty_value = '', $return_index = 0) {
+    public static function getItemsIdFromInput($input, $itemtype, $empty_value = '', $return_index = 0): string
+    {
         if (!isset($input['items_id'])) {
             return $empty_value;
         }
+
         if (is_array($input['items_id'])) {
             return is_array($input['items_id'][$itemtype] ?? null) ? ($input['items_id'][$itemtype][$return_index] ?? $empty_value) : $empty_value;
         } else {
@@ -107,15 +119,17 @@ class PluginIserviceCommon {
         }
     }
 
-    public static function getValueFromInput($variable_name, $input, $empty_value = '', $return_index = 0)
+    public static function getValueFromInput($variable_name, $input, $empty_value = '', $return_index = 0): string
     {
         if (!isset($input[$variable_name])) {
             return $empty_value;
         }
+
         return is_array($input[$variable_name]) ? ($input[$variable_name][$return_index] ?? $empty_value) : $input[$variable_name];
     }
 
-    public static function clearAfterRedirectMessages($type = null) {
+    public static function clearAfterRedirectMessages($type = null): void
+    {
         if ($type === null) {
             $_SESSION["MESSAGE_AFTER_REDIRECT"] = [];
         } elseif (isset($_SESSION["MESSAGE_AFTER_REDIRECT"][$type])) {
@@ -123,25 +137,28 @@ class PluginIserviceCommon {
         }
     }
 
-    public static function br2nl($input) {
-        return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n","",str_replace("\r","", htmlspecialchars_decode($input))));
+    public static function br2nl($input): string
+    {
+        return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n", "", str_replace("\r", "", htmlspecialchars_decode($input))));
     }
 
-    public static function isDateEmpty($dateValue)
+    public static function isDateEmpty($dateValue): bool
     {
         return empty($dateValue) || trim($dateValue) === '0000-00-00' || trim($dateValue) === '0000-00-00 00:00:00';
     }
 
-    public static function isPrinterColorOrPlotter($id)
+    public static function isPrinterColorOrPlotter($id): bool
     {
         $printer = new Printer();
         if (!$printer->getFromDB($id)) {
             return false;
         }
+
         return in_array($printer->fields['printertypes_id'], [PluginIservicePrinter::ID_COLOR_TYPE, PluginIservicePrinter::ID_PLOTTER_TYPE]);
     }
 
-    public static function addMonthToDate($date_in_string, $number_of_months) {
+    public static function addMonthToDate($date_in_string, $number_of_months): ?string
+    {
 
         if (empty($date_in_string)) {
             return null;
@@ -150,7 +167,7 @@ class PluginIserviceCommon {
         $date = new DateTime($date_in_string);
 
         $oldDay = $date->format("d");
-        $date->add(new DateInterval("P" . $number_of_months. "M"));
+        $date->add(new DateInterval("P" . $number_of_months . "M"));
         $newDay = $date->format("d");
 
         if ($oldDay != $newDay) {
@@ -161,7 +178,8 @@ class PluginIserviceCommon {
 
     }
 
-    public static function unlinkRecursively($filePath) {
+    public static function unlinkRecursively($filePath): void
+    {
 
         if (is_file($filePath)) {
             unlink($filePath);
@@ -171,18 +189,19 @@ class PluginIserviceCommon {
             $objects = scandir($filePath);
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
-                    self::unlinkRecursively($filePath. DIRECTORY_SEPARATOR .$object);
+                    self::unlinkRecursively($filePath . DIRECTORY_SEPARATOR . $object);
                 }
             }
+
             rmdir($filePath);
         }
     }
 
-    public static function getExchangeRate($currency = 'Euro')
+    public static function getExchangeRate($currency = 'Euro'): ?TValuta
     {
         if (self::$exchangeRateService === null) {
             if (!class_exists('TValuta')) {
-                require_once __DIR__ . DIRECTORY_SEPARATOR . 'TValuta.php';
+                include_once __DIR__ . DIRECTORY_SEPARATOR . 'TValuta.php';
             }
 
             self::$exchangeRateService = new TValuta();
@@ -194,9 +213,12 @@ class PluginIserviceCommon {
         } catch (Exception $ex) {
             self::$lastExchangeRateServiceError = $ex->getMessage();
         }
+
+        return null;
     }
 
-    public static function writeCsvFile($fileName, $data, $append=false): ?string {
+    public static function writeCsvFile($fileName, $data, $append = false): ?string
+    {
         if (!is_array($data)) {
             return 'Input data must be a 2 dimensional array';
         }
@@ -209,6 +231,7 @@ class PluginIserviceCommon {
             if (!is_array($fields)) {
                 continue;
             }
+
             fputcsv($file, $fields);
         }
 
@@ -216,7 +239,7 @@ class PluginIserviceCommon {
         return null;
     }
 
-    public static function getCsvFile(string $filename, string $separator = ',', string $enclosure = '"', string $escape = '\\')
+    public static function getCsvFile(string $filename, string $separator = ',', string $enclosure = '"', string $escape = '\\'): array
     {
         $file = fopen($filename, 'r');
 
@@ -239,11 +262,11 @@ class PluginIserviceCommon {
         return array_merge($result, $array);
     }
 
-    public static function getSumOfUnpaidInvoicesLink($supplier_id, $supplier_code)
+    public static function getSumOfUnpaidInvoicesLink($supplier_id, $supplier_code): string
     {
         global $CFG_PLUGIN_ISERVICE;
 
-        $sum = 0;
+        $sum   = 0;
         $query = "
 					SELECT sum(f.valinc-f.valpla) as total_facturi, count(*) as nr_facturi, min(f.datafac) datafac_min, max(f.datafac) datafac_max
 					FROM glpi_suppliers s
@@ -256,9 +279,9 @@ class PluginIserviceCommon {
         foreach (self::getQueryResult($query) as $row) {
             $sum = self::numberFormat($row['total_facturi']) . ' RON';
             if ($row['total_facturi'] > 0) {
-                $date_now = new DateTime();
+                $date_now  = new DateTime();
                 $date_diff = $date_now->diff(new DateTime($row['datafac_min']))->format('%a');
-                $style = $date_diff > 29 ? " style='color:red;'" : "";
+                $style     = $date_diff > 29 ? " style='color:red;'" : "";
                 if ($row['nr_facturi'] == 1) {
                     $sum = sprintf("%s (1 factură din <span%s>%s</span>)", $sum, $style, $row['datafac_min']);
                 } else {
@@ -270,8 +293,9 @@ class PluginIserviceCommon {
         return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$supplier_code'>$sum</a>";
     }
 
-    public static function numberFormat(float $number, int $decimals = 2, ?string $decimal_separator = '.', ?string $thousands_separator = '')
+    public static function numberFormat(float $number, int $decimals = 2, ?string $decimal_separator = '.', ?string $thousands_separator = ''): string
     {
         return number_format($number, $decimals, $decimal_separator, $thousands_separator);
     }
+
 }
