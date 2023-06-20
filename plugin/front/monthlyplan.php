@@ -1,10 +1,18 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "planlunar.php".
-define('GLPI_ROOT', '../../..');
-include_once (GLPI_ROOT . "/inc/includes.php");
+require "../inc/includes.php";
 
-Session::checkRight("plugin_iservice_planlunar", READ);
+//Session::checkRight("plugin_iservice_planlunar", READ); TODO: check this
+
+Html::header(
+    __("iService", "iservice"),
+    $_SERVER['PHP_SELF'],
+    "plugin_iservice_views",
+    'monthly_plan',
+    "monthly_plan"
+);
+
 
 $year = filter_input(INPUT_GET, 'year');
 if ($year === null) {
@@ -38,8 +46,8 @@ SELECT
     e.phonenumber enterprise_tel,
     e.fax enterprise_fax,
     e.comment enterprise_comment,
-    ecf.part_email_f1 enterprise_email_facturi,
-    ecf.cod_hmarfa,
+    ecf.email_for_invoices_field enterprise_email_facturi,
+    ecf.hmarfa_code_field,
     p.id printer_id,
     p.otherserial,
     p.name printer_name,
@@ -48,10 +56,10 @@ SELECT
     p.comment printer_comment,
     CONCAT(COALESCE(CONCAT(u.realname, ' '), ''), COALESCE(u.firstname,'')) tech_name,
     s.name state,
-    pcf.week_nr,
-    pcf.observations,
-    pcf.data_fact,
-    pcf.emaintenancefield,
+    pcf.week_nr_field,
+    pcf.plan_observations_field,
+    pcf.invoice_date_field,
+    pcf.em_field,
     htf.numar_facturi,
     htf.total_facturi,
     putc.ticket_count as ticket_count_by_item,
@@ -59,15 +67,15 @@ SELECT
 FROM glpi_printers p
 JOIN glpi_infocoms i on i.items_id = p.id and i.itemtype = 'Printer'
 JOIN glpi_suppliers e on e.id = i.suppliers_id
-LEFT JOIN glpi_plugin_fields_printercustomfields pcf on pcf.items_id = p.id and pcf.itemtype = 'Printer'
-LEFT JOIN glpi_plugin_fields_suppliercustomfields ecf on ecf.items_id = e.id and ecf.itemtype = 'Supplier'
-LEFT JOIN hmarfa_total_facturi htf on htf.codbenef = ecf.cod_hmarfa
+LEFT JOIN glpi_plugin_fields_printerprintercustomfields pcf on pcf.items_id = p.id and pcf.itemtype = 'Printer'
+LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields ecf on ecf.items_id = e.id and ecf.itemtype = 'Supplier'
+LEFT JOIN hmarfa_total_facturi htf on htf.codbenef = ecf.hmarfa_code_field
 LEFT JOIN glpi_users u on u.ID = p.users_id_tech
 LEFT JOIN glpi_states s on s.ID = p.states_id
 LEFT JOIN glpi_plugin_iservice_printer_unclosed_ticket_counts putc ON putc.printers_id = p.id
 LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plt ON plt.printers_id = p.id
 LEFT JOIN glpi_tickets lct on lct.id = plt.tickets_id
-WHERE pcf.week_nr > 0 and p.is_deleted = 0 $tech_filter
+WHERE pcf.week_nr_field > 0 and p.is_deleted = 0 $tech_filter
 GROUP BY p.id
 ORDER BY e.name
 ";
@@ -78,54 +86,53 @@ if (!$result) {
     die();
 }
 
+$data = [];
+
 while (($row = $DB->fetchAssoc($result)) !== null) {
-    if ($row['week_nr'] > 0) {
+    if ($row['week_nr_field'] > 0) {
         for ($i = 1; $i < 5; $i++) {
             if (isset($data[$i][$row['enterprise_id']])) {
-                if ($i < $row['week_nr']) {
-                    $row['week_nr'] = $i;
-                    $data[$row['week_nr']][$row['enterprise_id']]['moved'] = true;
-                } elseif ($i > $row['week_nr']) {
-                    $data[$row['week_nr']][$row['enterprise_id']] = $data[$i][$row['enterprise_id']];
+                if ($i < $row['week_nr_field']) {
+                    $row['week_nr_field'] = $i;
+                    $data[$row['week_nr_field']][$row['enterprise_id']]['moved'] = true;
+                } elseif ($i > $row['week_nr_field']) {
+                    $data[$row['week_nr_field']][$row['enterprise_id']] = $data[$i][$row['enterprise_id']];
                     unset($data[$i][$row['enterprise_id']]);
-                    $data[$row['week_nr']][$row['enterprise_id']]['moved'] = true;
+                    $data[$row['week_nr_field']][$row['enterprise_id']]['moved'] = true;
                 }
                 break;
             }
         }
     }
-    $data[$row['week_nr']][$row['enterprise_id']]['enterprise_name'] = $row['enterprise_name'];
-    $data[$row['week_nr']][$row['enterprise_id']]['numar_facturi'] = $row['numar_facturi'];
-    $data[$row['week_nr']][$row['enterprise_id']]['total_facturi'] = $row['total_facturi'];
-    $data[$row['week_nr']][$row['enterprise_id']]['cod_hmarfa'] = $row['cod_hmarfa'];
-    $data[$row['week_nr']][$row['enterprise_id']]['enterprise_tel'] = $row['enterprise_tel'];
-    $data[$row['week_nr']][$row['enterprise_id']]['enterprise_fax'] = $row['enterprise_fax'];
-    $data[$row['week_nr']][$row['enterprise_id']]['enterprise_comment'] = $row['enterprise_comment'];
-    $data[$row['week_nr']][$row['enterprise_id']]['enterprise_email_facturi'] = $row['enterprise_email_facturi'];
-    if (!isset($data[$row['week_nr']][$row['enterprise_id']]['open_tickets_count'])) {
-        $data[$row['week_nr']][$row['enterprise_id']]['open_tickets_count'] = 0;
+    $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_name'] = $row['enterprise_name'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['numar_facturi'] = $row['numar_facturi'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['total_facturi'] = $row['total_facturi'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['hmarfa_code_field'] = $row['hmarfa_code_field'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_tel'] = $row['enterprise_tel'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_fax'] = $row['enterprise_fax'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_comment'] = $row['enterprise_comment'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_email_facturi'] = $row['enterprise_email_facturi'];
+    if (!isset($data[$row['week_nr_field']][$row['enterprise_id']]['open_tickets_count'])) {
+        $data[$row['week_nr_field']][$row['enterprise_id']]['open_tickets_count'] = 0;
     }
-    $data[$row['week_nr']][$row['enterprise_id']]['open_tickets_count'] += $row['ticket_count_by_item'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['open_tickets_count'] += $row['ticket_count_by_item'];
 
     if (stripos($row['state'], 'Proiect') !== 0) {
         $row['state'] = 'Altele';
     }
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['otherserial'] = $row['otherserial'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['observations'] = $row['observations'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['data_fact'] = $row['data_fact'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['emaintenancefield'] = $row['emaintenancefield'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['open_tickets_count'] = $row['ticket_count_by_item'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_name'] = $row['printer_name'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_contact'] = $row['printer_contact'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_contact_num'] = $row['printer_contact_num'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_comment'] = $row['printer_comment'];
-    $data[$row['week_nr']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['last_closed_ticket_close_date'] = $row['last_closed_ticket_close_date'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['otherserial'] = $row['otherserial'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['plan_observations_field'] = $row['plan_observations_field'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['invoice_date_field'] = $row['invoice_date_field'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['em_field'] = $row['em_field'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['open_tickets_count'] = $row['ticket_count_by_item'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_name'] = $row['printer_name'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_contact'] = $row['printer_contact'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_contact_num'] = $row['printer_contact_num'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['printer_comment'] = $row['printer_comment'];
+    $data[$row['week_nr_field']][$row['enterprise_id']]['techs'][$row['tech_name']][$row['state']]['printers'][$row['printer_id']]['last_closed_ticket_close_date'] = $row['last_closed_ticket_close_date'];
 }
-if (Plugin::isPluginLoaded('iservice')) {
-    PluginIserviceHtml::header(__('Monthly plan', 'iservice'), $_SERVER['PHP_SELF']);
-} else {
-    Html::header(__('Monthly plan', 'iservice'), $_SERVER['PHP_SELF'], "plugins", "iservice");
-}
+
+
 
 $form = new PluginIserviceHtml();
 
@@ -183,7 +190,14 @@ $form->closeForm();
                             <tbody>
                                 <?php
                                 $row_num = 0;
+                                if (empty($data) || !isset($data[$column])){
+                                    continue;
+                                }
+
                                 foreach ($data[$column] as $enterprise_id => $enterprise) {
+                                    if (empty($enterprise['techs'])) {
+                                        continue;
+                                    }
                                     foreach ($enterprise['techs'] as $tech_name => $tech) {
                                         foreach ($tech as $state_name => $state) {
                                             $printers = array();
@@ -194,13 +208,13 @@ $form->closeForm();
                                                 }
                                                 $printer_data['all_in_em'] = true;
                                                 foreach ($state['printers'] as $printer_id => $printer) {
-                                                    $printer_data['all_in_em'] &= $printer['emaintenancefield'];
+                                                    $printer_data['all_in_em'] &= $printer['em_field'];
 
-                                                    if (!isset($printer_data['data_fact']) || $printer['data_fact'] < $printer_data['data_fact']) {
-                                                        $printer_data['data_fact'] = $printer['data_fact'];
+                                                    if (!isset($printer_data['invoice_date_field']) || $printer['invoice_date_field'] < $printer_data['invoice_date_field']) {
+                                                        $printer_data['invoice_date_field'] = $printer['invoice_date_field'];
                                                     }
-                                                    if (!isset($printer_data['data_fact_max']) || $printer['data_fact'] > $printer_data['data_fact_max']) {
-                                                        $printer_data['data_fact_max'] = $printer['data_fact'];
+                                                    if (!isset($printer_data['data_fact_max']) || $printer['invoice_date_field'] > $printer_data['data_fact_max']) {
+                                                        $printer_data['data_fact_max'] = $printer['invoice_date_field'];
                                                     }
                                                     if (!isset($printer_data['last_closed_ticket_close_date']) || $printer['last_closed_ticket_close_date'] < $printer_data['last_closed_ticket_close_date']) {
                                                         $printer_data['last_closed_ticket_close_date'] = $printer['last_closed_ticket_close_date'];
@@ -237,13 +251,13 @@ $form->closeForm();
                                                     }
                                                     $printer_data['printer_name'] .= $printer['printer_name'];
 
-                                                    if (!isset($printer_data['observations'])) {
-                                                        $printer_data['observations'] = '';
-                                                    } elseif (!empty($printer_data['observations']) && !empty($printer['observations'])) {
-                                                        $printer_data['observations'] .= " AND ";
+                                                    if (!isset($printer_data['plan_observations_field'])) {
+                                                        $printer_data['plan_observations_field'] = '';
+                                                    } elseif (!empty($printer_data['plan_observations_field']) && !empty($printer['plan_observations_field'])) {
+                                                        $printer_data['plan_observations_field'] .= " AND ";
                                                     }
-                                                    if (!empty($printer['observations'])) {
-                                                        $printer_data['observations'] .= $printer['observations'];
+                                                    if (!empty($printer['plan_observations_field'])) {
+                                                        $printer_data['plan_observations_field'] .= $printer['plan_observations_field'];
                                                     }
                                                     if (!isset($printer_data['open_tickets_count'])) {
                                                         $printer_data['open_tickets_count'] = 0;
@@ -258,15 +272,15 @@ $form->closeForm();
                                             } else {
                                                 $printers = [];
                                                 foreach ($state['printers'] as $printer_id => $printer) {
-                                                    $printer['all_in_em'] = $printer['emaintenancefield'];
+                                                    $printer['all_in_em'] = $printer['em_field'];
                                                     $printer['printer_ids'] = [];
                                                     $printers[$printer_id] = $printer;
                                                 }
                                             }
                                             foreach ($printers as $printer_id => $printer) {
-                                                if (empty($printer['data_fact']) || $printer['data_fact'] == '0000-00-00') {
+                                                if (empty($printer['invoice_date_field']) || $printer['invoice_date_field'] == '0000-00-00') {
                                                     $color = "black";
-                                                } elseif (strtotime($printer['data_fact']) < mktime(0, 0, 0, $month, 1, $year)) {
+                                                } elseif (strtotime($printer['invoice_date_field']) < mktime(0, 0, 0, $month, 1, $year)) {
                                                     if (!isset($printer['multiple'])) {
                                                         $color = "red";
                                                     } elseif (strtotime($printer['data_fact_max']) < mktime(0, 0, 0, $month, 1, $year)) {
@@ -313,11 +327,11 @@ $form->closeForm();
                                                         if (!empty($enterprise['enterprise_email_facturi'])) {
                                                             $title .= "\r\nEmail trimis facturi: $enterprise[enterprise_email_facturi]";
                                                         }
-                                                        $title .= "\r\n\r\nData fact " . (isset($printer['multiple']) ? "max: $printer[data_fact_max]" : ":$printer[data_fact]");
+                                                        $title .= "\r\n\r\nData fact " . (isset($printer['multiple']) ? "max: $printer[data_fact_max]" : ":$printer[invoice_date_field]");
                                                         echo "<a href='" . GLPI_ROOT . "/front/supplier.form.php?id=$enterprise_id' title='$title'>$enterprise[enterprise_name]</a>";
                                                         $printer_link = GLPI_ROOT . "/plugins/iservice/front/view.php?view=printers&printers0[supplier_id]=$enterprise_id&printers0[filter_description]=$enterprise[enterprise_name]";
                                                         if (isset($printer['multiple'])) {
-                                                            echo empty($printer['observations']) ? '' : " ($printer[observations])";
+                                                            echo empty($printer['plan_observations_field']) ? '' : " ($printer[plan_observations_field])";
                                                             $search_string = str_replace(' ', '+', urldecode($enterprise['enterprise_name']));
                                                             //echo " <a href='".GLPI_ROOT."/front/search.php?x=0&y=0&globalsearch=$search_string' title='$printer[title]'>**&nbsp;$printer[multiple]&nbsp;**</a>";
                                                             echo " <a href='$printer_link' title='$printer[title]'>**&nbsp;$printer[multiple]&nbsp;**</a>";
@@ -334,7 +348,7 @@ $form->closeForm();
                                                             }
                                                             //echo " - <a href='".GLPI_ROOT."/front/printer.form.php?id=$printer_id' title='$title'>$printer[otherserial]</a>";
                                                             echo " - <a href='$printer_link' title='$title'>$printer[otherserial]</a>";
-                                                            echo empty($printer['observations']) ? '' : " ($printer[observations])";
+                                                            echo empty($printer['plan_observations_field']) ? '' : " ($printer[plan_observations_field])";
                                                         }
                                                         ?>
                                                     </td>
@@ -362,7 +376,7 @@ $form->closeForm();
                                                     <td style="text-align: center;">
                                                         <?php
                                                         if ($enterprise['numar_facturi'] > 0) {
-                                                            echo "<a href='" . GLPI_ROOT . "/plugins/iservice/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$enterprise[cod_hmarfa]'>**&nbsp;$enterprise[numar_facturi]&nbsp;**</a>";
+                                                            echo "<a href='" . GLPI_ROOT . "/plugins/iservice/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$enterprise[hmarfa_code_field]'>**&nbsp;$enterprise[numar_facturi]&nbsp;**</a>";
                                                         } else {
                                                             echo $enterprise['numar_facturi'];
                                                         }
@@ -386,4 +400,4 @@ $form->closeForm();
     </table>
 
     <?php
-    Html::footer();
+Html::footer();

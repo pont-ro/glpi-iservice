@@ -48,7 +48,7 @@ function plugin_init_iservice(): void
         // Add entry to configuration menu.
         $PLUGIN_HOOKS["menu_toadd"]['iservice'] = [
             'config' => 'PluginIserviceMenu',
-            'views' => ViewsMenuSetup::getViewClasses(),
+            'views' => ['monthly_plan' => 'PluginIserviceMenuMonthlyPlan' ] + ViewsMenuSetup::getViewClasses(),
         ];
 
         $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";

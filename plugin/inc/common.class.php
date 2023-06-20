@@ -271,7 +271,7 @@ class PluginIserviceCommon
 					SELECT sum(f.valinc-f.valpla) as total_facturi, count(*) as nr_facturi, min(f.datafac) datafac_min, max(f.datafac) datafac_max
 					FROM glpi_suppliers s
 					JOIN glpi_plugin_fields_suppliercustomfields scf on scf.items_id = s.id and itemtype = 'Supplier'
-					JOIN hmarfa_facturi f on f.codbenef = scf.cod_hmarfa AND f.tip like 'TF%' AND f.valinc-f.valpla > 0
+					JOIN hmarfa_facturi f on f.codbenef = scf.hmarfa_code_field AND f.tip like 'TF%' AND f.valinc-f.valpla > 0
 					WHERE s.id = $supplier_id AND f.valinc > f.valpla
 					GROUP BY s.id
 					";
