@@ -18,7 +18,7 @@ Html::header(
     $_SERVER['PHP_SELF'],
     "plugin_iservice_views",
     $view_id,
-    "iserviceconfig"
+    "views"
 );
 
 Session::checkRight('entity', READ);
