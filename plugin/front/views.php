@@ -2,24 +2,19 @@
 
 require "../inc/includes.php";
 
-$view_id      = PluginIserviceCommon::getInputVariable('view', 'Unpaid_Invoices');
-$view_archive = PluginIserviceCommon::getInputVariable('view_archive', false);
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\Views;
+
+$view_id      = IserviceToolBox::getInputVariable('view', 'Unpaid_Invoices');
+$view_archive = IserviceToolBox::getInputVariable('view_archive', false);
 $export       = filter_input(INPUT_POST, 'export') || filter_input(INPUT_GET, 'export');
 if ($export) {
     define('GLPI_KEEP_CSRF_TOKEN', true);
 }
 
-$views_directory = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "inc" . DIRECTORY_SEPARATOR . "views_views";
-$view            = PluginIserviceViews::getView($view_id, true, $view_archive, $views_directory);
+$view = Views::getView($view_id, true, $view_archive);
 
-
-Html::header(
-    __("iService", "iservice"),
-    $_SERVER['PHP_SELF'],
-    "plugin_iservice_views",
-    $view_id,
-    "views"
-);
+Html::header(__("iService", "iservice"), $_SERVER['PHP_SELF'], "plugin_iservice_views", $view_id, "views");
 
 // Session::checkRight('plugin_iservice_views', READ);
 // Session::checkRight($view->getRightName(), READ);

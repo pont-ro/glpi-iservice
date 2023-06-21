@@ -1353,7 +1353,7 @@ msgstr[2] ""
 msgid "Done"
 msgstr ""
 
-msgid "Waybill"
+msgid "Route Manifest"
 msgstr "Foaie de parcurs"
 
 msgid "Outbound Lots"
@@ -1379,13 +1379,6 @@ msgid_plural "Invoices"
 msgstr[0] "Factură"
 msgstr[1] "Facturi"
 msgstr[2] "Facturi"
-
-#: inc/central.class.php:110 inc/central.class.php:111 inc/views.class.php:55
-msgid "View"
-msgid_plural "Views"
-msgstr[0] "Vizualizare"
-msgstr[1] "Vizualizări"
-msgstr[2] "Vizualizări"
 
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."

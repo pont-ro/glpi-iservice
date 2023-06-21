@@ -8,6 +8,7 @@ if (!defined('INPUT_REQUEST')) {
 
 class ToolBox
 {
+    const RESPONSE_OK = 'OK';
 
     public static function getArrayInputVariable($variable_name, $default_value = null, $input_type = INPUT_REQUEST): ?array
     {
@@ -76,6 +77,38 @@ class ToolBox
         }
 
         return $query_result;
+    }
+
+    public static function getHtmlSanitizedValue($value): string
+    {
+        return preg_replace('((?![\w\-]).)', '-', trim($value));
+    }
+
+    public static function addKeysToArray(array $keys, array $array): array
+    {
+        $result = [];
+        foreach ($keys as $key) {
+            $result[$key] = null;
+        }
+
+        return array_merge($result, $array);
+    }
+
+    public static function inProfileArray($profiles): bool
+    {
+        if (empty($profiles)) {
+            return false;
+        }
+
+        if (!is_array($profiles)) {
+            if (func_num_args() > 1) {
+                $profiles = func_get_args();
+            } else {
+                $profiles = [$profiles];
+            }
+        }
+
+        return in_array($_SESSION["glpiactiveprofile"]["name"], $profiles);
     }
 
 }

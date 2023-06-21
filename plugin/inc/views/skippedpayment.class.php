@@ -2,13 +2,9 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
-use \Session;
-
 // Imported from iService2, needs refactoring. Original file: "Skipped_Payment.php".
 class SkippedPayment extends View
 {
-
-    public static $order = 20;
 
     public static $rightname = 'entity';
 

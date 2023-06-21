@@ -2,13 +2,9 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
-use \Session;
-
 // Imported from iService2, needs refactoring. Original file: "Foaie_de_Parcurs.class.php".
-class Waybill extends View
+class RouteManifest extends View
 {
-
-    public static $order = 60;
 
     public static $rightname = 'entity';
 
@@ -16,7 +12,7 @@ class Waybill extends View
 
     public static function getName(): string
     {
-        return __('Waybill', 'iservice');
+        return __('Route Manifest', 'iservice');
     }
 
     protected function getSettings(): array
