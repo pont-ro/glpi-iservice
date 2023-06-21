@@ -44,4 +44,4 @@ if (!IserviceToolBox::getQueryResult("delete from $importMappingsTable where ite
     die("Could not clear records from mapping table for $itemTypeClass object");
 }
 
-echo "OK";
+echo IserviceToolBox::RESPONSE_OK;

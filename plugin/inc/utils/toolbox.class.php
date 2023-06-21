@@ -8,6 +8,7 @@ if (!defined('INPUT_REQUEST')) {
 
 class ToolBox
 {
+    const RESPONSE_OK = 'OK';
 
     public static function getArrayInputVariable($variable_name, $default_value = null, $input_type = INPUT_REQUEST): ?array
     {

@@ -253,4 +253,4 @@ if ($oldItemsCount === count($errors['retry'] ?? [])) {
     unset($errors['retry']);
 }
 
-echo empty($errors) ? "OK" : json_encode($errors);
+echo empty($errors) ? IserviceToolBox::RESPONSE_OK : json_encode($errors);
