@@ -55,7 +55,7 @@ class ToolBox
         };
     }
 
-    public static function getQueryResult($query, $id_field = 'id', ?\DBmysql $db = null): array
+    public static function getQueryResult($query, $id_field = 'id', ?\DBmysql $db = null): bool|array
     {
         if ($db === null) {
             global $DB;
@@ -63,8 +63,8 @@ class ToolBox
         }
 
         $query_result = [];
-        if (false === ($result = $db->query($query)) || !$db->numrows($result)) {
-            return $query_result;
+        if (false === ($result = $db->query($query)) || $result === true || !$db->numrows($result)) {
+            return is_bool($result) ? $result : $query_result;
         }
 
         while ($data = $db->fetchAssoc($result)) {
