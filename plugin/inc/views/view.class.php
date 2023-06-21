@@ -130,6 +130,10 @@ class View extends \CommonGLPI
     protected $visible_columns_count = 0;
     protected $import_data           = null;
 
+    public static $rightname = '';
+
+    public static $icon = '';
+
     public function __construct($load_settings = true, $table_prefix = '', $table_suffix = '')
     {
         $this->table_prefix = $table_prefix;
@@ -137,6 +141,24 @@ class View extends \CommonGLPI
         if ($load_settings) {
             $this->loadSettings();
         }
+    }
+
+    public static function getMenuName(): string
+    {
+        return static::getName();
+    }
+
+    public static function getMenuContent(): array
+    {
+        if (!Session::haveRight(static::$rightname, READ)) {
+            return [];
+        }
+
+        return [
+            'title' => static::getMenuName(),
+            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
+            'icon'  => static::$icon,
+        ];
     }
 
     public static function getName(): string
@@ -186,11 +208,6 @@ class View extends \CommonGLPI
     {
         $class_name = get_class($this);
         return strtolower(strpos($class_name, "PluginIserviceView_") === 0 ? substr($class_name, strlen("PluginIserviceView_")) : $class_name);
-    }
-
-    public function getRightName(): string
-    {
-        return self::$rightname_base . $this->getMachineName();
     }
 
     public function getRequestArrayName($add_detail_level = 0): string

@@ -1,16 +1,27 @@
 <?php
 
-// Imported from iService2, needs refactoring.
-class PluginIserviceView_Loturi_Intrare extends PluginIserviceView {
-    
-    static $order = 50;
+namespace GlpiPlugin\Iservice\Views;
 
-    static function getName() {
-        return 'Loturi de intrare';
+use \Session;
+
+// Imported from iService2, needs refactoring. Original file: "Loturi_Intrare.php".
+class InboundLots extends View
+{
+
+    public static $order = 50;
+
+    public static $rightname = 'entity';
+
+    public static $icon = 'ti ti-transfer-in';
+
+    public static function getName(): string
+    {
+        return __('Inbound Lots', 'iService');
     }
 
-    protected function getSettings() {
-        return array(
+    protected function getSettings(): array
+    {
+        return [
             'name' => self::getName(),
             'query' => "
 								SELECT
@@ -35,82 +46,82 @@ class PluginIserviceView_Loturi_Intrare extends PluginIserviceView {
 									AND (n.denum LIKE '[denum_mat]' or n.denum is null)
 								",
             'default_limit' => 25,
-            'filters' => array(
-                'start_date' => array(
+            'filters' => [
+                'start_date' => [
                     'type' => 'date',
                     'caption' => 'Data factură',
                     'format' => 'Y-m-d',
                     'empty_value' => '2000-01-01',
                     'pre_widget' => "{$this->getWidgets()[self::WIDGET_LAST_6_MONTH]} {$this->getWidgets()[self::WIDGET_LAST_MONTH]} {$this->getWidgets()[self::WIDGET_THIS_MONTH]} ",
-                ),
-                'end_date' => array(
+                ],
+                'end_date' => [
                     'type' => 'date',
                     'caption' => ' - ',
                     'format' => 'Y-m-d',
                     'empty_value' => date('Y-m-d'),
-                ),
-                'nrtran' => array(
+                ],
+                'nrtran' => [
                     'type' => 'text',
                     'caption' => 'Nrtran',
                     'format' => '%%%s%%',
                     'header' => "nrtran",
-                ),
-                'codmat' => array(
+                ],
+                'codmat' => [
                     'type' => 'text',
                     'caption' => 'Cod material',
                     'format' => '%%%s%%',
                     'header' => 'codmat',
-                ),
-                'grupa' => array(
+                ],
+                'grupa' => [
                     'type' => 'text',
                     'caption' => 'Grupa',
                     'format' => '%%%s%%',
                     'header' => 'grupa',
-                ),
-                'denum_mat' => array(
+                ],
+                'denum_mat' => [
                     'type' => 'text',
                     'caption' => 'Denumire material',
                     'format' => '%%%s%%',
                     'header' => 'denumire_material',
-                ),
-                'denum_part' => array(
+                ],
+                'denum_part' => [
                     'type' => 'text',
                     'caption' => 'Denumire furnizor',
                     'format' => '%%%s%%',
                     'header' => 'denumire_partener',
-                ),
-            ),
-            'columns' => array(
-                'nrtran' => array(
+                ],
+            ],
+            'columns' => [
+                'nrtran' => [
                     'title' => 'Nrtran'
-                ),
-                'dataint' => array(
+                ],
+                'dataint' => [
                     'title' => 'Data intrării',
                     'default_sort' => 'DESC',
                     'style' => 'white-space: nowrap;'
-                ),
-                'codmat' => array(
+                ],
+                'codmat' => [
                     'title' => 'Cod material',
-                ),
-                'grupa' => array(
+                ],
+                'grupa' => [
                     'title' => 'Grupa',
-                ),
-                'pcont' => array(
+                ],
+                'pcont' => [
                     'title' => 'Pcont',
                     'align' => 'right',
                     'format' => '%.2f',
-                ),
-                'stoci' => array(
+                ],
+                'stoci' => [
                     'title' => 'Stoci',
-                ),
-                'denumire_material' => array(
+                ],
+                'denumire_material' => [
                     'title' => 'Denumire material',
-                ),
-                'denumire_partener' => array(
+                ],
+                'denumire_partener' => [
                     'title' => 'Denumire furnizor',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
 }

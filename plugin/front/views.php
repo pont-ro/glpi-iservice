@@ -21,7 +21,8 @@ Html::header(
     "views"
 );
 
-Session::checkRight('entity', READ);
+// Session::checkRight('plugin_iservice_views', READ);
+// Session::checkRight($view->getRightName(), READ);
 
 $view->display(false, $export);
 

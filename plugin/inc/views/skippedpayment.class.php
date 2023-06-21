@@ -12,27 +12,11 @@ class SkippedPayment extends View
 
     public static $rightname = 'entity';
 
-    public static function getMenuName(): string
-    {
-        return self::getName();
-    }
-
-    public static function getMenuContent(): array
-    {
-        if (!Session::haveRight(self::$rightname, READ)) {
-            return [];
-        }
-
-        return [
-            'title' => self::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
-            'icon'  => 'fa-fw ti ti-credit-card-off',
-        ];
-    }
+    public static $icon = 'ti ti-credit-card-off';
 
     public static function getName(): string
     {
-        return __('Clienți cu facturi omise', 'iservice');
+        return __('Clients with skipped payment', 'iservice');
     }
 
     protected function getSettings(): array

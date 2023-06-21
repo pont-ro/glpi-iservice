@@ -13,27 +13,11 @@ class UnpaidInvoices extends View
 
     public static $rightname = 'entity';
 
-    public static function getMenuName(): string
-    {
-        return self::getName();
-    }
-
-    public static function getMenuContent(): array
-    {
-        if (!Session::haveRight(self::$rightname, READ)) {
-            return [];
-        }
-
-        return [
-            'title' => self::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
-            'icon'  => 'fa-fw ti ti-currency-dollar-off',
-        ];
-    }
+    public static $icon = 'ti ti-currency-dollar-off';
 
     public static function getName(): string
     {
-        return __('Facturi', 'iservice');
+        return __('Invoices', 'iservice');
     }
 
     public static function getCodDisplay($row_data): string

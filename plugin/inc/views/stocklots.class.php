@@ -7,37 +7,21 @@ use \PluginIserviceConsumable_Model;
 use \PluginIserviceCommon;
 
 // Imported from iService2, needs refactoring. Original file: "Loturi_Stoc.php".
-class LoturiStoc extends View
+class StockLots extends View
 {
 
     public static $order = 40;
 
     public static $rightname = 'entity';
 
-    public static function getMenuName(): string
-    {
-        return self::getName();
-    }
-
-    public static function getMenuContent(): array
-    {
-        if (!Session::haveRight(self::$rightname, READ)) {
-            return [];
-        }
-
-        return [
-            'title' => self::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
-            'icon'  => 'fa-fw ti ti-building-warehouse',
-        ];
-    }
+    public static $icon = 'ti ti-building-warehouse';
 
     public static function getName(): string
     {
-        return __('Loturi de stoc', 'iservice');
+        return __('Stock Lots', 'iservice');
     }
 
-    static function getModelNamesDisplay($row_data): string
+    public static function getModelNamesDisplay($row_data): string
     {
         $model_names     = explode('<br>', $row_data['model_names']);
         $consumable_data = [];
@@ -51,7 +35,7 @@ class LoturiStoc extends View
         return PluginIserviceConsumable_Model::showForConsumable($row_data['Cod_Articol'], $consumable_data, true);
     }
 
-    static function getMinimumStockDisplay($row_data): string
+    public static function getMinimumStockDisplay($row_data): string
     {
         if (empty($row_data['minimum_stock'])) {
             $row_data['minimum_stock'] = 0;

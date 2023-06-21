@@ -12,27 +12,11 @@ class PriceList extends View
 
     public static $rightname = 'entity';
 
-    public static function getMenuName(): string
-    {
-        return self::getName();
-    }
-
-    public static function getMenuContent(): array
-    {
-        if (!Session::haveRight(self::$rightname, READ)) {
-            return [];
-        }
-
-        return [
-            'title' => self::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
-            'icon'  => 'fa-fw ti ti-receipt-2',
-        ];
-    }
+    public static $icon = 'ti ti-receipt-2';
 
     public static function getName(): string
     {
-        return __('Lista de prețuri', 'iservice');
+        return __('Price List', 'iservice');
     }
 
     protected function getSettings(): array

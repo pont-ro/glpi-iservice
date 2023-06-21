@@ -10,7 +10,7 @@ class ViewsMenuSetup
 
     public static function setViewsDropdownNameIcon(&$menus): void
     {
-         $menus['views']['title'] = __('Vizualizari', 'iservice');
+         $menus['views']['title'] = _n('View', 'Views', Session::getPluralNumber());
          $menus['views']['icon']  = 'fa-fw ti ti-columns';
     }
 

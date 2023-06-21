@@ -15,27 +15,11 @@ class Stoc extends View
 
     public static $rightname = 'entity';
 
-    public static function getMenuName(): string
-    {
-        return self::getName();
-    }
-
-    public static function getMenuContent(): array
-    {
-        if (!Session::haveRight(self::$rightname, READ)) {
-            return [];
-        }
-
-        return [
-            'title' => self::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
-            'icon'  => 'fa-fw ti ti-building-warehouse',
-        ];
-    }
+    public static $icon = 'ti ti-building-warehouse';
 
     public static function getName(): string
     {
-        return __('Optimizare stoc', 'iservice');
+        return __('Stock optimization', 'iservice');
     }
 
     public static function getModelNamesDisplay($row_data): string

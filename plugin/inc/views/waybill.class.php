@@ -5,34 +5,18 @@ namespace GlpiPlugin\Iservice\Views;
 use \Session;
 
 // Imported from iService2, needs refactoring. Original file: "Foaie_de_Parcurs.class.php".
-class FoaieDeParcurs extends View
+class Waybill extends View
 {
 
     public static $order = 60;
 
     public static $rightname = 'entity';
 
-    public static function getMenuName(): string
-    {
-        return self::getName();
-    }
-
-    public static function getMenuContent(): array
-    {
-        if (!Session::haveRight(self::$rightname, READ)) {
-            return [];
-        }
-
-        return [
-            'title' => self::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
-            'icon'  => 'fa-fw ti ti-road',
-        ];
-    }
+    public static $icon = 'ti ti-road';
 
     public static function getName(): string
     {
-        return __('Foaie de parcurs', 'iservice');
+        return __('Waybill', 'iservice');
     }
 
     protected function getSettings(): array
