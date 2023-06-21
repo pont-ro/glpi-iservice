@@ -8,6 +8,125 @@ Session::checkLoginUser();
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
+function getForeignKeyData(array $importConfig): array
+{
+    if (empty($importConfig['foreignKeys']) || empty($importConfig['preloadForeignKeys'])) {
+        return [];
+    }
+
+    $result        = [];
+    $foreignKeyMap = new PluginIserviceImportMapping();
+
+    foreach ($importConfig['foreignKeys'] as $itemType) {
+        if (empty($result[$itemType])) {
+            $map = $foreignKeyMap->find(['itemtype' => $itemType]);
+            foreach ($map as $item) {
+                $result[$itemType][$item['old_id']] = $item['new_id'];
+            }
+        }
+    }
+
+    return $result;
+}
+
+function processItemData(array $oldItemData, array $importConfig, array &$foreignKeyData, array &$errors): array
+{
+    $result = $oldItemData;
+    unset($result['id']);
+
+    $result = forceValues($result, $importConfig['forceValues']);
+    $result = checkValues($result, $importConfig['checkValues'], $errors);
+    $result = mapForeignKeys($result, $importConfig['foreignKeys'], $foreignKeyData, $errors);
+    return mapSelfReferences($result, $importConfig['selfReferences'], $oldItemData, $foreignKeyData, $errors);
+}
+
+function forceValues(array $result, array $forceValues): array
+{
+    if (empty($forceValues)) {
+        return $result;
+    }
+
+    foreach ($forceValues as $fieldName => $value) {
+        $result[$fieldName] = $value;
+    }
+
+    return $result;
+}
+
+function checkValues(array $result, array $checkValues, array &$errors): array
+{
+    if (empty($checkValues)) {
+        return $result;
+    }
+
+    foreach ($checkValues as $fieldName => $value) {
+        if ($result[$fieldName] !== $value) {
+            $errors[] = "Invalid value for field $fieldName: $result[$fieldName], expected $value";
+        }
+    }
+
+    return $result;
+}
+
+function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyData, array &$errors): array
+{
+    if (empty($foreignKeys)) {
+        return $result;
+    }
+
+    $foreignKeyMap = new PluginIserviceImportMapping();
+    foreach ($foreignKeys as $fieldName => $itemType) {
+        if ($result[$fieldName] < 0) {
+            $result[$fieldName] = 0;
+        }
+
+        if (empty($result[$fieldName])) {
+            continue;
+        }
+
+        if (empty($foreignKeyData[$itemType][$result[$fieldName]])) {
+            if ($foreignKeyMap->getFromDBByCrit(['itemtype' => $itemType, 'old_id' => $result[$fieldName]])) {
+                $foreignKeyData[$itemType][$result[$fieldName]] = $foreignKeyMap->getField('items_id');
+            }
+        }
+
+        if (empty($foreignKeyData[$itemType][$result[$fieldName]])) {
+            $errors[] = "Cannot find new value for $itemType object with id {$result[$fieldName]}. Was it imported?";
+            continue;
+        }
+
+        $result[$fieldName] = $foreignKeyData[$itemType][$result[$fieldName]];
+    }
+
+    return $result;
+}
+
+function mapSelfReferences(array $result, array $selfReferences, array $oldItemData, array $foreignKeyData, array &$errors): array
+{
+    if (empty($selfReferences)) {
+        return $result;
+    }
+
+    foreach ($selfReferences as $fieldName) {
+        if ($result[$fieldName] < 0) {
+            $result[$fieldName] = 0;
+        }
+
+        if (empty($result[$fieldName])) {
+            continue;
+        }
+
+        if (empty($foreignKeyData['self'][$result[$fieldName]])) {
+            $errors['retry'][$oldItemData['id']] = $oldItemData;
+            continue;
+        }
+
+        $result[$fieldName] = $foreignKeyData['self'][$result[$fieldName]];
+    }
+
+    return $result;
+}
+
 $input = IserviceToolBox::getInputVariables(
     [
         'oldDBHost',
@@ -28,36 +147,72 @@ if (empty($importConfig)) {
     return "Invalid import config for item type $input[itemType], it must return an array";
 }
 
+$foreignKeyData = getForeignKeyData($importConfig);
+
 $oldItems = IserviceToolBox::getQueryResult(
     "SELECT * FROM $importConfig[oldTable]",
     'id',
     new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
 );
 
+$errors        = [];
 $itemTypeClass = $importConfig['itemTypeClass'];
-$item          = new $itemTypeClass();
-$itemMap       = new PluginIserviceImportMapping();
 
-foreach ($oldItems as $oldItem) {
-    $map      = $itemMap->findForOldItemID($itemTypeClass, $oldItem['id']);
-    $itemData = $oldItem;
-    unset($itemData['id']);
+/* @var CommonDBTM $item */
+$item    = new $itemTypeClass();
+$itemMap = new PluginIserviceImportMapping();
 
-    if (empty($map)) {
-        $item->add($itemData);
-        $itemMap->add(
-            [
-                'itemtype' => $itemTypeClass,
-                'items_id' => $item->getID(),
-                'old_id'   => $oldItem['id'],
-            ]
-        );
-    } else {
-        $itemData['id'] = $map['items_id'];
-        $item->update($itemData);
+do {
+    unset($errors['retry']);
+    $oldItemsCount = count($oldItems);
+
+    foreach ($oldItems as $oldItem) {
+        $foundId  = false;
+        $map      = $itemMap->findForOldItemID($itemTypeClass, $oldItem['id']);
+        $itemData = processItemData($oldItem, $importConfig, $foreignKeyData, $errors);
+
+        if (!empty($map)) {
+            $foundId = $map['items_id'];
+        } elseif (!empty($importConfig['identifierField'])
+            && $item->getFromDBByCrit([$importConfig['identifierField'] => $itemData[$importConfig['identifierField']]])
+        ) {
+            $foundId = $item->getID();
+            $itemMap->add(
+                [
+                    'itemtype' => $itemTypeClass,
+                    'items_id' => $item->getID(),
+                    'old_id'   => $oldItem['id'],
+                ]
+            );
+        }
+
+        if ($foundId === false) {
+            if (!$item->add($itemData)) {
+                $errors[] = "Could not add $itemTypeClass object with data: " . json_encode($itemData);
+            };
+
+            $itemMap->add(
+                [
+                    'itemtype' => $itemTypeClass,
+                    'items_id' => $item->getID(),
+                    'old_id'   => $oldItem['id'],
+                ]
+            );
+        } else {
+            $itemData['id'] = $foundId;
+            $item->update($itemData);
+        }
+
+        if (!empty($importConfig['selfReferences'])) {
+            $foreignKeyData[$itemTypeClass][$oldItem['id']] = $item->getID();
+        }
     }
+} while (!empty($errors['retry']) && $oldItemsCount > count($errors['retry']) && $oldItems = $errors['retry']);
 
-    break;
+if ($oldItemsCount === count($errors['retry'])) {
+    $errors[] = "Cannot find new values for self referenced $importConfig[itemTypeClass] objects with the following ids";
+    $errors[] = implode(', ', array_keys($errors['retry']));
+    unset($errors['retry']);
 }
 
-echo "OK";
+echo empty($errors) ? "OK" : json_encode($errors);
