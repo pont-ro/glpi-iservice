@@ -18,7 +18,6 @@ Html::header(__("iService", "iservice"), $_SERVER['PHP_SELF'], "plugin_iservice_
 
 // Session::checkRight('plugin_iservice_views', READ);
 // Session::checkRight($view->getRightName(), READ);
-
 $view->display(false, $export);
 
 Html::footer();
