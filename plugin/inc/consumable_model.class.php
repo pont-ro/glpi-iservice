@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 /**
  * Consumable_Ticket Class
  *
@@ -28,7 +30,7 @@ class PluginIserviceConsumable_Model extends CommonDBRelation {
 
     function getForConsumable($id) {
         $query = "SELECT cm.*, pm.name FROM " . $this->getTable() . " cm LEFT JOIN glpi_printermodels pm ON pm.id = cm.printermodels_id WHERE " . self::$items_id_2 . " = '$id' ORDER BY id";
-        $result_data = PluginIserviceCommon::getQueryResult($query);
+        $result_data = IserviceToolBox::getQueryResult($query);
         return empty($result_data) ? [] : $result_data;
     }
 
@@ -51,7 +53,7 @@ class PluginIserviceConsumable_Model extends CommonDBRelation {
             return self::showForConsumable($consumable_id, array_column($consumable_models->getForConsumable($consumable_id), 'name', 'printermodels_id'), $return);
         }
 
-        $sanitized_consumable_id = PluginIserviceCommon::getHtmlSanitizedValue($consumable_id);
+        $sanitized_consumable_id = IserviceToolBox::getHtmlSanitizedValue($consumable_id);
         $url_encoded_consumable_id = urlencode($consumable_id);
         $result = "<div class='consumable-models-cell consumable-models-$sanitized_consumable_id'>";
         $result .= "<div class='consumable-models'>";

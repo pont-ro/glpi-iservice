@@ -3,7 +3,7 @@
 namespace GlpiPlugin\Iservice\Views;
 
 use \PluginIserviceHtml;
-use \PluginIserviceCommon;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use \Session;
 use \Html;
 
@@ -156,7 +156,7 @@ class View extends \CommonGLPI
 
         return [
             'title' => static::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . self::class,
+            'page' => '/plugins/iservice/front/views.php?view=' . static::class,
             'icon'  => static::$icon,
         ];
     }
@@ -164,19 +164,6 @@ class View extends \CommonGLPI
     public static function getName(): string
     {
         return "Override getName to statically get the name of this view";
-    }
-
-    public static function compareByOrder($view1, $view2): int
-    {
-        if (!isset($view1::$order)) {
-            return !isset($view2::$order) ? 0 : -1;
-        }
-
-        if (!isset($view2::$order)) {
-            return 1;
-        }
-
-        return $view1::$order > $view2::$order ? 1 : -1;
     }
 
     public static function getShortenedDisplay($text, $length = 50, $offset = 0): string
@@ -189,7 +176,7 @@ class View extends \CommonGLPI
     }
 
     /**
-     * @return \View
+     * @return GlpiPlugin\Iservice\Views\View
      */
     public static function createFromSettings($settings, $table_prefix = '', $table_suffix = ''): array
     {
@@ -237,7 +224,7 @@ class View extends \CommonGLPI
 
     protected static function inProfileArray($profiles): bool
     {
-        return PluginIserviceCommon::inProfileArray(func_get_args());
+        return IserviceToolBox::inProfileArray(func_get_args());
     }
 
     protected function getWidgets()
@@ -288,7 +275,7 @@ class View extends \CommonGLPI
 
     protected function loadRequestVariables(): void
     {
-        $request_array = PluginIserviceCommon::getArrayInputVariable($this->getRequestArrayName(), []);
+        $request_array = IserviceToolBox::getArrayInputVariable($this->getRequestArrayName(), []);
         foreach ($this->request_variable_defaults as $variable_name => $variable_default_value) {
             $this->$variable_name = isset($request_array[$variable_name]) ? $request_array[$variable_name] : $variable_default_value;
         }
@@ -358,7 +345,7 @@ class View extends \CommonGLPI
                 $filter .= $this->filters['prefix'];
             }
 
-            $request_values = PluginIserviceCommon::getArrayInputVariable($this->getRequestArrayName(), []);
+            $request_values = IserviceToolBox::getArrayInputVariable($this->getRequestArrayName(), []);
             foreach ($this->filters as $filter_name => $filter_data) {
                 if (in_array($filter_name, $this->getIgnoredFilterNames())) {
                     continue;
@@ -413,7 +400,7 @@ class View extends \CommonGLPI
         }
 
         $required     = !empty($filter_data['required']);
-        $filter_reset = $this->reset !== null || PluginIserviceCommon::getInputVariable('reset') !== null;
+        $filter_reset = $this->reset !== null || IserviceToolBox::getInputVariable('reset') !== null;
         $filter_value = ($filter_reset && !$required) ? null : ($params[$filter_name] ?? $filter_data['default'] ?? null);
         if ($required && empty($filter_value)) {
             ob_end_clean();
@@ -466,7 +453,7 @@ class View extends \CommonGLPI
 
                     $filter_data['post_widget'] = $this->generateWidgetBadge(
                         $badge_type,
-                        "$params[row_id]-" . PluginIserviceCommon::getHtmlSanitizedValue($filter_data['name']),
+                        "$params[row_id]-" . IserviceToolBox::getHtmlSanitizedValue($filter_data['name']),
                         $$text_variable,
                         $$handler_variable,
                         empty($$handler_variable)
@@ -1115,7 +1102,7 @@ class View extends \CommonGLPI
         }
 
         $data = [];
-        if ($this->instant_display || PluginIserviceCommon::getInputVariable('filtering')) {
+        if ($this->instant_display || IserviceToolBox::getInputVariable('filtering')) {
             $this->query_count = $this->getQueryCount();
             $this->adjustQueryLimit();
 
@@ -1177,7 +1164,7 @@ class View extends \CommonGLPI
 
     protected function getCacheFileName(): string
     {
-        return \PluginIserviceViews::$default_views_directory . "/{$this->getMachineName()}.cache";
+        return Views::$default_views_directory . "/{$this->getMachineName()}.cache";
     }
 
     public function getCachedData(): array
@@ -1194,7 +1181,7 @@ class View extends \CommonGLPI
     protected function prepareCache(): void
     {
         $cache_data    = $this->getCachedData();
-        $force_refresh = empty($this->force_refresh) ? PluginIserviceCommon::getInputVariable('cache_refresh') : $this->force_refresh;
+        $force_refresh = empty($this->force_refresh) ? IserviceToolBox::getInputVariable('cache_refresh') : $this->force_refresh;
         if (empty($this->ignore_control_hash) && ($cache_data['control_hash'] ?? '' != $this->control_hash)) {
             $force_refresh = true;
         }
@@ -1395,7 +1382,7 @@ class View extends \CommonGLPI
 
         $edit_field      = "<input id='$field_name-input-$item_id' style='vertical-align: middle;' value='$field_value' />";
         $on_edit_click   = $on_cancel_click = "$(\"#$field_name-edit-$item_id\").toggle();$(\"#$field_name-value-$item_id\").toggle();$(\"#$field_name-icon-$item_id\").toggle();";
-        $on_accept_click = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/$settings[callback].php?id=$item_id&operation=$settings[operation]&value=\" + $(\"#$field_name-input-$item_id\").val(), \"\", function(message) {if (message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {\$(\"#$field_name-value-$item_id\").html(\$(\"#$field_name-input-$item_id\").val());$on_edit_click}});";
+        $on_accept_click = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/$settings[callback].php?id=$item_id&operation=$settings[operation]&value=\" + $(\"#$field_name-input-$item_id\").val(), \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#$field_name-value-$item_id\").html(\$(\"#$field_name-input-$item_id\").val());$on_edit_click}});";
         $accept_button   = "<a class='fa fa-check-circle' href='javascript:void(0);' onclick='$on_accept_click' style='color: green; vertical-align: middle;'></a>";
         $cancel_button   = "<a class='fa fa-times-circle' href='javascript:void(0);' onclick='$on_cancel_click' style='color: red; vertical-align: middle;'></a>";
         $edit_span       = "<span id='$field_name-edit-$item_id' style='display: none;'>$edit_field $accept_button $cancel_button</span>";

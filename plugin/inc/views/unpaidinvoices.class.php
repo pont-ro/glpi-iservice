@@ -9,8 +9,6 @@ use \PluginIserviceDownload;
 class UnpaidInvoices extends View
 {
 
-    public static $order = 10;
-
     public static $rightname = 'entity';
 
     public static $icon = 'ti ti-currency-dollar-off';

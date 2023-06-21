@@ -5,6 +5,7 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceHtml {
 
     const FIELDTYPE_CHECKBOX = 'checkbox';
@@ -343,7 +344,7 @@ class PluginIserviceHtml {
             unset($options['multipart']);
         }
 
-        return $this->openTag('form', PluginIserviceCommon::addKeysToArray(['id', 'name', 'class', 'action', 'method', 'enctype', 'style'], $options), $return);
+        return $this->openTag('form', IserviceToolBox::addKeysToArray(['id', 'name', 'class', 'action', 'method', 'enctype', 'style'], $options), $return);
     }
 
     function closeForm($return = false) {
@@ -493,7 +494,7 @@ class PluginIserviceHtml {
     static function header($title, $url = '', $calling_object = null, $popup = '') {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE, $HEADER_LOADED, $DB;
 
-        if (!empty($CFG_GLPI['maintenance_mode']) && PluginIserviceCommon::getInputVariable('skipMaintenance', null) === null) {
+        if (!empty($CFG_GLPI['maintenance_mode']) && IserviceToolBox::getInputVariable('skipMaintenance', null) === null) {
             echo "Siteul este in mentenanță, vă rugăm reveniți.";
             die;
         }
@@ -521,7 +522,7 @@ class PluginIserviceHtml {
             }
         }
 
-        $admin_class = PluginIserviceCommon::inProfileArray(['admin', 'super-admin']) ? 'admin' : 'non-admin';
+        $admin_class = IserviceToolBox::inProfileArray(['admin', 'super-admin']) ? 'admin' : 'non-admin';
 
         // Body
         echo "<body id='iservice-body' class='$body_class $admin_class'>";
@@ -609,7 +610,7 @@ class PluginIserviceHtml {
                 $tester_task->displayResults('header');
             }
 
-            $hmarfa_import_lastrun_array = PluginIserviceCommon::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
+            $hmarfa_import_lastrun_array = IserviceToolBox::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
             $hmarfa_import_lastrun = $hmarfa_import_lastrun_array['0']['lastrun'];
             $hmarfa_button_color = '';
 
@@ -816,7 +817,7 @@ class PluginIserviceHtml {
     static function footer($keepDB = false) {
         global $CFG_GLPI, $FOOTER_LOADED, $TIMER_DEBUG;
 
-        $in_modal = PluginIserviceCommon::getInputVariable('_in_modal', false);
+        $in_modal = IserviceToolBox::getInputVariable('_in_modal', false);
         // If in modal : display popHeader
         if ($in_modal) {
             return Html::popFooter();

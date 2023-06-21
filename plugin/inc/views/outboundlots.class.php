@@ -2,13 +2,9 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
-use \Session;
-
 // Imported from iService2, needs refactoring. Original file: "Loturi_Iesire.php".
 class OutboundLots extends View
 {
-
-    public static $order = 30;
 
     public static $rightname = 'entity';
 

@@ -2,7 +2,7 @@
 
 namespace GlpiPlugin\Iservice\Utils;
 
-use GlpiPlugin\Iservice\Utils\ViewsMenuSetup;
+use GlpiPlugin\Iservice\Utils\ViewsMenu;
 
 class RedefineMenus
 {
@@ -16,7 +16,7 @@ class RedefineMenus
         $activeProfile        = $_SESSION['glpiactiveprofile']['id'] ?? null;
         $superAdminProfileIds = \Profile::getSuperAdminProfilesId();
 
-        ViewsMenuSetup::setViewsDropdownNameIcon($menus);
+        ViewsMenu::setDropdownNameAndIcon($menus);
 
         if (in_array($activeProfile, $superAdminProfileIds)) {
             return $menus;

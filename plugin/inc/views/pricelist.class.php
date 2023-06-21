@@ -8,8 +8,6 @@ use \Session;
 class PriceList extends View
 {
 
-    public static $order = 70;
-
     public static $rightname = 'entity';
 
     public static $icon = 'ti ti-receipt-2';
