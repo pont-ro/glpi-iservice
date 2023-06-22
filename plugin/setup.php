@@ -18,6 +18,10 @@ if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
     define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iservice");
 }
 
+if (!defined("PLUGIN_ISERVICE_CACHE_DIR")) {
+    define("PLUGIN_ISERVICE_CACHE_DIR", PLUGIN_ISERVICE_DOC_DIR . "/cache");
+}
+
 /**
  * Init the hooks of the plugins - Needed
  *

@@ -10,7 +10,10 @@ class CreateTablesInstallStep
     {
         global $DB;
 
-        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql');
+        $scriptPath = PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql';
+        $command    = "mysql -h $DB->dbhost -u $DB->dbuser -p$DB->dbpassword $DB->dbdefault < $scriptPath";
+        exec($command, $output, $returnVar);
+
         return true;
     }
 
