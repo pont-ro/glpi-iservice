@@ -1,5 +1,6 @@
 <?php
 
+use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Iservice\Utils\HtaccessChecker;
 
@@ -45,7 +46,10 @@ function plugin_init_iservice(): void
         $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.form.php';
 
         // Add entry to configuration menu.
-        $PLUGIN_HOOKS["menu_toadd"]['iservice'] = ['config' => 'PluginIserviceMenu'];
+        $PLUGIN_HOOKS["menu_toadd"]['iservice'] = [
+            'config' => 'PluginIserviceMenu',
+            'views' => ViewsMenu::getClasses(),
+        ];
 
         $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
 
