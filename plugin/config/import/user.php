@@ -2,6 +2,7 @@
 return [
     'itemTypeClass' => User::class,
     'oldTable'      => 'glpi_users',
+    'clearCondition'  => "name != 'glpi'",
     'identifierField' => 'name',
     'foreignKeys'   => [
         'locations_id' => 'Location',

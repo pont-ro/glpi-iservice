@@ -45,7 +45,7 @@
         "name": "part_cont1",
         "label": "Cont Banca1",
         "type": "text",
-        "ranking": "13",
+        "ranking": "35",
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",

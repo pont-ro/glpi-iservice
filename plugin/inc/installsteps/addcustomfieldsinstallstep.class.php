@@ -10,7 +10,7 @@ use Session;
 
 class AddCustomFieldsInstallStep
 {
-    const CLEANUP_ON_UNINSTALL = false;
+    const CLEANUP_ON_UNINSTALL = true;
 
     const CONTAINERS = [
         [
@@ -21,6 +21,7 @@ class AddCustomFieldsInstallStep
             'subtype'   => null,
             'is_active' => '1',
             'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/printer_customfields.json',
+            'old_id'    => 1,
         ],
         [
             'name'      => 'ticketcustomfield',
@@ -30,6 +31,7 @@ class AddCustomFieldsInstallStep
             'subtype'   => null,
             'is_active' => '1',
             'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/ticket_customfields.json',
+            'old_id'    => 2,
         ],
         [
             'name'      => 'suppliercustomfield',
@@ -39,6 +41,7 @@ class AddCustomFieldsInstallStep
             'subtype'   => null,
             'is_active' => '1',
             'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/supplier_customfields.json',
+            'old_id'    => 3,
         ],
         [
             'name'      => 'contractcustomfield',
@@ -48,6 +51,7 @@ class AddCustomFieldsInstallStep
             'subtype'   => null,
             'is_active' => '1',
             'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/contract_customfields.json',
+            'old_id'    => 4,
         ],
         [
             'name'      => 'cartridgecustomfield',
@@ -57,6 +61,7 @@ class AddCustomFieldsInstallStep
             'subtype'   => null,
             'is_active' => '1',
             'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/cartridge_customfields.json',
+            'old_id'    => 5,
         ],
         [
             'name'      => 'printermodelcustomfield',
@@ -66,6 +71,7 @@ class AddCustomFieldsInstallStep
             'subtype'   => null,
             'is_active' => '1',
             'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/printermodel_customfields.json',
+            'old_id'    => 6,
         ]
     ];
 
@@ -102,6 +108,7 @@ class AddCustomFieldsInstallStep
         $result                       = true;
         $containerData['_no_message'] = true;
 
+        $mapping    = new \PluginIserviceImportMapping();
         $container  = new PluginFieldsContainer();
         $containers = $container->find(
             [
@@ -111,6 +118,13 @@ class AddCustomFieldsInstallStep
 
         if (count($containers) === 0) {
             $containerData['id'] = $container->add($containerData);
+            $mapping->add(
+                [
+                    'itemtype' => PluginFieldsContainer::class,
+                    'items_id' => $containerData['id'],
+                    'old_id'   => $containerData['old_id'],
+                ]
+            );
         } else {
             $containerData['id']        = array_shift($containers)['id'];
             $containerData['itemtypes'] = self::encodeItemTypes($containerData['itemtypes']);

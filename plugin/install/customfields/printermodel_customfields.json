@@ -1,6 +1,6 @@
 [
     {
-        "name": "em_field",
+        "name": "em_compatible_field",
         "old_name": "emfield",
         "label": ["EM Compatible", "Compatibil EM"],
         "type": "yesno",
