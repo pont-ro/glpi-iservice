@@ -29,6 +29,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
         ];
     }
 
+    // Imported from iService2, needs refactoring. Code moved from: "planlunar.php".
     public function display($options = []): void
     {
         $year = filter_input(INPUT_GET, 'year');
