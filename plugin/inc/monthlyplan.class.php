@@ -39,6 +39,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                 $year = date('Y');
             }
         }
+
         $month = filter_input(INPUT_GET, 'month');
         if ($month === null) {
             $month = filter_input(INPUT_POST, 'month');
@@ -46,10 +47,12 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                 $month = date('m');
             }
         }
+
         $tech_id = filter_input(INPUT_GET, 'tech_id');
         if ($tech_id === null) {
             $tech_id = filter_input(INPUT_POST, 'tech_id');
         }
+
         if (empty($tech_id)) {
             $tech_filter = '';
         } else {
