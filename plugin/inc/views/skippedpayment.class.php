@@ -1,16 +1,23 @@
 <?php
 
-// Imported from iService2, needs refactoring.
-class PluginIserviceView_Skipped_Payment extends PluginIserviceView {
+namespace GlpiPlugin\Iservice\Views;
 
-    static $order = 20;
+// Imported from iService2, needs refactoring. Original file: "Skipped_Payment.php".
+class SkippedPayment extends View
+{
 
-    static function getName() {
-        return 'Clienți cu facturi omise';
+    public static $rightname = 'entity';
+
+    public static $icon = 'ti ti-credit-card-off';
+
+    public static function getName(): string
+    {
+        return __('Clients with skipped payment', 'iservice');
     }
 
-    protected function getSettings() {
-        return array(
+    protected function getSettings(): array
+    {
+        return [
             'name' => self::getName(),
             'query' => "
 						SELECT
@@ -40,26 +47,26 @@ class PluginIserviceView_Skipped_Payment extends PluginIserviceView {
 						GROUP BY b.codbenef
 						",
             'default_limit' => 100,
-            'columns' => array(
-                'min_nepla' => array(
+            'columns' => [
+                'min_nepla' => [
                     'title' => 'Data primei facturi neplătite',
                     'align' => 'center',
                     'default_sort' => 'ASC',
-                ),
-                'restpla' => array(
+                ],
+                'restpla' => [
                     'title' => 'Rest de plată',
                     'align' => 'right',
                     'format' => '%.2f RON',
-                ),
-                'max_pla' => array(
+                ],
+                'max_pla' => [
                     'title' => 'Data ultimei facturi plătite',
                     'align' => 'center',
-                ),
-                'nume_part' => array(
+                ],
+                'nume_part' => [
                     'title' => 'Nume partener',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
 }

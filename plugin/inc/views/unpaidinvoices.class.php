@@ -1,20 +1,31 @@
 <?php
 
-// Imported from iService2, needs refactoring.
-class PluginIserviceView_Unpaid_Invoices extends PluginIserviceView {
+namespace GlpiPlugin\Iservice\Views;
 
-    static $order = 10;
+use \Session;
+use \PluginIserviceDownload;
 
-    static function getName() {
-        return 'Facturi';
+// Imported from iService2, needs refactoring. Original file: "Unpaid_Invoices.php".
+class UnpaidInvoices extends View
+{
+
+    public static $rightname = 'entity';
+
+    public static $icon = 'ti ti-currency-dollar-off';
+
+    public static function getName(): string
+    {
+        return __('Invoices', 'iservice');
     }
 
-    static function getCodDisplay($row_data) {
+    public static function getCodDisplay($row_data): string
+    {
         $color = $row_data['data_factura'] < $row_data['last_magic_link_access'] ? 'green' : 'red';
         return "<span style='color:$color'  title='Link magic nu a fost accesat'>$row_data[cod]</span>";
     }
 
-    static function getInvoiceConfirmationDisplay($row_data) {
+    public static function getInvoiceConfirmationDisplay($row_data): string
+    {
         if ($row_data['invoice_confirmation'] == 'da') {
             $tooltip = "Confirmat de $row_data[invoice_confirmer] pe $row_data[invoice_confirmation_date]";
             return "<span class='form-group-checkbox' title='$tooltip'><input type='checkbox' class='new_checkbox' checked/><label class='label-checkbox'><span class=check></span></label></span>";
@@ -23,9 +34,10 @@ class PluginIserviceView_Unpaid_Invoices extends PluginIserviceView {
         }
     }
 
-    protected function getSettings() {
+    protected function getSettings(): array
+    {
         global $CFG_GLPI;
-        return array(
+        return [
             'name' => self::getName(),
             'query' => "
 						SELECT
@@ -58,7 +70,7 @@ class PluginIserviceView_Unpaid_Invoices extends PluginIserviceView {
 									, CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) invoice_confirmer
 								FROM {$this->table_prefix}hmarfa_facturi fa
 								JOIN {$this->table_prefix}hmarfa_firme fi ON fa.codbenef = fi.cod
-								LEFT JOIN glpi_plugin_fields_suppliercustomfields sc ON sc.cod_hmarfa = fi.cod and sc.itemtype = 'Supplier'
+								LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields sc ON sc.hmarfa_code_field = fi.cod and sc.itemtype = 'Supplier'
 								LEFT JOIN (
 										SELECT MAX(date) last_magic_link_access, items_id
 										FROM glpi_plugin_iservice_downloads
@@ -85,53 +97,53 @@ class PluginIserviceView_Unpaid_Invoices extends PluginIserviceView {
             'default_limit' => 25,
             'id_field' => 'nrfac',
             'itemtype' => 'invoice',
-            'mass_actions' => array(
-                'confirm' => array(
+            'mass_actions' => [
+                'confirm' => [
                     'caption' => 'Confirmă primirea facturii',
                     'action' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/invoice_confirm.php',
-                ),
-                'unconfirm' => array(
+                ],
+                'unconfirm' => [
                     'caption' => 'Revocă Confirmarea',
                     'action' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/invoice_confirm.php',
-                ),
-            ),
-            'filters' => array(
-                'start_date' => array(
+                ],
+            ],
+            'filters' => [
+                'start_date' => [
                     'type' => 'date',
                     'caption' => 'Data factură',
                     'format' => 'Y-m-d',
                     'empty_value' => '2000-01-01',
                     'pre_widget' => "{$this->getWidgets()[self::WIDGET_LAST_6_MONTH]} {$this->getWidgets()[self::WIDGET_LAST_MONTH]} {$this->getWidgets()[self::WIDGET_THIS_MONTH]} ",
-                ),
-                'confirmed' => array(
+                ],
+                'confirmed' => [
                     'type' => self::FILTERTYPE_SELECT,
                     'header' => 'invoice_confirmation',
-                    'options' => array(
+                    'options' => [
                         '0' => 'toate',
                         'da' => 'da',
                         'nu' => 'nu',
-                    ),
+                    ],
                     'format' => "AND CASE invoice_confirmation WHEN 0 THEN 'nu' ELSE 'da' END = '%s'",
-                ),
-                'end_date' => array(
+                ],
+                'end_date' => [
                     'type' => 'date',
                     'caption' => '-&nbsp;&nbsp;&nbsp;',
                     'format' => 'Y-m-d',
                     'empty_value' => date('Y-m-d'),
-                ),
-                'cod' => array(
+                ],
+                'cod' => [
                     'type' => 'text',
                     'caption' => 'Cod',
                     'format' => '%%%s%%',
                     'header' => 'cod',
-                ),
-                'nrfac' => array(
+                ],
+                'nrfac' => [
                     'type' => 'text',
                     'caption' => 'Nrfac',
                     'format' => '%%%s%%',
                     'header' => 'nrfac',
-                ),
-                'rest' => array(
+                ],
+                'rest' => [
                     'type' => 'int',
                     'caption' => 'Rest de plată',
                     'format' => '%d',
@@ -140,8 +152,8 @@ class PluginIserviceView_Unpaid_Invoices extends PluginIserviceView {
                     'style' => 'text-align:right;width:5em;',
                     'header' => 'valoare',
                     'header_caption' => '> ',
-                ),
-                'neinc' => array(
+                ],
+                'neinc' => [
                     'type' => 'int',
                     'caption' => 'Valoare neincasată',
                     'format' => '%d',
@@ -150,45 +162,45 @@ class PluginIserviceView_Unpaid_Invoices extends PluginIserviceView {
                     'style' => 'text-align:right;width:5em;',
                     'header' => 'valoare_neincasata',
                     'header_caption' => '> ',
-                ),
-                'nume_client' => array(
+                ],
+                'nume_client' => [
                     'type' => 'text',
                     'caption' => 'Nume client',
                     'format' => '%%%s%%',
                     'header' => 'nume_client',
-                ),
-                'tehnician' => array(
+                ],
+                'tehnician' => [
                     'type' => 'text',
                     'caption' => 'Tehnician',
                     'format' => '%%%s%%',
                     'header' => 'tehnician',
-                ),
-            ),
-            'columns' => array(
-                'tehnician' => array(
+                ],
+            ],
+            'columns' => [
+                'tehnician' => [
                     'title' => __('Technician'),
-                ),
-                'invoice_confirmation' => array(
+                ],
+                'invoice_confirmation' => [
                     'title' => 'Confirmat',
                     'format' => 'function:PluginIserviceView_Unpaid_Invoices::getInvoiceConfirmationDisplay($row);',
-                ),
-                'cod' => array(
+                ],
+                'cod' => [
                     'title' => 'Cod',
                     'format' => 'function:PluginIserviceView_Unpaid_Invoices::getCodDisplay($row);',
-                    'link' => array(
+                    'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/view.php?view=partners&partners0[partener]=[nume_client_glpi]',
-                    ),
-                ),
-                'last_magic_link_access' => array(
+                    ],
+                ],
+                'last_magic_link_access' => [
                     'title' => 'Last magic link access',
-                ),
-                'nume_client' => array(
+                ],
+                'nume_client' => [
                     'title' => 'Nume client',
-                ),
-                'nrfac' => array(
+                ],
+                'nrfac' => [
                     'title' => 'Nrfac',
                     'tooltip' => 'Detalii factură',
-                    'link' => array(
+                    'link' => [
                         'type' => 'detail',
                         'query' => "
 												SELECT
@@ -209,70 +221,70 @@ class PluginIserviceView_Unpaid_Invoices extends PluginIserviceView {
 												",
                         'detail_key' => '[nrfac]',
                         'name' => 'Detalii factura numărul: [#detail#key#]',
-                        'columns' => array(
-                            'Cod_Articol' => array(
+                        'columns' => [
+                            'Cod_Articol' => [
                                 'title' => 'Cod articol',
-                            ),
-                            'Denumire_Articol' => array(
+                            ],
+                            'Denumire_Articol' => [
                                 'title' => 'Denumire articol',
-                            ),
-                            'Descriere' => array(
+                            ],
+                            'Descriere' => [
                                 'title' => 'Descriere',
-                            ),
-                            'Gest' => array(
+                            ],
+                            'Gest' => [
                                 'title' => 'Gest',
-                            ),
-                            'Cant' => array(
+                            ],
+                            'Cant' => [
                                 'title' => 'Cant',
                                 'align' => 'center',
-                            ),
-                            'Pu_Intr' => array(
+                            ],
+                            'Pu_Intr' => [
                                 'title' => 'Pu intr',
                                 'align' => 'right',
-                            ),
-                            'Pu_Liv' => array(
+                            ],
+                            'Pu_Liv' => [
                                 'title' => 'Pu liv',
                                 'align' => 'right',
-                            ),
-                            'Valoare' => array(
+                            ],
+                            'Valoare' => [
                                 'title' => 'Valoare',
                                 'align' => 'right',
                                 'total' => true,
-                            ),
-                            'TVA' => array(
+                            ],
+                            'TVA' => [
                                 'title' => 'TVA',
                                 'align' => 'right',
-                            ),
-                            'Adaos' => array(
+                            ],
+                            'Adaos' => [
                                 'title' => 'Adaos',
                                 'align' => 'right',
-                            ),
-                            'Total' => array(
+                            ],
+                            'Total' => [
                                 'title' => 'Total',
                                 'align' => 'right',
                                 'total' => true,
-                            ),
-                        )
-                    )
-                ),
-                'data_factura' => array(
+                            ],
+                        ]
+                    ]
+                ],
+                'data_factura' => [
                     'title' => 'Data factură',
                     'align' => 'center',
                     'default_sort' => 'DESC',
                     'style' => 'white-space: nowrap;',
-                ),
-                'valoare' => array(
+                ],
+                'valoare' => [
                     'title' => 'Valoare',
                     'align' => 'right',
                     'total' => true,
-                ),
-                'valoare_neincasata' => array(
+                ],
+                'valoare_neincasata' => [
                     'title' => 'Valoare neincasată',
                     'align' => 'right',
                     'total' => true,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
 }

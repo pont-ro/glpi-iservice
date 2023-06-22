@@ -2,6 +2,8 @@
 
 namespace GlpiPlugin\Iservice\Utils;
 
+use GlpiPlugin\Iservice\Utils\ViewsMenu;
+
 class RedefineMenus
 {
     public const MENU_ITEMS_TO_REMOVE = [
@@ -13,6 +15,8 @@ class RedefineMenus
     {
         $activeProfile        = $_SESSION['glpiactiveprofile']['id'] ?? null;
         $superAdminProfileIds = \Profile::getSuperAdminProfilesId();
+
+        ViewsMenu::setDropdownNameAndIcon($menus);
 
         if (in_array($activeProfile, $superAdminProfileIds)) {
             return $menus;

@@ -1,16 +1,25 @@
 <?php
 
-// Imported from iService2, needs refactoring.
-class PluginIserviceView_Price_List extends PluginIserviceView {
+namespace GlpiPlugin\Iservice\Views;
 
-    static $order = 70;
+use \Session;
 
-    static function getName() {
-        return 'Lista de prețuri';
+// Imported from iService2, needs refactoring. Original file: "Price_List.php".
+class PriceList extends View
+{
+
+    public static $rightname = 'entity';
+
+    public static $icon = 'ti ti-receipt-2';
+
+    public static function getName(): string
+    {
+        return __('Price List', 'iservice');
     }
 
-    protected function getSettings() {
-        return array(
+    protected function getSettings(): array
+    {
+        return [
             'name' => self::getName(),
             'query' => "
 						SELECT
@@ -36,66 +45,66 @@ class PluginIserviceView_Price_List extends PluginIserviceView {
 							AND GRUPA LIKE '[GRUPA]'
 						",
             'default_limit' => 50,
-            'filters' => array(
-                'COD_PRODUC' => array(
+            'filters' => [
+                'COD_PRODUC' => [
                     'type' => 'text',
                     'caption' => 'COD_PRODUC',
                     'format' => '%%%s%%',
                     'header' => 'COD_PRODUC',
-                ),
-                'COD_ECH' => array(
+                ],
+                'COD_ECH' => [
                     'type' => 'text',
                     'caption' => 'COD_ECH',
                     'format' => '%%%s%%',
                     'header' => 'COD_ECH',
-                ),
-                'COD' => array(
+                ],
+                'COD' => [
                     'type' => 'text',
                     'caption' => 'COD',
                     'format' => '%%%s%%',
                     'header' => 'COD',
-                ),
-                'DENUM' => array(
+                ],
+                'DENUM' => [
                     'type' => 'text',
                     'caption' => 'DENUM',
                     'format' => '%%%s%%',
                     'header' => 'DENUM',
-                ),
-                'GRUPA' => array(
+                ],
+                'GRUPA' => [
                     'type' => 'text',
                     'caption' => 'GRUPA',
                     'format' => '%%%s%%',
                     'header' => 'GRUPA',
-                ),
-            ),
-            'columns' => array(
-                'COD_PRODUC' => array('title' => 'COD_PRODUC',),
-                'COD_ECH' => array('title' => 'COD_ECH',),
-                'COD' => array('title' => 'COD',),
-                'DENUM' => array('title' => 'DENUM',),
-                'DESCR' => array('title' => 'DESCR',),
-                'UM' => array('title' => 'UM',),
-                'GRUPA' => array('title' => 'GRUPA',),
-                'PVINV' => array(
+                ],
+            ],
+            'columns' => [
+                'COD_PRODUC' => ['title' => 'COD_PRODUC',],
+                'COD_ECH' => ['title' => 'COD_ECH',],
+                'COD' => ['title' => 'COD',],
+                'DENUM' => ['title' => 'DENUM',],
+                'DESCR' => ['title' => 'DESCR',],
+                'UM' => ['title' => 'UM',],
+                'GRUPA' => ['title' => 'GRUPA',],
+                'PVINV' => [
                     'title' => 'PVINV',
                     'align' => 'right',
                     'format' => '%.2f',
-                ),
-                'MONEDA' => array(
+                ],
+                'MONEDA' => [
                     'title' => 'MONEDA',
                     'align' => 'right',
-                ),
-                'PVIN' => array(
+                ],
+                'PVIN' => [
                     'title' => 'PVIN',
                     'align' => 'right',
                     'format' => '%.2f',
-                ),
-                'P_PRETURI' => array('title' => 'P_PRETURI',),
-                'P_PRET1' => array('title' => 'P_PRET1',),
-                'P_PRET2' => array('title' => 'P_PRET2',),
-                'P_PRET3' => array('title' => 'P_PRET3',),
-            ),
-        );
+                ],
+                'P_PRETURI' => ['title' => 'P_PRETURI',],
+                'P_PRET1' => ['title' => 'P_PRET1',],
+                'P_PRET2' => ['title' => 'P_PRET2',],
+                'P_PRET3' => ['title' => 'P_PRET3',],
+            ],
+        ];
     }
 
 }

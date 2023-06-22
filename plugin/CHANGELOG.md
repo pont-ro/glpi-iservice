@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+- EXL-294 - Migrated views from iService2
 - EXL-287 - Added plugin config handling
 - EXL-284 - Clean up unnecessary menu items
 - EXL-285 - Added htaccess based redirect to https 
