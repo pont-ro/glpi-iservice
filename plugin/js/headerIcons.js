@@ -22,7 +22,7 @@ function moveIconsToHeader()
 function handleClickHMarfaImport()
 {
     $('i.hMarfaImport').click(
-        function (event) {
+        function () {
             let regex  = /{([^}]+)}/g;
             let params = JSON.parse(regex.exec($(this).attr('class'))[0]);
             try {
