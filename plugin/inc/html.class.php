@@ -610,7 +610,7 @@ class PluginIserviceHtml {
                 $tester_task->displayResults('header');
             }
 
-            $hmarfa_import_lastrun_array = IserviceToolBox::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
+            $hmarfa_import_lastrun_array = PluginIserviceDB::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
             $hmarfa_import_lastrun = $hmarfa_import_lastrun_array['0']['lastrun'];
             $hmarfa_button_color = '';
 

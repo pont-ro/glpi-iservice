@@ -1,6 +1,8 @@
 <?php
 namespace GlpiPlugin\Iservice\InstallSteps;
 
+use PluginIserviceDB;
+
 class CreateTablesInstallStep
 {
 
@@ -8,11 +10,7 @@ class CreateTablesInstallStep
 
     public static function do(): bool
     {
-        global $DB;
-
-        $scriptPath = PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql';
-        $command    = "mysql -h $DB->dbhost -u $DB->dbuser -p$DB->dbpassword $DB->dbdefault < $scriptPath";
-        exec($command, $output, $returnVar);
+        PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql');
 
         return true;
     }

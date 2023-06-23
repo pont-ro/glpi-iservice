@@ -4,6 +4,7 @@ namespace GlpiPlugin\Iservice\Utils;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use \Session;
+use \PluginIserviceDB;
 
 class RedefineMenus
 {
@@ -75,11 +76,6 @@ class RedefineMenus
                     'icon'  => 'fa far fa-envelope header-icon me-1 element6',
                     'page'   => '',
                 ],
-                'temp_element6' => [
-                    'title' => 'temp_element3',
-                    'icon'  => 'fa fa-bug header-icon me-1 element6',
-                    'page'   => '',
-                ],
             ]
         ];
     }
@@ -89,7 +85,7 @@ class RedefineMenus
         $hmarfa_action_fields = [
             'execute' => 'hMarfaImport',
             '_glpi_csrf_token' => Session::getNewCSRFToken(),
-            '_glpi_simple_form' => 1
+            'D_glpi_simple_form' => 1
         ];
 
         $hmarfa_action_javascriptArray = [];
@@ -99,7 +95,7 @@ class RedefineMenus
 
         $serializedParams = '{' . implode(', ', $hmarfa_action_javascriptArray) . '}';
 
-        $hmarfa_import_lastrun_array = IserviceToolBox::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
+        $hmarfa_import_lastrun_array = PluginIserviceDB::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
         $hmarfa_import_lastrun       = $hmarfa_import_lastrun_array['0']['lastrun'];
         $hmarfa_button_color_class   = '';
 
@@ -110,9 +106,9 @@ class RedefineMenus
         }
 
         return [
-            'title' => 'hMarfaImport',
-            'icon'  => "fa fa-upload header-icon me-1 hMarfaImport $hmarfa_button_color_class $serializedParams",
-            'page'   => '',
+            'title' => __('Last execution of hMarfa import', 'iservice') . ': ' . $hmarfa_import_lastrun,
+            'icon'  => "fa fa-upload header-icon me-1 hMarfaImport $hmarfa_button_color_class",
+            'page'   => $serializedParams,
         ];
     }
 

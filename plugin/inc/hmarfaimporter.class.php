@@ -46,7 +46,7 @@ class PluginIserviceHMarfaImporter extends CommonDBTM
 
         set_time_limit(120);
 
-        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.hMarfaImport')) || !PluginIserviceConfig::getConfigValue('enabled_crons.hMarfaImport')) {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.hMarfaImport'))) {
             $task->log("hMarfa import is disabled by configuration.\n");
             return -2;
         }
@@ -104,7 +104,7 @@ class PluginIserviceHMarfaImporter extends CommonDBTM
             $directory = dirname($file);
 
             if (!is_dir($directory)) {
-                mkdir($directory, 0777, true);
+                mkdir($directory, 0775, true);
             }
         }
 

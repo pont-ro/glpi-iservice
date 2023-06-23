@@ -8,14 +8,14 @@ class CronTasksInstallStep
 
     const CRON_TASKS = [
         [
-            'itemtype' => 'PluginIserviceHMarfaImporter',
-            'name' => 'hMarfaImport',
-            'mode' => CronTask::MODE_EXTERNAL,
+            'itemtype'  => 'PluginIserviceHMarfaImporter',
+            'name'      => 'hMarfaImport',
+            'mode'      => CronTask::MODE_EXTERNAL,
             'frequency' => 600,
-            'param' => 0,
-            'hourmin' => 0,
-            'hourmax' => 24,
-            'comment' => '/HAMOR/EXPERTLINE/hDATA/A_EXL08',
+            'param'     => 0,
+            'hourmin'   => 0,
+            'hourmax'   => 24,
+            'comment'   => '/HAMOR/EXPERTLINE/hDATA/A_EXL08',
         ],
     ];
 
@@ -36,14 +36,14 @@ class CronTasksInstallStep
                 ) {
                     $crontask->add(
                         [
-                            'itemtype' => $ct['itemtype'],
-                            'name' => $ct['name'],
-                            'mode' => $ct['mode'],
+                            'itemtype'  => $ct['itemtype'],
+                            'name'      => $ct['name'],
+                            'mode'      => $ct['mode'],
                             'frequency' => $ct['frequency'],
-                            'param' => $ct['param'],
-                            'hourmin' => $ct['hourmin'],
-                            'hourmax' => $ct['hourmax'],
-                            'comment' => $ct['comment']
+                            'param'     => $ct['param'],
+                            'hourmin'   => $ct['hourmin'],
+                            'hourmax'   => $ct['hourmax'],
+                            'comment'   => $ct['comment']
                         ]
                     );
                 }
