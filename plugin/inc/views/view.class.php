@@ -154,9 +154,11 @@ class View extends \CommonGLPI
             return [];
         }
 
+        global $CFG_PLUGIN_ISERVICE;
+
         return [
             'title' => static::getMenuName(),
-            'page' => '/plugins/iservice/front/views.php?view=' . static::class,
+            'page' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=" . static::class,
             'icon'  => static::$icon,
         ];
     }

@@ -34,10 +34,31 @@ function processItemData(array $oldItemData, array $importConfig, array &$foreig
     $result = $oldItemData;
     unset($result['id']);
 
-    $result = forceValues($result, $importConfig['forceValues']);
-    $result = checkValues($result, $importConfig['checkValues'], $errors);
-    $result = mapForeignKeys($result, $importConfig['foreignKeys'], $foreignKeyData, $errors);
-    return mapSelfReferences($result, $importConfig['selfReferences'], $oldItemData, $foreignKeyData, $errors);
+    $result = mapFields($result, $importConfig['fieldMap'] ?? []);
+    $result = forceValues($result, $importConfig['forceValues'] ?? []);
+    $result = checkValues($result, $importConfig['checkValues'] ?? [], $errors);
+    $result = mapForeignKeys($result, $importConfig['foreignKeys'] ?? [], $foreignKeyData, $errors);
+    $result = mapSelfReferences($result, $importConfig['selfReferences'] ?? [], $oldItemData, $foreignKeyData, $errors);
+
+    return escapeValues($result);
+}
+
+function mapFields(array $input, array $fieldMap): array
+{
+    if (empty($fieldMap)) {
+        return $input;
+    }
+
+    $result = [];
+    foreach ($fieldMap as $fieldMapData) {
+        if (empty($fieldMapData['name'])) {
+            continue;
+        }
+
+        $result[$fieldMapData['name']] = $input[$fieldMapData['old_name'] ?? $fieldMapData['name']] ?? null;
+    }
+
+    return $result;
 }
 
 function forceValues(array $result, array $forceValues): array
@@ -91,7 +112,7 @@ function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyDat
         }
 
         if (empty($foreignKeyData[$itemType][$result[$fieldName]])) {
-            $errors[] = "Cannot find new value for $itemType object with id {$result[$fieldName]}. Was it imported?";
+            $errors[] = "Cannot find new id for $itemType object with id {$result[$fieldName]}. Was it imported?";
             continue;
         }
 
@@ -124,8 +145,21 @@ function mapSelfReferences(array $result, array $selfReferences, array $oldItemD
         $result[$fieldName] = $foreignKeyData['self'][$result[$fieldName]];
     }
 
+    return empty($errors['retry'][$oldItemData['id']]) ? $result : [];
+}
+
+function escapeValues(array $result): array
+{
+    global $DB;
+    foreach ($result as $fieldName => $value) {
+        $result[$fieldName] = $DB->escape($value);
+    }
+
     return $result;
 }
+
+// -------------------
+/* End of functions */
 
 $input = IserviceToolBox::getInputVariables(
     [
@@ -139,12 +173,12 @@ $input = IserviceToolBox::getInputVariables(
 
 $configFileName = PLUGIN_ISERVICE_DIR . '/config/import/' . strtolower("$input[itemType].php");
 if (empty($input['itemType']) || !file_exists($configFileName)) {
-    return "Invalid item type: $input[itemType]";
+    die("Invalid item type: $input[itemType]");
 }
 
 $importConfig = include $configFileName;
 if (empty($importConfig)) {
-    return "Invalid import config for item type $input[itemType], it must return an array";
+    die("Invalid import config for item type $input[itemType], it must return an array");
 }
 
 $foreignKeyData = getForeignKeyData($importConfig);
@@ -170,6 +204,10 @@ do {
         $foundId  = false;
         $map      = $itemMap->findForOldItemID($itemTypeClass, $oldItem['id']);
         $itemData = processItemData($oldItem, $importConfig, $foreignKeyData, $errors);
+
+        if (empty($itemData)) {
+            continue;
+        }
 
         if (!empty($map)) {
             $foundId = $map['items_id'];
@@ -204,15 +242,15 @@ do {
         }
 
         if (!empty($importConfig['selfReferences'])) {
-            $foreignKeyData[$itemTypeClass][$oldItem['id']] = $item->getID();
+            $foreignKeyData['self'][$oldItem['id']] = $item->getID();
         }
     }
 } while (!empty($errors['retry']) && $oldItemsCount > count($errors['retry']) && $oldItems = $errors['retry']);
 
-if ($oldItemsCount === count($errors['retry'])) {
-    $errors[] = "Cannot find new values for self referenced $importConfig[itemTypeClass] objects with the following ids";
+if ($oldItemsCount === count($errors['retry'] ?? [])) {
+    $errors[] = "Cannot find new values for self referenced $importConfig[itemTypeClass] objects with the following ids:";
     $errors[] = implode(', ', array_keys($errors['retry']));
     unset($errors['retry']);
 }
 
-echo empty($errors) ? "OK" : json_encode($errors);
+echo empty($errors) ? IserviceToolBox::RESPONSE_OK : json_encode($errors);

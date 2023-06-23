@@ -20,9 +20,11 @@ class PluginIserviceMenu extends CommonGLPI
             return [];
         }
 
+        global $CFG_PLUGIN_ISERVICE;
+
         return [
             'title' => self::getMenuName(),
-            'page'  => Plugin::getPhpDir('iservice', false) . "/front/config.form.php",
+            'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/config.form.php",
             'icon'  => 'fas fa-cogs',
         ];
     }

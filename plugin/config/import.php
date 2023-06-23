@@ -1,7 +1,7 @@
 <?php
 return [
-    'Various data' => [
-        'icon' => 'fa-fw ti ti-settings',
+    'various' => [
+        'icon' => 'ti ti-settings',
         'title' => __('Various data', 'iservice'),
         'items' => [
             'profile' => [
@@ -26,6 +26,30 @@ return [
             ],
         ]
     ],
+    'suppliers' => [
+        'icon' => 'ti ti-building-skyscraper',
+        'title' => __('Supplier data', 'iservice'),
+        'items' => [
+            'supplier_types' => [
+                'itemtype' => 'SupplierType',
+                'label' => _n('Supplier type', 'Supplier types', Session::getPluralNumber()),
+            ],
+            'supplier' => [
+                'itemtype' => 'Supplier',
+                'label' => _n('Supplier', 'Suppliers', Session::getPluralNumber()),
+            ],
+            'supplier_customfields' => [
+                'itemtype' => 'SupplierCustomfield',
+                'label' => _n('Supplier Custom Field', 'Supplier Custom Fields', Session::getPluralNumber(), 'iservice'),
+            ],
+        ]
+    ],
+    'customfields' => [
+        'icon' => 'fas fa-tasks',
+        'title' => _n('Custom field', 'Custom fields', Session::getPluralNumber()),
+        'items' => [
+        ]
+    ]
     /*
     'printers' => [
         'icon' => 'fa-fw ti ti-printer',

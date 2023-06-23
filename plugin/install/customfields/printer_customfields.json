@@ -99,6 +99,7 @@
     },
     {
         "name": "week_nr_field",
+        "old_name": "week_nr",
         "label": [
             "Week number",
             "Număr săptămână"
@@ -112,6 +113,7 @@
     },
     {
         "name": "plan_observations_field",
+        "old_name": "observations",
         "label": [
             "Plan observations",
             "Observații plan"
@@ -167,7 +169,7 @@
     },
     {
         "name": "em_field",
-        "old_name": "emfield",
+        "old_name": "emaintenancefield",
         "label": [
             "E-Maintenance",
             "E-Maintenance"
