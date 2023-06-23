@@ -2,6 +2,7 @@
 return [
     'itemTypeClass'   => Profile::class,
     'oldTable'        => 'glpi_profiles',
+    'clearCondition'  => "not name in ('admin', 'super-admin')",
     'identifierField' => 'name',
     'checkValues'     => [
         'changetemplates_id'  => 0,
