@@ -1,7 +1,7 @@
 $(document).ready(
     function () {
         moveIconsToHeader();
-        handleClickHMarfaImport();
+        registerHMarfaImportClick();
     }
 );
 
@@ -23,7 +23,7 @@ function moveIconsToHeader()
     dropDown.remove();
 }
 
-function handleClickHMarfaImport()
+function registerHMarfaImportClick()
 {
     $('i.hMarfaImport').parent().click(
         function () {

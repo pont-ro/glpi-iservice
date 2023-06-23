@@ -13,7 +13,7 @@ class PluginIserviceDB extends DB
         parent::__construct();
     }
 
-    public static function runScriptFile($scriptPath, DB $db = null): void
+    public static function runScriptFile($scriptPath, ?\DBmysql $db = null): void
     {
         if ($db === null) {
             global $DB;

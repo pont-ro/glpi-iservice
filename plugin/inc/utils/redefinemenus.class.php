@@ -85,7 +85,7 @@ class RedefineMenus
         $hmarfa_action_fields = [
             'execute' => 'hMarfaImport',
             '_glpi_csrf_token' => Session::getNewCSRFToken(),
-            'D_glpi_simple_form' => 1
+            '_glpi_simple_form' => 1
         ];
 
         $hmarfa_action_javascriptArray = [];
