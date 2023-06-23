@@ -100,10 +100,10 @@ class RedefineMenus
         $serializedParams = '{' . implode(', ', $hmarfa_action_javascriptArray) . '}';
 
         $hmarfa_import_lastrun_array = IserviceToolBox::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
-        $hmarfa_import_lastrun = $hmarfa_import_lastrun_array['0']['lastrun'];
-        $hmarfa_button_color_class = '';
+        $hmarfa_import_lastrun       = $hmarfa_import_lastrun_array['0']['lastrun'];
+        $hmarfa_button_color_class   = '';
 
-        $hmarfa_import_time_diff = abs(time() - strtotime($hmarfa_import_lastrun))/(60*60);
+        $hmarfa_import_time_diff = abs(time() - strtotime($hmarfa_import_lastrun)) / (60 * 60);
 
         if ($hmarfa_import_time_diff > 1) {
             $hmarfa_button_color_class = ($hmarfa_import_time_diff > 2) ? 'text-danger' : 'text-warning';
