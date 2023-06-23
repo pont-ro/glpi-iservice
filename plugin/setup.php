@@ -18,6 +18,10 @@ if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
     define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iservice");
 }
 
+if (!defined("PLUGIN_ISERVICE_CACHE_DIR")) {
+    define("PLUGIN_ISERVICE_CACHE_DIR", PLUGIN_ISERVICE_DOC_DIR . "/cache");
+}
+
 /**
  * Init the hooks of the plugins - Needed
  *
@@ -53,7 +57,10 @@ function plugin_init_iservice(): void
 
         $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
 
-        $PLUGIN_HOOKS['add_javascript']['iservice'] = "js/import.js";
+        $PLUGIN_HOOKS['add_javascript']['iservice'] = [
+            "js/import.js",
+            "js/iservice.js",
+        ];
 
         $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
 

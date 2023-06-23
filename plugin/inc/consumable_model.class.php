@@ -30,7 +30,7 @@ class PluginIserviceConsumable_Model extends CommonDBRelation {
 
     function getForConsumable($id) {
         $query = "SELECT cm.*, pm.name FROM " . $this->getTable() . " cm LEFT JOIN glpi_printermodels pm ON pm.id = cm.printermodels_id WHERE " . self::$items_id_2 . " = '$id' ORDER BY id";
-        $result_data = IserviceToolBox::getQueryResult($query);
+        $result_data = PluginIserviceDB::getQueryResult($query);
         return empty($result_data) ? [] : $result_data;
     }
 

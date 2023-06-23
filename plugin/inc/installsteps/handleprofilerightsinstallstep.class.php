@@ -2,6 +2,8 @@
 
 namespace GlpiPlugin\Iservice\InstallSteps;
 
+use PluginIserviceDB;
+
 class HandleProfileRightsInstallStep
 {
     const CLEANUP_ON_UNINSTALL = true;
@@ -64,13 +66,11 @@ class HandleProfileRightsInstallStep
 
     public static function runTableRestoreScript($tableName): bool
     {
-        global $DB;
-
         $scriptPath = PLUGIN_ISERVICE_DIR . "/install/sql/" . $tableName . "_original.sql";
-        $command    = "mysql -h $DB->dbhost -u $DB->dbuser -p$DB->dbpassword $DB->dbdefault < $scriptPath";
-        exec($command, $output, $returnVar);
 
-        return $returnVar === 0;
+        PluginIserviceDB::runScriptFile($scriptPath);
+
+        return true;
     }
 
 }

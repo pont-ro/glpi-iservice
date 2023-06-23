@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+- EXL-290 - Added hMarfa import
 - EXL-292 - Moved "Monthly plan" from iService2
 - EXL-294 - Migrated views from iService2
 - EXL-287 - Added plugin config handling

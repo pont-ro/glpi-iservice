@@ -42,11 +42,11 @@ class PluginIserviceHMarfaImporter extends CommonDBTM
      * */
     static function cronhMarfaImport($task)
     {
-        global $DB, $CFG_PLUGIN_ISERVICE;
+        global $DB;
 
         set_time_limit(120);
 
-        if (empty($CFG_PLUGIN_ISERVICE['enabled_crons']['hMarfaImport'])) {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.hMarfaImport'))) {
             $task->log("hMarfa import is disabled by configuration.\n");
             return -2;
         }
@@ -96,9 +96,17 @@ class PluginIserviceHMarfaImporter extends CommonDBTM
 
         include_once 'classes/DBFhandler.php';
 
-        $sql_file_name                = $CFG_PLUGIN_ISERVICE['hmarfa']['import']['script_file'];
-        $import_errors_file_name      = $CFG_PLUGIN_ISERVICE['hmarfa']['import']['errors'];
+        $sql_file_name                = PluginIserviceConfig::getConfigValue('hmarfa.import.script_file');
+        $import_errors_file_name      = PluginIserviceConfig::getConfigValue('hmarfa.import.errors');
         $import_errors_temp_file_name = "$import_errors_file_name.log";
+
+        foreach ([$sql_file_name, $import_errors_file_name, $import_errors_temp_file_name] as $file) {
+            $directory = dirname($file);
+
+            if (!is_dir($directory)) {
+                mkdir($directory, 0775, true);
+            }
+        }
 
         file_put_contents($sql_file_name, '');
 

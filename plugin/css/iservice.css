@@ -1,3 +1,14 @@
 .full-width {
     width: 100%;
 }
+
+.header-icon {
+    cursor: pointer;
+    font-size: 1.3rem;
+
+}
+
+.header-icons {
+    display: flex;
+    justify-content: space-around;
+}

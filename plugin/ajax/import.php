@@ -183,7 +183,7 @@ if (empty($importConfig)) {
 
 $foreignKeyData = getForeignKeyData($importConfig);
 
-$oldItems = IserviceToolBox::getQueryResult(
+$oldItems = PluginIserviceDB::getQueryResult(
     "SELECT * FROM $importConfig[oldTable]",
     'id',
     new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])

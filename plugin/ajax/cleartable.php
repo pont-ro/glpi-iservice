@@ -35,12 +35,12 @@ if (empty($importConfig['clearCondition'])) {
     $deleteQuery = "delete from {$item->getTable()} where {$importConfig['clearCondition']}";
 }
 
-if (!IserviceToolBox::getQueryResult($deleteQuery)) {
+if (!PluginIserviceDB::getQueryResult($deleteQuery)) {
     die("Could not clear table {$item->getTable()} for $itemTypeClass object");
 }
 
 $importMappingsTable = PluginIserviceImportMapping::getTable();
-if (!IserviceToolBox::getQueryResult("delete from $importMappingsTable where itemtype = '$input[itemType]' and items_id not in (select id from {$item->getTable()})")) {
+if (!PluginIserviceDB::getQueryResult("delete from $importMappingsTable where itemtype = '$input[itemType]' and items_id not in (select id from {$item->getTable()})")) {
     die("Could not clear records from mapping table for $itemTypeClass object");
 }
 
