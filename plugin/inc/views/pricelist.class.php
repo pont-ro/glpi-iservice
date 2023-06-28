@@ -8,7 +8,7 @@ use \Session;
 class PriceList extends View
 {
 
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_view_price_list';
 
     public static $icon = 'ti ti-receipt-2';
 

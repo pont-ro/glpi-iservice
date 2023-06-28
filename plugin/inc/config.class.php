@@ -9,7 +9,7 @@ class PluginIserviceConfig extends CommonDBTM
     private static array $localConfig   = [];
     private static array $defaultConfig = [];
 
-    public static $rightname = 'config';
+    public static $rightname = 'plugin_iservice_config';
 
     protected $displaylist = false;
 

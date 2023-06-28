@@ -10,7 +10,7 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class Stock extends View
 {
 
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_view_stock';
 
     public static $icon = 'ti ti-building-warehouse';
 
