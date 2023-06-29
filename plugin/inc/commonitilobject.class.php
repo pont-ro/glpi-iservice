@@ -12,4 +12,5 @@ trait PluginIserviceCommonITILObject
             $this->loadActors();
         }
     }
+
 }
