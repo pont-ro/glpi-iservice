@@ -42,7 +42,9 @@ function plugin_init_iservice(): void
 
     HtaccessChecker::check();
 
-    $PLUGIN_HOOKS['change_profile']['iservice'] = ['PluginIserviceProfile', 'changeprofile'];
+    if (Plugin::isPluginActive('iservice')) {
+        $PLUGIN_HOOKS['change_profile']['iservice'] = ['PluginIserviceProfile', 'changeprofile'];
+    }
 
     if (Session::getLoginUserID() && Plugin::isPluginActive('iservice')) {
         // Must override the formcreator hook, as it has bug.
