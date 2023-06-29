@@ -7,7 +7,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
      *
      * @var string
      */
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_monthly_plan';
 
     public static function getMenuName(): string
     {

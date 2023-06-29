@@ -9,7 +9,7 @@ use \PluginIserviceDownload;
 class UnpaidInvoices extends View
 {
 
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_view_unpaid_invoices';
 
     public static $icon = 'ti ti-currency-dollar-off';
 
