@@ -11,7 +11,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
 
     public static function getMenuName(): string
     {
-        return __('Plan lunar', 'iservice');
+        return __('Monthly plan', 'iservice');
     }
 
     public static function getMenuContent(): array
