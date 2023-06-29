@@ -42,30 +42,38 @@ function plugin_init_iservice(): void
 
     HtaccessChecker::check();
 
-    if (Session::getLoginUserID() && Plugin::isPluginActive('iservice')) {
-        // Must override the formcreator hook, as it has bug.
-        $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['formcreator'][Profile::class] = 'plugin_iservice_hook_formcreator_update_profile';
-
-        // Add link in plugin page.
-        $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.form.php';
-
-        // Add entry to configuration menu.
-        $PLUGIN_HOOKS["menu_toadd"]['iservice'] = [
-            'config' => 'PluginIserviceMenu',
-            'views' => ViewsMenu::getClasses(),
-        ];
-
-        $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
-
-        $PLUGIN_HOOKS['add_javascript']['iservice'] = [
-            "js/import.js",
-            "js/iservice.js",
-        ];
-
-        $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
-
-        PluginIserviceConfig::handleConfigValues();
+    if (!Plugin::isPluginActive('iservice')) {
+        return;
     }
+
+    $PLUGIN_HOOKS['change_profile']['iservice'] = ['PluginIserviceProfile', 'changeprofile'];
+
+    if (!Session::getLoginUserID()) {
+        return;
+    }
+
+    // Must override the formcreator hook, as it has bug.
+    $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['formcreator'][Profile::class] = 'plugin_iservice_hook_formcreator_update_profile';
+
+    // Add link in plugin page.
+    $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.form.php';
+
+    // Add entry to configuration menu.
+    $PLUGIN_HOOKS["menu_toadd"]['iservice'] = [
+        'config' => 'PluginIserviceMenu',
+        'views' => ViewsMenu::getClasses(),
+    ];
+
+    $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
+
+    $PLUGIN_HOOKS['add_javascript']['iservice'] = [
+        "js/import.js",
+        "js/iservice.js",
+    ];
+
+    $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
+
+    PluginIserviceConfig::handleConfigValues();
 }
 
 /**

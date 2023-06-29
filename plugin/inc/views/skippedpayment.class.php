@@ -6,7 +6,7 @@ namespace GlpiPlugin\Iservice\Views;
 class SkippedPayment extends View
 {
 
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_view_skipped_payment';
 
     public static $icon = 'ti ti-credit-card-off';
 

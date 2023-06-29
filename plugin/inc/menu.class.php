@@ -7,7 +7,7 @@ class PluginIserviceMenu extends CommonGLPI
      *
      * @var string
      */
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_config';
 
     public static function getMenuName(): string
     {

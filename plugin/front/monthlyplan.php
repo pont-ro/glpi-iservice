@@ -3,7 +3,7 @@
 // Imported from iService2, needs refactoring. Original file: "planlunar.php".
 require "../inc/includes.php";
 
-// Session::checkRight("plugin_iservice_planlunar", READ);
+Session::checkRight("plugin_iservice_monthly_plan", READ);
 
 Html::header(
     __("iService", "iservice"),

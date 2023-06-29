@@ -82,6 +82,10 @@ class RedefineMenus
 
     public static function getHMarfaMenuItem(): array
     {
+        if (!Session::haveRight('plugin_iservice_hmarfa', UPDATE)) {
+            return [];
+        }
+
         $hmarfa_action_fields = [
             'execute' => 'hMarfaImport',
             '_glpi_csrf_token' => Session::getNewCSRFToken(),

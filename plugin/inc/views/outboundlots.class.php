@@ -6,7 +6,7 @@ namespace GlpiPlugin\Iservice\Views;
 class OutboundLots extends View
 {
 
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_view_outbound_lots';
 
     public static $icon = 'ti ti-transfer-out';
 

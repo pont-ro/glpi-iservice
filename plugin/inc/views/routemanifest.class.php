@@ -6,7 +6,7 @@ namespace GlpiPlugin\Iservice\Views;
 class RouteManifest extends View
 {
 
-    public static $rightname = 'entity';
+    public static $rightname = 'plugin_iservice_view_route_manifest';
 
     public static $icon = 'ti ti-road';
 
