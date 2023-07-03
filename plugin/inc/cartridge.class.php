@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceCartridge extends Cartridge
 {
 
@@ -14,7 +16,7 @@ class PluginIserviceCartridge extends Cartridge
             if (empty($dropdown_options['value'])) {
                 $emptyables = [];
             } else {
-                $emptyables = PluginIserviceCommon::getQueryResult(
+                $emptyables = IserviceToolBox::getQueryResult(
                     "
                     select c.id, ci.name, c.date_use, ctd.name type_name
                     from glpi_cartridges c

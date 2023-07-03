@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceHmarfa
 {
 
@@ -44,8 +46,8 @@ class PluginIserviceHmarfa
 
         $add_disabled_reason    = '';
         $import_disabled_reason = '';
-        $acknowledge_other_csvs = PluginIserviceCommon::getInputVariable('acknowledge_other_csvs');
-        $exportFilePath         = PluginIserviceCommon::getInputVariable('exportfilepath', $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path'] . '/');
+        $acknowledge_other_csvs = IserviceToolBox::getInputVariable('acknowledge_other_csvs');
+        $exportFilePath         = IserviceToolBox::getInputVariable('exportfilepath', $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path'] . '/');
         $backFilePath           = $exportFilePath . "BAK";
         if (!file_exists($backFilePath)) {
             mkdir($backFilePath, 0775, true);
@@ -301,7 +303,7 @@ class PluginIserviceHmarfa
         }
 
         $safeEnterpriseName   = preg_replace('/[^a-zA-z0-9-]/', '-', trim($enterprise->fields["name"]));
-        $exportFileNameSuffix = PluginIserviceCommon::getInputVariable('export_file_name_suffix');
+        $exportFileNameSuffix = IserviceToolBox::getInputVariable('export_file_name_suffix');
 
         if (filter_input(INPUT_POST, 'restore')) {
             $backupPattern =
@@ -368,7 +370,7 @@ class PluginIserviceHmarfa
             $refreshTime = new DateTime(date('Y-m-d H:i:s', self::getNextImportTime() ?: time()));
             $refreshTime->add(new DateInterval('PT1M'));
 
-            if (PluginIserviceCommon::getInputVariable('add_pending_mail')) {
+            if (IserviceToolBox::getInputVariable('add_pending_mail')) {
                 $pending_email = new PluginIservicePendingEmail();
                 $pending_email->add(
                     [
@@ -755,7 +757,7 @@ class PluginIserviceHmarfa
         echo "        </th>\n";
         echo "      </tr>\n";
         echo "      <tr>\n";
-        $generate_ssx_ajaxcall_success_function = "function(message) {if (message!=\"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {alert(\"Fișierul S%2\$s generat cu succes\");}}";
+        $generate_ssx_ajaxcall_success_function = "function(message) {if (message!=\"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"Fișierul S%2\$s generat cu succes\");}}";
         $url_encoded_exportFilePath             = urlencode($exportFilePath);
         $generate_ajaxcall                      = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/generate_ssx.php?path=%1\$s&file_name=%2\$s\", \"\", $generate_ssx_ajaxcall_success_function);";
         $generate_ss_ajaxcall                   = sprintf($generate_ajaxcall, $url_encoded_exportFilePath, "S.$exportFileNameBase.csv");
@@ -864,7 +866,7 @@ class PluginIserviceHmarfa
         global $DB, $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         $form = new PluginIserviceHtml();
 
-        $order = PluginIserviceCommon::getInputVariable('order');
+        $order = IserviceToolBox::getInputVariable('order');
         if (!empty($order)) {
             echo "<form id='redirect-form' action='$CFG_GLPI[root_doc]/plugins/iservice/front/ticket.form.php' method='post'>";
             echo "<input type='hidden' name='id' value='$id'/>";
@@ -877,18 +879,18 @@ class PluginIserviceHmarfa
             die;
         }
 
-        if (PluginIserviceCommon::getInputVariable('to_ticket', null)) {
+        if (IserviceToolBox::getInputVariable('to_ticket', null)) {
             Html::redirect("$CFG_GLPI[root_doc]/plugins/iservice/front/ticket.form.php?id=$id&mode=" . PluginIserviceTicket::MODE_CLOSE);
         }
 
-        $add                    = PluginIserviceCommon::getInputVariable('add');
-        $save                   = PluginIserviceCommon::getInputVariable('save');
-        $wait                   = PluginIserviceCommon::getInputVariable('wait');
-        $delete                 = PluginIserviceCommon::getInputVariable('delete');
-        $import                 = PluginIserviceCommon::getInputVariable('import');
-        $finish                 = PluginIserviceCommon::getInputVariable('finish');
-        $restore                = PluginIserviceCommon::getInputVariable('restore');
-        $acknowledge_other_csvs = PluginIserviceCommon::getInputVariable('acknowledge_other_csvs');
+        $add                    = IserviceToolBox::getInputVariable('add');
+        $save                   = IserviceToolBox::getInputVariable('save');
+        $wait                   = IserviceToolBox::getInputVariable('wait');
+        $delete                 = IserviceToolBox::getInputVariable('delete');
+        $import                 = IserviceToolBox::getInputVariable('import');
+        $finish                 = IserviceToolBox::getInputVariable('finish');
+        $restore                = IserviceToolBox::getInputVariable('restore');
+        $acknowledge_other_csvs = IserviceToolBox::getInputVariable('acknowledge_other_csvs');
         $finished               = null;
         if ($wait) {
             $finished = 0;
@@ -909,7 +911,7 @@ class PluginIserviceHmarfa
 
         $acknowledge_disabled_reason = $import_disabled_reason = $add_disabled_reason = $wait_disabled_reason = $export_disabled_reason = null;
 
-        $export_file_path = PluginIserviceCommon::getInputVariable('export_file_path', $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path'] . '/');
+        $export_file_path = IserviceToolBox::getInputVariable('export_file_path', $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path'] . '/');
         $back_file_path   = $export_file_path . "BAK";
         if (!file_exists($back_file_path)) {
             mkdir($back_file_path, 0775, true);
@@ -953,7 +955,7 @@ class PluginIserviceHmarfa
             $currency_error = $ex->getMessage();
         }
 
-        $currency_rate = PluginIserviceCommon::getInputVariable('currency_rate', $currency_error == null ? $official_currency->EuroCaNumar : $currency_error);
+        $currency_rate = IserviceToolBox::getInputVariable('currency_rate', $currency_error == null ? $official_currency->EuroCaNumar : $currency_error);
 
         $ticket->fields['_users_id_assign'] = $ticket->getFirstAssignedUser()->getID();
 
@@ -985,7 +987,7 @@ class PluginIserviceHmarfa
         );
 
         // Partner email
-        $ticket_partner_email     = PluginIserviceCommon::getInputVariable('ticket_partner_email', $partner->customfields->fields['part_email_f1']);
+        $ticket_partner_email     = IserviceToolBox::getInputVariable('ticket_partner_email', $partner->customfields->fields['part_email_f1']);
         $ticket_partner_email_row = new PluginIserviceHtml_table_row(
             '', [
                 new PluginIserviceHtml_table_cell('Email de trimis facturi: ', '', 'width: 20%'),
@@ -1030,7 +1032,7 @@ class PluginIserviceHmarfa
         }
 
         $default_sales_average_percent     = count($ticket_partner_sales_rows) == 0 ? 1.3 : number_format($total_gain / count($ticket_partner_sales_rows), 2, '.', '');
-        $sales_average_percent             = PluginIserviceCommon::getInputVariable('sales_average_percent', $default_sales_average_percent);
+        $sales_average_percent             = IserviceToolBox::getInputVariable('sales_average_percent', $default_sales_average_percent);
         $sales_average                     = __('Average percent', 'iservice') . ": " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'sales_average_percent', $sales_average_percent, false, ['style' => 'width:3em;']);
         $ticket_partner_sales_average_cell = new PluginIserviceHtml_table_cell($sales_average, '', '', count($ticket_partner_sales_columns));
 
@@ -1047,7 +1049,7 @@ class PluginIserviceHmarfa
         $doc_date                = time();
         $safe_partner_name       = preg_replace('/[^a-zA-z0-9-]/', '-', $partner->fields["name"]);
         $export_file_name_prefix = $export_types[$ticket->customfields->fields['export_type']]['file_prefix'];
-        $export_file_name_suffix = PluginIserviceCommon::getInputVariable('export_file_name_suffix');
+        $export_file_name_suffix = IserviceToolBox::getInputVariable('export_file_name_suffix');
 
         if ($restore) {
             $backup_pattern =
@@ -1160,7 +1162,7 @@ class PluginIserviceHmarfa
 
             $consumable = new PluginIserviceConsumable();
             $consumable->getFromDB($ticket_consumable['Cod_Articol']);
-            $consumable_description                                            = PluginIserviceCommon::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? (($ticket->customfields->fields['export_type'] == 'aviz') ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
+            $consumable_description                                            = IserviceToolBox::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? (($ticket->customfields->fields['export_type'] == 'aviz') ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
             $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']] = $consumable_description;
             $ticket_consumable['Descriere']                                    = $consumable->fields['Denumire'] . "<br>" . $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, "consumable_description_$ticket_consumable[Cod_Articol]", $consumable_description, false, ['style' => 'height:2.5em;']);
             $ticket_consumable['Cant']                                         = number_format($ticket_consumable['amount'], 2, '.', '');
@@ -1171,7 +1173,7 @@ class PluginIserviceHmarfa
             $consumable->getHistoryTable($partner->customfields->fields['cod_hmarfa'], $consumable_history, $gain, $average_delivery_price);
             $ticket_consumable['Istoric_Vanzari'] = $consumable_history;
             // Gain
-            $consumable_gain                  = PluginIserviceCommon::getInputVariable("consumable_gain_$ticket_consumable[Cod_Articol]", empty($gain) ? $sales_average_percent : $gain);
+            $consumable_gain                  = IserviceToolBox::getInputVariable("consumable_gain_$ticket_consumable[Cod_Articol]", empty($gain) ? $sales_average_percent : $gain);
             $ticket_consumable[__('Average')] = $consumable_gain;
             // Stock price
             $ticket_consumable['Pret_Stoc'] = number_format($consumable->fields['Pret'], 2, '.', '');
@@ -1195,7 +1197,7 @@ class PluginIserviceHmarfa
 
             // Final price
             $final_price                                                 = intval($agreed_price) == 0 ? $ticket_consumable['Pret_Rec'] : $agreed_price;
-            $final_final_price                                           = number_format(PluginIserviceCommon::getInputVariable("final_price_$ticket_consumable[Cod_Articol]", isset($ticket_consumable_prices[$ticket_consumable['Cod_Articol']]) ? $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] : $final_price), 2, '.', '');
+            $final_final_price                                           = number_format(IserviceToolBox::getInputVariable("final_price_$ticket_consumable[Cod_Articol]", isset($ticket_consumable_prices[$ticket_consumable['Cod_Articol']]) ? $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] : $final_price), 2, '.', '');
             $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] = $final_final_price;
             $ticket_consumable['Pret_Vanz']                              = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "final_price_$ticket_consumable[Cod_Articol]", $final_final_price, false, ['style' => 'width:4em;']);
 
@@ -1235,7 +1237,7 @@ class PluginIserviceHmarfa
             }
         }
 
-        $vat                  = PluginIserviceCommon::getInputVariable('vat', 19);
+        $vat                  = IserviceToolBox::getInputVariable('vat', 19);
         $vatField             = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'vat', $vat, false, ['style' => 'width: 1.5em;']);
         $total_vat_value      = number_format($total_amount * $vat / 100, 2, '.', '');
         $total_value_with_vat = number_format($total_vat_value + $total_amount, 2, '.', '');
@@ -1596,7 +1598,7 @@ class PluginIserviceHmarfa
      */
     protected static function getNextImportTime()
     {
-        $cronTasks = PluginIserviceCommon::getQueryResult("select * from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
+        $cronTasks = IserviceToolBox::getQueryResult("select * from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
         $cronTask  = array_shift($cronTasks);
 
         if (empty($cronTask['lastrun'])) {

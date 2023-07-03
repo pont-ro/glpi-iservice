@@ -1,27 +1,33 @@
 <?php
-global $CFG_PLUGIN_ISERVICE;
 
 if (!function_exists('iservice_custom_command_check_root_folder_integrity')) {
-    if (!file_exists($CFG_PLUGIN_ISERVICE['folder_integrity']['report_file'])) {
-        file_put_contents($CFG_PLUGIN_ISERVICE['folder_integrity']['report_file'], '');
+    if (!file_exists(PluginIserviceConfig::getConfigValue('folder_integrity.report_file'))) {
+        file_put_contents(PluginIserviceConfig::getConfigValue('folder_integrity.report_file'), '');
     }
 
-    function iservice_custom_command_check_root_folder_integrity() {
+    function iservice_custom_command_check_root_folder_integrity()
+    {
         global $CFG_PLUGIN_ISERVICE;
 
         $result = [];
         exec("git -C \"$_SERVER[DOCUMENT_ROOT]\" clean -n", $result);
         file_put_contents(
             $CFG_PLUGIN_ISERVICE['folder_integrity']['report_file'],
-            implode("\n", array_map(function($value) {return str_replace("Would remove ", "", $value);
-}, $result)));
+            implode(
+                "\n", array_map(
+                    function ($value) {
+                        return str_replace("Would remove ", "", $value);
+                    }, $result
+                )
+            )
+        );
     }
 
 }
 
 return [
     'command_before' => 'check_root_folder_integrity',
-    'file_name' => $CFG_PLUGIN_ISERVICE['folder_integrity']['report_file'],
+    'file_name' => PluginIserviceConfig::getConfigValue('folder_integrity.report_file'),
     'test' => [
         'alert' => true,
         'no_cache' => true,
