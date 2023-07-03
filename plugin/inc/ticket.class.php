@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceTicket extends Ticket
 {
 
@@ -438,13 +440,13 @@ class PluginIserviceTicket extends Ticket
                 'status' => [
                     'default' => [
                         self::MODE_CREATENORMAL => parent::INCOMING,
-                        self::MODE_CREATEINQUIRY => PluginIserviceCommon::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::INCOMING : parent::SOLVED,
+                        self::MODE_CREATEINQUIRY => IserviceToolBox::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::INCOMING : parent::SOLVED,
                         self::MODE_CREATEQUICK => parent::CLOSED,
                         self::MODE_CREATEREQUEST => parent::INCOMING,
                         self::MODE_PARTNERCONTACT => parent::CLOSED,
                     ],
                     'forced' => [
-                        self::MODE_READCOUNTER => PluginIserviceCommon::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::CLOSED : parent::SOLVED,
+                        self::MODE_READCOUNTER => IserviceToolBox::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::CLOSED : parent::SOLVED,
                         self::MODE_CREATEQUICK => parent::CLOSED,
                         self::MODE_MODIFY => parent::PLANNED,
                     ],
@@ -883,8 +885,8 @@ class PluginIserviceTicket extends Ticket
     static function getPreviousIdForItemWithInput($item, $open = null)
     {
         return self::getPreviousIdForPrinterOrSupplier(
-            PluginIserviceCommon::getValueFromInput('_suppliers_id_assign', $item->input),
-            PluginIserviceCommon::getItemsIdFromInput($item->input, 'Printer'),
+            IserviceToolBox::getValueFromInput('_suppliers_id_assign', $item->input),
+            IserviceToolBox::getItemsIdFromInput($item->input, 'Printer'),
             $item->input['data_luc'] ?? $item->fields['data_luc'] ?? '',
             $item->getID(),
             $open
@@ -893,7 +895,7 @@ class PluginIserviceTicket extends Ticket
 
     static function getPreviousIdForPrinterOrSupplier($supplier_id = 0, $printer_id = 0, $data_luc = '', $id = 0, $open = null)
     {
-        return self::getLastIdForPrinterOrSupplier($supplier_id, $printer_id, $open, PluginIserviceCommon::isDateEmpty($data_luc) ? '' : "and (t.data_luc < '$data_luc' or (t.data_luc = '$data_luc' and t.id < $id))");
+        return self::getLastIdForPrinterOrSupplier($supplier_id, $printer_id, $open, IserviceToolBox::isDateEmpty($data_luc) ? '' : "and (t.data_luc < '$data_luc' or (t.data_luc = '$data_luc' and t.id < $id))");
     }
 
     static function getLastForPrinterOrSupplierFromInput($input, $open = null, $additional_condition = '', $additional_join = '')
@@ -911,8 +913,8 @@ class PluginIserviceTicket extends Ticket
     static function getLastIdForPrinterOrSupplierFromInput($input, $open = null, $additional_condition = '', $additional_join = '')
     {
         return self::getLastIdForPrinterOrSupplier(
-            PluginIserviceCommon::getValueFromInput('_suppliers_id_assign', $input),
-            PluginIserviceCommon::getItemsIdFromInput($input, 'Printer'),
+            IserviceToolBox::getValueFromInput('_suppliers_id_assign', $input),
+            IserviceToolBox::getItemsIdFromInput($input, 'Printer'),
             $open, $additional_condition, $additional_join
         );
     }
@@ -932,8 +934,8 @@ class PluginIserviceTicket extends Ticket
     static function getFirstIdForItemWithInput($item, $open = null, $additional_condition = '', $additional_join = '')
     {
         return self::getFirstIdForPrinterOrSupplier(
-            PluginIserviceCommon::getValueFromInput('_suppliers_id_assign', $item->input),
-            PluginIserviceCommon::getItemsIdFromInput($item->input, 'Printer'),
+            IserviceToolBox::getValueFromInput('_suppliers_id_assign', $item->input),
+            IserviceToolBox::getItemsIdFromInput($item->input, 'Printer'),
             $open, $additional_condition, $additional_join
         );
     }
@@ -983,7 +985,7 @@ class PluginIserviceTicket extends Ticket
             $join_and_condition = self::getConditionForPrinter($printer_id, $open, $order, $additional_condition, $additional_join);
         }
 
-        return PluginIserviceCommon::getQueryResult("select `$table`.tickets_id from `$table` $join_and_condition", "tickets_id");
+        return IserviceToolBox::getQueryResult("select `$table`.tickets_id from `$table` $join_and_condition", "tickets_id");
     }
 
     protected static function getConditionForPrinter($printer_id = 0, $open = null, $order = 'asc', $additional_condition = '', $additional_join = '')
@@ -1134,7 +1136,7 @@ class PluginIserviceTicket extends Ticket
 
         if ($id) {
             echo sprintf(__('%1$s - %2$s'), $this->getTypeName(1), sprintf(__('%1$s: %2$s'), __('ID'), $id));
-            if (PluginIserviceCommon::inProfileArray(['super-admin', 'admin'])) {
+            if (IserviceToolBox::inProfileArray(['super-admin', 'admin'])) {
                 $history_values  = [
                     'full' => 'Full',
                     'cartridge' => __('Cartridge'),
@@ -1196,7 +1198,7 @@ class PluginIserviceTicket extends Ticket
         }
 
         if ($prepared_data['field_hidden']['_close_on_success']) {
-            $close_on_success = PluginIserviceCommon::getInputVariable('_close_on_success', empty($prepared_data['default_values']['_close_on_success']) ? '' : $prepared_data['default_values']['_close_on_success']);
+            $close_on_success = IserviceToolBox::getInputVariable('_close_on_success', empty($prepared_data['default_values']['_close_on_success']) ? '' : $prepared_data['default_values']['_close_on_success']);
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_close_on_success', $close_on_success);
         } else {
             // _close_on_success must be hidden
@@ -1204,8 +1206,8 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_movement_id']) {
             $ticket_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_customfields->getFromDBByQuery("WHERE movement_id = " . PluginIserviceCommon::getInputVariable('movement_id', -2) . " LIMIT 1")) {
-                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), PluginIserviceCommon::getInputVariable('movement_id')));
+            if ($ticket_customfields->getFromDBByQuery("WHERE movement_id = " . IserviceToolBox::getInputVariable('movement_id', -2) . " LIMIT 1")) {
+                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement_id')));
             }
 
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_movement_id', $movement_id);
@@ -1215,8 +1217,8 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_movement2_id']) {
             $ticket_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_customfields->getFromDBByQuery("WHERE movement2_id = " . PluginIserviceCommon::getInputVariable('movement2_id', -2) . " LIMIT 1")) {
-                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), PluginIserviceCommon::getInputVariable('movement2_id')));
+            if ($ticket_customfields->getFromDBByQuery("WHERE movement2_id = " . IserviceToolBox::getInputVariable('movement2_id', -2) . " LIMIT 1")) {
+                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement2_id')));
             }
 
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_movement2_id', $movement2_id);
@@ -1226,8 +1228,8 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_idemmailfield']) {
             $ticket_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_customfields->getFromDBByQuery("WHERE idemmailfield = " . PluginIserviceCommon::getInputVariable('idemmailfield', -2) . " LIMIT 1")) {
-                Html::displayErrorAndDie(sprintf(__("Ticket already exists for [EM] email %d", "iservice"), PluginIserviceCommon::getInputVariable('idemmailfield')));
+            if ($ticket_customfields->getFromDBByQuery("WHERE idemmailfield = " . IserviceToolBox::getInputVariable('idemmailfield', -2) . " LIMIT 1")) {
+                Html::displayErrorAndDie(sprintf(__("Ticket already exists for [EM] email %d", "iservice"), IserviceToolBox::getInputVariable('idemmailfield')));
             }
 
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_idemmailfield', $idemmailfield);
@@ -1340,12 +1342,12 @@ class PluginIserviceTicket extends Ticket
 
         // Email
         $default_email = empty($printer->customfields->fields['email']) ? (empty($printer->fields['memory_size']) ? '' : $printer->fields['memory_size']) : $printer->customfields->fields['email'];
-        $email         = PluginIserviceCommon::getInputVariable('_email', '');
+        $email         = IserviceToolBox::getInputVariable('_email', '');
         if (empty($email)) {
             $email = $default_email;
         }
 
-        $send_email = PluginIserviceCommon::getInputVariable('_send_email', empty($this->fields['_send_email']) ? '' : $this->fields['_send_email']);
+        $send_email = IserviceToolBox::getInputVariable('_send_email', empty($this->fields['_send_email']) ? '' : $this->fields['_send_email']);
         if ($prepared_data['field_hidden']['_send_email']) {
             $email_field_options['postfix'] = [];
         } else {
@@ -1392,7 +1394,7 @@ class PluginIserviceTicket extends Ticket
 
         // Sum of unpaid invoices
         if (!$prepared_data['field_hidden']['_sum_of_unpaid_invoices'] && $supplier_id > 0) {
-            $sum_display = PluginIserviceCommon::getSumOfUnpaidInvoicesLink($supplier_id, $supplier_customfields->fields['cod_hmarfa']);
+            $sum_display = IserviceToolBox::getSumOfUnpaidInvoicesLink($supplier_id, $supplier_customfields->fields['cod_hmarfa']);
             $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_sum_of_unpaid_invoices', $sum_display));
         }
 
@@ -1586,7 +1588,7 @@ class PluginIserviceTicket extends Ticket
 
         // Followup content (Followup description)
         $followup             = new PluginIserviceTicketFollowup();
-        $get_followup_content = PluginIserviceCommon::getInputVariable('followup_content');
+        $get_followup_content = IserviceToolBox::getInputVariable('followup_content');
         if (!empty($get_followup_content) || isset($prepared_data['forced_values']['_followup[content]'])) {
             $followup_content = empty($get_followup_content) ? $prepared_data['forced_values']['_followup[content]'] : $get_followup_content;
         } else if ($id > 0 && $followup->getFromDBByQuery("WHERE id = (SELECT MAX(id) FROM " . ITILFollowup::getTable() . " WHERE items_id = $id AND itemtype = 'Ticket') LIMIT 1")) {
@@ -1853,7 +1855,7 @@ class PluginIserviceTicket extends Ticket
 
         // Data efectiva
         if (in_array($options['mode'], [self::MODE_CARTRIDGEMANAGEMENT, self::MODE_CLOSE]) && empty($followups)) {
-            if (PluginIserviceCommon::isDateEmpty($this->fields['data_luc'])) {
+            if (IserviceToolBox::isDateEmpty($this->fields['data_luc'])) {
                 $this->fields['data_luc'] = date('Y-m-d H:i:s');
             }
         }
@@ -1893,7 +1895,7 @@ class PluginIserviceTicket extends Ticket
         // Consumabile instalate
         if ($printer_id > 0 && !$prepared_data['field_hidden']['_printer_min_percentage']) {
             $pc2_last_cache_data    = PluginIserviceViews::getView('printercounters2', false)->getCachedData();
-            $printer_min_percentage = PluginIserviceCommon::getQueryResult(
+            $printer_min_percentage = IserviceToolBox::getQueryResult(
                 "SELECT consumable_code, min_estimate_percentage, cfci.mercurycodefield  
                                                            FROM glpi_plugin_iservice_cachetable_printercounters2  cp
                                                            INNER JOIN
@@ -2047,7 +2049,7 @@ class PluginIserviceTicket extends Ticket
         case self::MODE_CARTRIDGEMANAGEMENT:
         case self::MODE_CLOSE:
             if ($closed || empty($id) || $id < 1) {
-                if (PluginIserviceCommon::inProfileArray(['super-admin'])) {
+                if (IserviceToolBox::inProfileArray(['super-admin'])) {
                     $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->fields['data_luc'], $supplier_id, $printer_id);
                     if (count($newer_closed_ticket_ids)) {
                         $confirm = ['data-confirm-first' => count($newer_closed_ticket_ids) . " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"];
@@ -2167,7 +2169,7 @@ class PluginIserviceTicket extends Ticket
 
         $buttons[] = "<input type='checkbox' name='_send_notification' /> " . __('Send notification', 'iservice');
 
-        $show_warning       = PluginIserviceCommon::inProfileArray(['super-admin', 'admin', 'tehnician']) && ($last_opened_ticket->fields['data_luc'] ?? '2100-01-01' < $this->fields['data_luc']);
+        $show_warning       = IserviceToolBox::inProfileArray(['super-admin', 'admin', 'tehnician']) && ($last_opened_ticket->fields['data_luc'] ?? '2100-01-01' < $this->fields['data_luc']);
         $filter_description = urlencode(($printer->fields['name'] ?? '') . " (" . ($printer->fields['serial'] ?? '') . ") - " . ($printer->customfields->fields['usageaddressfield'] ?? ''));
         $form->displayButtonsTableRow(
             $buttons, [
@@ -2395,11 +2397,11 @@ class PluginIserviceTicket extends Ticket
     {
         $result = [];
 
-        $result['variables']['movement_id']   = PluginIserviceCommon::getInputVariable('movement_id', isset($this->customfields) ? $this->customfields->fields['movement_id'] : '');
-        $result['variables']['movement2_id']  = PluginIserviceCommon::getInputVariable('movement2_id', isset($this->customfields) ? $this->customfields->fields['movement2_id'] : '');
-        $result['variables']['idemmailfield'] = PluginIserviceCommon::getInputVariable('idemmailfield', isset($this->customfields) ? $this->customfields->fields['idemmailfield'] : '');
+        $result['variables']['movement_id']   = IserviceToolBox::getInputVariable('movement_id', isset($this->customfields) ? $this->customfields->fields['movement_id'] : '');
+        $result['variables']['movement2_id']  = IserviceToolBox::getInputVariable('movement2_id', isset($this->customfields) ? $this->customfields->fields['movement2_id'] : '');
+        $result['variables']['idemmailfield'] = IserviceToolBox::getInputVariable('idemmailfield', isset($this->customfields) ? $this->customfields->fields['idemmailfield'] : '');
 
-        $this->fields['items_id'] = PluginIserviceCommon::getArrayInputVariable('items_id', (is_array($this->fields['items_id']) ? $this->fields['items_id'] : ['Printer' => [$this->fields['items_id']]]) ?? ['Printer' => [0]]);
+        $this->fields['items_id'] = IserviceToolBox::getArrayInputVariable('items_id', (is_array($this->fields['items_id']) ? $this->fields['items_id'] : ['Printer' => [$this->fields['items_id']]]) ?? ['Printer' => [0]]);
         $printer_id               = $this->fields['items_id']['Printer'][0] ?? 0;
         $printer                  = new PluginIservicePrinter();
         if (empty($printer_id) && $this->getID() > 0) {
@@ -2414,7 +2416,7 @@ class PluginIserviceTicket extends Ticket
         $result['variables']['printer']    = $printer;
         $result['variables']['printer_id'] = $printer_id;
 
-        $this->fields['_suppliers_id_assign'] = $supplier_id = PluginIserviceCommon::getInputVariable('_suppliers_id_assign', $this->fields['_suppliers_id_assign'] ?? '');
+        $this->fields['_suppliers_id_assign'] = $supplier_id = IserviceToolBox::getInputVariable('_suppliers_id_assign', $this->fields['_suppliers_id_assign'] ?? '');
         if (empty($supplier_id) && !empty($printer_id)) {
             $infocom = new Infocom();
             if ($infocom->getFromDBforDevice('Printer', $printer_id)) {
@@ -2435,7 +2437,7 @@ class PluginIserviceTicket extends Ticket
                 return false;
             }
 
-            $this->fields['items_id']['Printer'] = array_column(PluginIserviceCommon::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
+            $this->fields['items_id']['Printer'] = array_column(IserviceToolBox::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
 
             // Further code poosibility
             self::$item_cache[$ID] = $this;
@@ -2537,7 +2539,7 @@ class PluginIserviceTicket extends Ticket
 
         $plugin_iservice_cartridges_tickets = new PluginIserviceCartridge_Ticket();
 
-        $used_types = PluginIserviceCommon::getQueryResult(
+        $used_types = IserviceToolBox::getQueryResult(
             "
             select ct.plugin_fields_typefielddropdowns_id selected_type
             from glpi_plugin_iservice_cartridges_tickets ct
@@ -2635,7 +2637,7 @@ class PluginIserviceTicket extends Ticket
             $suffix = "<br>$suffix";
         }
 
-        PluginIserviceCommon::clearAfterRedirectMessages(INFO);
+        IserviceToolBox::clearAfterRedirectMessages(INFO);
 
         Session::addMessageAfterRedirect(sprintf(__('Ticket %s saved successfully.', 'iservice'), stripslashes($ticket_name)) . stripslashes($suffix));
     }
@@ -2914,7 +2916,7 @@ class PluginIserviceTicket extends Ticket
                     "Titlu tichet: {$ticket->fields['name']}\n" .
                     "Nume aparat: {$printer->fields['name']}\n" .
                     "Serie aparat: {$printer->fields['serial']}\n\n" .
-                    "Descriere tichet:\n" . strip_tags(PluginIserviceCommon::br2nl($ticket->fields['content'])) . "\n\n" .
+                    "Descriere tichet:\n" . strip_tags(IserviceToolBox::br2nl($ticket->fields['content'])) . "\n\n" .
                     "Adnotări:\n" . $followup->getShortForMail($ticket->getID()) . "\n"
             ],
             'readcounter' => [
@@ -2929,7 +2931,7 @@ class PluginIserviceTicket extends Ticket
                     "Serie aparat: {$printer->fields['serial']}\n" .
                     (empty($ticket->fields['total2_black']) ? "" : "Contor alb-negru: {$ticket->fields['total2_black']}\n") .
                     (empty($ticket->fields['total2_color']) ? "" : "Contor color: {$ticket->fields['total2_color']}\n") .
-                    "Descriere tichet:\n" . strip_tags(PluginIserviceCommon::br2nl($ticket->fields['content'])) . "\n\n" .
+                    "Descriere tichet:\n" . strip_tags(IserviceToolBox::br2nl($ticket->fields['content'])) . "\n\n" .
                     "Adnotări:\n" . $followup->getShortForMail($ticket->getID()) . "\n"
             ],
         ];

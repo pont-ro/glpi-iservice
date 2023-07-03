@@ -1,10 +1,11 @@
 <?php
 
 // Imported from iService2, needs refactoring.
-define('GLPI_ROOT', __DIR__ . '/../../..');
-include_once (GLPI_ROOT . "/inc/includes.php");
+require "../inc/includes.php";
 
-$task = PluginIserviceCommon::getInputVariable('task');
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
+$task = IserviceToolBox::getInputVariable('task');
 if (empty($task)) {
     $args = getopt('', ['task::']);
     if (isset($args['task'])) {
@@ -19,8 +20,4 @@ if ($task !== 'DataIntegrityTest') {
 $task_class  = "PluginIserviceTask_$task";
 $task_object = new $task_class();
 
-PluginIserviceHtml::header($task_object->getTitle(), filter_input(INPUT_SERVER, 'PHP_SELF'));
-
 $task_object->execute();
-
-PluginIserviceHtml::footer();

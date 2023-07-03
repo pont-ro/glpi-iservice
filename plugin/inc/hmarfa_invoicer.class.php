@@ -7,11 +7,11 @@
  * @license   Proprietary
  * @since     2022-04-28
  */
-
-
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 {
@@ -19,7 +19,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
     public static function showInvoiceExportForm()
     {
 
-        $buttons = PluginIserviceCommon::getInputVariables(
+        $buttons = IserviceToolBox::getInputVariables(
             [
                 'add' => null,
                 'import' => null,
@@ -45,7 +45,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
     protected static function getItemsFromInput(array $buttons): array
     {
         foreach (['printer', 'router'] as $itemType) {
-            foreach (PluginIserviceCommon::getArrayInputVariable('item')[$itemType] ?? [] as $itemId => $itemData) {
+            foreach (IserviceToolBox::getArrayInputVariable('item')[$itemType] ?? [] as $itemId => $itemData) {
                 $result['input'][$itemId] = $itemData;
             }
         }
@@ -56,7 +56,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $result['invoice_total'] = 0;
 
-        $result['contracts'] = PluginIserviceCommon::getQueryResult(
+        $result['contracts'] = IserviceToolBox::getQueryResult(
             "
             SELECT 
                 ci.items_id
@@ -138,7 +138,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $contractRate     = floatval($contractData['curs'] ?? 1) ?: 1;
             $contractCurrency = $contractRate > 1 ? "EUR" : ($contractRate < 1 ? "???" : "RON");
 
-            $item->tableData['invoice_rate']      = PluginIserviceCommon::getInputVariable('invoice_rate', intval($result['input'][$itemId]['invoice_rate'] ?? 0) ?: ($contractCurrency === "EUR" ? (PluginIserviceCommon::getExchangeRate('Euro') ?? $contractRate) : $contractRate));
+            $item->tableData['invoice_rate']      = IserviceToolBox::getInputVariable('invoice_rate', intval($result['input'][$itemId]['invoice_rate'] ?? 0) ?: ($contractCurrency === "EUR" ? (IserviceToolBox::getExchangeRate('Euro') ?? $contractRate) : $contractRate));
             $item->tableData['contract_id']       = $contractData['id'] ?? null;
             $item->tableData['contract_number']   = $contractData['num'] ?? '';
             $item->tableData['contract_type']     = $contractData['contract_type'] ?? '';
@@ -156,7 +156,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             switch ($item->fields['printertypes_id']) {
             case PluginIservicePrinter::ID_ROUTER_TYPE:
-                $item->tableData['data_ult_fact']   = ($item->lastTicket()->fields['data_luc'] < $item->customfields->fields['data_fact']) ? PluginIserviceCommon::addMonthToDate($item->tableData['data_exp_fact'], 1) : $item->lastTicket()->fields['data_luc'] ;
+                $item->tableData['data_ult_fact']   = ($item->lastTicket()->fields['data_luc'] < $item->customfields->fields['data_fact']) ? IserviceToolBox::addMonthToDate($item->tableData['data_exp_fact'], 1) : $item->lastTicket()->fields['data_luc'] ;
                 $item->tableData['data_fact_until'] = $result['input'][$itemId]['data_fact_until'] ?? ($item->tableData['data_ult_fact'] ?? '');
                 $item->tableData['pret_unitar']     = $result['input'][$itemId]['pret_unitar'] ?? '';
                 $item->tableData['cantitate']       = $result['input'][$itemId]['cantitate'] ?? '';
@@ -175,7 +175,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 $item->tableData['data_fact_until'] = $result['input'][$itemId]['data_fact_until'] ?? null;
                 $item->tableData['val_ult_fact']    = $item->customfields->fields['valfactfield'] ?? 0 ?: 'necunoscut';
                 if (is_numeric($item->tableData['val_ult_fact'])) {
-                    $item->tableData['val_ult_fact'] = PluginIserviceCommon::numberFormat($item->tableData['val_ult_fact'], 2);
+                    $item->tableData['val_ult_fact'] = IserviceToolBox::numberFormat($item->tableData['val_ult_fact'], 2);
                 }
 
                 $item->tableData['serial']         = $item->fields['serial'];
@@ -193,7 +193,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 $item->tableData['tarif_cop_bl']   = $contractData['tarif_cop_bl'] ?? 0;
                 $item->tableData['tarif_cop_col']  = $contractData['tarif_cop_col1'] ?? 0;
                 $item->tableData['rows']           = self::getPrinterTableData($item, $result['input'][$itemId], $buttons);
-                $item->tableData['subtotal']       = PluginIserviceCommon::numberFormat(
+                $item->tableData['subtotal']       = IserviceToolBox::numberFormat(
                     $item->tableData['rows'][1]['total'] +
                     (($item->tableData['rows'][2]['total'] > 0 || $item->tableData['rows'][2]['fixed']) ? $item->tableData['rows'][2]['total'] : 0) +
                     (($item->tableData['rows'][3]['total'] > 0 || $item->tableData['rows'][3]['fixed']) ? $item->tableData['rows'][3]['total'] : 0),
@@ -543,11 +543,11 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $exportFileData = [
             'partner_name' => preg_replace('/[^A-z0-9-]/', '-', trim($items['first']['supplier']->fields["name"])),
-            'name_suffix' => PluginIserviceCommon::getInputVariable('export_file_name_suffix', date('YmdHis')),
-            'path' => PluginIserviceCommon::getInputVariable("exportfilepath", $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path']),
+            'name_suffix' => IserviceToolBox::getInputVariable('export_file_name_suffix', date('YmdHis')),
+            'path' => IserviceToolBox::getInputVariable("exportfilepath", $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path']),
         ];
 
-        $exportFileData['safe_suffix']       = PluginIserviceCommon::getHtmlSanitizedValue($exportFileData['name_suffix']);
+        $exportFileData['safe_suffix']       = IserviceToolBox::getHtmlSanitizedValue($exportFileData['name_suffix']);
         $exportFileData['base_name']         = implode('.', [$exportFileData['partner_name'], $exportFileData['safe_suffix'], $items['first']['supplier']->getID()]);
         $exportFileData['csv_name']          = "S.$exportFileData[base_name].csv";
         $exportFileData['ext_csv_name']      = "SX.$exportFileData[base_name].csv";
@@ -563,7 +563,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $exportFileData['ext_csv_exists'] = file_exists($exportFileData['ext_csv_full_path']);
 
         $exportFileData = array_merge(
-            $exportFileData, PluginIserviceCommon::getInputVariables(
+            $exportFileData, IserviceToolBox::getInputVariables(
                 [
                     'backup_path' => "$exportFileData[path]/BAK",
                     'backup_year' => null,
@@ -597,16 +597,16 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         // Currency
         $firstContractCurrency = floatval($items['first']['contract']['curs'] ?? 1) ?: 1;
 
-        return PluginIserviceCommon::getInputVariables(
+        return IserviceToolBox::getInputVariables(
             [
                 'part_email_f1' => $items['first']['supplier']->customfields->fields['part_email_f1'],
                 'nrcmd' => $defaultNrCmd,
                 'doc_date' => date("Y-m-d"),
-                'invoice_rate' => $firstContractCurrency > 1 ? (PluginIserviceCommon::getExchangeRate('Euro') ?? $firstContractCurrency) : $firstContractCurrency,
+                'invoice_rate' => $firstContractCurrency > 1 ? (IserviceToolBox::getExchangeRate('Euro') ?? $firstContractCurrency) : $firstContractCurrency,
 
                 's039' => !$exportFileData['csv_exists'],
-                's039_include_status' => PluginIserviceCommon::getInputVariable('s039_include_status', str_starts_with(strtolower($items['first']['state']->fields['name']), 'pro')),
-                's039_include_period' => PluginIserviceCommon::getInputVariable('s039_include_period', 0),
+                's039_include_status' => IserviceToolBox::getInputVariable('s039_include_status', str_starts_with(strtolower($items['first']['state']->fields['name']), 'pro')),
+                's039_include_period' => IserviceToolBox::getInputVariable('s039_include_period', 0),
                 's039_period_from' => $items['printers'][$items['first']['item']->getID()]->tableData['data_exp_fact'] ?? $items['routers'][$items['first']['item']->getID()]->tableData['data_exp_fact'],
                 's039_period_to' => $items['printers'][$items['first']['item']->getID()]->tableData['rows']['until'] ?? $items['routers'][$items['first']['item']->getID()]->tableData['data_fact_until'] ?? '',
 
@@ -772,7 +772,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             }
 
             foreach (['csv' => $csvExportData, 'ext_csv' => $csvExtendedExportData, 'dat' => $datExportData] as $dataType => $data) {
-                if (null !== ($csvResult = PluginIserviceCommon::writeCsvFile($exportFileData[$dataType . '_full_path'], $data, !$buttons['overwrite']))) {
+                if (null !== ($csvResult = IserviceToolBox::writeCsvFile($exportFileData[$dataType . '_full_path'], $data, !$buttons['overwrite']))) {
                     $result['errors'][$dataType] = $csvResult;
                 }
             }
@@ -783,7 +783,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             }
 
             $printerCustomfields = new PluginFieldsPrintercustomfield();
-            foreach (PluginIserviceCommon::getCsvFile($exportFileData['dat_full_path']) as $data) {
+            foreach (IserviceToolBox::getCsvFile($exportFileData['dat_full_path']) as $data) {
                 if (count($data) > 1 && $printerCustomfields->getFromDBByItemsId($data[0])) {
                     $updateData = [
                         $printerCustomfields->getIndexName() => $printerCustomfields->getID(),
@@ -922,7 +922,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $frontendData['other_csv_line_warning'] = '';
         $frontendData['import_disabled_reason'] = '';
         $unfinishedString                       = 'nefinalizată';
-        $acknowledgeOtherCsvs                   = PluginIserviceCommon::getInputVariable('acknowledge_other_csvs');
+        $acknowledgeOtherCsvs                   = IserviceToolBox::getInputVariable('acknowledge_other_csvs');
 
         if (count($exportFileData['name_suffixes']) > 1) {
             $frontendData['other_csv_line_warning'] = (count($exportFileData['name_suffixes']) > 2 ? 'alte facturi' : 'altă factură') . ' de servicii';
@@ -1034,7 +1034,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $form->openTable(['class' => 'no-border']);
 
         // $form->displayFieldTableRow($magic_link_label, $magic_link_button);
-        $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice') . ':', PluginIserviceCommon::getSumOfUnpaidInvoicesLink($items['first']['supplier']->getID(), $items['first']['supplier']->customfields->fields['cod_hmarfa']));
+        $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice') . ':', IserviceToolBox::getSumOfUnpaidInvoicesLink($items['first']['supplier']->getID(), $items['first']['supplier']->customfields->fields['cod_hmarfa']));
         $form->displayFieldTableRow(
             "Nume " . $form->generateNewTabLink('partener', "$CFG_GLPI[root_doc]/front/supplier.form.php?id={$items['first']['supplier']->getID()}") . ':',
             $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['supplier']->fields["name"])
@@ -1083,7 +1083,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $rateButtonStyle = 'padding: 1px 5px;border-radius: 5px;';
         $rateButtons     = "&nbsp;&nbsp;<input type='button' name='contract-currency-rate' class='submit' style='$rateButtonStyle' value='Contract: {$items['first']['contract']['curs']}' onClick='$(\"#invoice_rate\").val(\"{$items['first']['contract']['curs']}\");$(\"[name=refresh]\").click();'>";
         if ($invoiceData['invoice_rate'] > 1) {
-            $official_rate = PluginIserviceCommon::getExchangeRate('Euro') ?? PluginIserviceCommon::$lastExchangeRateServiceError;
+            $official_rate = IserviceToolBox::getExchangeRate('Euro') ?? IserviceToolBox::$lastExchangeRateServiceError;
             $rateOnClick   = $official_rate === 'eroare' ? 'return false;' : "$(\"#invoice_rate\").val(\"$official_rate\");$(\"[name=refresh]\").click();";
             $rateButtons  .= "&nbsp;&nbsp;<input type='button' name='official-currency-rate' class='submit' style='$rateButtonStyle' value='BNR: $official_rate' onClick='$rateOnClick'>";
         }
@@ -1234,7 +1234,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             );
             echo "&nbsp;&nbsp;";
             $no_invoice_ajax_call        = "\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/managePrinter.php?id={$printer->tableData['id']}&operation=set_no_invoice&value=\" + ($(this).is(\":checked\") ? 1 : 0)";
-            $no_invoice_success_function = "function(message) {if (message!=\"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);}}";
+            $no_invoice_success_function = "function(message) {if (message!=\"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);}}";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX,
                 "item[printer][{$printer->tableData['id']}][no_invoice]",
@@ -1524,7 +1524,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 ['clear_btn' => false]
             );
             echo "                                </div>\n";
-            echo "                                <input type='hidden' class='data_fact_until_new' value='" . PluginIserviceCommon::addMonthToDate($router->tableData['data_exp_fact'], 1) . "'/>\n";
+            echo "                                <input type='hidden' class='data_fact_until_new' value='" . IserviceToolBox::addMonthToDate($router->tableData['data_exp_fact'], 1) . "'/>\n";
             echo "                                <input type='hidden' class='submit ult_tichet_data_luc' value='" . date("Y-m-d", strtotime($router->tableData['data_ult_fact'])) . "'/>\n";
             echo "                            </td>\n";
             echo "                            <td align='center'>\n";
@@ -1635,7 +1635,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "                    <b>.{$items['first']['supplier']->getID()}.csv</b>";
         echo "                </td>\n";
         echo "                <td style='text-align: right; width: 33%'>\n";
-        $generate_ssx_ajaxcall_success_function = "function(message) {if (message!=\"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {alert(\"Fișierul S%2\$s generat cu succes\");}}";
+        $generate_ssx_ajaxcall_success_function = "function(message) {if (message!=\"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"Fișierul S%2\$s generat cu succes\");}}";
         $url_encoded_exportFilePath             = urlencode($exportFileData['path']);
         $generate_ajaxcall                      = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/generate_ssx.php?path=%1\$s/&file_name=%2\$s\", \"\", $generate_ssx_ajaxcall_success_function);";
         $generate_ss_ajaxcall                   = sprintf($generate_ajaxcall, $url_encoded_exportFilePath, $exportFileData['csv_name']);
@@ -1737,7 +1737,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
     protected static function numberFormat(float $number): string
     {
-        return PluginIserviceCommon::numberFormat($number, 2, '.', '');
+        return IserviceToolBox::numberFormat($number, 2, '.', '');
     }
 
 }

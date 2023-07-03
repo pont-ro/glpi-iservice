@@ -1,6 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring.
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceTask_DataIntegrityTest
 {
 
@@ -36,8 +37,7 @@ class PluginIserviceTask_DataIntegrityTest
     function getTestCases()
     {
         if (empty(self::$testCases)) {
-            global $CFG_PLUGIN_ISERVICE;
-            foreach (glob($CFG_PLUGIN_ISERVICE['dataintegritytests']['folder'] . DIRECTORY_SEPARATOR . '*.php') as $file_name) {
+            foreach (glob(PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . '/*.php') as $file_name) {
                 self::$testCases[pathinfo($file_name)['filename']] = include $file_name;
             }
         }
@@ -47,13 +47,12 @@ class PluginIserviceTask_DataIntegrityTest
 
     function displayResults($mode = 'detailed')
     {
-        global $CFG_PLUGIN_ISERVICE;
         $start_time             = microtime(true);
         $cache_time_minutes_ago = time() - $this->getCacheFileCreationTime();
         $cache_time_ago         = 'acum ' . (($cache_time_minutes_ago < 90) ? "$cache_time_minutes_ago secunde" : (round($cache_time_minutes_ago / 60) . ' minute'));
         switch ($mode) {
         case 'header':
-            $test_results   = $CFG_PLUGIN_ISERVICE['enable_header_tests'] ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
+            $test_results   = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
             $warning_count  = count($test_results['warning']);
             $error_count    = count($test_results['error']);
             $em_error_count = count($test_results['em_error']);
@@ -65,7 +64,7 @@ class PluginIserviceTask_DataIntegrityTest
                 $title = 'Nu s-au detectat erori E-Maintenance';
             }
 
-            echo "<li id='self_test_em'><a class='fa fa-print fa-2x' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=DataIntegrityTest&filter=em_' style='$color' title='$title'></a></li>";
+            echo "<li id='self_test_em'><a class='fa fa-print fa-2x' href='" . PLUGIN_ISERVICE_DIR . "/front/admintask.php?task=DataIntegrityTest&filter=em_' style='$color' title='$title'></a></li>";
             if ($warning_count + $error_count > 0) {
                 $fa_class = 'fa-exclamation-triangle badge';
                 $color    = 'color:' . ($error_count > 0 ? 'red' : 'deeppink');
@@ -78,10 +77,10 @@ class PluginIserviceTask_DataIntegrityTest
                 $badge    = '';
             }
 
-            echo "<li id='self_test'><a class='fa $fa_class fa-2x' data-badge='$badge' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=DataIntegrityTest&filter=!em_' style='$color' title='Data integrity test returned $title'></a></li>";
+            echo "<li id='self_test'><a class='fa $fa_class fa-2x' data-badge='$badge' href='" . PLUGIN_ISERVICE_DIR . "/front/admintask.php?task=DataIntegrityTest&filter=!em_' style='$color' title='Data integrity test returned $title'></a></li>";
             break;
         case 'alert':
-            $test_results = $CFG_PLUGIN_ISERVICE['enable_header_tests'] ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
+            $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
             if (count($test_results['alert']) < 1) {
                 break;
             }
@@ -108,7 +107,7 @@ class PluginIserviceTask_DataIntegrityTest
             echo "</table>";
             break;
         case 'em_alert':
-            $test_results = $CFG_PLUGIN_ISERVICE['enable_header_tests'] ? $this->getTestResults() : ['em_alert' => []];
+            $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['em_alert' => []];
             if (count($test_results['em_alert']) < 1) {
                 break;
             }
@@ -163,15 +162,15 @@ class PluginIserviceTask_DataIntegrityTest
             'em_info'  => 'green',
         ];
 
-        if (PluginIserviceCommon::getInputVariable('custom_command')) {
+        if (IserviceToolBox::getInputVariable('custom_command')) {
             $this->getTestCases();
-            $command = 'iservice_custom_command_' . PluginIserviceCommon::getInputVariable('command');
+            $command = 'iservice_custom_command_' . IserviceToolBox::getInputVariable('command');
             if (function_exists($command)) {
                 $command();
             }
         }
 
-        $filter = PluginIserviceCommon::getInputVariable('filter');
+        $filter = IserviceToolBox::getInputVariable('filter');
 
         $test_results = $this->getTestResults();
 
@@ -214,7 +213,6 @@ class PluginIserviceTask_DataIntegrityTest
 
     function getTestResults()
     {
-        global $CFG_PLUGIN_ISERVICE;
         if (self::$testResults === null) {
             $this->getTestResultsFromCache();
             $already_run = false;
@@ -292,7 +290,7 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_result_type = 'snoozed';
                 $case_result      =
                     $this->formatTestResultText([], $case_params['test']['snoozed_result']['summary_text'], '', ['snooze_time' => date('Y-m-d H:i:s', $this->isSnoozed($case_name))])
-                    . " <span id='unsnooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=unsnooze&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#unsnooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='reactivate' /></span>";
+                    . " <span id='unsnooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"" . PLUGIN_ISERVICE_DIR . "/ajax/manageDataintegrityTest.php?operation=unsnooze&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#unsnooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='reactivate' /></span>";
                 $should_ignore    = true;
             }
 
@@ -300,19 +298,19 @@ class PluginIserviceTask_DataIntegrityTest
                 if (!empty($case_params['command_before']) && function_exists("iservice_custom_command_$case_params[command_before]")) {
                     $command = "iservice_custom_command_$case_params[command_before]";
                     $command();
-                    $case_params = include $CFG_PLUGIN_ISERVICE['dataintegritytests']['folder'] . DIRECTORY_SEPARATOR . $case_name . '.php';
+                    $case_params = include PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . '/' . $case_name . '.php';
                 }
 
                 if (empty($case_params['query'])) {
                     $case_query_result = '';
                 } else {
-                    $case_query_result = PluginIserviceCommon::getQueryResult($case_params['query']);
+                    $case_query_result = PluginIserviceDB::getQueryResult($case_params['query']);
                 }
 
                 $case_result_type = null;
                 switch ($case_params['test']['type']) {
                 case 'compare_query_count':
-                    $this->processCompareQueryCountResult($case_result, $case_result_type, $case_query_result, $case_name, $case_params['test']);
+                    $this->processCompareQueryCountResult($case_result, $case_result_type, $case_query_result ?: [], $case_name, $case_params['test']);
                     break;
                 case 'string_begins':
                     $this->processStringBeginsResult($case_result, $case_result_type, $case_params['string'] ?? '', $case_name, $case_params['test']);
@@ -357,7 +355,7 @@ class PluginIserviceTask_DataIntegrityTest
             if (!empty($case_result_type)) {
                 $last_checked = empty($should_ignore) ? date('Y-m-d H:i:s') : (self::$lastTestResults[$case_name]['last_checked'] ?? 'never');
 
-                $clear_data      = "<span id='delete_last_saved_data_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=delete_last_result&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#delete_last_saved_data_span_$case_name\").hide(); } }); return false;' value='clear cached data' /></span>";
+                $clear_data      = "<span id='delete_last_saved_data_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"" . PLUGIN_ISERVICE_DIR . "[root_doc]/ajax/manageDataintegrityTest.php?operation=delete_last_result&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#delete_last_saved_data_span_$case_name\").hide(); } }); return false;' value='clear cached data' /></span>";
                 $additional_info = sprintf(
                     "<span class='hide-for-non-admin'>%s %s <pre id='test_results_$case_name' style='display:none'>%s</pre></span>",
                     !empty($case_params['schedule']['display_last_result']) ? "(last checked at <b>$last_checked</b>) $clear_data" : '',
@@ -567,8 +565,6 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getTestResultsFromCache()
     {
-        global $CFG_PLUGIN_ISERVICE;
-
         $last_results_file_path = $this->getLastResultsFilePath();
         if (file_exists($last_results_file_path)) {
             self::$lastTestResults = unserialize(file_get_contents($last_results_file_path));
@@ -577,7 +573,7 @@ class PluginIserviceTask_DataIntegrityTest
         }
 
         $cache_file_path = $this->getCacheFilePath();
-        $delete_cache    = PluginIserviceCommon::getInputVariable('delete_cache');
+        $delete_cache    = IserviceToolBox::getInputVariable('delete_cache');
         if (empty($delete_cache)) {
             $args         = getopt('', ['delete_cache::']);
             $delete_cache = $args['delete_cache'] ?? null;
@@ -585,7 +581,7 @@ class PluginIserviceTask_DataIntegrityTest
 
         self::$testResults = [];
         if (file_exists($cache_file_path)) {
-            if (!$delete_cache && time() - $this->getCacheFileCreationTime() < $CFG_PLUGIN_ISERVICE['dataintegritytests']['cache_timeout']) {
+            if (!$delete_cache && time() - $this->getCacheFileCreationTime() < PluginIserviceConfig::getConfigValue('dataintegritytests.cache_timeout')) {
                 return self::$testResults = unserialize(file_get_contents($cache_file_path));
             } else {
                 unlink($cache_file_path);
@@ -612,7 +608,7 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getCacheFilePath()
     {
-        return PLUGINISERVICE_CACHE_DIR . "/test_results";
+        return PLUGIN_ISERVICE_CACHE_DIR . "/test_results";
     }
 
     protected  function getCacheTimeFilePath()
@@ -622,7 +618,7 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getLastResultsFilePath()
     {
-        return PLUGINISERVICE_CACHE_DIR . "/last_results";
+        return PLUGIN_ISERVICE_CACHE_DIR . "/last_results";
     }
 
     protected function getCacheFileCreationTime()
@@ -648,7 +644,7 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getSnoozeFilePath()
     {
-        return PLUGINISERVICE_CACHE_DIR . "/test_snoozes";
+        return PLUGIN_ISERVICE_CACHE_DIR . "/test_snoozes";
     }
 
     protected function isSnoozed($testCase)
@@ -663,7 +659,6 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getSnoozeHtml($case_name, $enable_snooze = true)
     {
-        global $CFG_PLUGIN_ISERVICE;
         if (!$enable_snooze) {
             return '';
         }
@@ -681,7 +676,7 @@ class PluginIserviceTask_DataIntegrityTest
             $snooze_unit = 'hours';
         }
 
-        return "<span id='snooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=snooze&id=$case_name&snooze=\" + $(\"#snooze_$case_name\").val() + \" $snooze_unit\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#snooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='snooze' /> for <input type='text' id='snooze_$case_name' style='height: 1.1em;width: 1em;' value='$default_snooze_time'> $snooze_unit</span>";
+        return "<span id='snooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"" . PLUGIN_ISERVICE_DIR . "[root_doc]/ajax/manageDataintegrityTest.php?operation=snooze&id=$case_name&snooze=\" + $(\"#snooze_$case_name\").val() + \" $snooze_unit\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#snooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='snooze' /> for <input type='text' id='snooze_$case_name' style='height: 1.1em;width: 1em;' value='$default_snooze_time'> $snooze_unit</span>";
     }
 
     protected function getIterationFormat($iteration_format, $result)
