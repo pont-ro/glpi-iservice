@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Global_ReadCounter.php".
 class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
 {
 

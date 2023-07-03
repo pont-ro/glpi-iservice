@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Cartridges.php".
 class PluginIserviceView_Cartridges extends PluginIserviceView
 {
 

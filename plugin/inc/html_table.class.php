@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "html_table.class.php".
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }

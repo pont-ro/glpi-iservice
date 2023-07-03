@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Introders.php".
 class PluginIserviceView_Intorders extends PluginIserviceView
 {
 

@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Facturi_Client.php".
 class PluginIserviceView_Facturi_Client extends PluginIserviceView
 {
 

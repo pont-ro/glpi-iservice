@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Reminders.php".
 class PluginIserviceView_Reminders extends PluginIserviceView
 {
 

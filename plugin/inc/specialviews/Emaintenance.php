@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Emaintenance.php".
 class PluginIserviceView_Emaintenance extends PluginIserviceView
 {
 

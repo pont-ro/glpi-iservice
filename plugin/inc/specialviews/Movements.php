@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Movements.php".
 class PluginIserviceView_Movements extends PluginIserviceView
 {
 

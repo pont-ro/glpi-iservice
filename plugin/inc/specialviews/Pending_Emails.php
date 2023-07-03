@@ -1,4 +1,6 @@
 <?php
+
+// Imported from iService2, needs refactoring. Original file: "Pending_Emails.php".
 class PluginIserviceView_Pending_Emails extends PluginIserviceView
 {
 

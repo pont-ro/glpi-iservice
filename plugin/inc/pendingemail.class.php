@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "pendingemail.class.php".
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }

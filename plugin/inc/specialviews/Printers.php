@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Printers.php".
 class PluginIserviceView_Printers extends PluginIserviceView
 {
     protected $enable_emaintenance_data_import = true;

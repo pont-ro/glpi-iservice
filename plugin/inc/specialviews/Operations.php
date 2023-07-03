@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Operations.php".
 class PluginIserviceView_Operations extends PluginIserviceView
 {
 

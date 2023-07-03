@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Evaluation.php".
 class PluginIserviceView_Evaluation extends PluginIserviceView
 {
 

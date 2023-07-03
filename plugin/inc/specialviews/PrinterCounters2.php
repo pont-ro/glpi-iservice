@@ -1,4 +1,6 @@
 <?php
+
+// Imported from iService2, needs refactoring. Original file: "PrinterCounters2.php".
 class PluginIserviceView_PrinterCounters2 extends PluginIserviceView_Printers
 {
 

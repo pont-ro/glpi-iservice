@@ -1,5 +1,6 @@
 <?php
 
+// Imported from iService2, needs refactoring. Original file: "Last_n_Tickets.php".
 class PluginIserviceView_Last_n_Tickets extends PluginIserviceView
 {
 

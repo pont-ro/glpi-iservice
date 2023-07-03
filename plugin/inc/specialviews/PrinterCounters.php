@@ -1,4 +1,6 @@
 <?php
+
+// Imported from iService2, needs refactoring. Original file: "PrinterCounters.php".
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'Printers.php';
 
 class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers

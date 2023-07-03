@@ -1,4 +1,6 @@
 <?php
+
+// Imported from iService2, needs refactoring. Original file: "Partners.php".
 class PluginIserviceView_Partners extends PluginIserviceView
 {
 
