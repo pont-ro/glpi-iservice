@@ -18,7 +18,7 @@ return [
     ],
     'enable_snooze' => '2 hours',
     'schedule'      => [
-        'hours'       => [10, 11, 12, 13, 14, 15, 16, 17, 18],
+        'h:m'         => ['10-19:00'],
         'weekdays'    => [1, 2, 3, 4, 5],
         'ignore_text' => [
             'hours' => "E-maintenance mail existence checked only from 10 to 19",

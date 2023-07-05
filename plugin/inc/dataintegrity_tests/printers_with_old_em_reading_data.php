@@ -18,9 +18,9 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
         from glpi_printers p
         join glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer' and cfp.emaintenancefield = 1
         "
-        );
+        ) ?: [];
         $csv_data             = PluginIserviceEmaintenance::getDataFromCsvs();
-        $printer_customfields = new PluginFieldsPrintercustomfield();
+        $printer_customfields = new PluginFieldsPrinterprintercustomfield();
         foreach ($printers as $printer_fields) {
             if (($csv_data[$printer_fields['serial']]['data_luc'] ?? '#empty#import#data#') === '#empty#import#data#') {
                 $last_read_date = '1970-01-01';
@@ -43,7 +43,7 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
             );
         }
 
-        file_put_contents($CFG_PLUGIN_ISERVICE['emaintenance']['csv_last_check_date_file'], date('Y-m-d H:i:s'));
+        file_put_contents(PluginIserviceConfig::getConfigValue('emaintenance.csv_last_check_date_file'), date('Y-m-d H:i:s'));
     }
 
 }
@@ -94,7 +94,7 @@ return [
     ],
     'schedule'       => [
         'display_last_result' => true,
-        'hours'               => [8, 12, 16],
+        'h:m'               => ['8:00', '12:00', '16:00'],
         'weekdays'            => [1, 2, 3, 4, 5],
         'ignore_text'         => [
             'hours'    => "Checked only on workdays at 8, 12 and 16",

@@ -19,6 +19,19 @@ class PluginIserviceTask_DataIntegrityTest
         }
     }
 
+    public static function cronDataIntegrityTest($task)
+    {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.data_integrity_test'))) {
+            $task->log("Data Integrity Test is disabled by configuration.\n");
+            return -2;
+        }
+
+        (new self())->execute();
+
+        return 1;
+
+    }
+
     function getTitle()
     {
         return __('Self test', 'iservice');
@@ -52,33 +65,43 @@ class PluginIserviceTask_DataIntegrityTest
         $cache_time_ago         = 'acum ' . (($cache_time_minutes_ago < 90) ? "$cache_time_minutes_ago secunde" : (round($cache_time_minutes_ago / 60) . ' minute'));
         switch ($mode) {
         case 'header':
+            $result         = [];
             $test_results   = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
             $warning_count  = count($test_results['warning']);
             $error_count    = count($test_results['error']);
             $em_error_count = count($test_results['em_error']);
             if ($em_error_count > 0) {
-                $color = 'color:deeppink';
-                $title = "$em_error_count EM errors";
+                $result['em'] = [
+                    'color_class' => 'text-warning',
+                    'title' => $em_error_count . ' ' . __('EM errors', 'iservice'),
+                ];
             } else {
-                $color = '';
-                $title = 'Nu s-au detectat erori E-Maintenance';
+                $result['em'] = [
+                    'color_class' => '',
+                    'title' => __('No E-Maintenance errors detected', 'iservice'),
+                ];
             }
 
-            echo "<li id='self_test_em'><a class='fa fa-print fa-2x' href='" . PLUGIN_ISERVICE_DIR . "/front/admintask.php?task=DataIntegrityTest&filter=em_' style='$color' title='$title'></a></li>";
+            $title = __('Data integrity test returned', 'iservice');
             if ($warning_count + $error_count > 0) {
-                $fa_class = 'fa-exclamation-triangle badge';
-                $color    = 'color:' . ($error_count > 0 ? 'red' : 'deeppink');
-                $title    = ($warning_count > 0 ? "$warning_count warnings" : "") . (($warning_count > 0 && $error_count > 0) ? " and " : "") . ($error_count > 0 ? "$error_count errors" : "");
-                $badge    = str_pad($warning_count + $error_count, 2, '0', STR_PAD_LEFT);
+                $result['notEm'] = [
+                    'icon_class' => 'fa-exclamation-triangle badge',
+                    'color_class'    => ($error_count > 0 ? 'text-danger' : 'text-warning'),
+                    'title'    => $title . ' '
+                        . ($warning_count > 0 ? $warning_count . __(' warnings', 'iservice') : "")
+                        . (($warning_count > 0 && $error_count > 0) ? __(' and ', 'iservice') : "")
+                        . ($error_count > 0 ? $error_count . __(' errors', 'iservice') : ""),
+                    'badge'   => str_pad($warning_count + $error_count, 2, '0', STR_PAD_LEFT),
+                ];
             } else {
-                $fa_class = 'fa-check-circle';
-                $color    = '';
-                $title    = "no errors";
-                $badge    = '';
+                $result['notEm'] = [
+                    'icon_class' => 'fa-check-circle',
+                    'color_class'    => '',
+                    'title'    => $title . 'no errors',
+                    'badge'   => '',
+                ];
             }
-
-            echo "<li id='self_test'><a class='fa $fa_class fa-2x' data-badge='$badge' href='" . PLUGIN_ISERVICE_DIR . "/front/admintask.php?task=DataIntegrityTest&filter=!em_' style='$color' title='Data integrity test returned $title'></a></li>";
-            break;
+            return $result;
         case 'alert':
             $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
             if (count($test_results['alert']) < 1) {
@@ -265,24 +288,27 @@ class PluginIserviceTask_DataIntegrityTest
 
             $should_ignore = false;
             $formats       = [
-                'hours'    => 'H',
+                'h:m'  => 'H:i',
                 'weekdays' => 'N'
             ];
-            foreach ($formats as $schedule_criteria => $format) {
-                $case_result_type = 'ignored';
-                if (!empty($case_params['schedule'][$schedule_criteria]) && !in_array(date($format), $case_params['schedule'][$schedule_criteria])) {
-                    $should_ignore = true;
-                    if (!empty($case_params['schedule']['display_last_result'])) {
-                        $should_ignore = !empty(self::$lastTestResults[$case_name]);
-                        if ($should_ignore) {
-                            $case_result      = self::$lastTestResults[$case_name]['result'];
-                            $case_result_type = self::$lastTestResults[$case_name]['result_type'];
-                        }
-                    } else {
-                        $case_result = ($case_params['schedule']['ignore_text'][$schedule_criteria] ?? $case_params['schedule']['ignore_text'] ?? "$case_name ignored due to schedule");
-                    }
 
-                    break;
+            if (!empty($case_params['schedule'])) { // TODO: check all params for match
+                $should_ignore          = false;
+                $specifiedScheduleTypes = array_intersect(array_keys($case_params['schedule']), array_keys($formats));
+                foreach ($specifiedScheduleTypes as $scheduleType) {
+                    $scheduledDateValues = $case_params['schedule'][$scheduleType];
+                    if (!$this->isInSchedule($scheduledDateValues, $scheduleType)) {
+                        $should_ignore = true;
+                        if (!empty($case_params['schedule']['display_last_result'])) {
+                            $should_ignore = !empty(self::$lastTestResults[$case_name]);
+                            if ($should_ignore) {
+                                $case_result      = self::$lastTestResults[$case_name]['result'];
+                                $case_result_type = self::$lastTestResults[$case_name]['result_type'];
+                            }
+                        } else {
+                            $case_result = ($case_params['schedule']['ignore_text'][$scheduleType] ?? $case_params['schedule']['ignore_text'] ?? "$case_name ignored due to schedule");
+                        }
+                    }
                 }
             }
 
@@ -400,6 +426,36 @@ class PluginIserviceTask_DataIntegrityTest
         $this->cacheTestResults();
 
         return self::$testResults;
+    }
+
+    public function isInSchedule($scheduledDateValues, $scheduleType): bool
+    {
+        switch ($scheduleType) {
+        case 'h:m':
+            foreach ($scheduledDateValues as $scheduledDateValue) {
+                list($hour, $minute) = explode(':', $scheduledDateValue);
+
+                if (strpos($hour, '-') !== false) {
+                    list($hourStart, $hourEnd) = explode('-', $hour);
+                    $hourMatch                 = $hourStart <= date('H') && $hourEnd >= date('H');
+                } else {
+                    $hourMatch = $hour == date('H') || $hour == '*';
+                }
+
+                if (strpos($minute, '-') !== false) {
+                    list($minuteStart, $minuteEnd) = explode('-', $minute);
+                    $minuteMatch                   = $minuteStart <= date('i') && $minuteEnd >= date('i');
+                } else {
+                    $minuteMatch = $minute == date('i') || $minute == '*';
+                }
+
+                return $hourMatch && $minuteMatch;
+            }
+        case 'weekdays':
+            return in_array(date('w'), $scheduledDateValues);
+        default:
+            return false;
+        }
     }
 
     function processCompareQueryCountResult(&$result, &$result_type, $case_result, $case_name, $case_test_params)

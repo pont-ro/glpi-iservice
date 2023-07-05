@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: iservice \n"
+"Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2021-02-09 09:46+0200\n"
-"PO-Revision-Date: 2023-06-23 15:11+0300\n"
+"PO-Revision-Date: 2023-07-04 17:49+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro_RO\n"
@@ -216,7 +216,6 @@ msgstr "Următoarele tichete au mai fost deschise"
 #: inc/intorder_extorder.class.php:169 inc/ticket.class.php:1542
 msgid "Amount"
 msgstr "Cantitate"
-
 
 #: inc/cartridge_ticket.class.php:286
 msgid "Select"
@@ -894,6 +893,24 @@ msgstr[2] "Facturi"
 
 msgid "Last execution of hMarfa import"
 msgstr "Ultima execuție hMarfa import"
+
+msgid "No E-Maintenance errors detected"
+msgstr "Nu s-au detectat erori E-Maintenance"
+
+msgid "EM errors"
+msgstr "erori EM"
+
+msgid "Data integrity test returned"
+msgstr "Testul de integritate a dat"
+
+msgid " warnings"
+msgstr " avertismente"
+
+msgid " and "
+msgstr " și "
+
+msgid " errors"
+msgstr " erori"
 
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."

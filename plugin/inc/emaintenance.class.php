@@ -33,9 +33,8 @@ class PluginIserviceEmaintenance extends MailCollector {
      * @return -1 : done but not finish 1 : done with success
      * */
     static function cronEm_Mailgate($task) {
-        global $CFG_PLUGIN_ISERVICE;
 
-        if (empty($CFG_PLUGIN_ISERVICE['enabled_crons']['em_mailgate'])) {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.em_mailgate'))) {
             $task->log("E-maintenance mailgate is disabled by configuration.\n");
             return -2;
         }

@@ -17,7 +17,7 @@ class PluginIservicePrinter extends Printer
     const ID_PLOTTER_TYPE = 33;
 
     /*
-     * @var PluginFieldsPrintercustomfield
+     * @var PluginFieldsPrinterprintercustomfield
      */
     public $customfields = null;
 
@@ -145,7 +145,7 @@ class PluginIservicePrinter extends Printer
         global $CFG_GLPI;
 
         $printer               = new Printer();
-        $printer_customfields  = new PluginFieldsPrintercustomfield();
+        $printer_customfields  = new PluginFieldsPrinterprintercustomfield();
         $supplier              = new Supplier();
         $supplier_customfields = new PluginFieldsSuppliercustomfield();
         $contract              = new Contract();
@@ -309,7 +309,7 @@ class PluginIservicePrinter extends Printer
 
         $output = "<table class='two-column' style='width:100%;'>";
 
-        $printer_customfields = new PluginFieldsPrintercustomfield();
+        $printer_customfields = new PluginFieldsPrinterprintercustomfield();
         if ($printer_customfields->getFromDBByItemsId($printer->getID()) === false) {
             $printer_customfields->getEmpty();
         }
@@ -697,7 +697,7 @@ class PluginIservicePrinter extends Printer
 
     function getFromDB($ID)
     {
-        $this->customfields = new PluginFieldsPrintercustomfield();
+        $this->customfields = new PluginFieldsPrinterprintercustomfield();
         if (parent::getFromDB($ID)) {
             if (!$this->customfields->getFromDBByItemsId($ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
                 return false;

@@ -62,6 +62,8 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_view_price_list' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_outbound_lots' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_inbound_lots' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+
+            'plugin_iservice_admintask_DataIntegrityTest' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
         ];
 
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);
