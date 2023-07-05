@@ -1,6 +1,6 @@
 <?php
 
-// Imported from iService2, needs refactoring. Original file: "printer.class.php".
+// Imported from iService2, needs refactoring.
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -14,19 +14,22 @@ class PluginIservicePrinter extends Printer
     const ID_ROUTER_TYPE  = 35;
     const ID_PLOTTER_TYPE = 33;
 
-    /**
+    /*
      * @var PluginFieldsPrintercustomfield
      */
     public $customfields = null;
-    /**
+
+    /*
      * @var bool
      */
     protected $has_cartridge_management = null;
-    /**
+
+    /*
      * @var PluginIserviceTicket
      */
     protected $last_ticket = null;
-    /**
+
+    /*
      * @var PluginIserviceTicket
      */
     protected $last_closed_ticket = null;
@@ -174,7 +177,7 @@ class PluginIservicePrinter extends Printer
                 }
 
                 $printer_customfields->getFromDBByItemsId($printer_id);
-                // Supplier data
+                // Supplier data.
                 $infocom = new Infocom();
                 if (!$infocom->getFromDBforDevice('Printer', $printer_id)) {
                     $supplier->getEmpty();
@@ -185,7 +188,7 @@ class PluginIservicePrinter extends Printer
                     }
                 }
 
-                // Contract data
+                // Contract data.
                 $contract_item = new Contract_Item();
                 if (!$contract_item->getFromDBByQuery("WHERE items_id = $printer_id AND itemtype = 'Printer' LIMIT 1")) {
                     $contract->getEmpty();
@@ -414,12 +417,13 @@ class PluginIservicePrinter extends Printer
         return $output;
     }
 
-    /**
+    /*
      *
      * @param  Printer $printer
      * @param  Supplier $supplier
      * @param  PluginFieldsSuppliercustomfield $supplier_customfields
      * @param  boolean $readonly
+     *
      * @return string
      */
     function generateSupplierData($printer, $supplier, $supplier_customfields, $readonly)
