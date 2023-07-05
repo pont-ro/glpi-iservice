@@ -508,7 +508,7 @@ class PluginIserviceHmarfa
                 $export2_error = print_r(error_get_last(), true);
             }
         } elseif (isset($_POST['save'])) {
-            $printer_customfields = new PluginFieldsPrintercustomfield();
+            $printer_customfields = new PluginFieldsPrinterprintercustomfield();
             if (!$printer_customfields->update(
                 [
                     $printer->customfields->getIndexName() => $printer->customfields->getID(),
@@ -534,7 +534,7 @@ class PluginIserviceHmarfa
             }
         } elseif (isset($_POST['update'])) {
             if (file_exists($datFileName)) {
-                $printer_customfields = new PluginFieldsPrintercustomfield();
+                $printer_customfields = new PluginFieldsPrinterprintercustomfield();
                 foreach (explode("\r\n", file_get_contents($datFileName)) as $row) {
                     $data = explode(",", $row);
                     if (count($data) > 3 && $printer_customfields->getFromDBByItemsId($data[0])) {

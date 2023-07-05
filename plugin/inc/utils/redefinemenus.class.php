@@ -5,6 +5,7 @@ namespace GlpiPlugin\Iservice\Utils;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use \Session;
 use \PluginIserviceDB;
+use \PluginIserviceTask_DataIntegrityTest;
 
 class RedefineMenus
 {
@@ -51,14 +52,15 @@ class RedefineMenus
 
     public static function addDropdownWithHeaderIcons(&$menus): void
     {
+        $dataIntegrityTestMenuItems = self::getDataIntegrityTestMenuItems();
+
         $menus['headerIcons'] = [
             'title' => 'Header Icons',
             'icon'  => 'fas fa-user',
             'content' => [
-                'dataIntegrityTest' => self::getDataIntegrityTestMenuItem(),
                 'hMarfaImport' => self::getHMarfaMenuItem(),
-                'dataIntegrityTestNotEm' => self::getDataIntegrityTestMenuItem('!em_'),
-                'dataIntegrityTestEm' => self::getDataIntegrityTestMenuItem('em_'),
+                'dataIntegrityTestNotEm' => $dataIntegrityTestMenuItems['!em'] ?? [],
+                'dataIntegrityTestEm' => $dataIntegrityTestMenuItems['em'] ?? [],
                 'temp_element5' => [
                     'title' => 'temp_element3',
                     'icon'  => 'fa far fa-envelope header-icon me-1 element6',
@@ -104,35 +106,25 @@ class RedefineMenus
         ];
     }
 
-    public static function getDataIntegrityTestMenuItem(string $type = ''): array
+    public static function getDataIntegrityTestMenuItems(string $type = ''): array
     {
-        if (!Session::haveRight('plugin_iservice_hmarfa', UPDATE)) {
+        if (!Session::haveRight('plugin_iservice_admintask_DataIntegrityTest', READ)) {
             return [];
         }
 
-        $button_color_class = ''; //TODO add color class
-
-        switch ($type) {
-        case '!em_':
-            $title = __('Data integrity test returned no errors', 'iservice'); //TODO add translation and custom message based on returned errors
-            $icon  = "fa fa-check-circle header-icon me-1 keepUrl dataIntegrityTestNotEm $button_color_class";
-            $page  = "/plugins/iservice/front/admintask.php?task=DataIntegrityTest&filter=!em_";
-            break;
-        case 'em_':
-            $title = __('Nu s-au detectat erori E-Maintenance', 'iservice'); //TODO add translation and custom message based on returned errors
-            $icon  = "fa fa-print header-icon me-1 keepUrl dataIntegrityTestEm $button_color_class";
-            $page  = "/plugins/iservice/front/admintask.php?task=DataIntegrityTest&filter=em_";
-            break;
-        default:
-            $title = __('Data integrity test', 'iservice'); //TODO add translation
-            $icon  = "fa fa-star header-icon me-1 dataIntegrityTest $button_color_class";
-            $page  = "/plugins/iservice/front/admintask.php?task=DataIntegrityTest";
-        }
+        $dataIntegrityTestResults = (new PluginIserviceTask_DataIntegrityTest())->displayResults('header');
 
         return [
-            'title' => $title,
-            'icon'  => $icon,
-            'page'  => $page,
+            '!em' => [
+                'title' => $dataIntegrityTestResults['notEm']['title'],
+                'icon'  => "fa fa-check-circle header-icon me-1 keepUrl dataIntegrityTestNotEm " . $dataIntegrityTestResults['notEm']['color_class'],
+                'page'  => "/plugins/iservice/front/admintask.php?task=DataIntegrityTest&filter=!em_",
+            ],
+            'em' => [
+                'title' => $dataIntegrityTestResults['em']['title'],
+                'icon' => "fa fa-print header-icon me-1 keepUrl dataIntegrityTestEm " . $dataIntegrityTestResults['em']['color_class'],
+                'page' => "/plugins/iservice/front/admintask.php?task=DataIntegrityTest&filter=em_",
+            ],
         ];
     }
 

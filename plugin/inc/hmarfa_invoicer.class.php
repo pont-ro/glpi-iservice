@@ -782,7 +782,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 return $result;
             }
 
-            $printerCustomfields = new PluginFieldsPrintercustomfield();
+            $printerCustomfields = new PluginFieldsPrinterprintercustomfield();
             foreach (IserviceToolBox::getCsvFile($exportFileData['dat_full_path']) as $data) {
                 if (count($data) > 1 && $printerCustomfields->getFromDBByItemsId($data[0])) {
                     $updateData = [

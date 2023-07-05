@@ -4,7 +4,9 @@
 
 return [
     'version' => '0.0.1',
-    'enabled_crons.hMarfaImport' => true,
+    'enabled_crons.h_marfa_import' => true,
+    'enabled_crons.em_mailgate' => true,
+    'enabled_crons.data_integrity_test' => true,
     'enable_header_tests' => true,
     'hmarfa.import.script_file' => '/hMarfaImport.sql',
     'hmarfa.import.errors' => PLUGIN_ISERVICE_CACHE_DIR . "/hMarfaImportErrors",

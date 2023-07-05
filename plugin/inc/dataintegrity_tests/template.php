@@ -17,7 +17,7 @@ return [
     ],
     'enable_snooze' => false,
     'schedule' => [
-        'hours' => [],
+        'h:m' => ['1:00', '1-3:*', '*:15-25', '1-3:15-25', '*:15', '1:*'],
         'weekdays' => [],
         'ignore_text' => 'Task ignored due to shcedule',
     ]

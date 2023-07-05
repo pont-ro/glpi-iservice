@@ -12,7 +12,7 @@ if (!function_exists('iservice_custom_command_check_root_folder_integrity')) {
         $result = [];
         exec("git -C \"$_SERVER[DOCUMENT_ROOT]\" clean -n", $result);
         file_put_contents(
-            $CFG_PLUGIN_ISERVICE['folder_integrity']['report_file'],
+            PluginIserviceConfig::getConfigValue('folder_integrity.report_file'),
             implode(
                 "\n", array_map(
                     function ($value) {
