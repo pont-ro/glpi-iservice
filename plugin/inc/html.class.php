@@ -606,9 +606,6 @@ class PluginIserviceHtml {
             }
 
             $tester_task = new PluginIserviceTask_DataIntegrityTest();
-            if (Session::haveRight('plugin_iservice_admintask_DataIntegrityTest', READ)) {
-                $tester_task->displayResults('header');
-            }
 
             $hmarfa_import_lastrun_array = PluginIserviceDB::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
             $hmarfa_import_lastrun = $hmarfa_import_lastrun_array['0']['lastrun'];
@@ -698,8 +695,8 @@ class PluginIserviceHtml {
         }
 
         if (Session::haveRight('plugin_iservice_admintask_DataIntegrityTest', READ)) {
-            $tester_task->displayResults('em_alert');
-            $tester_task->displayResults('alert');
+            $tester_task->getDisplayResults('em_alert');
+            $tester_task->getDisplayResults('alert');
         }
 
         // call static function callcron() every 5min

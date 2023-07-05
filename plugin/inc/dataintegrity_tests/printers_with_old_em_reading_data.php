@@ -48,11 +48,8 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
 
 }
 
-if (file_exists(PluginIserviceConfig::getConfigValue('emaintenance.csv_last_check_date_file'))) {
-    if (false === ($csv_check_date = @file_get_contents(PluginIserviceConfig::getConfigValue('emaintenance.csv_last_check_date_file')))) {
-        $csv_check_date = 'unknown';
-    }
-} else {
+$fileName = PluginIserviceConfig::getConfigValue('emaintenance.csv_last_check_date_file');
+if (!file_exists($fileName) || (file_exists($fileName) && false === ($csv_check_date = @file_get_contents($fileName)))) {
     $csv_check_date = 'unknown';
 }
 
@@ -94,10 +91,10 @@ return [
     ],
     'schedule'       => [
         'display_last_result' => true,
-        'h:m'               => ['8:00', '12:00', '16:00'],
+        'h:m'               => ['7:45', '14:00', '17:30'],
         'weekdays'            => [1, 2, 3, 4, 5],
         'ignore_text'         => [
-            'hours'    => "Checked only on workdays at 8, 12 and 16",
+            'hours'    => "Checked only on workdays at 7:45, 14:00 and 17:30",
             'weekdays' => "Checked only on workdays"
         ]
     ]

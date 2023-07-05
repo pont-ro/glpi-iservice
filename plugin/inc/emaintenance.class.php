@@ -410,7 +410,7 @@ class PluginIserviceEmaintenance extends MailCollector {
         }
 
         $file_paths = [];
-        foreach (glob($import_path . "/*.csv") as $file_path) {
+        foreach (glob("$import_path/*.csv") as $file_path) {
             if (!is_file($file_path)) {
                 continue;
             }

@@ -47,7 +47,7 @@ class PluginIserviceHmarfa
         $add_disabled_reason    = '';
         $import_disabled_reason = '';
         $acknowledge_other_csvs = IserviceToolBox::getInputVariable('acknowledge_other_csvs');
-        $exportFilePath         = IserviceToolBox::getInputVariable('exportfilepath', $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path'] . '/');
+        $exportFilePath         = IserviceToolBox::getInputVariable('exportfilepath', PluginIserviceConfig::getConfigValue('hmarfa.export.default_path') . '/');
         $backFilePath           = $exportFilePath . "BAK";
         if (!file_exists($backFilePath)) {
             mkdir($backFilePath, 0775, true);

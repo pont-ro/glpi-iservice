@@ -58,7 +58,7 @@ class PluginIserviceTask_DataIntegrityTest
         return self::$testCases;
     }
 
-    function displayResults($mode = 'detailed')
+    public function getDisplayResults($mode = 'detailed')
     {
         $start_time             = microtime(true);
         $cache_time_minutes_ago = time() - $this->getCacheFileCreationTime();
@@ -160,7 +160,7 @@ class PluginIserviceTask_DataIntegrityTest
     function execute($called_from_display = false)
     {
         if (!$called_from_display) {
-            $this->displayResults();
+            $this->getDisplayResults();
             return;
         }
 
@@ -324,7 +324,7 @@ class PluginIserviceTask_DataIntegrityTest
                 if (!empty($case_params['command_before']) && function_exists("iservice_custom_command_$case_params[command_before]")) {
                     $command = "iservice_custom_command_$case_params[command_before]";
                     $command();
-                    $case_params = include PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . '/' . $case_name . '.php';
+                    $case_params = include PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . "/$case_name.php";
                 }
 
                 if (empty($case_params['query'])) {
@@ -378,10 +378,12 @@ class PluginIserviceTask_DataIntegrityTest
                 }
             }
 
+            global $CFG_PLUGIN_ISERVICE;
+
             if (!empty($case_result_type)) {
                 $last_checked = empty($should_ignore) ? date('Y-m-d H:i:s') : (self::$lastTestResults[$case_name]['last_checked'] ?? 'never');
 
-                $clear_data      = "<span id='delete_last_saved_data_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"" . PLUGIN_ISERVICE_DIR . "[root_doc]/ajax/manageDataintegrityTest.php?operation=delete_last_result&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#delete_last_saved_data_span_$case_name\").hide(); } }); return false;' value='clear cached data' /></span>";
+                $clear_data      = "<span id='delete_last_saved_data_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=delete_last_result&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#delete_last_saved_data_span_$case_name\").hide(); } }); return false;' value='clear cached data' /></span>";
                 $additional_info = sprintf(
                     "<span class='hide-for-non-admin'>%s %s <pre id='test_results_$case_name' style='display:none'>%s</pre></span>",
                     !empty($case_params['schedule']['display_last_result']) ? "(last checked at <b>$last_checked</b>) $clear_data" : '',
@@ -715,6 +717,8 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getSnoozeHtml($case_name, $enable_snooze = true)
     {
+        global $CFG_PLUGIN_ISERVICE;
+
         if (!$enable_snooze) {
             return '';
         }
@@ -732,7 +736,7 @@ class PluginIserviceTask_DataIntegrityTest
             $snooze_unit = 'hours';
         }
 
-        return "<span id='snooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"" . PLUGIN_ISERVICE_DIR . "[root_doc]/ajax/manageDataintegrityTest.php?operation=snooze&id=$case_name&snooze=\" + $(\"#snooze_$case_name\").val() + \" $snooze_unit\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#snooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='snooze' /> for <input type='text' id='snooze_$case_name' style='height: 1.1em;width: 1em;' value='$default_snooze_time'> $snooze_unit</span>";
+        return "<span id='snooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=snooze&id=$case_name&snooze=\" + $(\"#snooze_$case_name\").val() + \" $snooze_unit\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#snooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='snooze' /> for <input type='text' id='snooze_$case_name' style='height: 1.1em;width: 1em;' value='$default_snooze_time'> $snooze_unit</span>";
     }
 
     protected function getIterationFormat($iteration_format, $result)
