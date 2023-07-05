@@ -292,7 +292,7 @@ class PluginIserviceTask_DataIntegrityTest
                 'weekdays' => 'N'
             ];
 
-            if (!empty($case_params['schedule'])) { // TODO: check all params for match
+            if (!empty($case_params['schedule'])) {
                 $should_ignore          = false;
                 $specifiedScheduleTypes = array_intersect(array_keys($case_params['schedule']), array_keys($formats));
                 foreach ($specifiedScheduleTypes as $scheduleType) {
