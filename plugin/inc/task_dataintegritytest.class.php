@@ -1,6 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring.
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceTask_DataIntegrityTest
 {
 
@@ -16,6 +17,19 @@ class PluginIserviceTask_DataIntegrityTest
         if (file_exists($this->getSnoozeFilePath())) {
             $this->snoozeData = unserialize(file_get_contents($this->getSnoozeFilePath()));
         }
+    }
+
+    public static function cronDataIntegrityTest($task)
+    {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.data_integrity_test'))) {
+            $task->log("Data Integrity Test is disabled by configuration.\n");
+            return -2;
+        }
+
+        (new self())->execute();
+
+        return 1;
+
     }
 
     function getTitle()
@@ -36,8 +50,7 @@ class PluginIserviceTask_DataIntegrityTest
     function getTestCases()
     {
         if (empty(self::$testCases)) {
-            global $CFG_PLUGIN_ISERVICE;
-            foreach (glob($CFG_PLUGIN_ISERVICE['dataintegritytests']['folder'] . DIRECTORY_SEPARATOR . '*.php') as $file_name) {
+            foreach (glob(PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . '/*.php') as $file_name) {
                 self::$testCases[pathinfo($file_name)['filename']] = include $file_name;
             }
         }
@@ -45,43 +58,56 @@ class PluginIserviceTask_DataIntegrityTest
         return self::$testCases;
     }
 
-    function displayResults($mode = 'detailed')
+    public function getResultsForHeaderIcons(): array
     {
-        global $CFG_PLUGIN_ISERVICE;
+        $result         = [];
+        $test_results   = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
+        $warning_count  = count($test_results['warning']);
+        $error_count    = count($test_results['error']);
+        $em_error_count = count($test_results['em_error']);
+        if ($em_error_count > 0) {
+            $result['em'] = [
+                'color_class' => 'text-warning',
+                'title' => $em_error_count . ' ' . __('EM errors', 'iservice'),
+            ];
+        } else {
+            $result['em'] = [
+                'color_class' => '',
+                'title' => __('No E-Maintenance errors detected', 'iservice'),
+            ];
+        }
+
+        $title = __('Data integrity test returned', 'iservice');
+        if ($warning_count + $error_count > 0) {
+            $result['notEm'] = [
+                'icon_class' => 'fa-exclamation-triangle badge',
+                'color_class'    => ($error_count > 0 ? 'text-danger' : 'text-warning'),
+                'title'    => $title . ' '
+                    . ($warning_count > 0 ? $warning_count . __(' warnings', 'iservice') : "")
+                    . (($warning_count > 0 && $error_count > 0) ? __(' and ', 'iservice') : "")
+                    . ($error_count > 0 ? $error_count . __(' errors', 'iservice') : ""),
+                'badge'   => str_pad($warning_count + $error_count, 2, '0', STR_PAD_LEFT),
+            ];
+        } else {
+            $result['notEm'] = [
+                'icon_class' => 'fa-check-circle',
+                'color_class'    => '',
+                'title'    => $title . 'no errors',
+                'badge'   => '',
+            ];
+        }
+
+        return $result;
+    }
+
+    public function displayResults($mode = 'detailed')
+    {
         $start_time             = microtime(true);
         $cache_time_minutes_ago = time() - $this->getCacheFileCreationTime();
         $cache_time_ago         = 'acum ' . (($cache_time_minutes_ago < 90) ? "$cache_time_minutes_ago secunde" : (round($cache_time_minutes_ago / 60) . ' minute'));
         switch ($mode) {
-        case 'header':
-            $test_results   = $CFG_PLUGIN_ISERVICE['enable_header_tests'] ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
-            $warning_count  = count($test_results['warning']);
-            $error_count    = count($test_results['error']);
-            $em_error_count = count($test_results['em_error']);
-            if ($em_error_count > 0) {
-                $color = 'color:deeppink';
-                $title = "$em_error_count EM errors";
-            } else {
-                $color = '';
-                $title = 'Nu s-au detectat erori E-Maintenance';
-            }
-
-            echo "<li id='self_test_em'><a class='fa fa-print fa-2x' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=DataIntegrityTest&filter=em_' style='$color' title='$title'></a></li>";
-            if ($warning_count + $error_count > 0) {
-                $fa_class = 'fa-exclamation-triangle badge';
-                $color    = 'color:' . ($error_count > 0 ? 'red' : 'deeppink');
-                $title    = ($warning_count > 0 ? "$warning_count warnings" : "") . (($warning_count > 0 && $error_count > 0) ? " and " : "") . ($error_count > 0 ? "$error_count errors" : "");
-                $badge    = str_pad($warning_count + $error_count, 2, '0', STR_PAD_LEFT);
-            } else {
-                $fa_class = 'fa-check-circle';
-                $color    = '';
-                $title    = "no errors";
-                $badge    = '';
-            }
-
-            echo "<li id='self_test'><a class='fa $fa_class fa-2x' data-badge='$badge' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=DataIntegrityTest&filter=!em_' style='$color' title='Data integrity test returned $title'></a></li>";
-            break;
         case 'alert':
-            $test_results = $CFG_PLUGIN_ISERVICE['enable_header_tests'] ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
+            $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
             if (count($test_results['alert']) < 1) {
                 break;
             }
@@ -108,7 +134,7 @@ class PluginIserviceTask_DataIntegrityTest
             echo "</table>";
             break;
         case 'em_alert':
-            $test_results = $CFG_PLUGIN_ISERVICE['enable_header_tests'] ? $this->getTestResults() : ['em_alert' => []];
+            $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['em_alert' => []];
             if (count($test_results['em_alert']) < 1) {
                 break;
             }
@@ -163,15 +189,15 @@ class PluginIserviceTask_DataIntegrityTest
             'em_info'  => 'green',
         ];
 
-        if (PluginIserviceCommon::getInputVariable('custom_command')) {
+        if (IserviceToolBox::getInputVariable('custom_command')) {
             $this->getTestCases();
-            $command = 'iservice_custom_command_' . PluginIserviceCommon::getInputVariable('command');
+            $command = 'iservice_custom_command_' . IserviceToolBox::getInputVariable('command');
             if (function_exists($command)) {
                 $command();
             }
         }
 
-        $filter = PluginIserviceCommon::getInputVariable('filter');
+        $filter = IserviceToolBox::getInputVariable('filter');
 
         $test_results = $this->getTestResults();
 
@@ -214,7 +240,6 @@ class PluginIserviceTask_DataIntegrityTest
 
     function getTestResults()
     {
-        global $CFG_PLUGIN_ISERVICE;
         if (self::$testResults === null) {
             $this->getTestResultsFromCache();
             $already_run = false;
@@ -267,24 +292,27 @@ class PluginIserviceTask_DataIntegrityTest
 
             $should_ignore = false;
             $formats       = [
-                'hours'    => 'H',
+                'h:m'  => 'H:i',
                 'weekdays' => 'N'
             ];
-            foreach ($formats as $schedule_criteria => $format) {
-                $case_result_type = 'ignored';
-                if (!empty($case_params['schedule'][$schedule_criteria]) && !in_array(date($format), $case_params['schedule'][$schedule_criteria])) {
-                    $should_ignore = true;
-                    if (!empty($case_params['schedule']['display_last_result'])) {
-                        $should_ignore = !empty(self::$lastTestResults[$case_name]);
-                        if ($should_ignore) {
-                            $case_result      = self::$lastTestResults[$case_name]['result'];
-                            $case_result_type = self::$lastTestResults[$case_name]['result_type'];
-                        }
-                    } else {
-                        $case_result = ($case_params['schedule']['ignore_text'][$schedule_criteria] ?? $case_params['schedule']['ignore_text'] ?? "$case_name ignored due to schedule");
-                    }
 
-                    break;
+            if (!empty($case_params['schedule'])) {
+                $should_ignore          = false;
+                $specifiedScheduleTypes = array_intersect(array_keys($case_params['schedule']), array_keys($formats));
+                foreach ($specifiedScheduleTypes as $scheduleType) {
+                    $scheduledDateValues = $case_params['schedule'][$scheduleType];
+                    if (!$this->isInSchedule($scheduledDateValues, $scheduleType)) {
+                        $should_ignore = true;
+                        if (!empty($case_params['schedule']['display_last_result'])) {
+                            $should_ignore = !empty(self::$lastTestResults[$case_name]);
+                            if ($should_ignore) {
+                                $case_result      = self::$lastTestResults[$case_name]['result'];
+                                $case_result_type = self::$lastTestResults[$case_name]['result_type'];
+                            }
+                        } else {
+                            $case_result = ($case_params['schedule']['ignore_text'][$scheduleType] ?? $case_params['schedule']['ignore_text'] ?? "$case_name ignored due to schedule");
+                        }
+                    }
                 }
             }
 
@@ -292,7 +320,7 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_result_type = 'snoozed';
                 $case_result      =
                     $this->formatTestResultText([], $case_params['test']['snoozed_result']['summary_text'], '', ['snooze_time' => date('Y-m-d H:i:s', $this->isSnoozed($case_name))])
-                    . " <span id='unsnooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=unsnooze&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#unsnooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='reactivate' /></span>";
+                    . " <span id='unsnooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"" . PLUGIN_ISERVICE_DIR . "/ajax/manageDataintegrityTest.php?operation=unsnooze&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#unsnooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='reactivate' /></span>";
                 $should_ignore    = true;
             }
 
@@ -300,19 +328,19 @@ class PluginIserviceTask_DataIntegrityTest
                 if (!empty($case_params['command_before']) && function_exists("iservice_custom_command_$case_params[command_before]")) {
                     $command = "iservice_custom_command_$case_params[command_before]";
                     $command();
-                    $case_params = include $CFG_PLUGIN_ISERVICE['dataintegritytests']['folder'] . DIRECTORY_SEPARATOR . $case_name . '.php';
+                    $case_params = include PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . "/$case_name.php";
                 }
 
                 if (empty($case_params['query'])) {
                     $case_query_result = '';
                 } else {
-                    $case_query_result = PluginIserviceCommon::getQueryResult($case_params['query']);
+                    $case_query_result = PluginIserviceDB::getQueryResult($case_params['query']);
                 }
 
                 $case_result_type = null;
                 switch ($case_params['test']['type']) {
                 case 'compare_query_count':
-                    $this->processCompareQueryCountResult($case_result, $case_result_type, $case_query_result, $case_name, $case_params['test']);
+                    $this->processCompareQueryCountResult($case_result, $case_result_type, $case_query_result ?: [], $case_name, $case_params['test']);
                     break;
                 case 'string_begins':
                     $this->processStringBeginsResult($case_result, $case_result_type, $case_params['string'] ?? '', $case_name, $case_params['test']);
@@ -353,6 +381,8 @@ class PluginIserviceTask_DataIntegrityTest
                     break;
                 }
             }
+
+            global $CFG_PLUGIN_ISERVICE;
 
             if (!empty($case_result_type)) {
                 $last_checked = empty($should_ignore) ? date('Y-m-d H:i:s') : (self::$lastTestResults[$case_name]['last_checked'] ?? 'never');
@@ -402,6 +432,37 @@ class PluginIserviceTask_DataIntegrityTest
         $this->cacheTestResults();
 
         return self::$testResults;
+    }
+
+    public function isInSchedule($scheduledDateValues, $scheduleType): bool
+    {
+        switch ($scheduleType) {
+        case 'h:m':
+            foreach ($scheduledDateValues as $scheduledDateValue) {
+                list($hour, $minute) = explode(':', $scheduledDateValue);
+
+                if (strpos($hour, '-') !== false) {
+                    list($hourStart, $hourEnd) = explode('-', $hour);
+                    $hourMatch                 = $hourStart <= date('H') && $hourEnd >= date('H');
+                } else {
+                    $hourMatch = $hour == date('H') || $hour == '*';
+                }
+
+                if (strpos($minute, '-') !== false) {
+                    list($minuteStart, $minuteEnd) = explode('-', $minute);
+                    $minuteMatch                   = $minuteStart <= date('i') && $minuteEnd >= date('i');
+                } else {
+                    $minuteMatch = $minute == date('i') || $minute == '*';
+                }
+
+                return $hourMatch && $minuteMatch;
+            }
+
+        case 'weekdays':
+            return in_array(date('w'), $scheduledDateValues);
+        default:
+            return false;
+        }
     }
 
     function processCompareQueryCountResult(&$result, &$result_type, $case_result, $case_name, $case_test_params)
@@ -567,8 +628,6 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getTestResultsFromCache()
     {
-        global $CFG_PLUGIN_ISERVICE;
-
         $last_results_file_path = $this->getLastResultsFilePath();
         if (file_exists($last_results_file_path)) {
             self::$lastTestResults = unserialize(file_get_contents($last_results_file_path));
@@ -577,7 +636,7 @@ class PluginIserviceTask_DataIntegrityTest
         }
 
         $cache_file_path = $this->getCacheFilePath();
-        $delete_cache    = PluginIserviceCommon::getInputVariable('delete_cache');
+        $delete_cache    = IserviceToolBox::getInputVariable('delete_cache');
         if (empty($delete_cache)) {
             $args         = getopt('', ['delete_cache::']);
             $delete_cache = $args['delete_cache'] ?? null;
@@ -585,7 +644,7 @@ class PluginIserviceTask_DataIntegrityTest
 
         self::$testResults = [];
         if (file_exists($cache_file_path)) {
-            if (!$delete_cache && time() - $this->getCacheFileCreationTime() < $CFG_PLUGIN_ISERVICE['dataintegritytests']['cache_timeout']) {
+            if (!$delete_cache && time() - $this->getCacheFileCreationTime() < PluginIserviceConfig::getConfigValue('dataintegritytests.cache_timeout')) {
                 return self::$testResults = unserialize(file_get_contents($cache_file_path));
             } else {
                 unlink($cache_file_path);
@@ -612,7 +671,7 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getCacheFilePath()
     {
-        return PLUGINISERVICE_CACHE_DIR . "/test_results";
+        return PLUGIN_ISERVICE_CACHE_DIR . "/test_results";
     }
 
     protected  function getCacheTimeFilePath()
@@ -622,7 +681,7 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getLastResultsFilePath()
     {
-        return PLUGINISERVICE_CACHE_DIR . "/last_results";
+        return PLUGIN_ISERVICE_CACHE_DIR . "/last_results";
     }
 
     protected function getCacheFileCreationTime()
@@ -648,7 +707,7 @@ class PluginIserviceTask_DataIntegrityTest
 
     protected function getSnoozeFilePath()
     {
-        return PLUGINISERVICE_CACHE_DIR . "/test_snoozes";
+        return PLUGIN_ISERVICE_CACHE_DIR . "/test_snoozes";
     }
 
     protected function isSnoozed($testCase)
@@ -664,6 +723,7 @@ class PluginIserviceTask_DataIntegrityTest
     protected function getSnoozeHtml($case_name, $enable_snooze = true)
     {
         global $CFG_PLUGIN_ISERVICE;
+
         if (!$enable_snooze) {
             return '';
         }

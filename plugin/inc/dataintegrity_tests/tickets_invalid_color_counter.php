@@ -1,5 +1,9 @@
 <?php
+
 global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 $data_luc_max_difference = 3;
 return [
     'query' => "
@@ -24,7 +28,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => "There are {count} tickets with color counter but no color printer",
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has non color printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[pid]</a>  with serial [serial], but color counter [total2_color]. <a id='fix-ticket-[tid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageTicket.php?id=[tid]&operation=remove_color_counter\", \"\", function(message) {if (message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-ticket-[tid]\").remove();}});'>»»» FIX «««</a></b>",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has non color printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[pid]</a>  with serial [serial], but color counter [total2_color]. <a id='fix-ticket-[tid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageTicket.php?id=[tid]&operation=remove_color_counter\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-ticket-[tid]\").remove();}});'>»»» FIX «««</a></b>",
         ],
     ],
 ];

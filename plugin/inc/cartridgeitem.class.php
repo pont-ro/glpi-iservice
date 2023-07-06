@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 /**
  * CartridgeItem Class
  * This class is used to manage the various types of cartridges.
@@ -133,7 +135,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         foreach ($changeable_cartridges as $changeable_cartridge) {
             $cartridge_at_printer_location = $ticket->fields['locations_id'] == $changeable_cartridge['FK_location'];
             $location_condition            = empty($changeable_cartridge['location_parent_id']) ? "(l.locations_id is null or l.locations_id = 0)" : "l.locations_id = $changeable_cartridge[location_parent_id]";
-            $compatible_printers           = PluginIserviceCommon::getQueryResult(
+            $compatible_printers           = IserviceToolBox::getQueryResult(
                 "
                 select count(1) cnt, l.id location_id
                 from glpi_printers p
@@ -280,7 +282,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $query .= "ORDER BY $options[order_by]";
         }
 
-        return PluginIserviceCommon::getQueryResult($query, '_');
+        return IserviceToolBox::getQueryResult($query, '_');
     }
 
     static function dropdownForTicket($ticket, array $dropdown_options = [])
@@ -354,7 +356,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $query .= "ORDER BY $dropdown_options[order_by]";
         }
 
-        return PluginIserviceCommon::getQueryResult($query);
+        return IserviceToolBox::getQueryResult($query);
     }
 
     static function getCompatiblesForSupplierId($supplier_id, array $dropdown_options = [])
@@ -382,7 +384,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $query .= "ORDER BY $dropdown_options[order_by]";
         }
 
-        return PluginIserviceCommon::getQueryResult($query);
+        return IserviceToolBox::getQueryResult($query);
     }
 
     static function getForPrinterAtSupplier($printer_id, $supplier_id)
@@ -408,7 +410,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                   GROUP BY c.date_use, c.cartridgeitems_id
                   ORDER BY ref";
 
-        return PluginIserviceCommon::getQueryResult($query, '_');
+        return IserviceToolBox::getQueryResult($query, '_');
     }
 
     static function searchChangeableById($needle, $haystack)

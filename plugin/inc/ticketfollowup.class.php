@@ -65,7 +65,7 @@ class PluginIserviceTicketFollowup extends ItilFollowup
         $result   = $DB->query("SELECT * FROM `glpi_itilfollowups` WHERE `items_id` = '$id' and `itemtype` = 'Ticket' $restrict ORDER BY `date` DESC");
         $out      = "";
         while ($data = $DB->fetchAssoc($result)) {
-            $out .= date('[d.m.Y H:i:s] ', strtotime($data["date"])) . strip_tags(PluginIserviceCommon::br2nl($data["content"])) . "\n";
+            $out .= date('[d.m.Y H:i:s] ', strtotime($data["date"])) . strip_tags(IserviceToolBox::br2nl($data["content"])) . "\n";
         }
 
         return $out;

@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 /**
  * Cartridge_Ticket Class
  *
@@ -52,7 +54,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
     function getForTicket($id)
     {
         $query       = "SELECT ct.*, ci.name FROM " . $this->getTable() . " ct LEFT JOIN glpi_cartridges c ON c.id = ct.cartridges_id LEFT JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id WHERE " . self::$items_id_1 . " = $id ORDER BY id";
-        $result_data = PluginIserviceCommon::getQueryResult($query);
+        $result_data = IserviceToolBox::getQueryResult($query);
         return empty($result_data) ? false : $result_data;
     }
 

@@ -5,6 +5,7 @@ namespace GlpiPlugin\Iservice\Utils;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use \Session;
 use \PluginIserviceDB;
+use \PluginIserviceTask_DataIntegrityTest;
 
 class RedefineMenus
 {
@@ -51,26 +52,15 @@ class RedefineMenus
 
     public static function addDropdownWithHeaderIcons(&$menus): void
     {
+        $dataIntegrityTestMenuItems = self::getDataIntegrityTestMenuItems();
+
         $menus['headerIcons'] = [
             'title' => 'Header Icons',
             'icon'  => 'fas fa-user',
             'content' => [
-                'temp_element1' => [
-                    'title' => 'temp_element1',
-                    'icon'  => 'fa fa fa-star header-icon me-1 element1',
-                    'page'   => '',
-                ],
                 'hMarfaImport' => self::getHMarfaMenuItem(),
-                'temp_element3' => [
-                    'title' => 'temp_element3',
-                    'icon'  => 'fa fa-check-circle header-icon me-1 element3',
-                    'page'   => '',
-                ],
-                'temp_element4' => [
-                    'title' => 'temp_element2',
-                    'icon'  => 'fa fa-print header-icon me-1 element4',
-                    'page'   => '',
-                ],
+                'dataIntegrityTestNotEm' => $dataIntegrityTestMenuItems['!em'] ?? [],
+                'dataIntegrityTestEm' => $dataIntegrityTestMenuItems['em'] ?? [],
                 'temp_element5' => [
                     'title' => 'temp_element3',
                     'icon'  => 'fa far fa-envelope header-icon me-1 element6',
@@ -113,6 +103,28 @@ class RedefineMenus
             'title' => __('Last execution of hMarfa import', 'iservice') . ': ' . $hmarfa_import_lastrun,
             'icon'  => "fa fa-upload header-icon me-1 hMarfaImport $hmarfa_button_color_class",
             'page'   => $serializedParams,
+        ];
+    }
+
+    public static function getDataIntegrityTestMenuItems(string $type = ''): array
+    {
+        if (!Session::haveRight('plugin_iservice_admintask_DataIntegrityTest', READ)) {
+            return [];
+        }
+
+        $dataIntegrityTestResults = (new PluginIserviceTask_DataIntegrityTest())->getResultsForHeaderIcons();
+
+        return [
+            '!em' => [
+                'title' => $dataIntegrityTestResults['notEm']['title'],
+                'icon'  => "fa fa-check-circle header-icon me-1 keepUrl dataIntegrityTestNotEm " . $dataIntegrityTestResults['notEm']['color_class'],
+                'page'  => "/plugins/iservice/front/admintask.php?task=DataIntegrityTest&filter=!em_",
+            ],
+            'em' => [
+                'title' => $dataIntegrityTestResults['em']['title'],
+                'icon' => "fa fa-print header-icon me-1 keepUrl dataIntegrityTestEm " . $dataIntegrityTestResults['em']['color_class'],
+                'page' => "/plugins/iservice/front/admintask.php?task=DataIntegrityTest&filter=em_",
+            ],
         ];
     }
 

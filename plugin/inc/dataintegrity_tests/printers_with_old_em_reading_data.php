@@ -1,12 +1,15 @@
 <?php
+
 global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 if (!function_exists('iservice_custom_command_check_em_csv')) {
 
     function iservice_custom_command_check_em_csv()
     {
         global $CFG_PLUGIN_ISERVICE;
-        $printers             = PluginIserviceCommon::getQueryResult(
+        $printers             = PluginIserviceDB::getQueryResult(
             "
         select
               p.id id
@@ -15,9 +18,9 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
         from glpi_printers p
         join glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer' and cfp.emaintenancefield = 1
         "
-        );
+        ) ?: [];
         $csv_data             = PluginIserviceEmaintenance::getDataFromCsvs();
-        $printer_customfields = new PluginFieldsPrintercustomfield();
+        $printer_customfields = new PluginFieldsPrinterprintercustomfield();
         foreach ($printers as $printer_fields) {
             if (($csv_data[$printer_fields['serial']]['data_luc'] ?? '#empty#import#data#') === '#empty#import#data#') {
                 $last_read_date = '1970-01-01';
@@ -40,12 +43,13 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
             );
         }
 
-        file_put_contents($CFG_PLUGIN_ISERVICE['emaintenance']['csv_last_check_date_file'], date('Y-m-d H:i:s'));
+        file_put_contents(PluginIserviceConfig::getConfigValue('emaintenance.csv_last_check_date_file'), date('Y-m-d H:i:s'));
     }
 
 }
 
-if (false === ($csv_check_date = @file_get_contents($CFG_PLUGIN_ISERVICE['emaintenance']['csv_last_check_date_file']))) {
+$fileName = PluginIserviceConfig::getConfigValue('emaintenance.csv_last_check_date_file');
+if (!file_exists($fileName) || false === ($csv_check_date = @file_get_contents($fileName))) {
     $csv_check_date = 'unknown';
 }
 
@@ -81,16 +85,16 @@ return [
         'positive_result' => [
         // 'summary_text'   => "On <b><i>$csv_check_date</i></b> there were {count} printers with old data from E-maintenance CSV",
             'summary_text'   => "There are {count} printers with old data from E-maintenance CSV",
-            'iteration_text' => "For technician <b><i>[tech_park_name]</i></b> last counter is <b><i style='color: green' title='Unknown: the printer is in the csv, but never transmitted data\nInfinite: the printer does not exist in the csv'>[days_since_last_read]</i></b> days old for printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[name]</a> at <b><i>[supplier_name]</i></b>. <span id='snooze-read-check-[pid]'> <a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/managePrinter.php?id=[pid]&operation=snooze_read_check&snooze=\" + \$(\"#snooze-for-[pid]\").val(), \"\", function(message) {if (message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {\$(\"#snooze-read-check-[pid]\").remove();}});return false;'>» Snooze «</a> check for <input id='snooze-for-[pid]' type='text' value ='3' style='width:1em;'> days</span> or  <span id='manage-em-[pid]'><a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/managePrinter.php?id=[pid]&operation=exclude_from_em\", \"\", function(message) {if (message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {\$(\"#manage-em-[pid]\").remove();}});'>» Exclude from EM «</a></span>",
+            'iteration_text' => "For technician <b><i>[tech_park_name]</i></b> last counter is <b><i style='color: green' title='Unknown: the printer is in the csv, but never transmitted data\nInfinite: the printer does not exist in the csv'>[days_since_last_read]</i></b> days old for printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[name]</a> at <b><i>[supplier_name]</i></b>. <span id='snooze-read-check-[pid]'> <a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/managePrinter.php?id=[pid]&operation=snooze_read_check&snooze=\" + \$(\"#snooze-for-[pid]\").val(), \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#snooze-read-check-[pid]\").remove();}});return false;'>» Snooze «</a> check for <input id='snooze-for-[pid]' type='text' value ='3' style='width:1em;'> days</span> or  <span id='manage-em-[pid]'><a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/managePrinter.php?id=[pid]&operation=exclude_from_em\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#manage-em-[pid]\").remove();}});'>» Exclude from EM «</a></span>",
             'result_type'    => 'em_warning'
         ],
     ],
     'schedule'       => [
         'display_last_result' => true,
-        'hours'               => [8, 12, 16],
+        'h:m'               => ['7:45', '14:00', '17:30'],
         'weekdays'            => [1, 2, 3, 4, 5],
         'ignore_text'         => [
-            'hours'    => "Checked only on workdays at 8, 12 and 16",
+            'hours'    => "Checked only on workdays at 7:45, 14:00 and 17:30",
             'weekdays' => "Checked only on workdays"
         ]
     ]

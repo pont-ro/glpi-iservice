@@ -14,7 +14,11 @@ function moveIconsToHeader()
         function () {
             $(this).removeClass('dropdown-item');
             $(this).attr('data-params', $(this).attr('href').replace('/', ''));
-            $(this).attr('href', 'javascript:void(0);');
+
+            if (!$(this).find('i').hasClass('keepUrl')) {
+                $(this).attr('href', 'javascript:void(0);');
+            }
+
             $(this).find('span').remove();
             $(this).appendTo(headerIconsDiv);
         }

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+- EXL-289 - Added self tests from iService2
 - EXL-301 - Implemented profile rights based on iService2
 - EXL-290 - Added hMarfa import
 - EXL-292 - Moved "Monthly plan" from iService2
