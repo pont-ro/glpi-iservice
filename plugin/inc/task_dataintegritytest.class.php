@@ -58,50 +58,54 @@ class PluginIserviceTask_DataIntegrityTest
         return self::$testCases;
     }
 
-    public function getDisplayResults($mode = 'detailed')
+    public function getResultsForHeaderIcons(): array
+    {
+        $result         = [];
+        $test_results   = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
+        $warning_count  = count($test_results['warning']);
+        $error_count    = count($test_results['error']);
+        $em_error_count = count($test_results['em_error']);
+        if ($em_error_count > 0) {
+            $result['em'] = [
+                'color_class' => 'text-warning',
+                'title' => $em_error_count . ' ' . __('EM errors', 'iservice'),
+            ];
+        } else {
+            $result['em'] = [
+                'color_class' => '',
+                'title' => __('No E-Maintenance errors detected', 'iservice'),
+            ];
+        }
+
+        $title = __('Data integrity test returned', 'iservice');
+        if ($warning_count + $error_count > 0) {
+            $result['notEm'] = [
+                'icon_class' => 'fa-exclamation-triangle badge',
+                'color_class'    => ($error_count > 0 ? 'text-danger' : 'text-warning'),
+                'title'    => $title . ' '
+                    . ($warning_count > 0 ? $warning_count . __(' warnings', 'iservice') : "")
+                    . (($warning_count > 0 && $error_count > 0) ? __(' and ', 'iservice') : "")
+                    . ($error_count > 0 ? $error_count . __(' errors', 'iservice') : ""),
+                'badge'   => str_pad($warning_count + $error_count, 2, '0', STR_PAD_LEFT),
+            ];
+        } else {
+            $result['notEm'] = [
+                'icon_class' => 'fa-check-circle',
+                'color_class'    => '',
+                'title'    => $title . 'no errors',
+                'badge'   => '',
+            ];
+        }
+
+        return $result;
+    }
+
+    public function displayResults($mode = 'detailed')
     {
         $start_time             = microtime(true);
         $cache_time_minutes_ago = time() - $this->getCacheFileCreationTime();
         $cache_time_ago         = 'acum ' . (($cache_time_minutes_ago < 90) ? "$cache_time_minutes_ago secunde" : (round($cache_time_minutes_ago / 60) . ' minute'));
         switch ($mode) {
-        case 'header':
-            $result         = [];
-            $test_results   = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
-            $warning_count  = count($test_results['warning']);
-            $error_count    = count($test_results['error']);
-            $em_error_count = count($test_results['em_error']);
-            if ($em_error_count > 0) {
-                $result['em'] = [
-                    'color_class' => 'text-warning',
-                    'title' => $em_error_count . ' ' . __('EM errors', 'iservice'),
-                ];
-            } else {
-                $result['em'] = [
-                    'color_class' => '',
-                    'title' => __('No E-Maintenance errors detected', 'iservice'),
-                ];
-            }
-
-            $title = __('Data integrity test returned', 'iservice');
-            if ($warning_count + $error_count > 0) {
-                $result['notEm'] = [
-                    'icon_class' => 'fa-exclamation-triangle badge',
-                    'color_class'    => ($error_count > 0 ? 'text-danger' : 'text-warning'),
-                    'title'    => $title . ' '
-                        . ($warning_count > 0 ? $warning_count . __(' warnings', 'iservice') : "")
-                        . (($warning_count > 0 && $error_count > 0) ? __(' and ', 'iservice') : "")
-                        . ($error_count > 0 ? $error_count . __(' errors', 'iservice') : ""),
-                    'badge'   => str_pad($warning_count + $error_count, 2, '0', STR_PAD_LEFT),
-                ];
-            } else {
-                $result['notEm'] = [
-                    'icon_class' => 'fa-check-circle',
-                    'color_class'    => '',
-                    'title'    => $title . 'no errors',
-                    'badge'   => '',
-                ];
-            }
-            return $result;
         case 'alert':
             $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
             if (count($test_results['alert']) < 1) {
@@ -160,7 +164,7 @@ class PluginIserviceTask_DataIntegrityTest
     function execute($called_from_display = false)
     {
         if (!$called_from_display) {
-            $this->getDisplayResults();
+            $this->displayResults();
             return;
         }
 
@@ -453,6 +457,7 @@ class PluginIserviceTask_DataIntegrityTest
 
                 return $hourMatch && $minuteMatch;
             }
+
         case 'weekdays':
             return in_array(date('w'), $scheduledDateValues);
         default:

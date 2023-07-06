@@ -49,7 +49,7 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
 }
 
 $fileName = PluginIserviceConfig::getConfigValue('emaintenance.csv_last_check_date_file');
-if (!file_exists($fileName) || (file_exists($fileName) && false === ($csv_check_date = @file_get_contents($fileName)))) {
+if (!file_exists($fileName) || false === ($csv_check_date = @file_get_contents($fileName))) {
     $csv_check_date = 'unknown';
 }
 

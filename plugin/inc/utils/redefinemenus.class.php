@@ -112,7 +112,7 @@ class RedefineMenus
             return [];
         }
 
-        $dataIntegrityTestResults = (new PluginIserviceTask_DataIntegrityTest())->getDisplayResults('header');
+        $dataIntegrityTestResults = (new PluginIserviceTask_DataIntegrityTest())->getResultsForHeaderIcons();
 
         return [
             '!em' => [

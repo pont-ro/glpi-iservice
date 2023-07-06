@@ -695,8 +695,8 @@ class PluginIserviceHtml {
         }
 
         if (Session::haveRight('plugin_iservice_admintask_DataIntegrityTest', READ)) {
-            $tester_task->getDisplayResults('em_alert');
-            $tester_task->getDisplayResults('alert');
+            $tester_task->displayResults('em_alert');
+            $tester_task->displayResults('alert');
         }
 
         // call static function callcron() every 5min
