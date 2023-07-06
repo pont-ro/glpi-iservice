@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIservicePartner extends Supplier
 {
     use PluginIserviceItem;
@@ -85,7 +87,7 @@ class PluginIservicePartner extends Supplier
      */
     public static function getFromTicketInput($input)
     {
-        $supplier_id = PluginIserviceCommon::getValueFromInput('_suppliers_id_assign', $input);
+        $supplier_id = IserviceToolBox::getValueFromInput('_suppliers_id_assign', $input);
 
         if (empty($supplier_id)) {
             return new self();
@@ -110,7 +112,7 @@ class PluginIservicePartner extends Supplier
      */
     static function getFromMagicLink()
     {
-        $magic_link           = PluginIserviceCommon::getInputVariable('id', null);
+        $magic_link           = IserviceToolBox::getInputVariable('id', null);
         $partner_customfields = new PluginFieldsSuppliercustomfield();
         if (!$partner_customfields->getFromDBByQuery("WHERE magic_link = '$magic_link' LIMIT 1")) {
             return null;

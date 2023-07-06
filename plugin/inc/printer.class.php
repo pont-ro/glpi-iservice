@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIservicePrinter extends Printer
 {
 
@@ -15,7 +17,7 @@ class PluginIservicePrinter extends Printer
     const ID_PLOTTER_TYPE = 33;
 
     /*
-     * @var PluginFieldsPrintercustomfield
+     * @var PluginFieldsPrinterprintercustomfield
      */
     public $customfields = null;
 
@@ -76,7 +78,7 @@ class PluginIservicePrinter extends Printer
         }
 
         if ($this->last_ticket === null) {
-            $last_ticket_ids   = PluginIserviceCommon::getQueryResult("select tickets_id from glpi_plugin_iservice_printers_last_tickets where printers_id = {$this->getID()}");
+            $last_ticket_ids   = IserviceToolBox::getQueryResult("select tickets_id from glpi_plugin_iservice_printers_last_tickets where printers_id = {$this->getID()}");
             $last_ticket_ids   = array_column($last_ticket_ids, 'tickets_id');
             $this->last_ticket = new PluginIserviceTicket();
             $this->last_ticket->getFromDB(array_pop($last_ticket_ids));
@@ -92,7 +94,7 @@ class PluginIservicePrinter extends Printer
         }
 
         if ($this->last_closed_ticket === null) {
-            $last_closed_ticket_ids   = PluginIserviceCommon::getQueryResult("select tickets_id from glpi_plugin_iservice_printers_last_closed_tickets where printers_id = {$this->getID()}");
+            $last_closed_ticket_ids   = IserviceToolBox::getQueryResult("select tickets_id from glpi_plugin_iservice_printers_last_closed_tickets where printers_id = {$this->getID()}");
             $last_closed_ticket_ids   = array_column($last_closed_ticket_ids, 'tickets_id');
             $this->last_closed_ticket = new PluginIserviceTicket();
             $this->last_closed_ticket->getFromDB(array_pop($last_closed_ticket_ids));
@@ -143,7 +145,7 @@ class PluginIservicePrinter extends Printer
         global $CFG_GLPI;
 
         $printer               = new Printer();
-        $printer_customfields  = new PluginFieldsPrintercustomfield();
+        $printer_customfields  = new PluginFieldsPrinterprintercustomfield();
         $supplier              = new Supplier();
         $supplier_customfields = new PluginFieldsSuppliercustomfield();
         $contract              = new Contract();
@@ -307,7 +309,7 @@ class PluginIservicePrinter extends Printer
 
         $output = "<table class='two-column' style='width:100%;'>";
 
-        $printer_customfields = new PluginFieldsPrintercustomfield();
+        $printer_customfields = new PluginFieldsPrinterprintercustomfield();
         if ($printer_customfields->getFromDBByItemsId($printer->getID()) === false) {
             $printer_customfields->getEmpty();
         }
@@ -443,7 +445,7 @@ class PluginIservicePrinter extends Printer
         $no_wrap_options = ['field_class' => 'nowrap'];
 
         $post_data = filter_input_array(INPUT_POST);
-        if (!PluginIserviceCommon::getInputVariable('modify_supplier')) {
+        if (!IserviceToolBox::getInputVariable('modify_supplier')) {
             if (isset($post_data['supplier'])) {
                 foreach ($post_data['supplier'] as $field_name => $field_value) {
                     $supplier->fields[$field_name] = $field_value;
@@ -540,7 +542,7 @@ class PluginIservicePrinter extends Printer
         $no_wrap_options = ['field_class' => 'nowrap'];
 
         $post_data = filter_input_array(INPUT_POST);
-        if (!PluginIserviceCommon::getInputVariable('modify_contract')) {
+        if (!IserviceToolBox::getInputVariable('modify_contract')) {
             if (isset($post_data['contract'])) {
                 foreach ($post_data['contract'] as $field_name => $field_value) {
                     $contract->fields[$field_name] = $field_value;
@@ -695,7 +697,7 @@ class PluginIservicePrinter extends Printer
 
     function getFromDB($ID)
     {
-        $this->customfields = new PluginFieldsPrintercustomfield();
+        $this->customfields = new PluginFieldsPrinterprintercustomfield();
         if (parent::getFromDB($ID)) {
             if (!$this->customfields->getFromDBByItemsId($ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
                 return false;
@@ -764,7 +766,7 @@ class PluginIservicePrinter extends Printer
 
     static function getInstalledCartridges($printer_id, $additional_condition = '')
     {
-        return PluginIserviceCommon::getQueryResult(
+        return IserviceToolBox::getQueryResult(
             "
                 select c.*, cfc.mercurycodefield mercury_code, cfc.mercurycodesfield compatible_mercury_codes, cfc.atcfield atc, ci.name, c.plugin_fields_typefielddropdowns_id type_id, tfd.completename type_name
                 from glpi_cartridges c

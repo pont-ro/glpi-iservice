@@ -1,7 +1,7 @@
 <?php
-global $CFG_PLUGIN_ISERVICE;
+
 return [
-    'file_name' => $CFG_PLUGIN_ISERVICE['hmarfa']['import']['errors'],
+    'file_name' => PluginIserviceConfig::getConfigValue('hmarfa.import.errors'),
     'test' => [
         'alert' => true,
         'type' => 'read_file',

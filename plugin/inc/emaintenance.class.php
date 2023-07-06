@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceEmaintenance extends MailCollector {
 
     const DEFAULT_EMAIL = 'emaintenance@expertline.ro';
@@ -31,9 +33,8 @@ class PluginIserviceEmaintenance extends MailCollector {
      * @return -1 : done but not finish 1 : done with success
      * */
     static function cronEm_Mailgate($task) {
-        global $CFG_PLUGIN_ISERVICE;
 
-        if (empty($CFG_PLUGIN_ISERVICE['enabled_crons']['em_mailgate'])) {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.em_mailgate'))) {
             $task->log("E-maintenance mailgate is disabled by configuration.\n");
             return -2;
         }
@@ -68,7 +69,7 @@ class PluginIserviceEmaintenance extends MailCollector {
             $email = self::DEFAULT_EMAIL;
         }
 
-        return PluginIserviceCommon::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0];
+        return IserviceToolBox::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0];
     }
 
     static function getCsvConfig($type = 'EM')
@@ -345,7 +346,7 @@ class PluginIserviceEmaintenance extends MailCollector {
 
                 $result[$id]['partner_resolved_name'] = $supplier->fields['name'];
 
-                $printer_movements = PluginIserviceCommon::getQueryResult("
+                $printer_movements = IserviceToolBox::getQueryResult("
                     select *
                     from glpi_plugin_iservice_movements m
                     join glpi_plugin_fields_ticketcustomfields cft on cft.movement_id = m.id
@@ -405,12 +406,11 @@ class PluginIserviceEmaintenance extends MailCollector {
         if (is_dir($import_file_path)) {
             $import_path = $import_file_path;
         } else {
-            global $CFG_PLUGIN_ISERVICE;
-            $import_path = $CFG_PLUGIN_ISERVICE['emaintenance']['import_default_path'];
+            $import_path = PluginIserviceConfig::getConfigValue('emaintenance.import_default_path');
         }
 
         $file_paths = [];
-        foreach (glob($import_path . DIRECTORY_SEPARATOR . "*.csv") as $file_path) {
+        foreach (glob("$import_path/*.csv") as $file_path) {
             if (!is_file($file_path)) {
                 continue;
             }
