@@ -1,0 +1,643 @@
+<?php
+
+// Imported from iService2, needs refactoring. Original file: "Printers.php".
+class PluginIserviceView_Printers extends PluginIserviceView
+{
+    protected $enable_emaintenance_data_import = true;
+
+    static function getTicketStatusDisplay($row_data)
+    {
+        global $CFG_GLPI;
+        $export_color                  = $row_data['data_exp_fact'] < date("Y-m-d", strtotime("-14days")) ? '_red' : '_green';
+        $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usageaddressfield] - $row_data[supplier_name]");
+        $actions                       = [
+            'readcounter' => [
+                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_READCOUNTER . "&items_id[Printer][0]=$row_data[printer_id]",
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/form_edit.png',
+                'title' => __('Read counter', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_READCOUNTER, CREATE),
+            ],
+            'add' => [
+                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATENORMAL . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&_users_id_assign=$row_data[tech_id]",
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_add.png',
+                'title' => __('New ticket'),
+                'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, CREATE),
+            ],
+            'add_quick' => [
+                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]",
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_lightning.png',
+                'title' => __('New quick ticket', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, CREATE),
+            ],
+            'move' => [],
+            'hMarfa' => [
+                'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/hmarfaexport.form.php?id=$row_data[printer_id]",
+                'icon' => $CFG_GLPI['root_doc'] . "/plugins/iservice/pics/app_go$export_color.png",
+                'title' => __('hMarfa export', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_hmarfa', READ),
+            ],
+            'list_ticket' => [
+                'link' => "view.php?view=operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$operations_filter_description",
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_detail.png',
+                'title' => __('Operations list', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
+            ],
+            'counters' => [
+                'link' => "view.php?view=printercounters2&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']),
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
+                'title' => __('Printer counters', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
+            ],
+            'cartridges' => [
+                'link' => "view.php?view=cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
+                'title' => __('Installable cartridges', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
+                'onclick' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[supplier_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printer_id]\", \"\", function(message) {\$(\"#popup_$row_data[printer_id]_\").html(message);});",
+                'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_'></div>",
+            ],
+            'invoices' => [
+                'link' => "view.php?view=partners&partners0[partener]=" . urlencode($row_data['supplier_name']) . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1&partners0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/price_alert.png',
+                'title' => __('Unpaid invoices', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_view_partners', READ),
+            ],
+        ];
+
+        if (($movement_id = PluginIserviceMovement::getOpenFor('Printer', $row_data['printer_id'])) !== false) {
+            $actions['move'] = [
+                'link' => "movement.form.php?id=$movement_id",
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/cog_red.png',
+                'title' => "Mutare nefinalizată",
+                'visible' => Session::haveRight('plugin_iservice_movement', READ),
+            ];
+        } elseif (($last_ticket_id = PluginIserviceTicket::getLastIdForPrinterOrSupplier(0, $row_data['printer_id'], true)) > 0) {
+            $actions['move']                = [
+                'link' => "ticket.form.php?id=$last_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE,
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/cog_orange.png',
+                'title' => "Există tichet deschis",
+                'visible' => Session::haveRight('plugin_iservice_movement', READ),
+            ];
+            $actions['add']['link_onclick'] = "onclick='return confirm(\"Există deja un tichet deschis. Doriți să continuați?\");'";
+        } else {
+            $actions['move'] = [
+                'link' => "movement.form.php?itemtype=Printer&items_id=$row_data[printer_id]",
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/cog.png',
+                'title' => __('Move', 'iservice') . " " . __('Printer', 'iservice'),
+                'visible' => Session::haveRight('plugin_iservice_movement', READ),
+            ];
+        }
+
+        $out = "<div id='row_actions_$row_data[printer_id]' class='actions collapsible' style='display:none'>";
+        foreach ($actions as $action) {
+            if (!isset($action['visible']) || $action['visible']) {
+                if (isset($action['onclick'])) {
+                    if ($action['onclick'] !== 'ajaxCall') {
+                        $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='$action[onclick]'>\r\n";
+                    } else {
+                        $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='ajaxCall(\"$action[link]\", \"$action[confirm]\", $action[success]);'>\r\n";
+                    }
+                } else {
+                    $onclick = $action['link_onclick'] ?? '';
+                    $out    .= "<a href='$action[link]' $onclick target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                }
+
+                if (isset($action['suffix'])) {
+                    $out .= $action['suffix'];
+                }
+            }
+        }
+
+        $out .= "<br><div id='ajax_selector_$row_data[printer_id]'></div>";
+        $out .= "</div>";
+
+        if (!empty($row_data['ticket_status'])) {
+            $out .= "&nbsp;" . Ticket::getStatusIcon($row_data['ticket_status']);
+        }
+
+        return $out;
+    }
+
+    static function getTicketStatusDisplayForExport($row_data)
+    {
+        return Ticket::getStatus($row_data['ticket_status']);
+    }
+
+    static function getTicketPrinterDisplay($row_data, $import_data)
+    {
+        global $CFG_GLPI;
+        $href    = $CFG_GLPI['root_doc'] . "/front/printer.form.php?id=$row_data[printer_id]";
+        $title   = "Număr contact: $row_data[contact_num]\r\nContact: $row_data[contact]\r\nObservații: $row_data[comment]\r\n\r\nLocatie: $row_data[location_complete_name]";
+        $printer = $row_data['printer_name'];
+        if ($row_data['emaintenance']) {
+            $title   .= "\r\n\r\nE-Maintenance " . ($row_data['disableem'] ? 'dezactivat' : 'activ');
+            $em_title = '';
+            $em_color = 'inherit';
+            if (!empty($import_data) && !isset($import_data[$row_data['spaceless_serial']])) {
+                $em_color = 'red';
+                $em_title = 'Aparatul nu există în fișierul de import';
+            } elseif ($row_data['disableem']) {
+                $em_color = 'orange';
+                $em_title = 'Aparatul este exclus din EM';
+            }
+
+            $printer .= " <span style='color:$em_color' title='$em_title'>[EM]</span>";
+        } elseif (isset($import_data[$row_data['spaceless_serial']])) {
+            $printer .= "<span style='color:deeppink' title='Aparatul există în fișierul de import, dar nu este setat în iService'> [EM]</span>";
+        }
+
+        if ($row_data['cartridge_management']) {
+            $printer .= " [CM]";
+            $title   .= "\r\n\r\nManagement de cartușe activ";
+            $style    = "color: green;";
+        } else {
+            $style = '';
+        }
+
+        if (stripos($row_data['external_user'], 'C_') === 0 || stripos($row_data['external_user'], 'S_') === 0 || !empty($row_data['supergroup'])) {
+            // if (!empty($row_data['supergroup']) || !empty($row_data['supergroup'])) {
+            $title   .= "\r\n";
+            $printer .= " [";
+            if (stripos($row_data['external_user'], 'C_') === 0 || stripos($row_data['external_user'], 'S_') === 0) {
+                // if (!empty($row_data['supergroup'])) {
+                $title   .= "\r\nUtilizator extern: $row_data[external_user]";
+                $printer .= "U";
+            }
+
+            if (!empty($row_data['supergroup'])) {
+                $title   .= "\r\nSupergrup: $row_data[supergroup]";
+                $printer .= "G";
+            }
+
+            $printer .= "]";
+            $style   .= 'font-style: italic;';
+        }
+
+        if (!empty($style)) {
+            $style = "style='$style'";
+        }
+
+        if (!Session::haveRight('plugin_iservice_interface_original', READ)) {
+            return $printer;
+        }
+
+        $title = htmlentities($title, ENT_QUOTES);
+        return "<a href='$href' title='$title' $style target='_blank'>$printer</a>";
+    }
+
+    static function getSupplierDisplay($row_data, $import_data)
+    {
+        $title = "Tel: $row_data[supplier_tel]\r\nFax: $row_data[supplier_fax]\r\nObservații: $row_data[supplier_comment]\r\nEmail trimis facturi: $row_data[supplier_email_facturi]";
+        $color = 'green';
+        if ($row_data['numar_facturi_neplatite'] >= 2) {
+            $color  = "red";
+            $title .= "\r\n\r\nPartenerul are " . $row_data['numar_facturi_neplatite'] . " facturi neplătite!";
+        } elseif ($row_data['numar_facturi_neplatite'] == 1) {
+            $color  = "orange";
+            $title .= "\r\n\r\nPartenerul are o factură neplătită!";
+        }
+
+        if ($row_data['supplier_deleted']) {
+            $color = "red";
+            $title = "PARTENER ȘTERS!\r\n\r\n$title";
+        }
+
+        return "<span style='color:$color' title='$title'>$row_data[supplier_name]</span>";
+    }
+
+    static function getLocationDisplay($row_data)
+    {
+        if (empty($row_data['cartridge_management'])) {
+            return $row_data['location_complete_name'] ?: '======';
+        }
+
+        $ticket                                   = new PluginIserviceTicket();
+        $ticket->fields['items_id']['Printer'][0] = $row_data['printer_id'];
+        $ticket->fields['_suppliers_id_assign']   = $row_data['supplier_id'];
+        $changeable_cartridges                    = PluginIserviceCartridgeItem::getChangeablesForTicket($ticket);
+        $title                                    = '';
+        $style                                    = '';
+        if (count($changeable_cartridges) > 0) {
+            foreach ($changeable_cartridges as $cartridge) {
+                $title .= $cartridge["name"];
+                if (!empty($cartridge['location_name'])) {
+                    $title .= " din locația $cartridge[location_completename]";
+                }
+
+                $title .= "\n$cartridge[cpt]\n\n";
+            }
+        } else {
+            if (!empty($row_data['location_parent_id']) && 0 < count($compatible_cartridges = PluginIserviceCartridgeItem::getChangeablesForTicket($ticket, ['ignore_location' => true]))) {
+                $title = __('You have compatible cartridges at other locations:', 'iservice') . "\n";
+                foreach ($compatible_cartridges as $cartridge) {
+                    $title .= $cartridge["name"];
+                    if (!empty($cartridge['location_name'])) {
+                        $title .= " din locația $cartridge[location_completename]";
+                    }
+
+                    $title .= "\n$cartridge[cpt]\n\n";
+                }
+
+                $style = "style='color: orange'";
+            } else {
+                $title = __('You have no compatible cartridges!', 'iservice');
+                $style = "style='color: red'";
+            }
+        }
+
+        return "<span title='$title' $style>" . ($row_data['location_complete_name'] ?: '======') . "</span>";
+    }
+
+    static function getOtherSerialDisplay($row_data)
+    {
+        if ($row_data['noinvoicefield']) {
+            return "<span class='error' title='Aparat exclus din facturare'>" . $row_data['otherserial'] . "</span>";
+        }
+
+        return $row_data['otherserial'];
+    }
+
+    static function getSerialDisplay($row_data)
+    {
+        if (!Session::haveRight('plugin_iservice_printer', READ)) {
+            return $row_data['serial'];
+        }
+
+        if (!empty($row_data['gps'])) {
+            $style = "style='color:blue;font-style:italic;'";
+            $gps   = "\n(GPS: $row_data[gps])";
+        } else {
+            $gps   = "";
+            $style = "";
+        }
+
+        $link = "<a href='printer.form.php?id=$row_data[printer_id]' title='" . __('Manage printer', 'iservice') . "$gps' $style>$row_data[serial]</a>";
+        return $link;
+    }
+
+    static function getDataExpFactDisplay($row_data)
+    {
+        return "<span title='Data factură: $row_data[data_fact]'>" . date('Y-m-d', strtotime($row_data['data_exp_fact'])) . "</span>";
+    }
+
+    protected function getRightCondition($printer_table_alias = 'p.')
+    {
+        $right_condition = '';
+        if (!Session::haveRight('plugin_iservice_ticket_all_printers', READ)) {
+            $printer_conditions = [];
+            if (Session::haveRight('plugin_iservice_ticket_own_printers', READ)) {
+                $printer_conditions[] = "{$printer_table_alias}users_id = " . $_SESSION['glpiID'];
+            }
+
+            if (Session::haveRight('plugin_iservice_ticket_assigned_printers', READ)) {
+                $printer_conditions[] = "{$printer_table_alias}users_id_tech = " . $_SESSION['glpiID'];
+            }
+
+            if (Session::haveRight('plugin_iservice_ticket_group_printers', READ) && !empty($_SESSION['glpigroups'])) {
+                $printer_conditions[] = "{$printer_table_alias}groups_id IN (" . join(',', $_SESSION['glpigroups']) . ")";
+            }
+
+            if (count($printer_conditions) > 0) {
+                $right_condition .= "AND (" . join(' OR ', $printer_conditions) . ')';
+            }
+        }
+
+        return $right_condition;
+    }
+
+    protected function getSettings()
+    {
+        global $CFG_GLPI;
+
+        $printer_counters_button = PluginIserviceCommon::inProfileArray('client') ? '' :
+            "<a class='vsubmit' href='view.php?view=printercounters2' target='_blank'>" . __('Printer counters', 'iservice') . " v2</a>";
+
+        $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', PluginIserviceCommon::getInputVariable('import_file', '')) : '';
+        if ($this->enable_emaintenance_data_import) {
+            $this->import_data = PluginIserviceEmaintenance::getDataFromCsvs(PluginIserviceEmaintenance::getImportFilePaths(PluginIserviceCommon::getInputVariable('import_file', '')));
+        }
+
+        $import = PluginIserviceCommon::getArrayInputVariable('import');
+        if (!empty($import)) {
+            $printer_customfields = new PluginFieldsPrintercustomfield();
+            $emaintenance_query   = "select " . PluginIservicePrinter::getSerialFieldForEM() . " id, pc.id customfield_id from glpi_plugin_fields_printercustomfields pc join glpi_printers p on p.id = pc.items_id and pc.itemtype='Printer' where pc.emaintenancefield = 1";
+            foreach (PluginIserviceCommon::getQueryResult($emaintenance_query) as $id => $printer_customfield) {
+                if (!array_key_exists($id, $this->import_data)) {
+                    $printer_customfields->update(
+                        [
+                            'id' => $printer_customfield['customfield_id'],
+                            'emaintenancefield' => 0
+                        ]
+                    );
+                }
+            }
+
+            foreach ($this->import_data as $id => $import_data) {
+                if (!empty($import_data['error'])) {
+                    continue;
+                }
+
+                if ($printer_customfields->getFromDBByQuery("JOIN glpi_printers p ON p.id = items_id and itemtype = 'Printer' AND p.is_deleted = 0 WHERE " . PluginIservicePrinter::getSerialFieldForEM() . " = '$id' LIMIT 1")) {
+                    $printer_customfields->update(
+                        [
+                            'id' => $printer_customfields->getID(),
+                            'emaintenancefield' => 1
+                        ]
+                    );
+                }
+            }
+        }
+
+        if (false !== ($cid = PluginIserviceCommon::getInputVariable('cid', false))) {
+            $contract_title     = " pentru contractul " . PluginIserviceCommon::getInputVariable('contract_name');
+            $contract_join      = "LEFT JOIN glpi_contracts_items ci on ci.items_id = p.id and ci.itemtype = 'Printer'";
+            $contract_condition = "AND ci.contracts_id = $cid";
+        } else {
+            $contract_title     = '';
+            $contract_join      = '';
+            $contract_condition = '';
+        }
+
+        return [
+            'name' => __('Printer list', 'iservice') . $contract_title,
+            'prefix' => "
+                        <div class='printonly'>
+                            <table style='width:40%;float:right;'><tr>
+                                <td style='width:20%'>Data efectiva</td>
+                                <td style='border: 1px solid;width:80%;height:2em;'>&nbsp;</td>
+                            </tr><tr>
+                                <td style='width:20%'>Tehnician</td>
+                                <td style='border: 1px solid;width:80%;height:2em;'>&nbsp;</td>
+                            </tr></table>
+                        </div>
+                        <div style='clear:both'></div>
+                        ",
+            'insert_empty_rows' => [
+                'count' => 1,
+                'content' => "Observatii + valori contoare: ",
+                'row_class' => 'printonly',
+                'row_style' => 'height: 10em;',
+                'cell_style' => 'border-top:1px solid #CCC;border-bottom:1px solid #CCC;',
+            ],
+            'query' => "
+                        SELECT
+                              p.id printer_id
+                            , p.original_name printer_name
+                            , p.otherserial
+                            , p.serial
+                            , " . PluginIservicePrinter::getSerialFieldForEM('p') . " spaceless_serial
+                            , p.contact_num
+                            , p.contact
+                            , p.comment
+                            , pt.name printer_type
+                            , st.name printer_status
+                            , plt.status ticket_status
+                            , s.id supplier_id
+                            , s.name supplier_name
+                            , s.phonenumber supplier_tel
+                            , s.fax supplier_fax
+                            , s.comment supplier_comment
+                            , s.is_deleted supplier_deleted
+                            , l.completename location_complete_name
+                            , l.locations_id location_parent_id
+                            , u.id tech_id
+                            , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_name
+                            , ue.name external_user
+                            , g.completename supergroup
+                            , plt.data_luc last_data_luc
+                            , plt.total2_black last_total2_black
+                            , cfp.total2_black_fact
+                            , plt.total2_color last_total2_color
+                            , cfp.total2_color_fact
+                            , cfp.data_exp_fact
+                            , CAST(cfp.data_fact as DATE) data_fact
+                            , cfp.week_nr
+                            , cfp.emaintenancefield emaintenance
+                            , cfp.disableemfield disableem
+                            , cfp.gps
+                            , cfp.usageaddressfield
+                            , cfp.noinvoicefield
+                            , cfs.part_email_f1 supplier_email_facturi
+                            , cfs.cartridge_management
+                            , t2.codbenef
+                            , t2.numar_facturi_neplatite
+                        FROM glpi_plugin_iservice_printers p
+                        LEFT JOIN glpi_plugin_iservice_printers_last_tickets plt ON plt.printers_id = p.id
+                        LEFT JOIN glpi_printertypes pt ON pt.id = p.printertypes_id
+                        LEFT JOIN glpi_infocoms i ON i.items_id = p.id and i.itemtype = 'Printer'
+                        LEFT JOIN glpi_suppliers s ON s.id = i.suppliers_id
+                        LEFT JOIN glpi_locations l ON l.id = p.locations_id
+                        LEFT JOIN glpi_users u ON u.id = p.users_id_tech
+                        LEFT JOIN glpi_users ue ON ue.id = p.users_id
+                        LEFT JOIN glpi_groups g ON g.id = p.groups_id
+                        LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.items_id = p.id and cfp.itemtype = 'Printer'
+                        LEFT JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = s.id and cfs.itemtype = 'Supplier'
+                        LEFT JOIN glpi_states st ON st.id = p.states_id
+                        LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite
+                                   FROM hmarfa_facturi 
+                                   WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
+                                   AND valinc-valpla > 0
+                                   GROUP BY codbenef) t2 ON t2.codbenef = cfs.cod_hmarfa
+                        $contract_join
+                        WHERE p.is_deleted = 0 {$this->getRightCondition()} $contract_condition
+                            AND p.original_name LIKE '[printer_name]'
+                            AND p.otherserial LIKE '[otherserial]'
+                            AND p.serial LIKE '[serial]'
+                            AND ((s.name is null AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
+                            AND ((cfp.usageaddressfield is null AND '[usageaddressfield]' = '%%') OR cfp.usageaddressfield LIKE '[usageaddressfield]')
+                            AND ((l.completename is null AND '[printer_location]' = '%%') OR l.completename LIKE '[printer_location]')
+                            AND ((st.name is null AND '[printer_status]' = '%%') OR st.name LIKE '[printer_status]')
+                            AND ((cfp.week_nr is null AND '[week_nr]' = '%%') OR cfp.week_nr LIKE '[week_nr]')
+                            [tech_id]
+                            [supplier_id]
+                            [em_disabled]
+                        GROUP BY p.id
+                        ",
+            'default_limit' => 30,
+            'id_field' => 'printer_id',
+            'itemtype' => 'printer',
+            'mass_actions' => [
+                'group_read' => [
+                    'caption' => 'Citire globală',
+                    'action' => 'view.php?view=global_readcounter',
+                ],
+                'mass_invoice' => [
+                    'caption' => 'Facturează',
+                    'action' => 'hmarfaexport.form.php?mode=3'
+                ],
+            ],
+            'filters' => [
+                'filter_buttons_prefix' => "$import_button $printer_counters_button",
+                'supplier_id' => [
+                    'type' => self::FILTERTYPE_HIDDEN,
+                    'format' => "AND s.id = %d",
+                    'cache_override' => [
+                        'format' => "AND supplier_id = %d",
+                    ],
+                ],
+                'printer_name' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Nume',
+                    'format' => '%%%s%%',
+                    'header' => 'printer_name',
+                ],
+                'em_disabled' => [
+                    'type' => self::FILTERTYPE_CHECKBOX,
+                    'format' => 'AND cfp.disableemfield = 1',
+                    'header' => 'printer_name',
+                    'header_caption' => 'Doar cele excluse din EM ',
+                    'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
+                ],
+                'supplier_name' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Partener',
+                    'format' => '%%%s%%',
+                    'header' => 'supplier_name',
+                ],
+                'tech_id' => [
+                    'type' => self::FILTERTYPE_USER,
+                    'caption' => 'Responsabil',
+                    'format' => 'AND u.id = %d',
+                    'header' => 'tech_name',
+                    'glpi_class_params' => ['right' => 'own_ticket'],
+                    'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
+                    'cache_override' => [
+                        'format' => "AND tech_id = %d",
+                    ],
+                ],
+                'otherserial' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Număr inventar',
+                    'format' => '%%%s%%',
+                    'header' => 'otherserial',
+                ],
+                'serial' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Număr serie',
+                    'format' => '%%%s%%',
+                    'header' => 'serial',
+                ],
+                'printer_status' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Status',
+                    'format' => '%%%s%%',
+                    'header' => 'printer_status',
+                ],
+                'usageaddressfield' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Adresa de exploatare',
+                    'format' => '%%%s%%',
+                    'header' => 'usageaddressfield',
+                ],
+                'week_nr' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'format' => '%%%s%%',
+                    'header' => 'week_nr',
+                    'style' => 'width: 1em;'
+                ],
+                'printer_location' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Locație',
+                    'format' => '%%%s%%',
+                    'header' => 'location_complete_name',
+                ],
+            ],
+            'columns' => [
+                'ticket_status' => [
+                    'title' => '',
+                    'format' => 'function:PluginIserviceView_Printers::getTicketStatusDisplay($row);',
+                    'export_format' => 'function:PluginIserviceView_Printers::getTicketStatusDisplayForExport($row);',
+                    'align' => 'center',
+                    'class' => 'noprint no-wrap',
+                ],
+                'printer_name' => [
+                    'title' => 'Nume',
+                    'format' => 'function:PluginIserviceView_Printers::getTicketPrinterDisplay($row, $this->import_data);',
+                ],
+                'supplier_name' => [
+                    'title' => 'Partener',
+                    'format' => 'function:PluginIserviceView_Printers::getSupplierDisplay($row, $this->import_data);',
+                    'link' => [
+                        'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
+                        'target' => '_blank',
+                        'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
+                    ]
+                ],
+                'location_complete_name' => [
+                    'title' => 'Locație',
+                    'format' => 'function:PluginIserviceView_Printers::getLocationDisplay($row);',
+                    'visible' => !self::inProfileArray('client'),
+                ],
+                'usageaddressfield' => [
+                    'title' => 'Adresa de exploatare',
+                    'editable' => true,
+                    'edit_settings' => [
+                        'callback' => 'managePrinter',
+                        'operation' => 'set_usageaddressfield'
+                    ]
+                ],
+                'tech_name' => [
+                    'title' => 'Responsabil',
+                    'link' => [
+                        'href' => $CFG_GLPI['root_doc'] . '/front/user.form.php?id=[tech_id]',
+                        'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
+                    ],
+                    'visible' => !self::inProfileArray('client'),
+                ],
+                'otherserial' => [
+                    'title' => 'Număr inventar',
+                    'format' => 'function:PluginIserviceView_Printers::getOtherSerialDisplay($row);',
+                    'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
+                ],
+                'serial' => [
+                    'title' => 'Număr serie',
+                    'format' => 'function:PluginIserviceView_Printers::getSerialDisplay($row);',
+                ],
+                'last_data_luc' => [
+                    'title' => 'Data lucrare u.i.',
+                    'default_sort' => 'DESC',
+                    'style' => 'white-space: nowrap;',
+                ],
+                'last_total2_black' => [
+                    'title' => 'Black2 u.i.',
+                ],
+                'total2_black_fact' => [
+                    'title' => 'Black2 facturat',
+                    'visible' => !self::inProfileArray('client'),
+                ],
+                'last_total2_color' => [
+                    'title' => 'Color2 u.i.',
+                ],
+                'total2_color_fact' => [
+                    'title' => 'Color2 facturat',
+                    'visible' => !self::inProfileArray('client'),
+                ],
+                'data_exp_fact' => [
+                    'title' => 'Data exp.<br>factură',
+                    'style' => 'white-space: nowrap;',
+                    'format' => 'function:default',  // this will call PluginIserviceView_Printers::getDataExpFactDisplay($row);
+                    'visible' => !self::inProfileArray('client'),
+                ],
+                'week_nr' => [
+                    'title' => 'Nr.<br>săpt.',
+                    'class' => 'noprint',
+                    'align' => 'center',
+                    'visible' => !self::inProfileArray('client'),
+                ],
+                'printer_status' => [
+                    'title' => 'Status',
+                    'visible' => !self::inProfileArray('client'),
+                ],
+                'ticket_number' => [
+                    'title' => 'Numar tichet',
+                    'value' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                    'class' => 'printonly',
+                    'style' => 'border: 1px solid;min-height:2em;',
+                    'header_style' => '',
+                    'footer_style' => '',
+                ],
+            ],
+        ];
+    }
+
+}
