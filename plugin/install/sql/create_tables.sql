@@ -280,11 +280,202 @@ create table if not exists `hmarfa_tran` (
     index `hmarfa_tran_dataint_idx` (`dataint`)
 );
 
-create or replace view hmarfa_total_facturi as
-select
-    `f`.`codbenef` as `codbenef`,
-    count(`f`.`nrfac`) as `numar_facturi`,
-    sum(`f`.`valinc` - `f`.`valpla`) as `total_facturi`
-from `hmarfa_facturi` `f`
-where `f`.`tip` like 'tf%' and `f`.`valinc` - `f`.`valpla` > 0
-group by `f`.`codbenef`;
+create table `glpi_plugin_iservice_consumables_tickets` (
+    `id` int(11) not null auto_increment,
+    `locations_id` int(11) not null default '0',
+    `create_cartridge` tinyint(1) not null default '0',
+    `tickets_id` int(11) not null default '0',
+    `plugin_iservice_consumables_id` varchar(15) not null default '0',
+    `plugin_fields_typefielddropdowns_id` int(11) null default null,
+    `amount` decimal(11,2) not null default '0.00',
+    `price` decimal(11,2) not null default '0.00',
+    `euro_price` tinyint(1) not null default '0',
+    `new_cartridge_ids` varchar(200) null default null,
+    primary key (`id`),
+    unique index `unique_ticket_consumables` (`tickets_id`, `plugin_iservice_consumables_id`),
+    index `tickets_id` (`tickets_id`),
+    index `locations_id` (`locations_id`),
+    index `new_cartridge_ids` (`new_cartridge_ids`),
+    index `amount` (`amount`),
+    index `plugin_iservice_consumables_id` (`plugin_iservice_consumables_id`),
+    index `plugin_fields_typefielddropdowns_id` (`plugin_fields_typefielddropdowns_id`)
+);
+
+create table `glpi_plugin_iservice_cartridges_tickets` (
+    `id` int(11) not null auto_increment,
+    `tickets_id` int(11) not null default '0',
+    `cartridges_id` int(11) not null default '0',
+    `locations_id` int(11) not null default '0',
+    `plugin_fields_typefielddropdowns_id` int(11) not null default '0',
+    `cartridges_id_emptied` int(11) null default null,
+    primary key (`id`),
+    unique index `unique_ticket_cartridges` (`tickets_id`, `cartridges_id`),
+    index `tickets_id` (`tickets_id`),
+    index `cartridges_id` (`cartridges_id`),
+    index `locations_id` (`locations_id`),
+    index `plugin_fields_typefielddropdowns_id` (`plugin_fields_typefielddropdowns_id`),
+    index `cartridges_id_emptied` (`cartridges_id_emptied`)
+);
+
+create table `glpi_plugin_iservice_intorders` (
+    `id` int(11) not null auto_increment,
+    `tickets_id` int(11) null default null,
+    `plugin_iservice_consumables_id` varchar(15) not null default '0',
+    `amount` decimal(11,2) not null,
+    `deadline` date not null default '0000-00-00',
+    `users_id` int(11) not null,
+    `plugin_iservice_orderstatuses_id` int(11) not null default '0',
+    `content` text null default null,
+    `create_date` timestamp not null default current_timestamp(),
+    `modify_date` timestamp not null default '0000-00-00 00:00:00',
+    primary key (`id`),
+    index `plugin_frontim_consumables_id` (`plugin_iservice_consumables_id`),
+    index `deadline` (`deadline`),
+    index `users_id` (`users_id`),
+    index `plugin_frontim_orderstatues_id` (`plugin_iservice_orderstatuses_id`),
+    index `tickets_id` (`tickets_id`),
+    index `plugin_iservice_consumables_id` (`plugin_iservice_consumables_id`),
+    index `plugin_iservice_orderstatues_id` (`plugin_iservice_orderstatuses_id`)
+);
+
+create table `glpi_plugin_iservice_intorders_extorders` (
+    `id` int(11) not null auto_increment,
+    `plugin_iservice_extorders_id` int(11) not null,
+    `plugin_iservice_intorders_id` int(11) not null,
+    primary key (`id`),
+    index `plugin_frontim_extorders_id` (`plugin_iservice_extorders_id`),
+    index `plugin_frontim_intorders_id` (`plugin_iservice_intorders_id`),
+    index `plugin_iservice_extorders_id` (`plugin_iservice_extorders_id`),
+    index `plugin_iservice_intorders_id` (`plugin_iservice_intorders_id`)
+);
+
+create table `glpi_plugin_iservice_orderstatuses` (
+    `id` int(11) not null auto_increment,
+    `name` varchar(100) not null,
+    `comment` text null default null,
+    `weight` int(4) not null default '0',
+    primary key (`id`)
+);
+
+create table `glpi_plugin_iservice_ememails` (
+    `id` int(11) not null auto_increment,
+    `date` timestamp null default null,
+    `from` varchar(100) null default null,
+    `to` varchar(100) null default null,
+    `subject` varchar(255) null default null,
+    `body` text null default null,
+    `printers_id` int(11) null default null,
+    `suppliers_id` int(11) null default null,
+    `users_id_tech` int(11) null default null,
+    `suggested` text null default null,
+    `process_result` text null default null,
+    `read` int(1) not null default '0',
+    primary key (`id`)
+);
+
+create table `glpi_plugin_iservice_extorders` (
+    `id` int(11) not null auto_increment,
+    `users_id` int(11) not null,
+    `suppliers_id` int(11) not null,
+    `plugin_iservice_orderstatuses_id` int(11) not null,
+    `content` text null default null,
+    `create_date` timestamp not null default current_timestamp(),
+    `modify_date` timestamp not null default '0000-00-00 00:00:00',
+    primary key (`id`),
+    index `users_id` (`users_id`),
+    index `suppliers_id` (`suppliers_id`),
+    index `plugin_frontim_orderstatues_id` (`plugin_iservice_orderstatuses_id`),
+    index `plugin_iservice_orderstatues_id` (`plugin_iservice_orderstatuses_id`)
+);
+
+create table `glpi_plugin_iservice_orderstatuschanges` (
+    `id` int(11) not null auto_increment,
+    `orders_id` int(11) not null,
+    `type` varchar(50) not null,
+    `plugin_iservice_orderstatuses_id_old` int(11) not null,
+    `plugin_iservice_orderstatuses_id_new` int(11) not null,
+    `users_id` int(11) not null,
+    `date` timestamp not null default current_timestamp(),
+    primary key (`id`),
+    index `orders_id` (`orders_id`),
+    index `type` (`type`),
+    index `orderstatuses_id_old` (`plugin_iservice_orderstatuses_id_old`),
+    index `orderstatuses_id_new` (`plugin_iservice_orderstatuses_id_new`)
+);
+
+create table `glpi_plugin_iservice_consumables_models` (
+    `id` int(11) not null auto_increment,
+    `plugin_iservice_consumables_id` varchar(15) not null default '0',
+    `printermodels_id` int(11) not null default '0',
+    primary key (`id`)
+);
+
+create table `glpi_plugin_iservice_minimum_stocks` (
+	`id` int(11) not null auto_increment,
+	`plugin_iservice_consumables_id` varchar(15) not null default '0',
+	`minimum_stock` int(11) not null default '0',
+	primary key (`id`)
+);
+
+create table `glpi_plugin_iservice_movements` (
+    `id` int(11) not null auto_increment,
+    `itemtype` varchar(255) not null,
+    `tickets_id` int(11) not null,
+    `items_id` int(11) not null,
+    `suppliers_id_old` int(11) not null,
+    `suppliers_id` int(11) not null,
+    `init_date` timestamp not null default current_timestamp(),
+    `invoice` int(1) null default null,
+    `users_id` int(11) null default null,
+    `states_id` int(11) null default null,
+    `locations_id` int(11) null default null,
+    `usage_address` varchar(255) null default null,
+    `week_number` int(11) null default null,
+    `users_id_tech` int(11) null default null,
+    `groups_id` int(11) null default null,
+    `contact` varchar(255) null default null,
+    `contact_num` varchar(255) null default null,
+    `contracts_id` int(11) null default null,
+    `dba` decimal(10,0) null default null,
+    `dca` decimal(10,0) null default null,
+    `total2_black_fact` int(11) null default null,
+    `total2_color_fact` int(11) null default null,
+    `data_fact` date null default null,
+    `data_exp_fact` date null default null,
+    `disableem` tinyint(1) not null default '0',
+    `snoozereadcheck` date null default null,
+    `moved` int(1) not null default '0',
+    `type` varchar(20) not null,
+    primary key (`id`),
+    index `tickets_id` (`tickets_id`),
+    index `items_id` (`items_id`),
+    index `itemtype` (`itemtype`),
+    index `suppliers_id_old` (`suppliers_id_old`),
+    index `suppliers_id` (`suppliers_id`)
+);
+
+create table `glpi_plugin_iservice_downloads` (
+    `id` int(11) not null auto_increment,
+    `downloadtype` varchar(20) not null default '',
+    `items_id` varchar(50) not null default '',
+    `date` timestamp not null default current_timestamp(),
+    `ip` varchar(15) not null default '0.0.0.0',
+    `users_id` int(11) not null default '0',
+    primary key (`id`),
+    index `downloadtype` (`downloadtype`),
+    index `items_id` (`items_id`),
+    index `users_id` (`users_id`)
+);
+
+create table `glpi_plugin_iservice_pendingemails` (
+    `id` int(11) not null auto_increment,
+    `printers_id` int(11) not null,
+    `refresh_time` timestamp not null default current_timestamp(),
+    `invoice` varchar(20) null default null,
+    `mail_to` varchar(200) null default null,
+    `subject` varchar(100) null default null,
+    `body` text null default null,
+    `attachment` varchar(250) null default null,
+    primary key (`id`),
+    index `printers_id` (`printers_id`)
+);
