@@ -65,7 +65,7 @@ class PluginIserviceDB extends DB
         }
 
         $tableName = $object->getTable();
-        $query = "select `$tableName`.* from `$tableName` $query" . ($limit ? " limit 1" : '');
+        $query     = "select `$tableName`.* from `$tableName` $query" . ($limit ? " limit 1" : '');
 
         if (false === ($result = $db->query($query)) || $result === true || $db->numrows($result) !== 1) {
             if ($db->numrows($result) > 1) {
