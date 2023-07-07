@@ -2,10 +2,9 @@
 
 namespace GlpiPlugin\Iservice\Utils;
 
-use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-use \Session;
-use \PluginIserviceDB;
-use \PluginIserviceTask_DataIntegrityTest;
+use PluginIserviceDB;
+use PluginIserviceTask_DataIntegrityTest;
+use Session;
 
 class RedefineMenus
 {
@@ -90,7 +89,7 @@ class RedefineMenus
         $serializedParams = '{' . implode(', ', $hmarfa_action_javascriptArray) . '}';
 
         $hmarfa_import_lastrun_array = PluginIserviceDB::getQueryResult("select lastrun from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
-        $hmarfa_import_lastrun       = $hmarfa_import_lastrun_array['0']['lastrun'];
+        $hmarfa_import_lastrun       = $hmarfa_import_lastrun_array['0']['lastrun'] ?? '';
         $hmarfa_button_color_class   = '';
 
         $hmarfa_import_time_diff = abs(time() - strtotime($hmarfa_import_lastrun)) / (60 * 60);

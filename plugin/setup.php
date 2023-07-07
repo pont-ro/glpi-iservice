@@ -1,8 +1,8 @@
 <?php
 
-use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Iservice\Utils\HtaccessChecker;
+use GlpiPlugin\Iservice\Utils\ViewsMenu;
 
 define('ISERVICE_VERSION', '0.0.1');
 
@@ -18,8 +18,16 @@ if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
     define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iservice");
 }
 
+if (!file_exists(PLUGIN_ISERVICE_DOC_DIR)) {
+    mkdir(PLUGIN_ISERVICE_DOC_DIR);
+}
+
 if (!defined("PLUGIN_ISERVICE_CACHE_DIR")) {
     define("PLUGIN_ISERVICE_CACHE_DIR", PLUGIN_ISERVICE_DOC_DIR . "/cache");
+}
+
+if (!file_exists(PLUGIN_ISERVICE_CACHE_DIR)) {
+    mkdir(PLUGIN_ISERVICE_CACHE_DIR);
 }
 
 /**
