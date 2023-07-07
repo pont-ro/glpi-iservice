@@ -192,7 +192,7 @@ class PluginIservicePrinter extends Printer
 
                 // Contract data.
                 $contract_item = new Contract_Item();
-                if (!$contract_item->getFromDBByQuery("WHERE items_id = $printer_id AND itemtype = 'Printer' LIMIT 1")) {
+                if (!PluginIserviceDB::populateByItemsId($contract_item, $printer_id, 'Printer')) {
                     $contract->getEmpty();
                     $contract_customfields->getEmpty();
                 } else {
@@ -699,7 +699,7 @@ class PluginIservicePrinter extends Printer
     {
         $this->customfields = new PluginFieldsPrinterprintercustomfield();
         if (parent::getFromDB($ID)) {
-            if (!$this->customfields->getFromDBByItemsId($ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
+            if (!PluginIserviceDB::popuplateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
                 return false;
             }
 
@@ -711,26 +711,29 @@ class PluginIservicePrinter extends Printer
         return false;
     }
 
-    function getFromDBByEMSerial($serial, $use_cm_condition = false)
+    public function getFromDBByEMSerial($serial, $use_cm_condition = false)
     {
+        $printer_table    = PluginIservicePrinter::getTable();
         $spaceless_serial = str_replace(" ", "", $serial);
+
         if ($use_cm_condition) {
-            $printer_table = PluginIservicePrinter::getTable();
-            $join          = "JOIN glpi_infocoms i ON i.items_id = $printer_table.id and i.itemtype = 'Printer' JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = i.suppliers_id and cfs.itemtype = 'Supplier'";
-            $cm_condition  = "AND " . self::getCMCondition('cfs.cartridge_management', "$printer_table.printertypes_id", "$printer_table.states_id");
+            $join         = "JOIN glpi_infocoms i ON i.items_id = $printer_table.id and i.itemtype = 'Printer' JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = i.suppliers_id and cfs.itemtype = 'Supplier'";
+            $cm_condition = "AND " . self::getCMCondition('cfs.cartridge_management', "$printer_table.printertypes_id", "$printer_table.states_id");
         } else {
             $join         = "";
             $cm_condition = "";
         }
 
-        if ($this->getFromDBByQuery("$join WHERE " . self::getSerialFieldForEM() . " = '$spaceless_serial' AND is_deleted = 0 $cm_condition LIMIT 1")) {
-            return $this->getFromDB($this->getID());
+        $result = PluginIserviceDB::getQueryResult("SELECT `id` from $printer_table $join WHERE " . self::getSerialFieldForEM() . " = '$spaceless_serial' AND is_deleted = 0 $cm_condition LIMIT 1");
+
+        if (!$result) {
+            return false;
         }
 
-        return false;
+        return $this->getFromDB(array_pop($result)['id']);
     }
 
-    function getSpacelessSerial()
+    public function getSpacelessSerial()
     {
         if (empty($this->fields['serial'])) {
             return '';

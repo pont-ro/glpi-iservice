@@ -113,8 +113,8 @@ class PluginIservicePartner extends Supplier
     static function getFromMagicLink()
     {
         $magic_link           = IserviceToolBox::getInputVariable('id', null);
-        $partner_customfields = new PluginFieldsSuppliercustomfield();
-        if (!$partner_customfields->getFromDBByQuery("WHERE magic_link = '$magic_link' LIMIT 1")) {
+        $partner_customfields = new PluginFieldsSuppliersuppliercustomfield();
+        if (!PluginIserviceDB::populateByQuery($partner_customfields, "WHERE magic_link = '$magic_link' LIMIT 1")) {
             return null;
         }
 

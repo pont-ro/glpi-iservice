@@ -959,7 +959,7 @@ class PluginIserviceTicket extends Ticket
             $join_and_condition = self::getConditionForPrinter($printer_id, $open, $order, $additional_condition, $additional_join);
         }
 
-        if ($object->getFromDBByQuery("$join_and_condition LIMIT 1")) {
+        if (PluginIserviceDB::populateByQuery($object, $join_and_condition, true)) {
             return $object->fields['tickets_id'];
         }
 
@@ -1205,8 +1205,8 @@ class PluginIserviceTicket extends Ticket
         }
 
         if ($prepared_data['field_hidden']['_movement_id']) {
-            $ticket_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_customfields->getFromDBByQuery("WHERE movement_id = " . IserviceToolBox::getInputVariable('movement_id', -2) . " LIMIT 1")) {
+            $ticket_customfields = new PluginFieldsTicketticketcustomfield();
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement_id = " . IserviceToolBox::getInputVariable('movement_id', -2), true)) {
                 Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement_id')));
             }
 
@@ -1216,8 +1216,8 @@ class PluginIserviceTicket extends Ticket
         }
 
         if ($prepared_data['field_hidden']['_movement2_id']) {
-            $ticket_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_customfields->getFromDBByQuery("WHERE movement2_id = " . IserviceToolBox::getInputVariable('movement2_id', -2) . " LIMIT 1")) {
+            $ticket_customfields = new PluginFieldsTicketticketcustomfield();
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement2_id = " . IserviceToolBox::getInputVariable('movement2_id', -2), true)) {
                 Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement2_id')));
             }
 
@@ -1227,8 +1227,8 @@ class PluginIserviceTicket extends Ticket
         }
 
         if ($prepared_data['field_hidden']['_idemmailfield']) {
-            $ticket_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_customfields->getFromDBByQuery("WHERE idemmailfield = " . IserviceToolBox::getInputVariable('idemmailfield', -2) . " LIMIT 1")) {
+            $ticket_customfields = new PluginFieldsTicketticketcustomfield();
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE idemmailfield = " . IserviceToolBox::getInputVariable('idemmailfield', -2), true)) {
                 Html::displayErrorAndDie(sprintf(__("Ticket already exists for [EM] email %d", "iservice"), IserviceToolBox::getInputVariable('idemmailfield')));
             }
 
@@ -1591,7 +1591,7 @@ class PluginIserviceTicket extends Ticket
         $get_followup_content = IserviceToolBox::getInputVariable('followup_content');
         if (!empty($get_followup_content) || isset($prepared_data['forced_values']['_followup[content]'])) {
             $followup_content = empty($get_followup_content) ? $prepared_data['forced_values']['_followup[content]'] : $get_followup_content;
-        } else if ($id > 0 && $followup->getFromDBByQuery("WHERE id = (SELECT MAX(id) FROM " . ITILFollowup::getTable() . " WHERE items_id = $id AND itemtype = 'Ticket') LIMIT 1")) {
+        } else if ($id > 0 && PluginIserviceDB::populateByQuery($followup, "WHERE id = (SELECT MAX(id) FROM " . ITILFollowup::getTable() . " WHERE items_id = $id AND itemtype = 'Ticket')")) {
             $followup_content = $followup->fields['content'];
         } else {
             $followup_content = $this->fields['_followup[content]'] ?? '';
