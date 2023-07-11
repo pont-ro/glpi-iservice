@@ -821,7 +821,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         }
 
         $old_cartridge = new Cartridge();
-        if ($old_cartridge->getFromDBByQuery("join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = `glpi_cartridges`.cartridgeitems_id and cfc.itemtype = 'CartridgeItem' where tickets_id_out = $ticket_id and cfc.mercurycodefield in ({$cartridgeitem_custom_field->fields['mercurycodesfield']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1")) {
+        if (PluginIserviceDB::populateByQuery($old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = `glpi_cartridges`.cartridgeitems_id and cfc.itemtype = 'CartridgeItem' where tickets_id_out = $ticket_id and cfc.mercurycodefield in ({$cartridgeitem_custom_field->fields['mercurycodesfield']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1")) {
             $old_cartridge->update(
                 [
                     '_no_message' => true,
@@ -931,7 +931,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         $old_cartridge          = new Cartridge();
         $uninstalled_multiplier = 0;
         if (empty($emptied_cartridge_id)) {
-            if (!$old_cartridge->getFromDBByQuery("join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = `glpi_cartridges`.cartridgeitems_id and cfc.itemtype = 'CartridgeItem' where tickets_id_out = $ticket_id and cfc.mercurycodefield in ({$cartridgeitem_custom_field->fields['mercurycodesfield']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1")) {
+            if (!PluginIserviceDB::populateByQuery($old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = `glpi_cartridges`.cartridgeitems_id and cfc.itemtype = 'CartridgeItem' where tickets_id_out = $ticket_id and cfc.mercurycodefield in ({$cartridgeitem_custom_field->fields['mercurycodesfield']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1")) {
                 $uninstalled_multiplier = -1;
             }
         } else {
