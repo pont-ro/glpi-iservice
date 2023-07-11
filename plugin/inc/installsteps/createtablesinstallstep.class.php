@@ -10,7 +10,11 @@ class CreateTablesInstallStep
 
     public static function do(): bool
     {
-        PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql');
+        $tables = include PLUGIN_ISERVICE_DIR . '/config/database_tables.php';
+
+        foreach ($tables as $tableName => $tableConfig) {
+            PluginIserviceDB::createTable($tableName, $tableConfig);
+        }
 
         return true;
     }
