@@ -2,6 +2,7 @@
 
 class PluginIserviceDB extends DB
 {
+    private static array $indexesCash = [];
 
     public function __construct($dbHost, $dbName, $dbUser, $dbPassword)
     {
@@ -112,6 +113,16 @@ class PluginIserviceDB extends DB
         return $db->query($query) === true;
     }
 
+    public static function deleteTable(string $tableName, ?\DBmysql $db = null): bool
+    {
+        if ($db === null) {
+            global $DB;
+            $db = $DB;
+        }
+
+        return $db->query("drop table if exists $tableName") === true;
+    }
+
     public static function alterTable(string $tableName, array $tableConfig, ?\DBmysql $db = null): bool
     {
         if ($db === null) {
@@ -189,7 +200,7 @@ class PluginIserviceDB extends DB
         return rtrim($sql, ',');
     }
 
-    public static function indexExists(string $tableName, string $indexName, ?\DBmysql $db = null): bool
+    public static function indexExists(string $tableName, string $indexName, $useCache = true, ?\DBmysql $db = null): bool
     {
         if ($db === null) {
             global $DB;
@@ -197,13 +208,46 @@ class PluginIserviceDB extends DB
         }
 
         if ($indexName == 'primary key') {
-            $indexName = 'primary';
+            $indexName = 'PRIMARY';
         }
 
-        $query  = "show index from $tableName where key_name = '$indexName'";
-        $result = $db->query($query);
+        if ($indexes = self::listIndexes($tableName, $useCache, $db)) {
+            if (isset($indexes[$indexName])) {
+                return true;
+            }
 
-        return $result && $db->numrows($result) > 0;
+            return false;
+        }
+
+        return false;
+    }
+
+    public static function listIndexes($tableName, $useCache = true, ?\DBmysql $db = null): bool|array
+    {
+        if ($db === null) {
+            global $DB;
+            $db = $DB;
+        }
+
+        if ($useCache && isset(self::$indexesCash[$tableName])) {
+            return self::$indexesCash[$tableName];
+        }
+
+        $result = $db->query("show index from `$tableName`");
+        if ($result) {
+            if ($db->numrows($result) > 0) {
+                self::$indexesCash[$tableName] = [];
+                while ($data = $db->fetchAssoc($result)) {
+                    self::$indexesCash[$tableName][$data["Key_name"]] = $data;
+                }
+
+                return self::$indexesCash[$tableName];
+            }
+
+            return [];
+        }
+
+        return false;
     }
 
 }

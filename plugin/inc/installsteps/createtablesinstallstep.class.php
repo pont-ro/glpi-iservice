@@ -25,9 +25,11 @@ class CreateTablesInstallStep
             return;
         }
 
-        global $DB;
+        $tables = array_reverse(array_keys(include PLUGIN_ISERVICE_DIR . '/config/database_tables.php'));
 
-        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/delete_tables.sql');
+        foreach ($tables as $tableName) {
+            PluginIserviceDB::deleteTable($tableName);
+        }
     }
 
 }
