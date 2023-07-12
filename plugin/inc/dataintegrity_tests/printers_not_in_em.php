@@ -15,8 +15,8 @@ return [
         from glpi_plugin_iservice_printers p
         join glpi_printermodels pm on pm.id = p.printermodels_id
         join glpi_users u on u.id = p.users_id_tech
-        join glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer' and cfp.emaintenancefield = 0 and cfp.disableemfield = 0
-        join glpi_plugin_fields_printermodelprintermodelcustomfields cfpm on cfpm.items_id = p.printermodels_id and cfpm.itemtype = 'PrinterModel' and cfpm.emfield = 1
+        join glpi_plugin_fields_printerprintercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer' and cfp.em_field = 0 and cfp.disable_em_field = 0
+        join glpi_plugin_fields_printermodelprintermodelcustomfields cfpm on cfpm.items_id = p.printermodels_id and cfpm.itemtype = 'PrinterModel' and cfpm.em_compatible_field = 1
         where p.is_deleted = 0
         ",
     'test' => [

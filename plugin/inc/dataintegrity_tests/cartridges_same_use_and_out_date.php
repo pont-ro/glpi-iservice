@@ -2,9 +2,10 @@
 global $CFG_PLUGIN_ISERVICE;
 return [
     'query' => "
-        select c.id, c.tickets_id_use ticket_id
+        select c.id, cfc.tickets_id_use_field ticket_id
         from glpi_cartridges c
-        where c.tickets_id_use = c.tickets_id_out
+        join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
+        where cfc.tickets_id_use_field = cfc.tickets_id_out_field
         ",
     'test' => [
         'alert' => true,

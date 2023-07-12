@@ -58,7 +58,7 @@ class PluginIserviceMovement extends CommonDBTM
 
             $ticket_out              = new Ticket();
             $ticket_out_customfields = new PluginFieldsTicketcustomfield();
-            if (($ticket_out_customfields->getFromDBByQuery("WHERE movement2_id = $moved[id] LIMIT 1") === false) || ($ticket_out->getFromDB($ticket_out_customfields->fields['items_id']) && $ticket_out->fields['status'] != Ticket::CLOSED)) {
+            if (($ticket_out_customfields->getFromDBByQuery("WHERE movement2_id_field = $moved[id] LIMIT 1") === false) || ($ticket_out->getFromDB($ticket_out_customfields->fields['items_id']) && $ticket_out->fields['status'] != Ticket::CLOSED)) {
                 return $moved['id'];
             }
         }
@@ -149,21 +149,21 @@ class PluginIserviceMovement extends CommonDBTM
         if ($id > 0) {
             $total2_black      = $this->fields['total2_black'] ?? $printer->lastTicket()->fields['total2_black'] ?? '';
             $total2_color      = $this->fields['total2_color'] ?? $printer->lastTicket()->fields['total2_color'] ?? '';
-            $total2_black_fact = $this->fields['total2_black_fact'] ?? $item_customfields->fields['total2_black_fact'] ?? '';
-            $total2_color_fact = $this->fields['total2_color_fact'] ?? $item_customfields->fields['total2_color_fact'] ?? '';
-            $data_fact         = $this->fields['data_fact'] ?? $item_customfields->fields['data_fact'] ?? '';
-            $data_exp_fact     = $this->fields['data_exp_fact'] ?? $item_customfields->fields['data_exp_fact'] ?? '';
-            $dba               = $this->fields['dba'] ?? $item_customfields->fields['dailybkaveragefield'] ?? '';
-            $dca               = $this->fields['dca'] ?? $item_customfields->fields['dailycoloraveragefield'] ?? '';
+            $invoiced_total_black_field = $this->fields['invoiced_total_black_field'] ?? $item_customfields->fields['invoiced_total_black_field'] ?? '';
+            $invoiced_total_color_field = $this->fields['invoiced_total_color_field'] ?? $item_customfields->fields['invoiced_total_color_field'] ?? '';
+            $invoice_date_field         = $this->fields['invoice_date_field'] ?? $item_customfields->fields['invoice_date_field'] ?? '';
+            $invoice_expiry_date_field     = $this->fields['invoice_expiry_date_field'] ?? $item_customfields->fields['invoice_expiry_date_field'] ?? '';
+            $dba               = $this->fields['dba'] ?? $item_customfields->fields['daily_bk_average_field'] ?? '';
+            $dca               = $this->fields['dca'] ?? $item_customfields->fields['daily_color_average_field'] ?? '';
             $disable_em        = $this->fields['disableem'] ?? 0;
             $snooze_read_check = $this->fields['snoozereadcheck'] ?? date('Y-m-d', strtotime('yesterday'));
             $table_rows[]      = $form->generateFieldTableRow(
                 'Date facturare și contoare', '<div id="invoice-data" style="width:82%">'
-                    . '<div style="display:inline-block;width:50%">ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'data_fact', $data_fact) . '</b></div>'
-                    . '<div style="display:inline-block;width:50%">expirare factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'data_exp_fact', $data_exp_fact) . '</b></div>'
-                    . '<div style="display:inline-block;width:50%">Contor black ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'total2_black_fact', $total2_black_fact) . '</b></div>'
+                    . '<div style="display:inline-block;width:50%">ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoice_date_field', $invoice_date_field) . '</b></div>'
+                    . '<div style="display:inline-block;width:50%">expirare factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoice_expiry_date_field', $invoice_expiry_date_field) . '</b></div>'
+                    . '<div style="display:inline-block;width:50%">Contor black ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoiced_total_black_field', $invoiced_total_black_field) . '</b></div>'
                     . '<div style="display:inline-block;width:50%">Contor black ultima intervenție: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'total2_black', $total2_black) . '</b></div>'
-                    . '<div style="display:inline-block;width:50%">Contor color ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'total2_color_fact', $total2_color_fact) . '</b></div>'
+                    . '<div style="display:inline-block;width:50%">Contor color ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoiced_total_color_field', $invoiced_total_color_field) . '</b></div>'
                     . '<div style="display:inline-block;width:50%">Contor color ultima intervenție: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'total2_color', $total2_color) . '</b></div>'
                 . '</div>'
             );
@@ -177,7 +177,7 @@ class PluginIserviceMovement extends CommonDBTM
             // In Ticket
             $ticket_in              = new Ticket();
             $ticket_in_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_in_customfields->getFromDBByQuery("WHERE movement_id = $id LIMIT 1") && $ticket_in->getFromDB($ticket_in_customfields->fields['items_id'])) {
+            if ($ticket_in_customfields->getFromDBByQuery("WHERE movement_id_field = $id LIMIT 1") && $ticket_in->getFromDB($ticket_in_customfields->fields['items_id'])) {
                 $ticket_in_exists = true;
                 $ticket_in_closed = $ticket_in->fields['status'] == Ticket::CLOSED;
                 $ticket_actions   = "<a href='ticket.form.php?id={$ticket_in->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "&_close_on_success=1' class='vsubmit' target='_blank'>" . ($ticket_in_closed ? __("View", "iservice") : (__("Modify", "iservice") . " / " . __("Close", "iservice"))) . "</a>";
@@ -243,7 +243,7 @@ class PluginIserviceMovement extends CommonDBTM
                 $move_button_disabled = false;
                 $checkbox_onclick     = 'if ($(".movement_prohibitor:checked").length === $(".movement_prohibitor").length) {$("#btn_move").attr("disabled", false).removeClass("disabled");} else {$("#btn_move").attr("disabled", true).addClass("disabled");}';
                 $checkbox             = $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '', 0, false, ['class' => 'movement_prohibitor', 'onclick' => $checkbox_onclick]);
-                if ($total2_black > $total2_black_fact) {
+                if ($total2_black > $invoiced_total_black_field) {
                     $last_invoice_black_counter_color = 'red';
                     $last_intervention_checkbox_black = "$checkbox Confirm că am actualizat contorul black (contor ultima intervenție > ultima factura)";
                     $move_button_disabled             = 'disabled';
@@ -252,7 +252,7 @@ class PluginIserviceMovement extends CommonDBTM
                     $last_intervention_checkbox_black = '';
                 }
 
-                if ($total2_color > $total2_color_fact) {
+                if ($total2_color > $invoiced_total_color_field) {
                     $last_invoice_color_counter_color = 'red';
                     $last_intervention_checkbox_color = "$checkbox Confirm că am actualizat contorul color (contor ultima intervenție > ultima factura)";
                     $move_button_disabled             = 'disabled';
@@ -277,11 +277,11 @@ class PluginIserviceMovement extends CommonDBTM
                 $table_rows[] = $form->generateFieldTableRow(__('Location'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'locations_id', $locations_id, false, ['type' => 'Location', 'class' => 'full']));
 
                 // Usage address
-                $usage_address = empty($this->fields['usage_address']) ? $item_customfields->fields['usageaddressfield'] : $this->fields['usage_address'];
+                $usage_address = empty($this->fields['usage_address']) ? $item_customfields->fields['usage_address_field'] : $this->fields['usage_address'];
                 $table_rows[]  = $form->generateFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'usage_address', $usage_address));
 
                 // Week number
-                $week_number  = empty($this->fields['week_number']) ? $item_customfields->fields['week_nr'] : $this->fields['week_number'];
+                $week_number  = empty($this->fields['week_number']) ? $item_customfields->fields['week_nr_field'] : $this->fields['week_number'];
                 $table_rows[] = $form->generateFieldTableRow('Numar saptamana', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'week_number', $week_number));
 
                 // User id tech
@@ -318,15 +318,15 @@ class PluginIserviceMovement extends CommonDBTM
                 // Invoice data
                 $table_rows[] = $form->generateFieldTableRow(
                     'Date ultima factură', '<div style="width:82%">'
-                        . '<div style="display:inline-block;width:50%">ultima factură ' . $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, 'data_fact', $data_fact) . '</div>'
-                        . '<div style="display:inline-block;width:50%">expirare factură ' . $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, 'data_exp_fact', $data_exp_fact) . '</div>'
+                        . '<div style="display:inline-block;width:50%">ultima factură ' . $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, 'invoice_date_field', $invoice_date_field) . '</div>'
+                        . '<div style="display:inline-block;width:50%">expirare factură ' . $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, 'invoice_expiry_date_field', $invoice_expiry_date_field) . '</div>'
                     . '</div>'
                 );
 
                 // Invoiced counters
                 $table_rows[] = $form->generateFieldTableRow(
                     'Contor black', '<div style="width:82%">'
-                        . "<div style=\"display:inline-block;width:50%;color:$last_invoice_black_counter_color\">ultima factură " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'total2_black_fact', $total2_black_fact, false, ['style' => 'width:inherit']) . '</div>'
+                        . "<div style=\"display:inline-block;width:50%;color:$last_invoice_black_counter_color\">ultima factură " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'invoiced_total_black_field', $invoiced_total_black_field, false, ['style' => 'width:inherit']) . '</div>'
                         . "<div style=\"display:inline-block;width:50%\">ultima intervenție: <b>" . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'total2_black', $total2_black) . "</b>;</div>$last_intervention_checkbox_black"
                     . '</div>'
                 );
@@ -334,7 +334,7 @@ class PluginIserviceMovement extends CommonDBTM
                 // Last counters
                 $table_rows[] = $form->generateFieldTableRow(
                     'Contor color', '<div style="width:82%">'
-                        . "<div style=\"display:inline-block;width:50%;color:$last_invoice_color_counter_color\">ultima factură " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'total2_color_fact', $total2_color_fact, false, ['style' => 'width:inherit']) . '</div>'
+                        . "<div style=\"display:inline-block;width:50%;color:$last_invoice_color_counter_color\">ultima factură " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'invoiced_total_color_field', $invoiced_total_color_field, false, ['style' => 'width:inherit']) . '</div>'
                         . "<div style=\"display:inline-block;width:50%\">ultima intervenție: <b>" . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'total2_color', $total2_color) . "</b></div>$last_intervention_checkbox_color"
                     . '</div>'
                 );
@@ -376,7 +376,7 @@ class PluginIserviceMovement extends CommonDBTM
         // Out Ticket
         $ticket_out              = new Ticket();
         $ticket_out_customfields = new PluginFieldsTicketcustomfield();
-        if ($ticket_out_customfields->getFromDBByQuery("WHERE movement2_id = $id LIMIT 1") && $ticket_out->getFromDB($ticket_out_customfields->fields['items_id'])) {
+        if ($ticket_out_customfields->getFromDBByQuery("WHERE movement2_id_field = $id LIMIT 1") && $ticket_out->getFromDB($ticket_out_customfields->fields['items_id'])) {
             $ticket_out_exists = true;
             $ticket_out_closed = $ticket_out->fields['status'] == Ticket::CLOSED;
             $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? __("View", "iservice") : __("Close", "iservice")) . "</a>";
@@ -388,7 +388,7 @@ class PluginIserviceMovement extends CommonDBTM
             $ticket_out_closed = false;
             $params            = "mode=" . PluginIserviceTicket::MODE_CREATENORMAL;
             $params           .= "&items_id[Printer][0]=" . $this->fields['items_id'];
-            $params           .= "&movement2_id=$id";
+            $params           .= "&movement2_id_field=$id";
             $params           .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('livrare echipament');
             $params           .= "&name=livrare echipament";
             $params           .= "&content=livrare echipament";

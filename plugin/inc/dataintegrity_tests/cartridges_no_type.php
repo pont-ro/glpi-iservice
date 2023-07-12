@@ -9,12 +9,12 @@ return [
         select
               c.id cid
             , c.plugin_fields_typefielddropdowns_id c_type
-            , ci.plugin_fields_typefielddropdowns_id ci_type
+            , ci.plugin_fields_cartridgeitemtypedropdowns_id ci_type
             , tfd.name ci_type_name
-            , ci.supportedtypesfield 
+            , ci.supported_types_field 
         from glpi_cartridges c
-        left join glpi_plugin_fields_cartridgeitemcartridgecustomfields ci on ci.items_id = c.cartridgeitems_id and ci.itemtype = 'CartridgeItem'
-        left join glpi_plugin_fields_typefielddropdowns tfd on tfd.id = ci.plugin_fields_typefielddropdowns_id 
+        left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields ci on ci.items_id = c.cartridgeitems_id and ci.itemtype = 'CartridgeItem'
+        left join glpi_plugin_fields_typefielddropdowns tfd on tfd.id = ci.plugin_fields_cartridgeitemtypedropdowns_id 
         where coalesce(c.plugin_fields_typefielddropdowns_id, 0) = 0 and c.date_use is not null
         ",
     'test' => [

@@ -1,6 +1,8 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "manageCartridge.php".
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 // Direct access to file
 if (strpos($_SERVER['PHP_SELF'], "manageCartridge.php")) {
     include '../../../inc/includes.php';
@@ -22,17 +24,17 @@ $operations = [
     'delete_cartridge' => 'delete_cartridge'
 ];
 
-$id          = PluginIserviceCommon::getInputVariable('id');
-$type_id     = PluginIserviceCommon::getInputVariable('type_id');
-$location_id = PluginIserviceCommon::getInputVariable('location_id');
-$supplier_id = PluginIserviceCommon::getInputVariable('supplier_id');
+$id          = IserviceToolBox::getInputVariable('id');
+$type_id     = IserviceToolBox::getInputVariable('type_id');
+$location_id = IserviceToolBox::getInputVariable('location_id');
+$supplier_id = IserviceToolBox::getInputVariable('supplier_id');
 
 $cartridge = new Cartridge();
 if (!$cartridge->getFromDB($id)) {
     die(sprintf(__("Invalid cartridge id: %d", "iservice"), $id));
 }
 
-$operation = PluginIserviceCommon::getInputVariable('operation');
+$operation = IserviceToolBox::getInputVariable('operation');
 if (!array_key_exists($operation, $operations)) {
     die(sprintf(__("Invalid operation: %s", "iservice"), $operation));
 }
@@ -56,13 +58,13 @@ case 'remove_from_supplier':
             $consumable_ticket->update(['id' => $row['id'], 'amount' => $new_amount, 'new_cartridge_ids' => $new_cartridge_ids]);
         }
 
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'force_supplier':
     $update_data = ['id' => $id, "FK_enterprise" => $supplier_id];
     if ($cartridge->update($update_data)) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'change_location':
@@ -77,7 +79,7 @@ case 'force_location':
     }
 
     if ($cartridge->update($update_data)) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'remove_from_printer':
@@ -95,7 +97,7 @@ case 'remove_from_printer':
             (__("Could not remove cartridge from the installer ticket."));
         }
 
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'use':
@@ -107,9 +109,9 @@ case 'use':
         die(sprintf(__("Cartridge %d is empty, it is not installed on a printer", "iservice"), $id));
     }
 
-    $counter_black = PluginIserviceCommon::getInputVariable('counter_black');
-    $counter_color = PluginIserviceCommon::getInputVariable('counter_color');
-    $install_date  = PluginIserviceCommon::getInputVariable('install_date');
+    $counter_black = IserviceToolBox::getInputVariable('counter_black');
+    $counter_color = IserviceToolBox::getInputVariable('counter_color');
+    $install_date  = IserviceToolBox::getInputVariable('install_date');
     if ($cartridge->update(
         [
             'id' => $id,
@@ -121,20 +123,20 @@ case 'use':
         ]
     )
     ) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'force_type':
     $update_data = ['id' => $id, "plugin_fields_typefielddropdowns_id" => $type_id];
     if ($cartridge->update($update_data)) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'delete_cartridge':
     if (!$cartridge->delete(['id' => $id])) {
         die(printf(__("Could not delete cartridge from the database.", "iservice")));
     }
-    die(PluginIserviceCommon::RESPONSE_OK);
+    die(IserviceToolBox::RESPONSE_OK);
 default:
     die(sprintf(__("Operation not implemented: %s", "iservice"), $operations[$operation]));
 }

@@ -1,7 +1,16 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Tickets.php".
-class PluginIserviceView_Tickets extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+use \PluginIserviceTicket;
+use \PluginIserviceDB;
+use \CommonITILActor;
+use \PluginIserviceOrderStatus;
+class Tickets extends View
 {
 
     public static function getTicketStatusDisplay($row_data)
@@ -53,7 +62,7 @@ class PluginIserviceView_Tickets extends PluginIserviceView
             break;
         }
 
-        $list_ticket_description = urlencode(empty($row_data['printer_id']) ? "Toate" : "$row_data[printer_name] ($row_data[printer_serial]) - $row_data[usageaddressfield] - $row_data[supplier_name]");
+        $list_ticket_description = urlencode(empty($row_data['printer_id']) ? "Toate" : "$row_data[printer_name] ($row_data[printer_serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                 = [
             'printers' => [
                 'link' => "view.php?view=printers&printers0[supplier_id]=$row_data[supplier_id]&printers0[filter_description]=" . urlencode($row_data['supplier_name']),
@@ -214,7 +223,7 @@ class PluginIserviceView_Tickets extends PluginIserviceView
         return "<span style='color:$color' title='$title'>$row_data[supplier_name]</span>";
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
 
@@ -226,10 +235,10 @@ class PluginIserviceView_Tickets extends PluginIserviceView
             $ticket_status_options[$status_id] = $status_name;
         }
 
-        $data_luc_start_pre_widget =
-            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[data_luc_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-6 months")) . "\")' value='ultimele 6 luni'>" .
-            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[data_luc_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-30 days")) . "\")' value='ultimele 30 zile'>" .
-            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[data_luc_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-7 days")) . "\")' value='ultimele 7 zile'>";
+        $effective_date_start_pre_widget =
+            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-6 months")) . "\")' value='ultimele 6 luni'>" .
+            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-30 days")) . "\")' value='ultimele 30 zile'>" .
+            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-7 days")) . "\")' value='ultimele 7 zile'>";
 
         $right_condition = '';
         if (!Session::haveRight('plugin_iservice_ticket_all_printers', READ)) {
@@ -253,19 +262,19 @@ class PluginIserviceView_Tickets extends PluginIserviceView
 
         $prefix = '';
         if (Session::haveRight('plugin_iservice_view_emaintenance', READ)) {
-            $em_count_data = PluginIserviceCommon::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_ememails where `read` = 0');
+            $em_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_ememails where `read` = 0');
             $em_count      = empty($em_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$em_count_data[0]['count']}</span>";
             $prefix       .= "<a href='view.php?view=emaintenance' target='_blank'>Număr emailuri E-maintenance necitite: $em_count</a>";
         }
 
         if (Session::haveRight('plugin_iservice_interface_original', READ)) {
-            $nm_count_data = PluginIserviceCommon::getQueryResult('SELECT count(1) count FROM glpi_notimportedemails');
+            $nm_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_notimportedemails');
             $nm_count      = empty($nm_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$nm_count_data[0]['count']}</span>";
             $prefix       .= "&nbsp;|&nbsp;<a href='$CFG_GLPI[root_doc]/front/notimportedemail.php' target='_blank'>Număr emailuri neimportate: $nm_count</a>";
         }
 
         if (Session::haveRight('plugin_iservice_view_movements', READ)) {
-            $mo_count_data = PluginIserviceCommon::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_movements m where m.moved = 0');
+            $mo_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_movements m where m.moved = 0');
             $mo_count      = empty($mo_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$mo_count_data[0]['count']}</span>";
             $prefix       .= "&nbsp;|&nbsp;<a href='view.php?view=movements&movements0[finalized]=0' target='_blank'>Număr mutări nefinalizate: $mo_count</a>";
         }
@@ -279,20 +288,20 @@ class PluginIserviceView_Tickets extends PluginIserviceView
                             , t.id ticket_id
                             , t.name ticket_name
                             , t.content ticket_content
-                            , t.total2_black + coalesce(t.total2_color, 0) ticket_counter_total
-                            , t.total2_black ticket_counter_black
-                            , t.total2_color ticket_counter_color
+                            , cft.total2_black_field + coalesce(cft.total2_color_field, 0) ticket_counter_total
+                            , cft.total2_black_field ticket_counter_black
+                            , cft.total2_color_field ticket_counter_color
                             , i.name ticket_category
-                            , tc.export_type ticket_export_type
-                            , tc.exported ticket_exported
+                            , cft.plugin_fields_ticketexporttypedropdowns_id ticket_export_type
+                            , cft.exported_field ticket_exported
                             , p.id printer_id
-                            , CONCAT(p.name, CASE WHEN cfp.emaintenancefield = 1 THEN ' [EM]' ELSE '' END, CASE WHEN scf.cartridge_management = 1 THEN ' [CM]' ELSE '' END) printer_name
-                            , cfp.usageaddressfield
+                            , CONCAT(p.name, CASE WHEN cfp.em_field = 1 THEN ' [EM]' ELSE '' END, CASE WHEN scf.cm_field = 1 THEN ' [CM]' ELSE '' END) printer_name
+                            , cfp.usage_address_field
                             , l.completename printer_location
                             , s.id supplier_id
                             , s.name supplier_name
                             , t.date date_open
-                            , CASE t.data_luc WHEN '0000-00-00 00:00:00' THEN NULL WHEN '0000-00-00' THEN NULL ELSE t.data_luc END data_luc
+                            , CASE cft.effective_date_field WHEN '0000-00-00 00:00:00' THEN NULL WHEN '0000-00-00' THEN NULL ELSE cft.effective_date_field END effective_date
                             , u.id tech_park_id
                             , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
                             , a.id tech_assign_id
@@ -306,15 +315,15 @@ class PluginIserviceView_Tickets extends PluginIserviceView
                             , GROUP_CONCAT(CONCAT(CAST(tf.date AS CHAR), '\n', tf.content) SEPARATOR '\n') ticket_followups
                             , t2.numar_facturi_neplatite
                         FROM glpi_tickets t
+                        LEFT JOIN glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
-                        LEFT JOIN glpi_plugin_fields_ticketcustomfields tc ON tc.items_id = t.id and tc.itemtype = 'Ticket'
                         LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
                         LEFT JOIN glpi_printers p ON p.id = it.items_id
-                        LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.items_id = p.id and cfp.itemtype = 'Printer'
+                        LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.items_id = p.id and cfp.itemtype = 'Printer'
                         LEFT JOIN glpi_locations l ON l.id = t.locations_id
                         LEFT JOIN glpi_suppliers_tickets st ON st.tickets_id = t.id AND st.type = " . CommonITILActor::ASSIGN . "
                         LEFT JOIN glpi_suppliers s ON s.id = st.suppliers_id
-                        LEFT JOIN glpi_plugin_fields_suppliercustomfields scf ON scf.items_id = s.id and scf.itemtype = 'Supplier'
+                        LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields scf ON scf.items_id = s.id and scf.itemtype = 'Supplier'
                         LEFT JOIN glpi_users u ON u.id = p.users_id_tech
                         LEFT JOIN glpi_tickets_users tu ON tu.tickets_id = t.id AND tu.type = " . CommonITILActor::ASSIGN . "
                         LEFT JOIN glpi_users a ON a.id = tu.users_id
@@ -338,23 +347,23 @@ class PluginIserviceView_Tickets extends PluginIserviceView
                                                 GROUP BY tickets_id
                                   ) eoc ON eoc.tickets_id = t.id
                         LEFT JOIN glpi_itilfollowups tf ON tf.items_id = t.id and tf.itemtype = 'Ticket'" . (self::inProfileArray('tehnician', 'admin', 'super-admin') ? '' : " AND (tf.is_private = 0 OR tf.users_id = $_SESSION[glpiID])") . "
-                        LEFT JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = s.id and cfs.itemtype = 'Supplier'
+                        LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON cfs.items_id = s.id and cfs.itemtype = 'Supplier'
                         LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite
                                    FROM hmarfa_facturi 
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
                                    AND valinc-valpla > 0
-                                   GROUP BY codbenef) t2 ON t2.codbenef = cfs.cod_hmarfa
+                                   GROUP BY codbenef) t2 ON t2.codbenef = cfs.hmarfa_code_field
                         WHERE t.is_deleted = 0 $right_condition
                             AND t.status in ([ticket_status])
                             AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
                             AND t.name LIKE '[ticket_name]'
                             AND ((p.name IS NULL AND '[printer_name]' = '%%') OR p.name LIKE '[printer_name]')
-                            AND ((cfp.usageaddressfield is null AND '[usageaddressfield]' = '%%') OR cfp.usageaddressfield LIKE '[usageaddressfield]')
+                            AND ((cfp.usage_address_field is null AND '[usage_address_field]' = '%%') OR cfp.usage_address_field LIKE '[usage_address_field]')
                             AND ((s.name IS NULL AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
                             AND t.date <= '[date_open]'
-                            AND (t.data_luc IS NULL OR t.data_luc <= '[data_luc]')
-                            [data_luc_start]
+                            AND (cft.effective_date_field IS NULL OR cft.effective_date_field <= '[effective_date]')
+                            [effective_date_start]
                             [unlinked]
                             [tech_id]
                             [assigned_only]
@@ -370,15 +379,15 @@ class PluginIserviceView_Tickets extends PluginIserviceView
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => 'AND p.id = %d'
                 ],
-                'data_luc_start' => [
+                'effective_date_start' => [
                     'type' => self::FILTERTYPE_LABEL,
                     'caption' => '',
-                    'format' => "AND ((t.data_luc IS NULL AND '%1\$s' = '') OR t.data_luc >= '%1\$s 00:00:00')",
+                    'format' => "AND ((cft.effective_date_field IS NULL AND '%1\$s' = '') OR cft.effective_date_field >= '%1\$s 00:00:00')",
                     'style' => 'width: 6em;',
-                    'pre_widget' => $data_luc_start_pre_widget,
+                    'pre_widget' => $effective_date_start_pre_widget,
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
                 ],
-                'data_luc' => [
+                'effective_date' => [
                     'type' => self::FILTERTYPE_DATE,
                     'caption' => '< Data efectivă <',
                     'format' => 'Y-m-d 23:59:59',
@@ -436,11 +445,11 @@ class PluginIserviceView_Tickets extends PluginIserviceView
                     'format' => '%%%s%%',
                     'header' => 'supplier_name',
                 ],
-                'usageaddressfield' => [
+                'usage_address_field' => [
                     'type' => self::FILTERTYPE_TEXT,
                     'caption' => 'Adresa de exploatare',
                     'format' => '%%%s%%',
-                    'header' => 'usageaddressfield',
+                    'header' => 'usage_address_field',
                 ],
                 'tech_id' => [
                     'type' => self::FILTERTYPE_USER,
@@ -520,7 +529,7 @@ class PluginIserviceView_Tickets extends PluginIserviceView
                     ],
                     'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
                 ],
-                'usageaddressfield' => [
+                'usage_address_field' => [
                     'title' => 'Adresa de exploatare',
                 ],
                 'printer_serial' => [
@@ -532,7 +541,7 @@ class PluginIserviceView_Tickets extends PluginIserviceView
                     'default_sort' => 'DESC',
                     'align' => 'center',
                 ],
-                'data_luc' => [
+                'effective_date' => [
                     'title' => 'Data efectivă',
                     'sort_default_dir' => 'DESC',
                     'align' => 'center',

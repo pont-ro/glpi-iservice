@@ -11,8 +11,9 @@ return [
         from glpi_tickets t
         left join glpi_plugin_iservice_consumables_tickets cst on cst.tickets_id = t.id
         left join glpi_plugin_iservice_cartridges_tickets crt on crt.tickets_id = t.id
+        left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
         where t.is_deleted = 1 
-          and t.data_luc > '2018-07-01 00:00:00'
+          and cft.effective_date_field > '2018-07-01 00:00:00'
           and (cst.id is not null or crt.id is not null)
         group by t.id
         order by t.id desc

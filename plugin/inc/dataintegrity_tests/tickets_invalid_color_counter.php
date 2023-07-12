@@ -4,21 +4,22 @@ global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
-$data_luc_max_difference = 3;
+$effective_date_max_difference = 3;
 return [
     'query' => "
         select
             t.id tid
-          , t.total2_color
+          , cft.total2_color_field
           , p.id pid
           , p.serial
         from glpi_tickets t
+        join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
         join glpi_items_tickets it on it.tickets_id = t.id and itemtype = 'Printer'
         join glpi_printers p on p.id = it.items_id 
         where t.is_deleted = 0
           and p.printertypes_id != " . PluginIservicePrinter::ID_COLOR_TYPE . "
           and p.printertypes_id != " . PluginIservicePrinter::ID_PLOTTER_TYPE . "
-          and t.total2_color <> 0
+          and cft.total2_color_field <> 0
         ",
     'test' => [
         'alert' => true,

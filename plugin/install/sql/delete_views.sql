@@ -1,3 +1,5 @@
+drop view if exists glpi_plugin_iservice_printer_usage_coefficients;
+
 drop view if exists glpi_plugin_iservice_printer_unclosed_ticket_counts;
 
 drop view if exists glpi_plugin_iservice_printers_last_closed_tickets;

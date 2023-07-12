@@ -1,8 +1,25 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Introders.php".
-class PluginIserviceView_Intorders extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+use \PluginIserviceOrderStatus;
+use \PluginIserviceHtml;
+use \PluginIserviceTicket;
+
+class Intorders extends View
 {
+    public static $rightname = 'plugin_iservice_view_intorders';
+
+    public static $icon = 'ti ti-box-padding';
+
+    public static function getName(): string
+    {
+        return __('Intorders', 'iService');
+    }
 
     static function getModelNamesDisplay($row_data)
     {
@@ -34,7 +51,7 @@ class PluginIserviceView_Intorders extends PluginIserviceView
         }
 
         global $CFG_PLUGIN_ISERVICE;
-        $sanitized_consumable_id = PluginIserviceCommon::getHtmlSanitizedValue($row_data['consumable_code']);
+        $sanitized_consumable_id = IserviceToolBox::getHtmlSanitizedValue($row_data['consumable_code']);
         $result                  = "<a id='min-stock-link-$row_data[__row_id__]' class='clickable min-stock-link-$sanitized_consumable_id' onclick='$(\"#min-stock-span-$row_data[__row_id__]\").show();$(this).hide();'>{$row_data['minimum_stock']}</a>";
         $result                 .= "<span id='min-stock-span-$row_data[__row_id__]' style='display:none; white-space: nowrap;'>";
         $result                 .= "<input id='min-stock-edit-$row_data[__row_id__]' class='min-stock-edit-$sanitized_consumable_id' style='width:2em;' type='text' value='$row_data[minimum_stock]' />&nbsp;";
@@ -45,7 +62,7 @@ class PluginIserviceView_Intorders extends PluginIserviceView
         return $result;
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         $iservice_front = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";
@@ -136,7 +153,7 @@ class PluginIserviceView_Intorders extends PluginIserviceView
                 ) o
                 WHERE order_id LIKE '[order_id]'
                     AND ((ticket_id IS NULL AND '[ticket_id]' = '%%') OR ticket_id LIKE '[ticket_id]')
-                    AND order_status_id in ([order_status])
+                    AND order_status_id in ('[order_status]')
                     AND create_date < '[create_date]'
                     AND consumable_code LIKE '[consumable_code]'
                     AND ((consumable_name IS NULL AND '[consumable_name]' = '%%') OR consumable_name LIKE '[consumable_name]')

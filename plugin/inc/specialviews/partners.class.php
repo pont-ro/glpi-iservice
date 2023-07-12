@@ -1,10 +1,23 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Partners.php".
-class PluginIserviceView_Partners extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Views\View;
+
+class Partners extends View
 {
 
-    protected function getSettings()
+    public static $rightname = 'plugin_iservice_view_partners';
+
+    public static $icon = 'ti ti-friends';
+
+    public static function getName(): string
+    {
+        return __('Partners', 'iService');
+    }
+
+    protected function getSettings(): array
     {
         return [
             'name' => __('Due partner list', 'iservice'),
@@ -13,7 +26,7 @@ class PluginIserviceView_Partners extends PluginIserviceView
 				    s.id id
 					, s.name Nume_Partener
 					, d.date Data_Ultima_Contactare
-					, sc.magic_link partner_magic_link
+					, sc.magic_link_field partner_magic_link
 					, t1.data Data_Ultima_Plata
 					, t1.sum Valoare_Ulitma_Plata
 					, t.codbenef
@@ -56,7 +69,7 @@ class PluginIserviceView_Partners extends PluginIserviceView
 							WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
 							  AND valinc-valpla > 0 AND dscad < NOW()
 							GROUP BY codbenef) t3 ON t1.partener = t3.codbenef
-				LEFT JOIN glpi_plugin_fields_suppliercustomfields sc ON sc.cod_hmarfa = t.codbenef and sc.itemtype = 'Supplier'
+				LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields sc ON sc.hmarfa_code_field = t.codbenef and sc.itemtype = 'Supplier'
 				LEFT JOIN glpi_suppliers s ON s.id = sc.items_id
 				LEFT JOIN (SELECT items_id id, MAX(date) date
 				      FROM glpi_plugin_iservice_downloads

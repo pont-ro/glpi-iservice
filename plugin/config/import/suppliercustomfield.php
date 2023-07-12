@@ -17,7 +17,7 @@ $fieldMap = json_decode(file_get_contents(PLUGIN_ISERVICE_DIR . '/install/custom
 
 return [
     'itemTypeClass'    => PluginFieldsSuppliersuppliercustomfield::class,
-    'oldTable'         => 'glpi_plugin_fields_suppliercustomfields',
+    'oldTable'         => 'glpi_plugin_fields_suppliersuppliercustomfields',
     'fieldMap'         => array_merge($additionalFields, $fieldMap),
     'foreignKeys'      => [
         'items_id'                    => 'Supplier',

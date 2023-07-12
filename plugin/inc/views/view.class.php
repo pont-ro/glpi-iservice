@@ -195,8 +195,7 @@ class View extends \CommonGLPI
 
     public function getMachineName(): string
     {
-        $class_name = get_class($this);
-        return strtolower(strpos($class_name, "PluginIserviceView_") === 0 ? substr($class_name, strlen("PluginIserviceView_")) : $class_name);
+        return basename(str_replace('\\', '/', get_class($this)));
     }
 
     public function getRequestArrayName($add_detail_level = 0): string

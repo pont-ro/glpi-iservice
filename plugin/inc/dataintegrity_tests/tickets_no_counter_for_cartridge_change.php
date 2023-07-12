@@ -4,6 +4,7 @@ return [
     'query' => "
         select t.id tid, it.items_id pid, tm.min_id
         from glpi_tickets t
+        join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
         join glpi_items_tickets it on it.tickets_id = t.id and it.itemtype = 'Printer'
         join glpi_plugin_iservice_cartridges_tickets crt on crt.tickets_id = t.id
         join (select min(s_t.id) min_id, s_it.items_id 
@@ -12,7 +13,7 @@ return [
               join glpi_plugin_iservice_cartridges_tickets s_crt on s_crt.tickets_id = s_t.id
               where itemtype = 'Printer'
               group by items_id) tm on tm.items_id = it.items_id
-        where t.is_deleted = 0 and t.`status` = 6 and coalesce(t.total2_black, 0) + coalesce(t.total2_color, 0) = 0 and t.id != tm.min_id
+        where t.is_deleted = 0 and t.`status` = 6 and coalesce(cft.total2_black_field, 0) + coalesce(cft.total2_color_field, 0) = 0 and t.id != tm.min_id
         group by t.id
         order by t.id
         ",

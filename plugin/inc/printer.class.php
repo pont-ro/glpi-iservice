@@ -65,7 +65,7 @@ class PluginIservicePrinter extends Printer
                 return false;
             }
 
-            $this->has_cartridge_management = !empty($supplier_customfield->fields['cartridge_management']);
+            $this->has_cartridge_management = !empty($supplier_customfield->fields['cm_field']);
         }
 
         return $this->has_cartridge_management;
@@ -282,7 +282,7 @@ class PluginIservicePrinter extends Printer
             }
 
             if (Session::haveRight('plugin_iservice_view_operations', READ)) {
-                $filter_description = urlencode("{$printer->fields['name']} ({$printer->fields['serial']}) - {$printer_customfields->fields['usageaddressfield']} - {$supplier->fields['name']}");
+                $filter_description = urlencode("{$printer->fields['name']} ({$printer->fields['serial']}) - {$printer_customfields->fields['usage_address_field']} - {$supplier->fields['name']}");
                 $buttons[]          = "<a class='vsubmit' href='view.php?view=operations&operations0[printer_id]=$printer_id&operations0[filter_description]=$filter_description'>" . __('Operations list', 'iservice') . "</a>";
             }
 
@@ -346,18 +346,18 @@ class PluginIservicePrinter extends Printer
         $output .= $form->generateFieldTableRow(__('Location'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[locations_id]', $printer->fields['locations_id'], $readonly || !$has_full_rights, ['type' => 'Location']), $no_wrap_options);
 
         // Usage address
-        $output .= $form->generateFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[printer][usageaddressfield]', $printer_customfields->fields['usageaddressfield'], $readonly));
+        $output .= $form->generateFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[printer][usage_address_field]', $printer_customfields->fields['usage_address_field'], $readonly));
 
         // Cost center
-        $output .= $form->generateFieldTableRow('Centru de cost', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][costcenterfield]', $printer_customfields->fields['costcenterfield'], $readonly));
+        $output .= $form->generateFieldTableRow('Centru de cost', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][cost_center_field]', $printer_customfields->fields['cost_center_field'], $readonly));
 
         // Coordonate GPS
         $label = 'Coordonate GPS';
-        if (!empty($printer_customfields->fields['gps'])) {
-            $label = "<a href='https://www.google.com/maps/search/?api=1&query=" . $printer_customfields->fields['gps'] . "' target='_blank'>$label</a>";
+        if (!empty($printer_customfields->fields['contact_gps_field'])) {
+            $label = "<a href='https://www.google.com/maps/search/?api=1&query=" . $printer_customfields->fields['contact_gps_field'] . "' target='_blank'>$label</a>";
         }
 
-        $output .= $form->generateFieldTableRow($label, $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][gps]', $printer_customfields->fields['gps'], $readonly));
+        $output .= $form->generateFieldTableRow($label, $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][contact_gps_field]', $printer_customfields->fields['contact_gps_field'], $readonly));
 
         // Alternate username number
         $output .= $form->generateFieldTableRow(__('Alternate username number'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'printer[contact_num]', $printer->fields['contact_num'], $readonly));
@@ -409,10 +409,10 @@ class PluginIservicePrinter extends Printer
         }
 
         // Planlunar week
-        $output .= $form->generateFieldTableRow('Număr săptămână', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][week_nr]', $printer_customfields->fields['week_nr'], $readonly || !$has_full_rights));
+        $output .= $form->generateFieldTableRow('Număr săptămână', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][week_nr_field]', $printer_customfields->fields['week_nr_field'], $readonly || !$has_full_rights));
 
         // Planlunar comments
-        $output .= $form->generateFieldTableRow('Observații plan lunar', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[printer][observations]', $printer_customfields->fields['observations'], $readonly || !$has_full_rights));
+        $output .= $form->generateFieldTableRow('Observații plan lunar', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[printer][plan_observations_field]', $printer_customfields->fields['plan_observations_field'], $readonly || !$has_full_rights));
 
         $output .= "</table>";
 
@@ -506,20 +506,20 @@ class PluginIservicePrinter extends Printer
         }
 
         // Cod Fiscal
-        $output .= $form->generateFieldTableRow('Cod Fiscal', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][part_cui]', $supplier_customfields->fields['part_cui'], $readonly));
+        $output .= $form->generateFieldTableRow('Cod Fiscal', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][uic_field]', $supplier_customfields->fields['uic_field'], $readonly));
 
         // Numar Registru Comert
-        $output .= $form->generateFieldTableRow('Număr Registru Comerț', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][part_regcom]', $supplier_customfields->fields['part_regcom'], $readonly));
+        $output .= $form->generateFieldTableRow('Număr Registru Comerț', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][crn_field]', $supplier_customfields->fields['crn_field'], $readonly));
 
         // Model fisa de interventie
         $output .= $form->generateFieldTableRow('Model fișă de intervenție', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][model]', $supplier_customfields->fields['model'], $readonly));
 
         // hMarfa code
-        $output .= $form->generateFieldTableRow('Cod Partener hMarfa', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][cod_hmarfa]', $supplier_customfields->fields['cod_hmarfa'], $readonly));
+        $output .= $form->generateFieldTableRow('Cod Partener hMarfa', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][hmarfa_code_field]', $supplier_customfields->fields['hmarfa_code_field'], $readonly));
 
         // Email pentru trimis facturi
         if ($has_full_rights) {
-            $output .= $form->generateFieldTableRow('Email pentru trimis facturi', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[supplier][part_email_f1]', $supplier_customfields->fields['part_email_f1'], $readonly));
+            $output .= $form->generateFieldTableRow('Email pentru trimis facturi', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[supplier][email_for_invoices_field]', $supplier_customfields->fields['email_for_invoices_field'], $readonly));
         }
 
         $output .= "</table>";
@@ -612,28 +612,28 @@ class PluginIservicePrinter extends Printer
         $output .= $form->generateFieldTableRow(__('Comments'), $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, 'contract[comment]', $contract->fields['comment'], $readonly));
 
         // Included black copies
-        $output .= $form->generateFieldTableRow('Copii black incluse', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][cop_bl_inclus]', $contract_customfields->fields['cop_bl_inclus'], $readonly));
+        $output .= $form->generateFieldTableRow('Copii black incluse', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][included_copies_bk_field]', $contract_customfields->fields['included_copies_bk_field'], $readonly));
 
         // Included color copies
-        $output .= $form->generateFieldTableRow('Copii color incluse', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][cop_col_inclus]', $contract_customfields->fields['cop_col_inclus'], $readonly));
+        $output .= $form->generateFieldTableRow('Copii color incluse', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][included_copies_col_field]', $contract_customfields->fields['included_copies_col_field'], $readonly));
 
         // Black copy price
-        $output .= $form->generateFieldTableRow('Tarif copie black', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][tarif_cop_bl]', $contract_customfields->fields['tarif_cop_bl'], $readonly));
+        $output .= $form->generateFieldTableRow('Tarif copie black', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][copy_price_bk_field]', $contract_customfields->fields['copy_price_bk_field'], $readonly));
 
         // Color copy price
-        $output .= $form->generateFieldTableRow('Tarif copie color', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][tarif_cop_col1]', $contract_customfields->fields['tarif_cop_col1'], $readonly));
+        $output .= $form->generateFieldTableRow('Tarif copie color', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][copy_price_col_field]', $contract_customfields->fields['copy_price_col_field'], $readonly));
 
         // Included copies value
-        $output .= $form->generateFieldTableRow('Valoare copii incluse', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][val_cop_inclus]', $contract_customfields->fields['val_cop_inclus'], $readonly));
+        $output .= $form->generateFieldTableRow('Valoare copii incluse', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][included_copy_value_field]', $contract_customfields->fields['included_copy_value_field'], $readonly));
 
         // Monthly price
-        $output .= $form->generateFieldTableRow('Tarif lunar', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][tarif_lunar1]', $contract_customfields->fields['tarif_lunar1'], $readonly));
+        $output .= $form->generateFieldTableRow('Tarif lunar', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][monthly_fee_field]', $contract_customfields->fields['monthly_fee_field'], $readonly));
 
         // Rate
-        $output .= $form->generateFieldTableRow('Curs de calcul', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][curs]', $contract_customfields->fields['curs'], $readonly));
+        $output .= $form->generateFieldTableRow('Curs de calcul', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][currency_field]', $contract_customfields->fields['currency_field'], $readonly));
 
         // Unit price divider
-        $output .= $form->generateFieldTableRow('Divizor PU copie', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][divizor_pu]', $contract_customfields->fields['divizor_pu'], $readonly));
+        $output .= $form->generateFieldTableRow('Divizor PU copie', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[contract][copy_price_divider_field]', $contract_customfields->fields['copy_price_divider_field'], $readonly));
 
         $output .= "</table>";
 
@@ -699,7 +699,7 @@ class PluginIservicePrinter extends Printer
     {
         $this->customfields = new PluginFieldsPrinterprintercustomfield();
         if (parent::getFromDB($ID)) {
-            if (!PluginIserviceDB::popuplateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
+            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
                 return false;
             }
 
@@ -717,8 +717,8 @@ class PluginIservicePrinter extends Printer
         $spaceless_serial = str_replace(" ", "", $serial);
 
         if ($use_cm_condition) {
-            $join         = "JOIN glpi_infocoms i ON i.items_id = $printer_table.id and i.itemtype = 'Printer' JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = i.suppliers_id and cfs.itemtype = 'Supplier'";
-            $cm_condition = "AND " . self::getCMCondition('cfs.cartridge_management', "$printer_table.printertypes_id", "$printer_table.states_id");
+            $join          = "JOIN glpi_infocoms i ON i.items_id = $printer_table.id and i.itemtype = 'Printer' JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON cfs.items_id = i.suppliers_id and cfs.itemtype = 'Supplier'";
+            $cm_condition  = "AND " . self::getCMCondition('cfs.cm_field', "$printer_table.printertypes_id", "$printer_table.states_id");
         } else {
             $join         = "";
             $cm_condition = "";
@@ -769,13 +769,13 @@ class PluginIservicePrinter extends Printer
 
     static function getInstalledCartridges($printer_id, $additional_condition = '')
     {
-        return IserviceToolBox::getQueryResult(
+        return PluginIserviceDB::getQueryResult(
             "
-                select c.*, cfc.mercurycodefield mercury_code, cfc.mercurycodesfield compatible_mercury_codes, cfc.atcfield atc, ci.name, c.plugin_fields_typefielddropdowns_id type_id, tfd.completename type_name
+                select c.*, cfc.mercury_code_field mercury_code, cfc.compatible_mercury_codes_field compatible_mercury_codes, cfc.atc_field atc, ci.name, c.plugin_fields_typefielddropdowns_id type_id, tfd.completename type_name
                 from glpi_cartridges c
                 join glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
                 left join glpi_plugin_fields_typefielddropdowns tfd on tfd.id = c.plugin_fields_typefielddropdowns_id
-                left join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
+                left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfc on cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
                 where printers_id = $printer_id AND NOT date_use IS null AND date_out IS null $additional_condition
                 "
         );

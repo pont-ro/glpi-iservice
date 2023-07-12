@@ -2,9 +2,10 @@
 global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 return [
     'query' => "
-        select c.id, c.printers_id, c.printed_pages bk, c.printed_pages_color color, c.tickets_id_use install_ticket_id, c.tickets_id_out out_ticket_id
+        select c.id, c.printers_id, cfc.printed_pages_field bk, cfc.printed_pages_color_field color, cfc.tickets_id_use_field install_ticket_id, cfc.tickets_id_out_field out_ticket_id
         from glpi_cartridges c
-        where c.printed_pages < 0 or c.printed_pages_color < 0
+        join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
+        where cfc.printed_pages_field < 0 or cfc.printed_pages_color_field < 0
         ",
     'test' => [
         'alert' => true,

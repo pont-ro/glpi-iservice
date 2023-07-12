@@ -344,8 +344,6 @@ create table `glpi_plugin_iservice_intorders_extorders` (
     `plugin_iservice_intorders_id` int(11) not null,
     primary key (`id`),
     index `plugin_frontim_extorders_id` (`plugin_iservice_extorders_id`),
-    index `plugin_frontim_intorders_id` (`plugin_iservice_intorders_id`),
-    index `plugin_iservice_extorders_id` (`plugin_iservice_extorders_id`),
     index `plugin_iservice_intorders_id` (`plugin_iservice_intorders_id`)
 );
 

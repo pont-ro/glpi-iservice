@@ -3,7 +3,7 @@ return [
     'query' => "
         select c.id, c.ref, c.name
         from glpi_cartridgeitems c
-        left join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'CartridgeItem'
+        left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'CartridgeItem'
         where c.is_deleted = 0 and cfc.id is null
         ",
     'test' => [

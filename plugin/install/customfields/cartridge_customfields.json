@@ -1,20 +1,22 @@
 [
     {
-        "name": "mercury_code_field",
-        "old_name": "mercurycodefield",
-        "label": ["Mercury Code","Mercury Code"],
-        "type": "text",
+        "name": "tickets_id_use_field",
+        "old_name": "tickets_id_use",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Ticket id","Id-ul tichetului"],
+        "type": "number",
         "ranking": "10",
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1"
+        "mandatory": "0"
     },
     {
-        "name": "compatible_mercury_codes_field",
-        "old_name": "mercurycodesfield",
-        "label": ["Compatible Mercury Codes", "Mercurycode-uri compatibile (între '' și separate cu virgulă)"],
-        "type": "text",
+        "name": "tickets_id_out_field",
+        "old_name": "tickets_id_out",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Ticket id out","Id-ul tichetului de iesire"],
+        "type": "number",
         "ranking": "20",
         "default_value": "",
         "is_active": "1",
@@ -22,9 +24,10 @@
         "mandatory": "0"
     },
     {
-        "name": "atc_field",
-        "old_name": "atcfield",
-        "label": ["Average total count","Contor total mediu (ATC)"],
+        "name": "pages_color_field",
+        "old_name": "pages_color",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Color pages","Pagini color"],
         "type": "number",
         "ranking": "30",
         "default_value": "",
@@ -33,71 +36,72 @@
         "mandatory": "0"
     },
     {
-        "name": "types_field",
-        "old_name": "typefield",
-        "label": ["Types","Tipuri disponibile (doar pentru referință)"],
-        "type": "dropdown",
+        "name": "pages_use_field",
+        "old_name": "pages_use",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Pages use","Pagini utilizate"],
+        "type": "number",
         "ranking": "40",
         "default_value": "",
-        "is_active": "1",
-        "is_readonly": "0",
-        "mandatory": "0",
-        "dropdown_values": [
-            {
-                "name": "Black",
-                "comment": "id: 1"
-            },
-            {
-                "name": "Cyan",
-                "comment": "id: 2"
-            },
-            {
-                "name": "Magenta",
-                "comment": "id: 3"
-            },
-            {
-                "name": "Yellow",
-                "comment": "id: 4"
-            },
-            {
-                "name": "Mat black",
-                "comment": "id: 5"
-            },
-            {
-                "name": "Foto black",
-                "comment": "id: 6"
-            },
-            {
-                "name": "Necunoscut",
-                "comment": "id: 7"
-            },
-            {
-                "name": "Piesă de schimb",
-                "comment": "id: 9"
-            },
-            {
-                "name": "Color",
-                "comment": "id: 10"
-            }
-        ]
-    },
-    {
-        "name": "life_coefficient_field",
-        "old_name": "lcfield",
-        "label": ["Life coefficient","Coeficient durata de viață"],
-        "type": "number",
-        "ranking": "50",
-        "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0"
     },
     {
-        "name": "supported_types_field",
-        "old_name": "supportedtypesfield",
-        "label": ["Supported types","Tipuri suportate (separate cu virgulă)"],
-        "type": "text",
+        "name": "pages_color_use_field",
+        "old_name": "pages_color_use",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Color pages use","Pagini color utilizate"],
+        "type": "number",
+        "ranking": "50",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "printed_pages_field",
+        "old_name": "printed_pages",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Printed pages","Pagini printate"],
+        "type": "number",
         "ranking": "60",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "printed_pages_color_field",
+        "old_name": "printed_pages_color",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Printed color pages","Pagini color printate"],
+        "type": "number",
+        "ranking": "70",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "suppliers_id_field",
+        "old_name": "FK_enterprise",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Supplier","Furnizor"],
+        "type": "number",
+        "ranking": "80",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "1"
+    },
+    {
+        "name": "locations_id_field",
+        "old_name": "FK_location",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Location","Locatie"],
+        "type": "number",
+        "ranking": "90",
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",

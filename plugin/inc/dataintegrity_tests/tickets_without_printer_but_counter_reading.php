@@ -2,7 +2,7 @@
 global $CFG_PLUGIN_ISERVICE;
 return [
     'query' => "
-        select t.id tid, t.total2_black, t.total2_color, REPLACE(SUBSTR(l.new_value, POSITION('(' IN l.new_value) + 1), ')', '') pid, p.name
+        select t.id tid, cft.total2_black_field, cft.total2_color_field, REPLACE(SUBSTR(l.new_value, POSITION('(' IN l.new_value) + 1), ')', '') pid, p.name
         from glpi_tickets t
         left join glpi_items_tickets it on it.tickets_id = t.id and it.itemtype = 'Printer'
         left join glpi_plugin_iservice_consumables_tickets ct on ct.tickets_id = t.id
@@ -14,10 +14,11 @@ return [
            group by items_id) ml on ml.tid = t.id
         left join glpi_logs l on l.id = ml.max_lid
         left join glpi_printers p on p.id = REPLACE(SUBSTR(l.new_value, POSITION('(' IN l.new_value) + 1), ')', '')
-        where t.is_deleted = 0 and coalesce(t.total2_black, 0) + coalesce(t.total2_color, 0) > 0
+        left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
+        where t.is_deleted = 0 and coalesce(cft.total2_black_field, 0) + coalesce(cft.total2_color_field, 0) > 0
           and it.id is null
           and (p.id is not null or l.new_value is null)
-          and t.data_luc > '2017-03-01 00:00:00'
+          and cft.effective_date_field > '2017-03-01 00:00:00'
         group by t.id
         ",
     'test' => [

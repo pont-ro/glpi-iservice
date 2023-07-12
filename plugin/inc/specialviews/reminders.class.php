@@ -1,7 +1,12 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Reminders.php".
-class PluginIserviceView_Reminders extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+
+class Reminders extends View
 {
 
     static function getRowBackgroundClass($row_data)
@@ -29,7 +34,7 @@ class PluginIserviceView_Reminders extends PluginIserviceView
         return Html::clean(Toolbox::unclean_cross_side_scripting_deep($row_data['text']));
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         $iservice_front   = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";

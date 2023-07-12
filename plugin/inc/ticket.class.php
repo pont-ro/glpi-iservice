@@ -640,7 +640,7 @@ class PluginIserviceTicket extends Ticket
                         self::MODE_CLOSE => false,
                     ],
                 ],
-                'data_luc' => [
+                'effective_date' => [
                     'default' => [
                         self::MODE_CREATENORMAL => date('Y-m-d H:i:s'),
                         self::MODE_READCOUNTER => date('Y-m-d H:i:s'),
@@ -887,15 +887,15 @@ class PluginIserviceTicket extends Ticket
         return self::getPreviousIdForPrinterOrSupplier(
             IserviceToolBox::getValueFromInput('_suppliers_id_assign', $item->input),
             IserviceToolBox::getItemsIdFromInput($item->input, 'Printer'),
-            $item->input['data_luc'] ?? $item->fields['data_luc'] ?? '',
+            $item->input['effective_date'] ?? $item->customfields->fields['effective_date'] ?? '',
             $item->getID(),
             $open
         );
     }
 
-    static function getPreviousIdForPrinterOrSupplier($supplier_id = 0, $printer_id = 0, $data_luc = '', $id = 0, $open = null)
+    static function getPreviousIdForPrinterOrSupplier($supplier_id = 0, $printer_id = 0, $effective_date = '', $id = 0, $open = null)
     {
-        return self::getLastIdForPrinterOrSupplier($supplier_id, $printer_id, $open, IserviceToolBox::isDateEmpty($data_luc) ? '' : "and (t.data_luc < '$data_luc' or (t.data_luc = '$data_luc' and t.id < $id))");
+        return self::getLastIdForPrinterOrSupplier($supplier_id, $printer_id, $open, IserviceToolBox::isDateEmpty($effective_date) ? '' : "and (cft.effective_date < '$effective_date' or (cft.effective_date = '$effective_date' and t.id < $id))");
     }
 
     static function getLastForPrinterOrSupplierFromInput($input, $open = null, $additional_condition = '', $additional_join = '')
@@ -966,9 +966,9 @@ class PluginIserviceTicket extends Ticket
         return 0;
     }
 
-    static function getNewerClosedTikcetIds($ticket_id, $data_luc, $supplier_id, $printer_id)
+    static function getNewerClosedTikcetIds($ticket_id, $effective_date, $supplier_id, $printer_id)
     {
-        return self::getAllIdsForPrinterOrSupplier($supplier_id, $printer_id, 'desc', false, "and (t.data_luc > '$data_luc' or (t.data_luc = '$data_luc' and t.id > $ticket_id))");
+        return self::getAllIdsForPrinterOrSupplier($supplier_id, $printer_id, 'desc', false, "and (cft.effective_date > '$effective_date' or (cft.effective_date = '$effective_date' and t.id > $ticket_id))");
     }
 
     static function getAllIdsForPrinterOrSupplier($supplier_id = 0, $printer_id = 0, $order = 'asc', $open = null, $additional_condition = '', $additional_join = '')
@@ -994,9 +994,11 @@ class PluginIserviceTicket extends Ticket
             $printer_id = $printer_id['Printer'][0];
         }
 
-        $join           = "JOIN glpi_tickets t ON t.id = `glpi_items_tickets`.tickets_id AND t.is_deleted = 0 $additional_join";
+        $join = "JOIN glpi_tickets t ON t.id = `glpi_items_tickets`.tickets_id AND t.is_deleted = 0 ";
+        $join .= "JOIN glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket' ";
+        $join .= $additional_join;
         $open_condition = $open === null ? "" : "t.status " . ($open ? "!=" : "=") . Ticket::CLOSED . " AND";
-        return "$join WHERE $open_condition `glpi_items_tickets`.items_id = $printer_id and `glpi_items_tickets`.itemtype = 'Printer' $additional_condition ORDER BY t.data_luc $order, t.id $order";
+        return "$join WHERE $open_condition `glpi_items_tickets`.items_id = $printer_id and `glpi_items_tickets`.itemtype = 'Printer' $additional_condition ORDER BY cft.effective_date $order, t.id $order";
     }
 
     protected static function getConditionForSupplier($supplier_id = 0, $open = null, $order = 'asc', $additional_condition = '', $additional_join = '')
@@ -1008,13 +1010,14 @@ class PluginIserviceTicket extends Ticket
                      WHERE git.itemtype = 'Printer'
                      GROUP BY git.tickets_id 
                     ) ic on ic.tickets_id = t.id
+                LEFT JOIN glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
                  $additional_join
                  ";
         $open_condition = $open === null ? "" : "t.status " . ($open ? "!=" : "=") . Ticket::CLOSED . " AND";
         return "$join WHERE $open_condition ic.item_count IS NULL
                 AND `glpi_suppliers_tickets`.suppliers_id = $supplier_id
                 AND `glpi_suppliers_tickets`.type = " . CommonITILActor::ASSIGN . " $additional_condition
-                ORDER BY t.data_luc $order, t.id $order";
+                ORDER BY cft.effective_date $order, t.id $order";
     }
 
     function displayResult($result_type, $result)
@@ -1115,7 +1118,7 @@ class PluginIserviceTicket extends Ticket
             Html::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea $movement întâi!</a>");
         } else {
             $movement = new PluginIserviceMovement();
-            $movement->getFromDB($this->customfields->fields['movement_id'] ?: $this->customfields->fields['movement2_id'] ?: -1);
+            $movement->getFromDB($this->customfields->fields['movement_id'] ?: $this->customfields->fields['movement2_id_field'] ?: -1);
         }
 
         // Begin form
@@ -1206,7 +1209,7 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_movement_id']) {
             $ticket_customfields = new PluginFieldsTicketticketcustomfield();
-            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement_id = " . IserviceToolBox::getInputVariable('movement_id', -2), true)) {
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement_id_field = " . IserviceToolBox::getInputVariable('movement_id', -2), true)) {
                 Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement_id')));
             }
 
@@ -1217,7 +1220,7 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_movement2_id']) {
             $ticket_customfields = new PluginFieldsTicketticketcustomfield();
-            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement2_id = " . IserviceToolBox::getInputVariable('movement2_id', -2), true)) {
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement2_id_field = " . IserviceToolBox::getInputVariable('movement2_id', -2), true)) {
                 Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement2_id')));
             }
 
@@ -1228,23 +1231,23 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_idemmailfield']) {
             $ticket_customfields = new PluginFieldsTicketticketcustomfield();
-            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE idemmailfield = " . IserviceToolBox::getInputVariable('idemmailfield', -2), true)) {
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE em_mail_id_field = " . IserviceToolBox::getInputVariable('idemmailfield', -2), true)) {
                 Html::displayErrorAndDie(sprintf(__("Ticket already exists for [EM] email %d", "iservice"), IserviceToolBox::getInputVariable('idemmailfield')));
             }
 
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_idemmailfield', $idemmailfield);
         } else {
-            // idemmailfield must be hidden
+            // em_mail_id_field must be hidden
         }
 
         // Have to get the number of consumables here, to be able to use it:
         ob_start();
         $order_status             = $this->getOrderStatus();
-        $ticket_consumables       = PluginIserviceConsumable_Ticket::showForTicket($this, $prepared_data['field_required'], false, (empty($id) || $closed || ($id > 0 && $this->customfields->fields['deliveredfield']) || $order_status != 0));
+        $ticket_consumables       = PluginIserviceConsumable_Ticket::showForTicket($this, $prepared_data['field_required'], false, (empty($id) || $closed || ($id > 0 && $this->customfields->fields['delivered_field']) || $order_status != 0));
         $ticket_consumables_table = ob_get_contents();
         ob_end_clean();
         ob_start();
-        $ticket_cartridges       = PluginIserviceCartridge_Ticket::showForTicket($this, $prepared_data['field_required'], false, (empty($id) || $closed || ($id > 0 && $this->customfields->fields['exported']) || $order_status != 0));
+        $ticket_cartridges       = PluginIserviceCartridge_Ticket::showForTicket($this, $prepared_data['field_required'], false, (empty($id) || $closed || ($id > 0 && $this->customfields->fields['exported_field']) || $order_status != 0));
         $ticket_cartridges_table = ob_get_clean();
         if ($ticket_consumables || count($ticket_cartridges)) {
             $prepared_data['field_readonly']['_suppliers_id_assign'] = true;
@@ -1317,9 +1320,9 @@ class PluginIserviceTicket extends Ticket
 
         // Usage address
         if ($prepared_data['field_hidden']['_usageaddressfield']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_usageaddressfield', $printer->customfields->fields['usageaddressfield']);
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_usageaddressfield', $printer->customfields->fields['usage_address_field']);
         } else {
-            $form->displayFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_usageaddressfield', $printer->customfields->fields['usageaddressfield'] ?? ''));
+            $form->displayFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_usageaddressfield', $printer->customfields->fields['usage_address_field'] ?? ''));
         }
 
         // Location - The location of the printer at the first save should be saved,
@@ -1394,7 +1397,7 @@ class PluginIserviceTicket extends Ticket
 
         // Sum of unpaid invoices
         if (!$prepared_data['field_hidden']['_sum_of_unpaid_invoices'] && $supplier_id > 0) {
-            $sum_display = IserviceToolBox::getSumOfUnpaidInvoicesLink($supplier_id, $supplier_customfields->fields['cod_hmarfa']);
+            $sum_display = IserviceToolBox::getSumOfUnpaidInvoicesLink($supplier_id, $supplier_customfields->fields['hmarfa_code_field']);
             $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_sum_of_unpaid_invoices', $sum_display));
         }
 
@@ -1414,11 +1417,11 @@ class PluginIserviceTicket extends Ticket
             $info_table = new PluginIserviceHtml_table(
                 'tab_cadrehov wide80', $info_table_header, new PluginIserviceHtml_table_row(
                     '', [
-                        new PluginIserviceHtml_table_cell($printer->customfields->fields['data_fact'] ?? '', 'nowrap'),
-                        new PluginIserviceHtml_table_cell($printer->customfields->fields['data_exp_fact'] ?? '', 'nowrap'),
-                        $printer->customfields->fields['total2_color_fact'] ?? '',
+                        new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_date_field'] ?? '', 'nowrap'),
+                        new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_expiry_date_field'] ?? '', 'nowrap'),
+                        $printer->customfields->fields['invoiced_total_color_field'] ?? '',
                         $printer->lastClosedTicket()->fields['total2_color'] ?? '',
-                        $printer->customfields->fields['total2_black_fact'] ?? '',
+                        $printer->customfields->fields['invoiced_total_black_field'] ?? '',
                         $printer->lastClosedTicket()->fields['total2_black'] ?? '',
                     ]
                 ), 'display: inline-block;text-align: center;'
@@ -1428,7 +1431,7 @@ class PluginIserviceTicket extends Ticket
 
         $last_ticket        = self::getLastForPrinterOrSupplier($supplier_id, $printer_id);
         $last_closed_ticket = self::getLastForPrinterOrSupplier(0, $printer_id, false);
-        $last_opened_ticket = self::getLastForPrinterOrSupplier(0, $printer_id, true, "and t.data_luc < '{$this->fields['data_luc']}'");
+        $last_opened_ticket = self::getLastForPrinterOrSupplier(0, $printer_id, true, "and cft.effective_date < '{$this->customfields->fields['effective_date']}'");
 
         // Counter required minumums
         // We check if there are newer tickets.
@@ -1437,26 +1440,26 @@ class PluginIserviceTicket extends Ticket
         $total2_color_required_minimum = $last_closed_ticket->fields['total2_color'] ?? 0;
 
         // If there are newer closed tickets, we do not allow counter change, as counters on the cartridges will be messed up.
-        if ($id > 0 && ($last_closed_ticket->fields['data_luc'] ?? '') > $this->fields['data_luc']) {
+        if ($id > 0 && ($last_closed_ticket->customfields->fields['effective_date'] ?? '') > $this->customfields->fields['effective_date']) {
             $prepared_data['field_readonly']['total2_black'] = true;
             $prepared_data['field_readonly']['total2_color'] = true;
         }
 
         // If the ticket is closed or there are newer tickets, the required minimum is the already saved counter or the last intervention counter
-        if ($id > 0 && (($last_ticket->fields['data_luc'] ?? '') > $this->fields['data_luc'] || $closed)) {
+        if ($id > 0 && (($last_ticket->customfields->fields['effective_date'] ?? '') > $this->customfields->fields['effective_date'] || $closed)) {
             $total2_black_required_minimum = min($total2_black_required_minimum, $this->fields['total2_black']);
             $total2_color_required_minimum = min($total2_color_required_minimum, $this->fields['total2_color']);
         }
 
-        // Data_luc required minimum
-        $data_luc_requiered_minimum = $closed ? '2000-01-01' : date('Y-m-d H:i', strtotime($last_closed_ticket->fields['data_luc'] ?? '2000-01-01'));
+        // effective_date required minimum
+        $effective_date_requiered_minimum = $closed ? '2000-01-01' : date('Y-m-d H:i', strtotime($last_closed_ticket->customfields->fields['effective_date'] ?? '2000-01-01'));
 
         // Counter CSV data
         $csv_data = PluginIserviceEmaintenance::getDataFromCsvsForSpacelessSerial($printer->getSpacelessSerial());
         if (!empty($csv_data) && !$prepared_data['field_readonly']['total2_black']) {
             $style   = '';
             $onclick = '';
-            $title   = "Click pentru valoarea din CSV\nData contor: {$csv_data['data_luc']}\nContor black: ";
+            $title   = "Click pentru valoarea din CSV\nData contor: {$csv_data['effective_date']}\nContor black: ";
 
             $button_template = " <input class='submit' onclick='' title=' %2\$d' type='button' value='din CSV'/>";
 
@@ -1489,8 +1492,8 @@ class PluginIserviceTicket extends Ticket
                 }
             }
 
-            if (!isset($csv_data['data_luc']['error']) && $csv_data['data_luc'] >= $data_luc_requiered_minimum) {
-                $onclick .= sprintf("setGlpiDateField($(\"[name=_data_luc]\").closest(\".dropdown_wrapper\"), \"%s\");", $csv_data['data_luc']);
+            if (!isset($csv_data['effective_date']['error']) && $csv_data['effective_date'] >= $effective_date_requiered_minimum) {
+                $onclick .= sprintf("setGlpiDateField($(\"[name=_effective_date]\").closest(\".dropdown_wrapper\"), \"%s\");", $csv_data['effective_date']);
             }
 
             $counter_black_suffix = " <input class='submit' onclick='$onclick' title='$title' type='button' $style value='din CSV' />";
@@ -1499,25 +1502,25 @@ class PluginIserviceTicket extends Ticket
         }
 
         // Estimation
-        if (!$closed && $printer_id > 0 && !$printer->isRouter() && (empty($id) || ($last_ticket->fields['data_luc'] ?? '') <= $this->fields['data_luc']) && $last_closed_ticket->getID() > 0 && !$printer->customfields->fields['noinvoicefield']) {
-            $last_data_luc           = new DateTime($last_closed_ticket->fields['data_luc'] ?? '');
-            $days_since_last_counter = $last_data_luc->diff(new DateTime(empty($this->fields['data_luc']) ? null : $this->fields['data_luc']))->format("%a");
-            $estimated_black         = $last_closed_ticket->fields['total2_black'] + $printer->customfields->fields['dailybkaveragefield'] * $days_since_last_counter;
-            $estimated_color         = $last_closed_ticket->fields['total2_color'] + $printer->customfields->fields['dailycoloraveragefield'] * $days_since_last_counter;
+        if (!$closed && $printer_id > 0 && !$printer->isRouter() && (empty($id) || ($last_ticket->customfields->fields['effective_date'] ?? '') <= $this->customfields->fields['effective_date']) && $last_closed_ticket->getID() > 0 && !$printer->customfields->fields['no_invoice_field']) {
+            $last_effective_date           = new DateTime($last_closed_ticket->customfields->fields['effective_date'] ?? '');
+            $days_since_last_counter = $last_effective_date->diff(new DateTime(empty($this->customfields->fields['effective_date']) ? null : $this->customfields->fields['effective_date']))->format("%a");
+            $estimated_black         = $last_closed_ticket->fields['total2_black'] + $printer->customfields->fields['daily_bk_average_field'] * $days_since_last_counter;
+            $estimated_color         = $last_closed_ticket->fields['total2_color'] + $printer->customfields->fields['daily_color_average_field'] * $days_since_last_counter;
             $title                   = "";
             $onclick                 = '';
             if ($estimated_black > 0) {
-                $title   .= "black: $estimated_black ({$last_closed_ticket->fields['total2_black']} + {$printer->customfields->fields['dailybkaveragefield']}*$days_since_last_counter)";
+                $title   .= "black: $estimated_black ({$last_closed_ticket->fields['total2_black']} + {$printer->customfields->fields['daily_bk_average_field']}*$days_since_last_counter)";
                 $onclick .= "$(\"[name=total2_black]\").val($estimated_black);";
             }
 
             if (($color_printer || $plotter_printer) && $estimated_color > 0) {
-                $title   .= ", " . ($plotter_printer ? "suprafață hârtie" : "color") . ": $estimated_color ({$last_closed_ticket->fields['total2_color']} + {$printer->customfields->fields['dailycoloraveragefield']}*$days_since_last_counter)";
+                $title   .= ", " . ($plotter_printer ? "suprafață hârtie" : "color") . ": $estimated_color ({$last_closed_ticket->fields['total2_color']} + {$printer->customfields->fields['daily_color_average_field']}*$days_since_last_counter)";
                 $onclick .= "$(\"[name=total2_color]\").val($estimated_color);";
             }
 
             // Uncomment this line to see date explanation
-            // $title .= sprintf(" [%s - %s]", date('Y-m-d', strtotime($this->fields['data_luc'])), date('Y-m-d', strtotime($last_closed_ticket->fields['data_luc'])));
+            // $title .= sprintf(" [%s - %s]", date('Y-m-d', strtotime($this->customfields->fields['effective_date'])), date('Y-m-d', strtotime($last_closed_ticket->customfields->fields['effective_date'])));
             $counter_black_suffix .= " <input class='submit' onclick='$onclick' title='$title' type='button' value='Estimare' />";
         } else {
             $estimated_black = '';
@@ -1646,7 +1649,7 @@ class PluginIserviceTicket extends Ticket
 
         // Change cartridge
         $changeables = 0;
-        if (empty($printer_id) || $printer_id < 1 || $supplier_id < 1 || !$supplier_customfields->fields['cartridge_management']) {
+        if (empty($printer_id) || $printer_id < 1 || $supplier_id < 1 || !$supplier_customfields->fields['cm_field']) {
             $prepared_data['field_hidden']['_change_cartridge'] = true;
             $changeables                                        = -1;
         } elseif ($this->fields['itilcategories_id'] == self::getItilCategoryId('citire contor')) {
@@ -1657,12 +1660,12 @@ class PluginIserviceTicket extends Ticket
             $cartridge_link             = "view.php?view=cartridges&pmi={$printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$printer->fields['name']}";
             $last_ticket_with_cartridge = self::getLastForPrinterOrSupplier($supplier_id, $printer_id, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
             echo "<tr><td><a target='_blank' href='$cartridge_link'>", __('Change cartridge', 'iservice'), "</a>";
-            if ($id > 0 && ($last_ticket_with_cartridge->fields['data_luc'] ?? '') > $this->fields['data_luc']) {
+            if ($id > 0 && ($last_ticket_with_cartridge->customfields->fields['effective_date'] ?? '') > $this->customfields->fields['effective_date']) {
                 echo "<br><span style='color:grey;font-size:90%'>Atenție. Există un tichet mai nou ({$last_ticket_with_cartridge->getID()}) cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet.<span>";
             }
 
             echo "</td><td>";
-            $changeables = PluginIserviceCartridge_Ticket::showChangeableForTicket($this, $prepared_data['field_required'], false, (/*$id < 1 || */$closed || (($last_ticket_with_cartridge->fields['data_luc'] ?? '') > $this->fields['data_luc'] && $id > 0)));
+            $changeables = PluginIserviceCartridge_Ticket::showChangeableForTicket($this, $prepared_data['field_required'], false, (/*$id < 1 || */$closed || (($last_ticket_with_cartridge->customfields->fields['effective_date'] ?? '') > $this->customfields->fields['effective_date'] && $id > 0)));
             echo "</td></tr>";
         }
 
@@ -1710,16 +1713,16 @@ class PluginIserviceTicket extends Ticket
 
         // Without papers
         if ($prepared_data['field_hidden']['_without_papers']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_without_papers', $id > 0 ? $this->customfields->fields['fara_hartii'] : $prepared_data['default_values']['_without_papers']);
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_without_papers', $id > 0 ? $this->customfields->fields['without_paper_field'] : $prepared_data['default_values']['_without_papers']);
         } else {
-            $form->displayFieldTableRow(__('Without papers', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_without_papers', $id > 0 ? $this->customfields->fields['fara_hartii'] : $prepared_data['default_values']['_without_papers'], $prepared_data['field_readonly']['_without_papers']));
+            $form->displayFieldTableRow(__('Without papers', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_without_papers', $id > 0 ? $this->customfields->fields['without_paper_field'] : $prepared_data['default_values']['_without_papers'], $prepared_data['field_readonly']['_without_papers']));
         }
 
         // Without moving
         if ($prepared_data['field_hidden']['_without_moving']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_without_moving', $id > 0 ? $this->customfields->fields['fara_deplasare'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']));
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_without_moving', $id > 0 ? $this->customfields->fields['no_travel'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']));
         } else {
-            $form->displayFieldTableRow('Fără deplasare', $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_without_moving', $id > 0 ? $this->customfields->fields['fara_deplasare'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']), $prepared_data['field_readonly']['_without_moving']));
+            $form->displayFieldTableRow('Fără deplasare', $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_without_moving', $id > 0 ? $this->customfields->fields['no_travel'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']), $prepared_data['field_readonly']['_without_moving']));
         }
 
         // Save work progress
@@ -1739,12 +1742,12 @@ class PluginIserviceTicket extends Ticket
             $prepared_data['field_hidden']['_consumables'] = true;
         }
 
-        if ($this->customfields->fields['exported']) {
+        if ($this->customfields->fields['exported_field']) {
             $prepared_data['field_readonly']['_export_type'] = true;
         }
 
         $prepared_data['field_hidden']['_export_type'] = $prepared_data['field_hidden']['_consumables'];
-        $export_type                                   = $id > 0 ? $this->customfields->fields['export_type'] : (empty($prepared_data['default_values']['_export_type']) ? '' : $prepared_data['default_values']['_export_type']);
+        $export_type                                   = $id > 0 ? $this->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'] : (empty($prepared_data['default_values']['_export_type']) ? '' : $prepared_data['default_values']['_export_type']);
 
         if ($prepared_data['field_hidden']['_export_type']) {
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_export_type', $export_type);
@@ -1774,12 +1777,12 @@ class PluginIserviceTicket extends Ticket
 
         // Delivered
         if ($prepared_data['field_hidden']['_delivered']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_delivered', $id > 0 ? $this->customfields->fields['deliveredfield'] : $prepared_data['default_values']['_delivered']);
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_delivered', $id > 0 ? $this->customfields->fields['delivered_field'] : $prepared_data['default_values']['_delivered']);
         } else {
             $errors = [];
             if (empty($ticket_consumables)) {
                 $errors[] = 'Nu sunt consumabile de livirat';
-            } if ($this->customfields->fields['exported']) {
+            } if ($this->customfields->fields['exported_field']) {
                 $errors[] = 'Starea livrării nu poate fi modificată dacă tichetul este exportat';
             } else {
                 if (!empty($this->consumable_data['installed_cartridges'])) {
@@ -1796,25 +1799,25 @@ class PluginIserviceTicket extends Ticket
                 $deliver_checkbox_title = count($errors) < 2 ? $errors[0] : ("Starea livrări nu poate fi modificată pentru următoarele motive:\n" . implode("\n", $errors));
             } else {
                 $prepared_data['field_readonly']['_delivered'] = false;
-                $deliver_checkbox_title                        = $this->customfields->fields['deliveredfield'] ? 'Revocă livrarea' : 'Finalizează livrarea';
+                $deliver_checkbox_title                        = $this->customfields->fields['delivered_field'] ? 'Revocă livrarea' : 'Finalizează livrarea';
             }
 
             $deliver_checkbox_options = [
                 'title' => $deliver_checkbox_title,
                 'onclick' => 'if ($(this).is(":checked")) { $("#btn_export").removeClass("disabled").attr("title", ""); $(this).attr("title", "Revocă livrarea"); } else { $("#btn_export").addClass("disabled").attr("title", $("#btn_export").data("title")); $(this).attr("title", "Finalizează livrarea"); }',
             ];
-            $delivered_date           = $this->customfields->fields['deliveredfield'] ? ($this->consumable_data['delivery_date'] ?? '?') : $this->fields['data_luc'];
-            $data_luc_span            = " la data de <span id='dataluc-span' style='font-weight: bold;'>$delivered_date</span> ";
-            $data_luc_span           .= $this->customfields->fields['deliveredfield'] ? "(revocați livrarea și schimbați data efectivă pentru a modifica)" : "(schimbați data efectivă pentru a modifica)";
-            $form->displayFieldTableRow(__('Delivered', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_delivered', $id > 0 ? $this->customfields->fields['deliveredfield'] : $prepared_data['default_values']['_delivered'], $prepared_data['field_readonly']['_delivered'], $deliver_checkbox_options) . $data_luc_span);
-            echo "<script>setTimeout(function() { $('[name=\"_data_luc\"]').change(function() { $('#dataluc-span').text($(this).val()); }); }, 1000 );</script>";
+            $delivered_date           = $this->customfields->fields['delivered_field'] ? ($this->consumable_data['delivery_date'] ?? '?') : $this->customfields->fields['effective_date'];
+            $effective_date_span            = " la data de <span id='dataluc-span' style='font-weight: bold;'>$delivered_date</span> ";
+            $effective_date_span           .= $this->customfields->fields['delivered_field'] ? "(revocați livrarea și schimbați data efectivă pentru a modifica)" : "(schimbați data efectivă pentru a modifica)";
+            $form->displayFieldTableRow(__('Delivered', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_delivered', $id > 0 ? $this->customfields->fields['delivered_field'] : $prepared_data['default_values']['_delivered'], $prepared_data['field_readonly']['_delivered'], $deliver_checkbox_options) . $effective_date_span);
+            echo "<script>setTimeout(function() { $('[name=\"_effective_date\"]').change(function() { $('#dataluc-span').text($(this).val()); }); }, 1000 );</script>";
         }
 
         // Exported
         if ($prepared_data['field_hidden']['_exported']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_exported', $id > 0 ? $this->customfields->fields['exported'] : $prepared_data['default_values']['_exported']);
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_exported', $id > 0 ? $this->customfields->fields['exported_field'] : $prepared_data['default_values']['_exported']);
         } else {
-            if ($this->customfields->fields['exported']) {
+            if ($this->customfields->fields['exported_field']) {
                 $months   = [
                     1 => 'ianuarie',
                     2 => 'februarie',
@@ -1833,12 +1836,12 @@ class PluginIserviceTicket extends Ticket
                 $supplier->getFromDB($supplier_id);
                 $mail_subject      = "Factura ExpertLine - {$supplier->fields['name']} - " . $months[date("n")] . ", " . date("Y");
                 $mail_body         = $supplier->getMailBody();
-                $send_email_button = " <a class='vsubmit' href='mailto:{$supplier_customfields->fields['part_email_f1']}?subject=$mail_subject&body=$mail_body'>Trimite email către client</a>";
+                $send_email_button = " <a class='vsubmit' href='mailto:{$supplier_customfields->fields['email_for_invoices_field']}?subject=$mail_subject&body=$mail_body'>Trimite email către client</a>";
             } else {
                 $send_email_button = '';
             }
 
-            $form->displayFieldTableRow(__('Exported in csv and imported in hMarfa', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_exported', $id > 0 ? $this->customfields->fields['exported'] : $prepared_data['default_values']['_exported'], $prepared_data['field_readonly']['_exported']) . $send_email_button);
+            $form->displayFieldTableRow(__('Exported in csv and imported in hMarfa', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_exported', $id > 0 ? $this->customfields->fields['exported_field'] : $prepared_data['default_values']['_exported'], $prepared_data['field_readonly']['_exported']) . $send_email_button);
         }
 
         // Services invoiced
@@ -1855,35 +1858,35 @@ class PluginIserviceTicket extends Ticket
 
         // Data efectiva
         if (in_array($options['mode'], [self::MODE_CARTRIDGEMANAGEMENT, self::MODE_CLOSE]) && empty($followups)) {
-            if (IserviceToolBox::isDateEmpty($this->fields['data_luc'])) {
-                $this->fields['data_luc'] = date('Y-m-d H:i:s');
+            if (IserviceToolBox::isDateEmpty($this->customfields->fields['effective_date'])) {
+                $this->customfields->fields['effective_date'] = date('Y-m-d H:i:s');
             }
         }
 
-        if ($prepared_data['field_hidden']['data_luc']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'data_luc', empty($this->fields['data_luc']) ? '' : $this->fields['data_luc']);
+        if ($prepared_data['field_hidden']['effective_date']) {
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'effective_date', empty($this->customfields->fields['effective_date']) ? '' : $this->customfields->fields['effective_date']);
         } else {
-            $data_luc_buttons = [
+            $effective_date_buttons = [
                 'Azi' => date("Y-m-d H:i:s"),
                 'Ieri' => date("Y-m-d H:i:s", strtotime("-1 day")),
                     // 'Alaltăieri' => date("Y-m-d H:i:s", strtotime("-2 days")),
             ];
-            $warning = ($this->fields['data_luc'] && $this->fields['data_luc'] < ($last_closed_ticket->fields['data_luc'] ?? $this->fields['data_luc'])) ? "ATENȚIE! Ultimul tichet închis are data efectivă: " . date('Y-m-d H:i:s', strtotime($last_closed_ticket->fields['data_luc'])) : '';
+            $warning = ($this->customfields->fields['effective_date'] && $this->customfields->fields['effective_date'] < ($last_closed_ticket->customfields->fields['effective_date'] ?? $this->customfields->fields['effective_date'])) ? "ATENȚIE! Ultimul tichet închis are data efectivă: " . date('Y-m-d H:i:s', strtotime($last_closed_ticket->customfields->fields['effective_date'])) : '';
             $form->displayFieldTableRow(
                 __('Effective date', 'iservice'), $form->generateField(
-                    PluginIserviceHtml::FIELDTYPE_DATETIME, 'data_luc', $this->fields['data_luc'], $prepared_data['field_readonly']['data_luc'], [
-                        'data-required-minimum' => $data_luc_requiered_minimum,
+                    PluginIserviceHtml::FIELDTYPE_DATETIME, 'effective_date', $this->customfields->fields['effective_date'], $prepared_data['field_readonly']['effective_date'], [
+                        'data-required-minimum' => $effective_date_requiered_minimum,
                         'data-label' => __('Effective date', 'iservice'),
-                        'mindate' => date('Y-m-d', strtotime($last_closed_ticket->fields['data_luc'] ?? '0000-00-00')),
+                        'mindate' => date('Y-m-d', strtotime($last_closed_ticket->customfields->fields['effective_date'] ?? '0000-00-00')),
                         'class' => 'full agressive',
-                        'buttons' => $data_luc_buttons,
+                        'buttons' => $effective_date_buttons,
                         'warning' => $warning
                     ]
                 )
             );
         }
 
-        $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_data_luc_default', $this->fields['data_luc'] ?? '');
+        $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_effective_date_default', $this->customfields->fields['effective_date'] ?? '');
 
         // Email de notificare
         if ($prepared_data['field_hidden']['_notificationmailfield']) {
@@ -1896,7 +1899,7 @@ class PluginIserviceTicket extends Ticket
         if ($printer_id > 0 && !$prepared_data['field_hidden']['_printer_min_percentage']) {
             $pc2_last_cache_data    = PluginIserviceViews::getView('printercounters2', false)->getCachedData();
             $printer_min_percentage = IserviceToolBox::getQueryResult(
-                "SELECT consumable_code, min_estimate_percentage, cfci.mercurycodefield  
+                "SELECT consumable_code, min_estimate_percentage, cfci.mercury_code_field  
                                                            FROM glpi_plugin_iservice_cachetable_printercounters2  cp
                                                            INNER JOIN
                                                                (
@@ -1904,9 +1907,9 @@ class PluginIserviceTicket extends Ticket
                                                                    FROM glpi_plugin_iservice_cachetable_printercounters2
                                                                    WHERE printer_id=$printer_id
                                                                ) cp2 on cp2.printer_id = cp.printer_id
-                                                           LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfci on cfci.items_id = cp.ciid and cfci.itemtype = 'CartridgeItem'
+                                                           LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = cp.ciid and cfci.itemtype = 'CartridgeItem'
                                                            WHERE cp.min_estimate_percentage = cp2.min_percentage 
-                                                             AND cp.cartridge_management = 1
+                                                             AND cp.cm_field = 1
                                                              AND cp.consumable_type = 'cartridge'
                                                              AND cp.printer_types_id in (3, 4)
                                                              AND cp.printer_states_id in (SELECT id FROM glpi_states WHERE name like 'CO%' OR name like 'Gar%' OR name like 'Pro%')"
@@ -2013,7 +2016,7 @@ class PluginIserviceTicket extends Ticket
 
             $action           = $id > 0 ? 'update' : 'add';
             $buttons[$action] = $form->generateSubmit($action, __('Save'), ['data-required' => implode(',', array_keys(array_filter($prepared_data['field_required']))), 'onclick' => "getElementsByName(\"status\")[0].value=" . Ticket::SOLVED . ";"]);
-            if (!$ticket_consumables || $this->customfields->fields['exported']) {
+            if (!$ticket_consumables || $this->customfields->fields['exported_field']) {
                 $buttons[$action . '_close'] = $form->generateSubmit(
                     $action, __('Save') . ' & ' . __('Close', 'iservice'), [
                         'data-required' => implode(',', array_keys(array_filter($prepared_data['field_required']))),
@@ -2050,7 +2053,7 @@ class PluginIserviceTicket extends Ticket
         case self::MODE_CLOSE:
             if ($closed || empty($id) || $id < 1) {
                 if (IserviceToolBox::inProfileArray(['super-admin'])) {
-                    $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->fields['data_luc'], $supplier_id, $printer_id);
+                    $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->customfields->fields['effective_date'], $supplier_id, $printer_id);
                     if (count($newer_closed_ticket_ids)) {
                         $confirm = ['data-confirm-first' => count($newer_closed_ticket_ids) . " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"];
                     } else {
@@ -2083,7 +2086,7 @@ class PluginIserviceTicket extends Ticket
             }
 
             foreach ($button_statuses as $status) {
-                $confirm_alert    = ($status === Ticket::SOLVED || $this->fields['status'] != Ticket::SOLVED) ? '' : "if (!nativeConfirm(\"ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de {$this->fields['data_luc']}!\")) return false;";
+                $confirm_alert    = ($status === Ticket::SOLVED || $this->fields['status'] != Ticket::SOLVED) ? '' : "if (!nativeConfirm(\"ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de {$this->customfields->fields['effective_date']}!\")) return false;";
                 $buttons[$status] = $form->generateSubmit(
                     'update', '&nbsp;', [
                         'data-required' => implode(',', array_keys(array_filter($prepared_data['field_required']))),
@@ -2099,7 +2102,7 @@ class PluginIserviceTicket extends Ticket
                 'data-required' => implode(',', array_keys(array_filter($prepared_data['field_required']))),
                 'data-title' => 'Ticketul nu poate fi exportat până livrarea nu este finalizată',
             ];
-            if (!$this->customfields->fields['deliveredfield']) {
+            if (!$this->customfields->fields['delivered_field']) {
                 $export_button_options['class'] = 'submit disabled';
                 $export_button_options['title'] = 'Ticketul nu poate fi exportat până livrarea nu este finalizată';
             }
@@ -2107,20 +2110,20 @@ class PluginIserviceTicket extends Ticket
             $buttons['export'] = $form->generateSubmit('export', __('Save') . ' + ' . __('hMarfa export', 'iservice'), $export_button_options);
             $buttons['order']  = $form->generateSubmit('order', __('Save') . ' + ' . __('Order', 'iservice'), ['data-required' => implode(',', array_keys(array_filter($prepared_data['field_required'])))]);
 
-            // If minimum percentage estimate is less then -150% and data_luc is not older than 4 days and the cartridge with minimum percentage estimate is not changed, the ticket cannot be closed
+            // If minimum percentage estimate is less then -150% and effective_date is not older than 4 days and the cartridge with minimum percentage estimate is not changed, the ticket cannot be closed
             $ticket_cartridges_mercurycodes = [];
             foreach ($ticket_cartridges as $tc) {
-                foreach (explode(',', str_replace("'", "", $tc['mercurycodesfield'])) as $mercurycode) {
+                foreach (explode(',', str_replace("'", "", $tc['compatible_mercury_codes_field'])) as $mercurycode) {
                     array_push($ticket_cartridges_mercurycodes, $mercurycode);
                 }
             }
 
             // Do not allow close if there is a cartridge with very low estimate percentage
-            // if (isset($printer_min_percentage[0]['min_estimate_percentage']) && $printer_min_percentage[0]['min_estimate_percentage'] < -1.50 && ceil((time() - strtotime($this->fields['data_luc'] ?? '2000-01-01')) / 60 / 60 / 24) < 4 && !in_array($printer_min_percentage[0]['mercurycodefield'], $ticket_cartridges_mercurycodes)) {
+            // if (isset($printer_min_percentage[0]['min_estimate_percentage']) && $printer_min_percentage[0]['min_estimate_percentage'] < -1.50 && ceil((time() - strtotime($this->customfields->fields['effective_date'] ?? '2000-01-01')) / 60 / 60 / 24) < 4 && !in_array($printer_min_percentage[0]['mercury_code_field'], $ticket_cartridges_mercurycodes)) {
             // unset($buttons['close']);
             // }
             // If it is a movement ticket, it cannot be closed until the services invoice is not created.
-            if ($this->customfields->fields['movement_id'] || $this->customfields->fields['movement2_id']) {
+            if ($this->customfields->fields['movement_id'] || $this->customfields->fields['movement2_id_field']) {
                 unset($buttons['services_export']);
                 if (($this->customfields->fields['movement_id']) && !$movement->fields['invoice']) {
                     unset($buttons['close']);
@@ -2135,7 +2138,7 @@ class PluginIserviceTicket extends Ticket
                 // If ticket has consumables cannot generate services invoice
                 unset($buttons['services_export']);
                 // If ticket has consumables and is exported, it cannot be ordered
-                if ($this->customfields->fields['exported']) {
+                if ($this->customfields->fields['exported_field']) {
                     unset($buttons['order']);
                 } else {
                     // And if it is not exported yet, it cannot be closed
@@ -2169,8 +2172,8 @@ class PluginIserviceTicket extends Ticket
 
         $buttons[] = "<input type='checkbox' name='_send_notification' /> " . __('Send notification', 'iservice');
 
-        $show_warning       = IserviceToolBox::inProfileArray(['super-admin', 'admin', 'tehnician']) && ($last_opened_ticket->fields['data_luc'] ?? '2100-01-01' < $this->fields['data_luc']);
-        $filter_description = urlencode(($printer->fields['name'] ?? '') . " (" . ($printer->fields['serial'] ?? '') . ") - " . ($printer->customfields->fields['usageaddressfield'] ?? ''));
+        $show_warning       = IserviceToolBox::inProfileArray(['super-admin', 'admin', 'tehnician']) && ($last_opened_ticket->customfields->fields['effective_date'] ?? '2100-01-01' < $this->customfields->fields['effective_date']);
+        $filter_description = urlencode(($printer->fields['name'] ?? '') . " (" . ($printer->fields['serial'] ?? '') . ") - " . ($printer->customfields->fields['usage_address_field'] ?? ''));
         $form->displayButtonsTableRow(
             $buttons, [
                 'label' => $show_warning ? "<span style='color: red'>ATENȚIE! Există tickete deschise mai vechi, vezi <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=operations&operations0[printer_id]={$printer->fields['id']}&operations0[filter_description]=$filter_description' target='_blank'>lista lucrari</a></span>" : '',
@@ -2398,8 +2401,8 @@ class PluginIserviceTicket extends Ticket
         $result = [];
 
         $result['variables']['movement_id']   = IserviceToolBox::getInputVariable('movement_id', isset($this->customfields) ? $this->customfields->fields['movement_id'] : '');
-        $result['variables']['movement2_id']  = IserviceToolBox::getInputVariable('movement2_id', isset($this->customfields) ? $this->customfields->fields['movement2_id'] : '');
-        $result['variables']['idemmailfield'] = IserviceToolBox::getInputVariable('idemmailfield', isset($this->customfields) ? $this->customfields->fields['idemmailfield'] : '');
+        $result['variables']['movement2_id_field']  = IserviceToolBox::getInputVariable('movement2_id_field', isset($this->customfields) ? $this->customfields->fields['movement2_id_field'] : '');
+        $result['variables']['em_mail_id_field'] = IserviceToolBox::getInputVariable('em_mail_id_field', isset($this->customfields) ? $this->customfields->fields['em_mail_id_field'] : '');
 
         $this->fields['items_id'] = IserviceToolBox::getArrayInputVariable('items_id', (is_array($this->fields['items_id']) ? $this->fields['items_id'] : ['Printer' => [$this->fields['items_id']]]) ?? ['Printer' => [0]]);
         $printer_id               = $this->fields['items_id']['Printer'][0] ?? 0;
@@ -2513,7 +2516,7 @@ class PluginIserviceTicket extends Ticket
 
         // First check the cartridges at the given partner. If there are none, check the partners in the same group.
         if (count($cartridges) === 0) {
-            $cartridges = $cartridge->find("FIND_IN_SET (FK_enterprise, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
+            $cartridges = $cartridge->find("FIND_IN_SET (FK_enterprise, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
         }
 
         if (count($cartridges) === 0) {
@@ -2535,7 +2538,7 @@ class PluginIserviceTicket extends Ticket
         $cartridge->getFromDB($cartridge_id_to_install);
         $cartridge_customfields->getFromDBByItemsId($cartridge->fields['cartridgeitems_id']);
         $cartridge->fields['printers_id']      = $printer_id;
-        $cartridge->fields['mercurycodefield'] = $cartridge_customfields->fields['mercurycodefield'];
+        $cartridge->fields['mercury_code_field'] = $cartridge_customfields->fields['mercury_code_field'];
 
         $plugin_iservice_cartridges_tickets = new PluginIserviceCartridge_Ticket();
 
@@ -2549,7 +2552,7 @@ class PluginIserviceTicket extends Ticket
             "
         );
 
-        foreach (explode(',', $cartridge_customfields->fields['supportedtypesfield']) as $supported_type) {
+        foreach (explode(',', $cartridge_customfields->fields['supported_types_field']) as $supported_type) {
             if (!in_array($supported_type, array_column($used_types, 'selected_type'))) {
                 $cartridge->fields['plugin_fields_typefielddropdowns_id'] = $supported_type;
                 break;

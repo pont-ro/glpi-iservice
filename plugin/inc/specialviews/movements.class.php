@@ -1,34 +1,49 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Movements.php".
-class PluginIserviceView_Movements extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Views\View;
+use \PluginIserviceTicket;
+
+class Movements extends View
 {
 
-    protected function getSettings()
+    public static $rightname = 'plugin_iservice_view_movements';
+
+    public static $icon = 'ti ti-arrows-move';
+
+    public static function getName(): string
+    {
+        return __('Movements', 'iService');
+    }
+    protected function getSettings(): array
     {
         return [
             'name' => __('Movement list', 'iservice'),
             'query' => "
 						SELECT
-							  m.id movement_id
+							  m.id movement_id_field
 							, m.init_date movement_start_date
 							, p.name printer_name
 							, p.serial printer_serial
 							, os.name old_partner
 							, ns.name new_partner
 							, CASE WHEN m.moved = 1 THEN 'Da' ELSE 'Nu' END movement_finalized
-							, IFNULL(t2.total2_black, t1.total2_black) black_counter
-							, IFNULL(t2.total2_color, t1.total2_color) color_counter
+							, IFNULL(cft2.total2_black_field, cft1.total2_black_field) black_counter
+							, IFNULL(cft2.total2_color_field, cft1.total2_color_field) color_counter
 							, t1.id ticket1_id
 							, t2.id ticket2_id
 						FROM glpi_plugin_iservice_movements m
 						LEFT JOIN glpi_printers p ON p.id = m.items_id AND m.itemtype='Printer'
 						LEFT JOIN glpi_suppliers os ON os.id = m.suppliers_id_old
 						LEFT JOIN glpi_suppliers ns ON ns.id = m.suppliers_id
-						LEFT JOIN glpi_plugin_fields_ticketcustomfields tc1 ON tc1.movement_id = m.id and tc1.itemtype = 'Ticket'
+						LEFT JOIN glpi_plugin_fields_ticketticketcustomfields tc1 ON tc1.movement_id_field = m.id and tc1.itemtype = 'Ticket'
 						LEFT JOIN glpi_tickets t1 ON t1.id = tc1.items_id
-						LEFT JOIN glpi_plugin_fields_ticketcustomfields tc2 ON tc2.movement2_id = m.id and tc2.itemtype = 'Ticket'
+                        LEFT JOIN glpi_plugin_fields_ticketticketcustomfields cft1 ON cft1.items_id = t1.id and cft1.itemtype = 'Ticket'
+						LEFT JOIN glpi_plugin_fields_ticketticketcustomfields tc2 ON tc2.movement2_id_field = m.id and tc2.itemtype = 'Ticket'
 						LEFT JOIN glpi_tickets t2 ON t2.id = tc2.items_id
+						LEFT JOIN glpi_plugin_fields_ticketticketcustomfields cft2 ON cft2.items_id = t2.id and cft2.itemtype = 'Ticket'
 						WHERE m.moved in ([finalized])
 						  AND ((p.name IS NULL AND '[printer_name]' = '%%') OR p.name LIKE '[printer_name]')
 						  AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
@@ -74,7 +89,7 @@ class PluginIserviceView_Movements extends PluginIserviceView
                     'title' => 'Data începerii mutării',
                     'link' => [
                         'type' => 'normal',
-                        'href' => 'movement.form.php?id=[movement_id]',
+                        'href' => 'movement.form.php?id=[movement_id_field]',
                         'title' => 'Deschide mutare',
                         'target' => '_blank',
                     ],

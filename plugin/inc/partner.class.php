@@ -56,7 +56,7 @@ class PluginIservicePartner extends Supplier
                 return false;
             }
 
-            $this->hMarfa_fields = self::gethMarfaFields($this->customfields->fields['cod_hmarfa']);
+            $this->hMarfa_fields = self::gethMarfaFields($this->customfields->fields['hmarfa_code_field']);
 
             self::$item_cache[$ID] = $this;
             return true;
@@ -67,7 +67,7 @@ class PluginIservicePartner extends Supplier
 
     public function hasCartridgeManagement()
     {
-        return !empty($this->customfields->fields['cartridge_management']);
+        return !empty($this->customfields->fields['cm_field']);
     }
 
     static function gethMarfaFields($cod_hmarfa)
@@ -114,7 +114,7 @@ class PluginIservicePartner extends Supplier
     {
         $magic_link           = IserviceToolBox::getInputVariable('id', null);
         $partner_customfields = new PluginFieldsSuppliersuppliercustomfield();
-        if (!PluginIserviceDB::populateByQuery($partner_customfields, "WHERE magic_link = '$magic_link' LIMIT 1")) {
+        if (!PluginIserviceDB::populateByQuery($partner_customfields, "WHERE magic_link_field = '$magic_link' LIMIT 1")) {
             return null;
         }
 
@@ -135,7 +135,7 @@ class PluginIservicePartner extends Supplier
         return $partner->customfields->update(
             [
                 $partner->customfields->getIndexName() => $partner->customfields->getID(),
-                'magic_link' => base64_encode(mt_rand(10000, 99999) . str_pad($id, 5, '0', STR_PAD_LEFT) . mt_rand(10000, 99999))
+                'magic_link_field' => base64_encode(mt_rand(10000, 99999) . str_pad($id, 5, '0', STR_PAD_LEFT) . mt_rand(10000, 99999))
             ]
         );
     }
@@ -143,7 +143,7 @@ class PluginIservicePartner extends Supplier
     function getMagicLink()
     {
         global $CFG_GLPI;
-        return $CFG_GLPI['root_doc'] . "/plugins/iservice/front/client.php?id=" . $this->customfields->fields['magic_link'];
+        return $CFG_GLPI['root_doc'] . "/plugins/iservice/front/client.php?id=" . $this->customfields->fields['magic_link_field'];
     }
 
     function getInvoiceInfo($invoice_info = 0)
@@ -151,7 +151,7 @@ class PluginIservicePartner extends Supplier
         global $DB;
         $conditions = [
             "(codl = 'F' OR stare like 'V%') AND tip like 'TF%'",
-            "codbenef = '{$this->customfields->fields['cod_hmarfa']}'",
+            "codbenef = '{$this->customfields->fields['hmarfa_code_field']}'",
         ];
         switch ($invoice_info) {
         case self::INVOICEINFO_DEBT:
@@ -186,7 +186,7 @@ class PluginIservicePartner extends Supplier
 
     function getMailBody($type = '', $url_encoded = true)
     {
-        if (!empty($this->customfields->fields['magic_link'])) {
+        if (!empty($this->customfields->fields['magic_link_field'])) {
             $unpaid_invoices_count = $unpaid_invoices_value = 0;
             $unpaid_invoices       = $this->getInvoiceInfo(PluginIservicePartner::INVOICEINFO_FULL_UNPAID);
             if (count($unpaid_invoices) < 1) {
@@ -208,7 +208,7 @@ class PluginIservicePartner extends Supplier
             case 'scadente':
                 $mail_body = "Catre
 {$this->fields['name']}
-Cod fiscal: {$this->customfields->fields['part_cui']}
+Cod fiscal: {$this->customfields->fields['uic_field']}
 
 Stimate client,
 
@@ -241,7 +241,7 @@ Rog confirmare de primire.
 
 In evidentele noastre figureaza urmatoarele datorii, inclusiv cea atasata
 {$this->fields['name']}
-Cod fiscal: {$this->customfields->fields['part_cui']}
+Cod fiscal: {$this->customfields->fields['uic_field']}
 Numar facturi neachitate: $unpaid_invoices_count
 Valoare facturi neachitate: $unpaid_invoices_value
 $unpaid_invoices_list
@@ -273,7 +273,7 @@ Expert Line srl
         }
 
         echo "<script>$('#c_preference').addClass('no-user');</script>";
-        echo "<li id='partner-title'$class>{$this->fields['name']} - {$this->customfields->fields['part_cui']}</li>";
+        echo "<li id='partner-title'$class>{$this->fields['name']} - {$this->customfields->fields['uic_field']}</li>";
     }
 
 }

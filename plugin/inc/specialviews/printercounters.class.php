@@ -1,10 +1,23 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "PrinterCounters.php".
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'Printers.php';
+namespace GlpiPlugin\Iservice\Specialviews;
 
-class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use \PluginIservicePrinter;
+use \PluginIserviceDB;
+use \PluginFieldsPrinterprintercustomfield;
+
+class PrinterCounters extends Printers
 {
+    public static $rightname = 'plugin_iservice_view_printercounters';
+
+    public static $icon = 'ti ti-brand-days-counter';
+
+    public static function getName(): string
+    {
+        return __('PrinterCounters', 'iService');
+    }
 
     static function getMinPercentageDisplay($column, $row_data)
     {
@@ -13,7 +26,7 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
         }
 
         $single         = stripos($column, 'single') === 0 ? 1 : 0;
-        $items          = PluginIserviceCommon::getQueryResult(
+        $items          = PluginIserviceDB::getQueryResult(
             "
             SELECT
                 c.id
@@ -23,40 +36,42 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
               , getCartridgeDaysToEmptyEstimate(c.id, $single) days_to_empty" . ($single ? "" : "
               , getCartridgeChangeableCartridgeCount(c.id) changeable_cartridge_count
               , getCartridgeCompatiblePrinterCount(c.id) compatible_printers_count") . "
-              , cfc.atcfield
-              , CASE c.plugin_fields_typefielddropdowns_id
+              , cfci.atc_field
+              , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id
                     WHEN 2 THEN getPrinterCounterEstimate(c.printers_id, 1)
                     WHEN 3 THEN getPrinterCounterEstimate(c.printers_id, 1)
                     WHEN 4 THEN getPrinterCounterEstimate(c.printers_id, 1)
                     ELSE getPrinterCounterEstimate(c.printers_id, 0)
                 END estimated_counter
-              , CASE c.plugin_fields_typefielddropdowns_id
-                    WHEN 2 THEN t.total2_color
-                    WHEN 3 THEN t.total2_color
-                    WHEN 4 THEN t.total2_color
+              , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id
+                    WHEN 2 THEN cft.total2_color_field
+                    WHEN 3 THEN cft.total2_color_field
+                    WHEN 4 THEN cft.total2_color_field
                     ELSE t.total2_black
                 END installed_counter
               , plct.data_luc last_data_luc
-              , CASE c.plugin_fields_typefielddropdowns_id
+              , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id
                     WHEN 2 THEN plct.total2_color
                     WHEN 3 THEN plct.total2_color
                     WHEN 4 THEN plct.total2_color
                     ELSE plct.total2_black
                 END last_counter
-              , CASE c.plugin_fields_typefielddropdowns_id
-                    WHEN 2 THEN cfp.dailycoloraveragefield
-                    WHEN 3 THEN cfp.dailycoloraveragefield
-                    WHEN 4 THEN cfp.dailycoloraveragefield
-                    ELSE cfp.dailybkaveragefield
+              , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id
+                    WHEN 2 THEN cfp.daily_color_average_field
+                    WHEN 3 THEN cfp.daily_color_average_field
+                    WHEN 4 THEN cfp.daily_color_average_field
+                    ELSE cfp.daily_bk_average_field
                 END da
               , DATEDIFF(NOW(), plct.data_luc) passed_days
             FROM glpi_cartridges c
+            JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
             JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
             JOIN glpi_plugin_iservice_printers p ON p.id = c.printers_id
             LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
-            JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
-            JOIN glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
-            JOIN glpi_tickets t on t.id = c.tickets_id_use
+            JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
+            JOIN glpi_plugin_fields_printerprintercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
+            JOIN glpi_tickets t on t.id = cfc.tickets_id_use_field
+            JOIN glpi_plugin_fields_ticketticketcustomfields cft ON cft.items_id = t.id and cft.itemtype = 'Ticket'
             WHERE c.id in ({$row_data[$column . '_ids']})
             "
         );
@@ -64,7 +79,7 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
         $min_percentage = 999999;
         $explanation    = "";
         foreach ($items as $item) {
-            $title_text = "Cartuș $item[id] ($item[ref]) cu $item[atcfield] copii medii\nDisponibil $item[percentage]%, golire în $item[days_to_empty] zile\n";
+            $title_text = "Cartuș $item[id] ($item[ref]) cu $item[atc_field] copii medii\nDisponibil $item[percentage]%, golire în $item[days_to_empty] zile\n";
             if ($min_percentage > $item['percentage']) {
                 $min_percentage = $item['percentage'];
                 $explanation    = "<br>($item[ref])";
@@ -108,7 +123,7 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
         global $DB;
         $call = $DB->prepare("CALL getPrinterDailyAverageCalculation($row_data[printer_id], " . ($column === 'dca' ? 1 : 0) . ", @dailyAverage, @ticketCount, @minCounter, @maxCounter, @minDataLuc, @maxDataLuc)");
         $call->execute();
-        $values = PluginIserviceCommon::getQueryResult("SELECT @dailyAverage, @ticketCount, @minCounter, @maxCounter, @minDataLuc, @maxDataLuc");
+        $values = PluginIserviceDB::getQueryResult("SELECT @dailyAverage, @ticketCount, @minCounter, @maxCounter, @minDataLuc, @maxDataLuc");
         foreach (array_shift($values) as $var_name => $var_value) {
             $data[substr($var_name, 1)] = $var_value;
         }
@@ -159,32 +174,33 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
             return '';
         }
 
-        $printed_pages_field = ($column === 'bk' ? '(c.printed_pages + c.printed_pages_color)' : 'c.printed_pages_color');
+        $printed_pages_field = ($column === 'bk' ? '(cfc.printed_pages_field + cfc.pages_color_use_field)' : 'cfc.pages_color_use_field');
         $type_conditions     = [
             'bk' => 'not in (2, 3, 4)',
             'c' => '= 2',
             'm' => '= 3',
             'y' => '= 4',
         ];
-        $data                = PluginIserviceCommon::getQueryResult(
+        $data                = PluginIserviceDB::getQueryResult(
             "
             select
                 c.id cid
               , c.cartridgeitems_id ciid
-              , c.plugin_fields_typefielddropdowns_id tid
+              , cfci.plugin_fields_cartridgeitemtypedropdowns_id tid
               , c.date_use
               , c.date_out
               , $printed_pages_field printed_pages
               , ci.ref
-              , cfc.atcfield atc
+              , cfci.atc_field atc
             from glpi_cartridges c
             join glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id and (ci.ref like '%cton%' or ci.ref like '%ccat%' or ci.ref like '%ccai%')
-            join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
+            join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
+            join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
             where c.date_out is not null
               and $printed_pages_field > 0
-              and c.plugin_fields_typefielddropdowns_id {$type_conditions[$column]}
+              and cfci.plugin_fields_cartridgeitemtypedropdowns_id {$type_conditions[$column]}
               and c.printers_id = $row_data[printer_id]
-            order by c.cartridgeitems_id, c.plugin_fields_typefielddropdowns_id, c.date_out
+            order by c.cartridgeitems_id, cfci.plugin_fields_cartridgeitemtypedropdowns_id, c.date_out
             "
         );
 
@@ -252,27 +268,27 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
         return $result;
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
-        if (PluginIserviceCommon::getInputVariable('mass_action_update_daily_averages')) {
-            $printer_customfields = new PluginFieldsPrintercustomfield();
-            foreach (PluginIserviceCommon::getArrayInputVariable('item')['printer'] as $printer_id => $update) {
+        if (IserviceToolBox::getInputVariable('mass_action_update_daily_averages')) {
+            $printer_customfields = new PluginFieldsPrinterprintercustomfield();
+            foreach (IserviceToolBox::getArrayInputVariable('item')['printer'] as $printer_id => $update) {
                 if (!$update || !$printer_customfields->getFromDBByItemsId($printer_id)) {
                     continue;
                 }
 
-                $dba = PluginIserviceCommon::getQueryResult("SELECT getPrinterDailyAverage($printer_id, 0) dba")[0]['dba'];
-                $dca = PluginIserviceCommon::getQueryResult("SELECT getPrinterDailyAverage($printer_id, 1) dca")[0]['dca'];
-                $printer_customfields->update(['id' => $printer_customfields->getID(), 'dailybkaveragefield' => $dba, 'dailycoloraveragefield' => $dca]);
+                $dba = PluginIserviceDB::getQueryResult("SELECT getPrinterDailyAverage($printer_id, 0) dba")[0]['dba'];
+                $dca = PluginIserviceDB::getQueryResult("SELECT getPrinterDailyAverage($printer_id, 1) dca")[0]['dca'];
+                $printer_customfields->update(['id' => $printer_customfields->getID(), 'daily_bk_average_field' => $dba, 'daily_color_average_field' => $dca]);
             }
 
             $this->force_refresh = true;
         }
 
-        if (PluginIserviceCommon::getInputVariable('mass_action_update_usage_coefficients')) {
-            $printer_customfields = new PluginFieldsPrintercustomfield();
-            $item_values          = PluginIserviceCommon::getArrayInputVariable('item_values')['printer'];
-            foreach (PluginIserviceCommon::getArrayInputVariable('item')['printer'] as $printer_id => $update) {
+        if (IserviceToolBox::getInputVariable('mass_action_update_usage_coefficients')) {
+            $printer_customfields = new PluginFieldsPrinterprintercustomfield();
+            $item_values          = IserviceToolBox::getArrayInputVariable('item_values')['printer'];
+            foreach (IserviceToolBox::getArrayInputVariable('item')['printer'] as $printer_id => $update) {
                 if (!$update || !$printer_customfields->getFromDBByItemsId($printer_id)) {
                     continue;
                 }
@@ -340,28 +356,28 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
                             , g.completename supergroup
                             , plct.data_luc last_data_luc
                             , plct.total2_black last_total2_black
-                            , cfp.total2_black_fact
+                            , cfp.invoiced_total_black_field
                             , plct.total2_color last_total2_color
-                            , cfp.total2_color_fact
-                            , cfp.data_exp_fact
-                            , CAST(cfp.data_fact as DATE) data_fact
-                            , cfp.week_nr
-                            , cfp.emaintenancefield emaintenance
-                            , cfp.gps
-                            , cfp.usageaddressfield
-                            , cfp.dailybkaveragefield dba
-                            , cfp.dailycoloraveragefield dca
-                            , cfp.ucbkfield
+                            , cfp.invoiced_total_color_field
+                            , cfp.invoice_expiry_date_field
+                            , CAST(cfp.invoice_date_field as DATE) invoice_date_field
+                            , cfp.week_nr_field
+                            , cfp.em_field emaintenance
+                            , cfp.contact_gps_field
+                            , cfp.usage_address_field
+                            , cfp.daily_bk_average_field dba
+                            , cfp.daily_color_average_field dca
+                            , cfp.uc_bk_field
                             , cb.calc_ucbk
-                            , cfp.uccfield
+                            , cfp.uc_cyan_field
                             , cc.calc_ucc
-                            , cfp.ucmfield
+                            , cfp.uc_magenta_field
                             , cm.calc_ucm
-                            , cfp.ucyfield
+                            , cfp.uc_yellow_field
                             , cy.calc_ucy
-                            , cfs.atlfield
-                            , cfs.part_email_f1 supplier_email_facturi
-                            , cfs.cartridge_management
+                            /*, cfs.atlfield*/
+                            , cfs.email_for_invoices_field supplier_email_facturi
+                            , cfs.cm_field
                             , c0.min_single_cartridge_percentage
                             , c0.single_cartridge_ids
                             , c1.min_cartridge_percentage
@@ -370,7 +386,7 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
                             , c2.min_consumable_percentage
                             , c2.next_visit_days_consumable
                             , c2.consumable_ids
-                            , IF(c1.min_cartridge_percentage < cfs.atlfield * 100, 'da', 'nu') cartridge_limit_reached
+                            /*, IF(c1.min_cartridge_percentage < cfs.atlfield * 100, 'da', 'nu') cartridge_limit_reached*/
                             , getPrinterDailyAverage(p.id, 0) cdba
                             , getPrinterDailyAverage(p.id, 1) cdca
                         FROM glpi_plugin_iservice_printers p
@@ -382,8 +398,8 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
                         LEFT JOIN glpi_users u ON u.id = p.users_id_tech
                         LEFT JOIN glpi_users ue ON ue.id = p.users_id
                         LEFT JOIN glpi_groups g ON g.id = p.groups_id
-                        LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.items_id = p.id and cfp.itemtype = 'Printer'
-                        LEFT JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = s.id and cfs.itemtype = 'Supplier'
+                        LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.items_id = p.id and cfp.itemtype = 'Printer'
+                        LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON cfs.items_id = s.id and cfs.itemtype = 'Supplier'
                         LEFT JOIN glpi_states st ON st.id = p.states_id
                         LEFT JOIN (SELECT
                                        c.printers_id
@@ -411,29 +427,33 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
                                    JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
                                    WHERE c.date_use is not null and c.date_out is null and not ci.ref like 'CTON%' and not ci.ref like 'CCA%'
                                    GROUP BY c.printers_id) c2 ON c2.printers_id = p.id
-                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(c.printed_pages + c.printed_pages_color) / avg(cfc.atcfield), 2) calc_ucbk
+                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(cfc.printed_pages_field + cfc.printed_pages_color_field) / avg(cfci.atc_field), 2) calc_ucbk
                                    FROM glpi_cartridges c
+                                   JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
                                    JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id AND (ci.ref like '%cton%' OR ci.ref like '%ccat%' OR ci.ref like '%ccai%')
-                                   JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.items_id = c.cartridgeitems_id AND cfc.itemtype = 'CartridgeItem'
-                                   WHERE c.date_out IS NOT NULL AND (c.printed_pages + c.printed_pages_color) > 0 AND c.plugin_fields_typefielddropdowns_id NOT IN (2, 3, 4)
+                                   JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.items_id = c.cartridgeitems_id AND cfci.itemtype = 'CartridgeItem'
+                                   WHERE c.date_out IS NOT NULL AND (cfc.printed_pages_field + cfc.printed_pages_color_field) > 0 AND cfci.plugin_fields_cartridgeitemtypedropdowns_id NOT IN (2, 3, 4)
                                    GROUP BY c.printers_id) cb ON cb.pid = p.id
-                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(c.printed_pages_color) / avg(cfc.atcfield), 2) calc_ucc
+                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(cfc.printed_pages_color) / avg(cfci.atc_field), 2) calc_ucc
                                    FROM glpi_cartridges c
+                                   JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
                                    JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id AND (ci.ref like '%cton%' OR ci.ref like '%ccat%' OR ci.ref like '%ccai%')
-                                   JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.items_id = c.cartridgeitems_id AND cfc.itemtype = 'CartridgeItem'
-                                   WHERE c.date_out IS NOT NULL AND c.printed_pages_color > 0 AND c.plugin_fields_typefielddropdowns_id = 2
+                                   JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.items_id = c.cartridgeitems_id AND cfci.itemtype = 'CartridgeItem'
+                                   WHERE c.date_out IS NOT NULL AND cfc.printed_pages_color > 0 AND cfci.plugin_fields_cartridgeitemtypedropdowns_id = 2
                                    GROUP BY c.printers_id) cc ON cc.pid = p.id
-                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(c.printed_pages_color) / avg(cfc.atcfield), 2) calc_ucm
+                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(cfc.printed_pages_color) / avg(cfci.atc_field), 2) calc_ucm
                                    FROM glpi_cartridges c
+                                   JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
                                    JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id AND (ci.ref like '%cton%' OR ci.ref like '%ccat%' OR ci.ref like '%ccai%')
-                                   JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.items_id = c.cartridgeitems_id AND cfc.itemtype = 'CartridgeItem'
-                                   WHERE c.date_out IS NOT NULL AND c.printed_pages_color > 0 AND c.plugin_fields_typefielddropdowns_id = 3
+                                   JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.items_id = c.cartridgeitems_id AND cfci.itemtype = 'CartridgeItem'
+                                   WHERE c.date_out IS NOT NULL AND cfc.printed_pages_color > 0 AND cfci.plugin_fields_cartridgeitemtypedropdowns_id = 3
                                    GROUP BY c.printers_id) cm ON cm.pid = p.id
-                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(c.printed_pages_color) / avg(cfc.atcfield), 2) calc_ucy
+                        LEFT JOIN (SELECT c.printers_id pid, ROUND(avg(cfc.printed_pages_color) / avg(cfci.atc_field), 2) calc_ucy
                                    FROM glpi_cartridges c
+                                   JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
                                    JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id AND (ci.ref like '%cton%' OR ci.ref like '%ccat%' OR ci.ref like '%ccai%')
-                                   JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.items_id = c.cartridgeitems_id AND cfc.itemtype = 'CartridgeItem'
-                                   WHERE c.date_out IS NOT NULL AND c.printed_pages_color > 0 AND c.plugin_fields_typefielddropdowns_id = 4
+                                   JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.items_id = c.cartridgeitems_id AND cfci.itemtype = 'CartridgeItem'
+                                   WHERE c.date_out IS NOT NULL AND cfc.printed_pages_color > 0 AND cfci.plugin_fields_cartridgeitemtypedropdowns_id = 4
                                    GROUP BY c.printers_id) cy ON cy.pid = p.id
                         WHERE p.is_deleted = 0
                         GROUP BY p.id
@@ -442,7 +462,7 @@ class PluginIserviceView_PrinterCounters extends PluginIserviceView_Printers
         $settings['cache_timeout'] = 43200; // 12 hours
         $settings['cache_query']   = "SELECT *  FROM {table_name}
             WHERE printer_name LIKE '[printer_name]' {$this->getRightCondition('printer_')}
-              AND " . PluginIservicePrinter::getCMCondition('cartridge_management', 'printer_types_id', 'printer_states_id') . "
+              AND " . PluginIservicePrinter::getCMCondition('cm_field', 'printer_types_id', 'printer_states_id') . "
               AND otherserial LIKE '[otherserial]'
               AND serial LIKE '[serial]'
               AND supplier_name LIKE '[supplier_name]'

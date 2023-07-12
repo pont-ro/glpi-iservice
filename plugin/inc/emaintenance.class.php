@@ -5,8 +5,6 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-
 class PluginIserviceEmaintenance extends MailCollector {
 
     const DEFAULT_EMAIL = 'emaintenance@expertline.ro';
@@ -69,7 +67,7 @@ class PluginIserviceEmaintenance extends MailCollector {
             $email = self::DEFAULT_EMAIL;
         }
 
-        return IserviceToolBox::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0];
+        return PluginIserviceDB::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0] ?? [];
     }
 
     static function getCsvConfig($type = 'EM')
@@ -346,10 +344,10 @@ class PluginIserviceEmaintenance extends MailCollector {
 
                 $result[$id]['partner_resolved_name'] = $supplier->fields['name'];
 
-                $printer_movements = IserviceToolBox::getQueryResult("
+                $printer_movements = PluginIserviceDB::getQueryResult("
                     select *
                     from glpi_plugin_iservice_movements m
-                    join glpi_plugin_fields_ticketcustomfields cft on cft.movement_id = m.id
+                    join glpi_plugin_fields_ticketticketcustomfields cft on cft.movement_id_field = m.id
                     where m.itemtype = 'Printer'
                       and m.items_id = {$printer->getID()}
                       and m.suppliers_id_old = {$supplier->getID()}

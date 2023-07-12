@@ -4,7 +4,7 @@ return [
     'query' => "
         select t.id, count(ct.id) cartridge_count, cft.cartridge_install
         from glpi_tickets t
-        left join glpi_plugin_fields_ticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
+        left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
         left join glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id
         where t.is_deleted = 0
           and t.`status` = 6

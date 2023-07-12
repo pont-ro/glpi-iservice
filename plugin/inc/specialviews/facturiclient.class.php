@@ -1,8 +1,22 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Facturi_Client.php".
-class PluginIserviceView_Facturi_Client extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+class FacturiClient extends View
 {
+
+    public static $rightname = 'plugin_iservice_view_facturi_client';
+
+    public static $icon = 'ti ti-file-invoice';
+
+//    public static function getName(): string
+//    {
+//        return __('FacturiClient', 'iService');
+//    }
 
     protected $partner       = null;
     protected $client_access = false;
@@ -31,7 +45,7 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
         }
     }
 
-    static function getName($partner = '', $client_access = true)
+    static function getName($partner = '', $client_access = true): string
     {
         if (empty($partner) || !($partner instanceof Supplier)) {
             return "Facturi";
@@ -53,8 +67,8 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
     static function getDescription($partner)
     {
         global $CFG_GLPI;
-        $mail_recipient = $partner->customfields->fields['part_email_f1'];
-        if (empty($partner->customfields->fields['magic_link'])) {
+        $mail_recipient = $partner->customfields->fields['email_for_invoices_field'];
+        if (empty($partner->customfields->fields['magic_link_field'])) {
             $magic_link = null;
         } else {
             $magic_link                                  = $partner->getMagicLink();
@@ -94,7 +108,7 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
                 $form->generateFieldTableRow(__('Phone'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'phonenumber', $partner->fields['phonenumber'])),
                 $form->generateFieldTableRow(__('Address'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'address', $partner->fields['address'])),
                 $form->generateFieldTableRow(__('Comments'), $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, 'comment', $partner->fields['comment'])),
-                $form->generateFieldTableRow('Email pentru trimis facturi', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[part_email_f1]', $partner->customfields->fields['part_email_f1'])),
+                $form->generateFieldTableRow('Email pentru trimis facturi', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[email_for_invoices_field]', $partner->customfields->fields['email_for_invoices_field'])),
                 $form->generateButtonsTableRow(
                     [
                         $form->generateButton('update', __('Save') . " " . __('Supplier'), ['type' => 'submit']),
@@ -136,10 +150,10 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
         $this->partner       = isset($params['partner']) ? $params['partner'] : null;
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
-        if (empty($this->partner)) {
-            $request_variables = PluginIserviceCommon::getArrayInputVariable($this->getRequestArrayName(), []);
+       if (empty($this->partner)) {
+            $request_variables = IserviceToolBox::getArrayInputVariable($this->getRequestArrayName(), []);
             if (!isset($request_variables['partner_id'])) {
                 die("Partner should be given!");
             }
@@ -157,8 +171,8 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
             'description' => $this->client_access ? '' : PluginIserviceView_Facturi_Client::getDescription($this->partner),
             'postfix' => PluginIserviceView_Facturi_Client::getSuffix($this->partner, $this->client_access),
             'params' => [
-                'id' => $this->client_access ? $this->partner->customfields->fields['magic_link'] : '',
-                'cui' => isset($this->partner->customfields->fields['part_cui']) ? $this->partner->customfields->fields['part_cui'] : "",
+                'id' => $this->client_access ? $this->partner->customfields->fields['magic_link_field'] : '',
+                'cui' => isset($this->partner->customfields->fields['uic_field']) ? $this->partner->customfields->fields['uic_field'] : "",
                 'partner_id' => $this->client_access ? '' : ($this->partner->getID()),
             ],
             'query' => "
@@ -188,7 +202,7 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
                                             GROUP BY items_id
                                      ) d ON d.items_id = fa.nrfac
                                 WHERE (fa.codl = 'F' OR fa.stare like 'V%') AND fa.tip like 'TF%'
-                                  AND fa.codbenef = '{$this->partner->customfields->fields['cod_hmarfa']}'
+                                  AND fa.codbenef = '{$this->partner->customfields->fields['hmarfa_code_field']}'
                                 GROUP BY fa.nrfac
                             ) as t
                         WHERE t.nrfac LIKE '[nrfac]'
@@ -324,7 +338,7 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
                         'query' => "
                                     SELECT *
                                     FROM glpi_plugin_iservice_downloads
-                                    WHERE downloadtype='magic_link'
+                                    WHERE downloadtype='magic_link_field'
                                         AND items_id = '{$this->partner->getID()}'
                                     ORDER BY date DESC
                                     ",
@@ -352,7 +366,7 @@ class PluginIserviceView_Facturi_Client extends PluginIserviceView
                 'download' => [
                     'title' => 'Descarcă',
                     'align' => 'center',
-                    'format' => "function:PluginIserviceView_Facturi_Client::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link']}');",
+                    'format' => "function:PluginIserviceView_Facturi_Client::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link_field']}');",
                 ],
             ],
         ];

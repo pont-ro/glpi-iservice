@@ -4,9 +4,9 @@ return [
     'query' => "
         select t.id, count(ct.id) consumable_count
         from glpi_tickets t
-        join glpi_plugin_fields_ticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
+        join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
         join glpi_plugin_iservice_consumables_tickets ct on ct.tickets_id = t.id
-        where t.is_deleted = 0 and (cft.export_type is null or cft.export_type = '')
+        where t.is_deleted = 0 and (cft.plugin_fields_ticketexporttypedropdowns_id is null or cft.plugin_fields_ticketexporttypedropdowns_id = '')
         group by t.id
         ",
     'test' => [
