@@ -10,7 +10,11 @@ class CreateTablesInstallStep
 
     public static function do(): bool
     {
-        PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql');
+        $tables = include PLUGIN_ISERVICE_DIR . '/config/database_tables.php';
+
+        foreach ($tables as $tableName => $tableConfig) {
+            PluginIserviceDB::createTable($tableName, $tableConfig);
+        }
 
         return true;
     }
@@ -21,9 +25,11 @@ class CreateTablesInstallStep
             return;
         }
 
-        global $DB;
+        $tables = array_reverse(array_keys(include PLUGIN_ISERVICE_DIR . '/config/database_tables.php'));
 
-        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/delete_tables.sql');
+        foreach ($tables as $tableName) {
+            PluginIserviceDB::deleteTable($tableName);
+        }
     }
 
 }
