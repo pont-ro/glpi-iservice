@@ -2,7 +2,7 @@
 
 class PluginIserviceDB extends DB
 {
-    private static array $indexesCash = [];
+    private static array $tableIndexes = [];
 
     public function __construct($dbHost, $dbName, $dbUser, $dbPassword)
     {
@@ -229,19 +229,19 @@ class PluginIserviceDB extends DB
             $db = $DB;
         }
 
-        if ($useCache && isset(self::$indexesCash[$tableName])) {
-            return self::$indexesCash[$tableName];
+        if ($useCache && isset(self::$tableIndexes[$tableName])) {
+            return self::$tableIndexes[$tableName];
         }
 
         $result = $db->query("show index from `$tableName`");
         if ($result) {
             if ($db->numrows($result) > 0) {
-                self::$indexesCash[$tableName] = [];
+                self::$tableIndexes[$tableName] = [];
                 while ($data = $db->fetchAssoc($result)) {
-                    self::$indexesCash[$tableName][$data["Key_name"]] = $data;
+                    self::$tableIndexes[$tableName][$data["Key_name"]] = $data;
                 }
 
-                return self::$indexesCash[$tableName];
+                return self::$tableIndexes[$tableName];
             }
 
             return [];
