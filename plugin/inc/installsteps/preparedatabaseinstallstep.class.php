@@ -3,16 +3,18 @@ namespace GlpiPlugin\Iservice\InstallSteps;
 
 use PluginIserviceDB;
 
-class PrepareDatabaseInstallStep
+class CreateTablesInstallStep
 {
 
     const CLEANUP_ON_UNINSTALL = true;
 
     public static function do(): bool
     {
-        PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_tables.sql');
-        PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_views.sql');
-        PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/install/sql/create_stored_procedures.sql');
+        $tables = include PLUGIN_ISERVICE_DIR . '/config/database_tables.php';
+
+        foreach ($tables as $tableName => $tableConfig) {
+            PluginIserviceDB::createTable($tableName, $tableConfig);
+        }
 
         return true;
     }
@@ -23,11 +25,11 @@ class PrepareDatabaseInstallStep
             return;
         }
 
-        global $DB;
+        $tables = array_reverse(array_keys(include PLUGIN_ISERVICE_DIR . '/config/database_tables.php'));
 
-        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/delete_tables.sql');
-        $DB->runFile(PLUGIN_ISERVICE_DIR . '/install/sql/delete_views.sql');
-        PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/install/sql/delete_stored_procedures.sql');
+        foreach ($tables as $tableName) {
+            PluginIserviceDB::deleteTable($tableName);
+        }
     }
 
 }
