@@ -6,7 +6,6 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginIserviceContract extends Contract
 {
-    // TODO: create view for this
     use PluginIserviceItem;
 
     /*
