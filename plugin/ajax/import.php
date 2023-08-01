@@ -105,6 +105,12 @@ function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyDat
             continue;
         }
 
+        $itemType = mapItemType($result, $itemType);
+
+        if (empty($itemType)) {
+            continue;
+        }
+
         if (empty($foreignKeyData[$itemType][$result[$fieldName]])) {
             if ($foreignKeyMap->getFromDBByCrit(['itemtype' => $itemType, 'old_id' => $result[$fieldName]])) {
                 $foreignKeyData[$itemType][$result[$fieldName]] = $foreignKeyMap->getField('items_id');
@@ -120,6 +126,19 @@ function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyDat
     }
 
     return $result;
+}
+
+function mapItemType(array $result, mixed $itemType): string
+{
+    if (!is_array($itemType)) {
+        return $itemType;
+    }
+
+    if (isset($itemType['dependsFrom']) && !empty($result[$itemType['dependsFrom']])) {
+        return $itemType['itemTypes'][$result[$itemType['dependsFrom']]] ?? '';
+    }
+
+    return '';
 }
 
 function mapSelfReferences(array $result, array $selfReferences, array $oldItemData, array $foreignKeyData, array &$errors): array

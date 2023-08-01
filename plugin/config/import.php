@@ -24,6 +24,10 @@ return [
                 'itemtype' => 'Reminder',
                 'label' => _n('Reminder', 'Reminders', Session::getPluralNumber()),
             ],
+            'download' => [
+                'itemtype' => 'PluginIserviceDownload',
+                'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
+            ],
         ]
     ],
     'suppliers' => [

@@ -10,7 +10,7 @@ class PluginIserviceDownload extends CommonDBTM
 
     const DOWNLOAD_TYPE_INVOICE           = 'invoice';
     const DOWNLOAD_TYPE_INVOICE_CONFIRMED = 'invoice_confirmed';
-    const DOWNLOAD_TYPE_MAGIC_LINK        = 'magic_link_field';
+    const DOWNLOAD_TYPE_MAGIC_LINK        = 'magic_link';
     const DOWNLOAD_TYPE_PARTNER_CONTACTED = 'partner_contacted';
 
     public $download_type;
