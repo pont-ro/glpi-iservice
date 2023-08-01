@@ -17,6 +17,7 @@ class Movements extends View
     {
         return __('Movements', 'iService');
     }
+
     protected function getSettings(): array
     {
         return [
