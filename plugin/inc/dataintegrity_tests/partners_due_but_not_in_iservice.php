@@ -10,7 +10,7 @@ return [
             , SUM(ROUND(fa.valinc-fa.valpla,2)) AS due
           FROM hmarfa_facturi fa
           JOIN hmarfa_firme fi ON fa.codbenef = fi.cod
-          LEFT JOIN glpi_plugin_fields_suppliercustomfields sc ON sc.cod_hmarfa = fi.cod AND sc.itemtype = 'Supplier'
+          LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields sc ON sc.hmarfa_code_field = fi.cod AND sc.itemtype = 'Supplier'
           WHERE (fa.codl = 'F' OR fa.stare LIKE 'V%') AND fa.tip LIKE 'TF%'
             AND sc.id IS NULL
           GROUP BY fa.codbenef

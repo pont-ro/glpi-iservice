@@ -1,10 +1,25 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Extorders.php".
-class PluginIserviceView_Extorders extends PluginIserviceView
-{
+namespace GlpiPlugin\Iservice\Specialviews;
 
-    protected function getSettings()
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+use \PluginIserviceOrderStatus;
+use \PluginIserviceHtml;
+
+class Extorders extends View
+{
+    public static $rightname = 'plugin_iservice_view_extorders';
+
+    public static $icon = 'ti ti-box-margin';
+
+    public static function getName(): string
+    {
+        return __('Extorders', 'iService');
+    }
+
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         $iservice_front = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";
@@ -59,7 +74,7 @@ class PluginIserviceView_Extorders extends PluginIserviceView
 						GROUP BY eo.id
 						) o
 						WHERE order_id LIKE '[order_id]'
-						  AND order_status_id in ([order_status])
+						  AND order_status_id in ('[order_status]')
 						  AND create_date < '[create_date]'
 							AND ((intorders IS NULL AND '[intorders]' = '%%') OR intorders LIKE '[intorders]')
 							AND ((supplier_name IS NULL AND '[supplier_name]' = '%%') OR supplier_name LIKE '[supplier_name]')

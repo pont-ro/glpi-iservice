@@ -14,9 +14,9 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
         select
               p.id id
             , " . PluginIservicePrinter::getSerialFieldForEM('p') . " serial
-            , cfp.id cfid 
-        from glpi_printers p
-        join glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer' and cfp.emaintenancefield = 1
+            , p.cfid cfid
+        from glpi_plugin_iservice_printers p
+        where em_field = 1
         "
         ) ?: [];
         $csv_data             = PluginIserviceEmaintenance::getDataFromCsvs();
@@ -38,7 +38,7 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
             $printer_customfields->update(
                 [
                     'id'            => $printer_fields['cfid'],
-                    'lastreadfield' => $last_read_date
+                    'last_read_field' => $last_read_date
                 ]
             );
         }
@@ -60,17 +60,18 @@ return [
               p.id pid
             , p.name 
             , s.name supplier_name
-            , cfp.lastreadfield 
-            , if(DATEDIFF(CURDATE(), cfp.lastreadfield) > 15000, 'infinite', if(DATEDIFF(CURDATE(), cfp.lastreadfield) > 14000, 'unknown', LPAD(DATEDIFF(CURDATE(), cfp.lastreadfield), 5, '0'))) days_since_last_read
+            , p.last_read_field 
+            , if(DATEDIFF(CURDATE(), p.last_read_field) > 15000, 'infinite', if(DATEDIFF(CURDATE(), p.last_read_field) > 14000, 'unknown', LPAD(DATEDIFF(CURDATE(), p.last_read_field), 5, '0'))) days_since_last_read
             , u.name tech_park_name
         from glpi_plugin_iservice_printers p
         join glpi_users u on u.id = p.users_id_tech
-        join glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer' and cfp.emaintenancefield = 1 and coalesce(cfp.disableemfield, 0) = 0
         join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer'
         join glpi_suppliers s on s.id = ic.suppliers_id
         where p.is_deleted = 0
-          and coalesce(cfp.snoozereadcheckfield, '0000-00-00') <= CURDATE()
-          and DATEDIFF(CURDATE(), cfp.lastreadfield) > 4
+          and p.em_field = 1
+          and coalesce(p.disable_em_field, 0) = 0
+          and coalesce(p.snooze_read_check_field, '0000-00-00') <= CURDATE()
+          and DATEDIFF(CURDATE(), p.last_read_field) > 4
         order by case when days_since_last_read = 'unknown' or days_since_last_read = 'infinite' then days_since_last_read end desc,
         		 case when days_since_last_read != 'unknown' and days_since_last_read != 'infinite'  then days_since_last_read end asc,
                  u.name

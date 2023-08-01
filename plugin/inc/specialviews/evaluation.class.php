@@ -1,10 +1,24 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Evaluation.php".
-class PluginIserviceView_Evaluation extends PluginIserviceView
-{
+namespace GlpiPlugin\Iservice\Specialviews;
 
-    protected function getSettings()
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+use \CommonITILActor;
+
+class Evaluation extends View
+{
+    public static $rightname = 'plugin_iservice_view_evaluation';
+
+    public static $icon = 'ti ti-calculator';
+
+    public static function getName(): string
+    {
+        return __('Evaluation', 'iService');
+    }
+
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         $subsettings['tehnician']    = [
@@ -92,99 +106,99 @@ class PluginIserviceView_Evaluation extends PluginIserviceView
 					FROM glpi_users u
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type = " . CommonITILActor::ASSIGN . "
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 											GROUP BY tu.users_id
 										) a_t ON a_t.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type = " . CommonITILActor::OBSERVER . "
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 											GROUP BY tu.users_id
 										) o_t ON o_t.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND NOT t.itilcategories_id in (13, 15, 18, 25, 26, 4, 11, 20, 17, 1, 2, 6, 19, 12)
 											GROUP BY tu.users_id
 										) c_t0 ON c_t0.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND t.itilcategories_id in (13, 15, 18)
 											GROUP BY tu.users_id
 										) c_t1 ON c_t1.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND t.itilcategories_id in (25, 26)
 											GROUP BY tu.users_id
 										) c_t1_1 ON c_t1_1.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND t.itilcategories_id in (4, 11, 20)
 											GROUP BY tu.users_id
 										) c_t2 ON c_t2.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND t.itilcategories_id in (17)
 											GROUP BY tu.users_id
 										) c_t3 ON c_t3.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND t.itilcategories_id in (1, 2, 6)
 											GROUP BY tu.users_id
 										) c_t4 ON c_t4.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND t.itilcategories_id in (19)
 											GROUP BY tu.users_id
 										) c_t4_1 ON c_t4_1.user_id = u.id
 					LEFT JOIN ( SELECT tu.users_id user_id, count(t.id) ticket_count
 											FROM glpi_tickets_users tu
-											JOIN glpi_tickets t ON t.id = tu.tickets_id
+											JOIN glpi_plugin_iservice_tickets t ON t.id = tu.tickets_id
 											WHERE NOT t.is_deleted = 1
 												AND tu.type in (" . CommonITILActor::OBSERVER . ", " . CommonITILActor::ASSIGN . ")
-												AND t.data_luc >= '[start_date]'
-												AND t.data_luc <= '[end_date]'
+												AND t.effective_date_field >= '[start_date]'
+												AND t.effective_date_field <= '[end_date]'
 												AND t.itilcategories_id in (12)
 											GROUP BY tu.users_id
 										) c_t5 ON c_t5.user_id = u.id
@@ -240,14 +254,14 @@ class PluginIserviceView_Evaluation extends PluginIserviceView
 													, s.id supplier_id
 													, s.name supplier_name
 													, t.date date_open
-													, CASE t.data_luc WHEN '0000-00-00' THEN NULL	ELSE t.data_luc END data_luc
+													, CASE t.effective_date_field WHEN '0000-00-00' THEN NULL	ELSE t.effective_date_field END effective_date
 													, u.id tech_park_id
 													, CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
 													, a.id tech_assign_id
 													, CONCAT(IFNULL(CONCAT(a.realname, ' '),''), IFNULL(a.firstname, '')) tech_assign_name
 													, o.id observer_id
 													, CASE WHEN o.name IS NULL THEN NULL ELSE CONCAT(IFNULL(CONCAT(o.realname, ' '),''), IFNULL(o.firstname, '')) END observer_name
-												FROM glpi_tickets t
+												FROM glpi_plugin_iservice_tickets t
 												LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
 												LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
 												LEFT JOIN glpi_printers p ON p.id = it.items_id
@@ -259,7 +273,7 @@ class PluginIserviceView_Evaluation extends PluginIserviceView
 												LEFT JOIN glpi_users a ON a.id = tua.users_id
 												LEFT JOIN glpi_tickets_users tuo ON tuo.tickets_id = t.id AND tuo.type = " . CommonITILActor::OBSERVER . "
 												LEFT JOIN glpi_users o ON o.id = tuo.users_id
-											  WHERE t.data_luc >= '[start_date]' AND t.data_luc <= '[end_date]'
+											  WHERE t.effective_date_field >= '[start_date]' AND t.effective_date_field <= '[end_date]'
 												  AND (tua.users_id IN ([id]) OR tuo.users_id IN ([id]))
 												",
                         'default_limit' => 50,
@@ -303,7 +317,7 @@ class PluginIserviceView_Evaluation extends PluginIserviceView
                                 'style' => 'white-space: nowrap;',
                                 'default_sort' => 'DESC'
                             ],
-                            'data_luc' => [
+                            'effective_date_field' => [
                                 'title' => 'Data efectivă',
                                 'sort_default_dir' => 'DESC',
                                 'style' => 'white-space: nowrap;',

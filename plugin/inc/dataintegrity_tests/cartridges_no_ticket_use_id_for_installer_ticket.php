@@ -2,12 +2,11 @@
 global $CFG_PLUGIN_ISERVICE;
 return [
     'query' => "
-        select c.id cid, t.id tid, cft.cartridge_install date_install, t.total2_black, t.total2_color
-        from glpi_cartridges c
+        select c.id cid, t.id tid, t.cartridge_install date_install, t.total2_black_field, t.total2_color_field
+        from glpi_plugin_iservice_cartridges c
         join glpi_plugin_iservice_cartridges_tickets ct on ct.cartridges_id = c.id
-        join glpi_tickets t on t.id = ct.tickets_id and t.status = " . Ticket::CLOSED . "
-        join glpi_plugin_fields_ticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
-        where c.tickets_id_use is null
+        join glpi_plugin_iservice_tickets t on t.id = ct.tickets_id and t.status = " . Ticket::CLOSED . "
+        where c.tickets_id_use_field is null
         ",
     'test' => [
         'alert' => true,

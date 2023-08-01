@@ -33,6 +33,8 @@ namespace GlpiPlugin\iService;
 
 use GlpiPlugin\iService\InstallSteps\AddCustomFieldsInstallStep;
 use GlpiPlugin\iService\InstallSteps\CreateTablesInstallStep;
+use GlpiPlugin\iService\InstallSteps\CreateViewsInstallStep;
+use GlpiPlugin\iService\InstallSteps\CreateStoredProceduresInstallStep;
 use GlpiPlugin\iService\InstallSteps\SeedDatabaseInstallStep;
 use GlpiPlugin\iService\InstallSteps\OverwriteAssetsInstallStep;
 use GlpiPlugin\iService\InstallSteps\HandleProfileRightsInstallStep;
@@ -51,6 +53,8 @@ class PluginIserviceInstall
         $result = $result && CreateTablesInstallStep::do();
         $result = $result && SeedDatabaseInstallStep::do();
         $result = $result && AddCustomFieldsInstallStep::do();
+        $result = $result && CreateViewsInstallStep::do();
+        $result = $result && CreateStoredProceduresInstallStep::do();
         $result = $result && HandleProfileRightsInstallStep::do();
         return $result && CronTasksInstallStep::do();
     }
@@ -58,6 +62,9 @@ class PluginIserviceInstall
     public function uninstall(): void
     {
         AddCustomFieldsInstallStep::undo();
+        CreateTablesInstallStep::undo();
+        CreateStoredProceduresInstallStep::undo();
+        CreateViewsInstallStep::undo();
         CreateTablesInstallStep::undo();
         OverwriteAssetsInstallStep::undo();
         HandleProfileRightsInstallStep::undo();

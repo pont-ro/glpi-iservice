@@ -3,6 +3,7 @@
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Iservice\Utils\HtaccessChecker;
 use GlpiPlugin\Iservice\Utils\ViewsMenu;
+use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 
 define('ISERVICE_VERSION', '0.0.1');
 
@@ -68,8 +69,9 @@ function plugin_init_iservice(): void
 
     // Add entry to configuration menu.
     $PLUGIN_HOOKS["menu_toadd"]['iservice'] = [
-        'config' => 'PluginIserviceMenu',
-        'views' => ViewsMenu::getClasses(),
+        'config'       => 'PluginIserviceMenu',
+        'views'        => ViewsMenu::getClasses(),
+        'specialViews' => SpecialViewsMenu::getClasses(),
     ];
 
     $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";

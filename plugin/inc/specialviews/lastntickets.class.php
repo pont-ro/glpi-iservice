@@ -1,8 +1,20 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Last_n_Tickets.php".
-class PluginIserviceView_Last_n_Tickets extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Views\View;
+
+class LastNTickets extends View
 {
+    public static $rightname = 'plugin_iservice_view_tickets';
+
+    public static $icon = 'ti ti-ticket';
+
+    public static function getName(): string
+    {
+        return __('LastNTickets', 'iService');
+    }
 
     const TYPE_FOR_PRINTER = 'for_printer';
     const TYPE_PLATI       = 'plati';
@@ -35,7 +47,7 @@ class PluginIserviceView_Last_n_Tickets extends PluginIserviceView
         return true;
     }
 
-    public function display($readonly = false, $export = false, $detail = 0, $generate_form = true)
+    public function display($readonly = false, $export = false, $detail = 0, $generate_form = true): void
     {
         if (empty($this->type)) {
             die("View must be customized first!");
@@ -44,7 +56,7 @@ class PluginIserviceView_Last_n_Tickets extends PluginIserviceView
         parent::display($readonly, $export, $detail, $generate_form);
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         if (empty($this->type)) {
             return [];
@@ -56,8 +68,8 @@ class PluginIserviceView_Last_n_Tickets extends PluginIserviceView
         switch ($this->type) {
         case self::TYPE_FOR_PRINTER:
             $select_fields .= "
-                    , t.total2_black
-                    , t.total2_color
+                    , t.total2_black_field
+                    , t.total2_color_field
                     , p.id printer_id
                     , p.name printer_name
                     , p.serial printer_serial
@@ -88,7 +100,7 @@ class PluginIserviceView_Last_n_Tickets extends PluginIserviceView
             'sub_view' => true,
             'query' => "
 						SELECT $select_fields
-						FROM glpi_tickets t $joins
+						FROM glpi_plugin_iservice_tickets t $joins
 						WHERE t.is_deleted = 0 $conditions
 						GROUP BY t.id
 						",

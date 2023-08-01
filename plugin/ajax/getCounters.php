@@ -1,6 +1,8 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "getCounters.php".
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 // Direct access to file
 if (strpos($_SERVER['PHP_SELF'], "getCounters.php")) {
     include '../../../inc/includes.php';
@@ -21,7 +23,7 @@ $date_field_id = Html::showDateField('date', ['value' => date('Y-m-d')]);
 echo "<br>Contor black: <input type='text' id='counter_black_$cartridge_id' name='counter_black_$cartridge_id' value='$pages_use' style='width:4em;'>";
 echo "<br>Contor color: <input type='text' id='counter_color_$cartridge_id' name='counter_color_$cartridge_id' value='$pages_color_use' style='width:4em;'>";
 echo "</td><td>";
-$success_function = 'function(message) {if(message !== "' . PluginIserviceCommon::RESPONSE_OK . '") {alert(message);} else {alert(message);$("form").submit();}}';
+$success_function = 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {alert(message);$("form").submit();}}';
 $gather_data      = "counter_black=$(\"#counter_black_$cartridge_id\").val();counter_color=$(\"#counter_color_$cartridge_id\").val();install_date=$(\"#hiddendate$date_field_id\").val()";
 $ajax_call        = "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageCartridge.php?id=$cartridge_id&operation=use";
 $ajax_call       .= "&counter_black=\" + counter_black + \"";

@@ -4,22 +4,22 @@ namespace GlpiPlugin\Iservice\Utils;
 
 use \Session;
 
-class ViewsMenu
+class SpecialViewsMenu
 {
 
     public static function setDropdownNameAndIcon(&$menus): void
     {
         $menuConfig = self::getMenuConfig();
 
-        $menus['views']['title'] = $menuConfig['views']['title'] ?? _n('View', 'Views', Session::getPluralNumber());
-        $menus['views']['icon']  = $menuConfig['views']['icon'] ?? 'ti ti-columns';
+        $menus['specialViews']['title'] = $menuConfig['specialViews']['title'] ?? _n('Special View', 'Special Views', Session::getPluralNumber());
+        $menus['specialViews']['icon']  = $menuConfig['specialViews']['icon'] ?? 'ti ti-columns';
     }
 
     public static function getClasses(): array
     {
         $menuConfig = self::getMenuConfig();
 
-        return isset($menuConfig['views']['classes']) && is_array($menuConfig['views']['classes']) ? $menuConfig['views']['classes'] : [];
+        return isset($menuConfig['specialViews']['classes']) && is_array($menuConfig['specialViews']['classes']) ? $menuConfig['specialViews']['classes'] : [];
     }
 
     public static function getMenuConfig(): array
@@ -41,7 +41,7 @@ class ViewsMenu
             return null;
         }
 
-        return include_once GLPI_ROOT . "/plugins/iservice/config/menu.php";
+        return include_once GLPI_ROOT . "/plugins/iservice/config/menu.php" ?: [];
 
     }
 

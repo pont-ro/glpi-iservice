@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring.
-/**
+/*
  * @copyright Copyright (c) 2019 hupu
  * @author    hupu
  * @license   Proprietary
@@ -56,24 +56,23 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $result['invoice_total'] = 0;
 
-        $result['contracts'] = IserviceToolBox::getQueryResult(
+        $result['contracts'] = PluginIserviceDB::getQueryResult(
             "
             SELECT 
                 ci.items_id
               , c.id
               , c.num
-              , ccf.curs
-              , ccf.divizor_pu
-              , ccf.cop_bl_inclus
-              , ccf.cop_col_inclus
-              , ccf.val_cop_inclus
-              , ccf.tarif_lunar1
-              , ccf.tarif_cop_bl
-              , ccf.tarif_cop_col1
+              , c.currency_field
+              , c.copy_price_divider_field
+              , c.included_copies_bk_field
+              , c.included_copies_col_field
+              , c.included_copy_value_field
+              , c.monthly_fee_field
+              , c.copy_price_bk_field
+              , c.copy_price_col_field
               , ct.name contract_type
             FROM glpi_contracts_items ci
-            JOIN glpi_contracts c on c.id = ci.contracts_id and ci.itemtype = 'Printer'
-            LEFT JOIN glpi_plugin_fields_contractcustomfields ccf on ccf.items_id = c.id and ccf.itemtype = 'Contract'
+            JOIN glpi_plugin_iservice_contracts c on c.id = ci.contracts_id and ci.itemtype = 'Printer'
             LEFT JOIN glpi_contracttypes ct on ct.id = c.contracttypes_id
             WHERE ci.items_id in (" . implode(",", array_keys($result['input'])) . ")
             ",
@@ -102,7 +101,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $itemModel->getFromDB($item->fields['printermodels_id']);
 
             if (empty($result['first'])) {
-                // it is important to create a new PluginIserviceInstance for the first Item!
+                // It is important to create a new PluginIserviceInstance for the first Item!
                 $firstItem = new PluginIservicePrinter();
                 $firstItem->getFromDB($itemId);
                 $firstItemTechUser = new User();
@@ -135,28 +134,28 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             $result['ids'][]  = $itemId;
             $contractData     = $result['contracts'][$itemId] ?? [];
-            $contractRate     = floatval($contractData['curs'] ?? 1) ?: 1;
+            $contractRate     = floatval($contractData['currency_field'] ?? 1) ?: 1;
             $contractCurrency = $contractRate > 1 ? "EUR" : ($contractRate < 1 ? "???" : "RON");
 
-            $item->tableData['invoice_rate']      = IserviceToolBox::getInputVariable('invoice_rate', intval($result['input'][$itemId]['invoice_rate'] ?? 0) ?: ($contractCurrency === "EUR" ? (IserviceToolBox::getExchangeRate('Euro') ?? $contractRate) : $contractRate));
-            $item->tableData['contract_id']       = $contractData['id'] ?? null;
-            $item->tableData['contract_number']   = $contractData['num'] ?? '';
-            $item->tableData['contract_type']     = $contractData['contract_type'] ?? '';
-            $item->tableData['state_name']        = $itemState->fields['name'];
-            $item->tableData['id']                = $itemId;
-            $item->tableData['name']              = $item->fields['original_name'];
-            $item->tableData['model_name']        = $itemModel->fields['name'] ?? '';
-            $item->tableData['manufacturer_name'] = $itemManufacturer->fields['name'] ?? '';
-            $item->tableData['location']          = $itemLocation->fields['completename'] ?? '';
-            $item->tableData['location_parent']   = $itemLocationParent->fields['completename'] ?? '';
-            $item->tableData['costcenterfield']   = $item->customfields->fields['costcenterfield'] ?? '';
-            $item->tableData['usageaddressfield'] = $item->customfields->fields['usageaddressfield'] ?? '';
-            $item->tableData['data_exp_fact']     = $result['input'][$itemId]['data_exp_fact'] ?? (!empty($item->customfields->fields['data_exp_fact']) ? date('Y-m-d', strtotime($item->customfields->fields['data_exp_fact'])) : '');
-            $item->tableData['printertype']       = $item->fields['printertypes_id'];
+            $item->tableData['invoice_rate']              = IserviceToolBox::getInputVariable('invoice_rate', intval($result['input'][$itemId]['invoice_rate'] ?? 0) ?: ($contractCurrency === "EUR" ? (IserviceToolBox::getExchangeRate('Euro') ?? $contractRate) : $contractRate));
+            $item->tableData['contract_id']               = $contractData['id'] ?? null;
+            $item->tableData['contract_number']           = $contractData['num'] ?? '';
+            $item->tableData['contract_type']             = $contractData['contract_type'] ?? '';
+            $item->tableData['state_name']                = $itemState->fields['name'];
+            $item->tableData['id']                        = $itemId;
+            $item->tableData['name']                      = $item->fields['original_name'];
+            $item->tableData['model_name']                = $itemModel->fields['name'] ?? '';
+            $item->tableData['manufacturer_name']         = $itemManufacturer->fields['name'] ?? '';
+            $item->tableData['location']                  = $itemLocation->fields['completename'] ?? '';
+            $item->tableData['location_parent']           = $itemLocationParent->fields['completename'] ?? '';
+            $item->tableData['cost_center_field']         = $item->customfields->fields['cost_center_field'] ?? '';
+            $item->tableData['usage_address_field']       = $item->customfields->fields['usage_address_field'] ?? '';
+            $item->tableData['invoice_expiry_date_field'] = $result['input'][$itemId]['invoice_expiry_date_field'] ?? (!empty($item->customfields->fields['invoice_expiry_date_field']) ? date('Y-m-d', strtotime($item->customfields->fields['invoice_expiry_date_field'])) : '');
+            $item->tableData['printertype']               = $item->fields['printertypes_id'];
 
             switch ($item->fields['printertypes_id']) {
             case PluginIservicePrinter::ID_ROUTER_TYPE:
-                $item->tableData['data_ult_fact']   = ($item->lastTicket()->fields['data_luc'] < $item->customfields->fields['data_fact']) ? IserviceToolBox::addMonthToDate($item->tableData['data_exp_fact'], 1) : $item->lastTicket()->fields['data_luc'] ;
+                $item->tableData['data_ult_fact']   = ($item->lastTicket()->customfields->fields['effective_date_field'] < $item->customfields->fields['invoice_date_field']) ? IserviceToolBox::addMonthToDate($item->tableData['invoice_expiry_date_field'], 1) : $item->lastTicket()->customfields->fields['effective_date_field'] ;
                 $item->tableData['data_fact_until'] = $result['input'][$itemId]['data_fact_until'] ?? ($item->tableData['data_ult_fact'] ?? '');
                 $item->tableData['pret_unitar']     = $result['input'][$itemId]['pret_unitar'] ?? '';
                 $item->tableData['cantitate']       = $result['input'][$itemId]['cantitate'] ?? '';
@@ -170,30 +169,30 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 break;
             default:
                 $item->tableData['printer_codmat']  = self::getPrinterCodmat($result['contracts'][$itemId]['contract_type'] ?? '');
-                $item->tableData['no_invoice']      = $item->customfields->fields['noinvoicefield'] ?? false;
-                $item->tableData['data_ult_fact']   = $item->customfields->fields['data_fact'] ?? '';
+                $item->tableData['no_invoice']      = $item->customfields->fields['no_invoice_field'] ?? false;
+                $item->tableData['data_ult_fact']   = $item->customfields->fields['invoice_date_field'] ?? '';
                 $item->tableData['data_fact_until'] = $result['input'][$itemId]['data_fact_until'] ?? null;
-                $item->tableData['val_ult_fact']    = $item->customfields->fields['valfactfield'] ?? 0 ?: 'necunoscut';
+                $item->tableData['val_ult_fact']    = $item->customfields->fields['invoiced_value_field'] ?? 0 ?: 'necunoscut';
                 if (is_numeric($item->tableData['val_ult_fact'])) {
                     $item->tableData['val_ult_fact'] = IserviceToolBox::numberFormat($item->tableData['val_ult_fact'], 2);
                 }
 
-                $item->tableData['serial']         = $item->fields['serial'];
-                $item->tableData['otherserial']    = $item->fields['otherserial'];
-                $item->tableData['contor_bk_uf']   = $item->customfields->fields['total2_black_fact'] ?? 0;
-                $item->tableData['contor_bk_ui']   = $item->lastTicket()->fields['total2_black'] ?? 0;
-                $item->tableData['contor_col_uf']  = $item->customfields->fields['total2_color_fact'] ?? 0;
-                $item->tableData['contor_col_ui']  = $item->lastTicket()->fields['total2_color'] ?? 0;
-                $item->tableData['data_ui']        = empty($item->lastTicket()->fields['data_luc']) ? '' : date('Y-m-d', strtotime($item->lastTicket()->fields['data_luc']));
-                $item->tableData['divizor_copii']  = ($contractData['divizor_pu'] ?? 1) ?: 1;
-                $item->tableData['cop_bk_inclus']  = $contractData['cop_bl_inclus'] ?? 0;
-                $item->tableData['cop_col_inclus'] = $contractData['cop_col_inclus'] ?? 0;
-                $item->tableData['val_cop_inclus'] = $contractData['val_cop_inclus'] ?? 0;
-                $item->tableData['tarif_lunar1']   = $contractData['tarif_lunar1'] ?? 0;
-                $item->tableData['tarif_cop_bl']   = $contractData['tarif_cop_bl'] ?? 0;
-                $item->tableData['tarif_cop_col']  = $contractData['tarif_cop_col1'] ?? 0;
-                $item->tableData['rows']           = self::getPrinterTableData($item, $result['input'][$itemId], $buttons);
-                $item->tableData['subtotal']       = IserviceToolBox::numberFormat(
+                $item->tableData['serial']                    = $item->fields['serial'];
+                $item->tableData['otherserial']               = $item->fields['otherserial'];
+                $item->tableData['contor_bk_uf']              = $item->customfields->fields['invoiced_total_black_field'] ?? 0;
+                $item->tableData['contor_bk_ui']              = $item->lastTicket()->fields['total2_black'] ?? 0;
+                $item->tableData['contor_col_uf']             = $item->customfields->fields['invoiced_total_color_field'] ?? 0;
+                $item->tableData['contor_col_ui']             = $item->lastTicket()->fields['total2_color'] ?? 0;
+                $item->tableData['data_ui']                   = empty($item->lastTicket()->customfields->fields['effective_date_field']) ? '' : date('Y-m-d', strtotime($item->lastTicket()->customfields->fields['effective_date_field']));
+                $item->tableData['divizor_copii']             = ($contractData['copy_price_divider_field'] ?? 1) ?: 1;
+                $item->tableData['cop_bk_inclus']             = $contractData['included_copies_bk_field'] ?? 0;
+                $item->tableData['included_copies_col_field'] = $contractData['included_copies_col_field'] ?? 0;
+                $item->tableData['included_copy_value_field'] = $contractData['included_copy_value_field'] ?? 0;
+                $item->tableData['monthly_fee_field']         = $contractData['monthly_fee_field'] ?? 0;
+                $item->tableData['copy_price_bk_field']       = $contractData['copy_price_bk_field'] ?? 0;
+                $item->tableData['tarif_cop_col']             = $contractData['copy_price_col_field'] ?? 0;
+                $item->tableData['rows']                      = self::getPrinterTableData($item, $result['input'][$itemId], $buttons);
+                $item->tableData['subtotal']                  = IserviceToolBox::numberFormat(
                     $item->tableData['rows'][1]['total'] +
                     (($item->tableData['rows'][2]['total'] > 0 || $item->tableData['rows'][2]['fixed']) ? $item->tableData['rows'][2]['total'] : 0) +
                     (($item->tableData['rows'][3]['total'] > 0 || $item->tableData['rows'][3]['fixed']) ? $item->tableData['rows'][3]['total'] : 0),
@@ -285,9 +284,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $rows['location']     = $printerInputData['location'] ?? $printer->tableData['location'];
         $locationText         = empty($printerInputData['include_location']) ? '' : sprintf('%s - ', $rows['location']);
-        $rows['cost_center']  = $printerInputData['cost_center'] ?? $printer->tableData['costcenterfield'];
+        $rows['cost_center']  = $printerInputData['cost_center'] ?? $printer->tableData['cost_center_field'];
         $costCenterText       = empty($printerInputData['include_cost_center']) ? '' : sprintf('*%s* - ', $rows['cost_center']);
-        $rows['usageaddress'] = $printerInputData['usageaddress'] ?? $printer->tableData['usageaddressfield'];
+        $rows['usageaddress'] = $printerInputData['usageaddress'] ?? $printer->tableData['usage_address_field'];
         $usageaddressText     = empty($printerInputData['include_usageaddress']) ? '' : sprintf('%s - ', $rows['usageaddress']);
         $statusText           = empty($printerInputData['include_status']) ? '' : " - {$printer->tableData['state_name']}";
 
@@ -311,7 +310,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
 
         $usedValue =
-            $printer->tableData['tarif_cop_bl'] * ($printer->tableData['contor_bk_ui'] - $printer->tableData['contor_bk_uf']) +
+            $printer->tableData['copy_price_bk_field'] * ($printer->tableData['contor_bk_ui'] - $printer->tableData['contor_bk_uf']) +
             $printer->tableData['tarif_cop_col'] * ($printer->tableData['contor_col_ui'] - $printer->tableData['contor_col_uf']);
 
         $allowedCounterBlack = $printer->tableData['contor_bk_uf'];
@@ -321,22 +320,22 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $allowedCounterColor = $printer->tableData['contor_col_uf'];
         if ($printer->tableData['contor_col_ui'] >= $printer->tableData['contor_col_uf']) {
-            $allowedCounterColor += $printer->tableData['cop_col_inclus'];
+            $allowedCounterColor += $printer->tableData['included_copies_col_field'];
         }
 
         $printer->tableData['equalizer_coefficient'] = 0;
         $printer->tableData['cop_bk_echiv']          = 0;
         $printer->tableData['cop_col_echiv']         = 0;
-        // If echivalent calculation
+        // If echivalent calculation.
         if (stripos($printer->tableData['contract_type'], 'coie') === 0) {
-            // If color copies are included but not used
-            if ($printer->tableData['cop_col_inclus'] && $printer->tableData['contor_col_ui'] < $allowedCounterColor) {
-                $printer->tableData['equalizer_coefficient'] = round($printer->tableData['tarif_cop_col'] / $printer->tableData['tarif_cop_bl'], 2);
+            // If color copies are included but not used.
+            if ($printer->tableData['included_copies_col_field'] && $printer->tableData['contor_col_ui'] < $allowedCounterColor) {
+                $printer->tableData['equalizer_coefficient'] = round($printer->tableData['tarif_cop_col'] / $printer->tableData['copy_price_bk_field'], 2);
                 $printer->tableData['cop_bk_echiv']          = floor(($allowedCounterColor - $printer->tableData['contor_col_ui']) * $printer->tableData['equalizer_coefficient']);
                 $printer->tableData['cop_col_echiv']         = 0;
                 $allowedCounterBlack                        += $printer->tableData['cop_bk_echiv'];
             } elseif ($printer->tableData['cop_bk_inclus'] && $printer->tableData['contor_bk_ui'] < $allowedCounterBlack) {
-                $printer->tableData['equalizer_coefficient'] = round($printer->tableData['tarif_cop_bl'] / $printer->tableData['tarif_cop_col'], 2);
+                $printer->tableData['equalizer_coefficient'] = round($printer->tableData['copy_price_bk_field'] / $printer->tableData['tarif_cop_col'], 2);
                 $printer->tableData['cop_bk_echiv']          = 0;
                 $printer->tableData['cop_col_echiv']         = floor(($allowedCounterBlack - $printer->tableData['contor_bk_ui']) * $printer->tableData['equalizer_coefficient']);
                 $allowedCounterColor                        += $printer->tableData['cop_col_echiv'];
@@ -356,8 +355,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $untilPart = '';
 
-        // Row 1 //
-        $val1    = self::numberFormat($printer->tableData['tarif_lunar1'] * $printer->tableData['invoice_rate']);
+        // Row 1.
+        $val1    = self::numberFormat($printer->tableData['monthly_fee_field'] * $printer->tableData['invoice_rate']);
         $cant1   = self::numberFormat(!empty($printerInputData['row_1']['cant']) && !empty($printerInputData['row_1']['fixed']) ? $printerInputData['row_1']['cant'] : 1);
         $rows[1] = [
             'codmat' => (!empty($printerInputData['row_1']['codmat']) && !empty($printerInputData['row_1']['fixed'])) ? $printerInputData['row_1']['codmat'] : ($printer->tableData['printer_codmat'] . 'L'),
@@ -368,7 +367,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             'total'  => self::numberFormat($val1 * $cant1),
         ];
 
-        $rows['until'] = strtotime($printer->tableData['data_exp_fact']);
+        $rows['until'] = strtotime($printer->tableData['invoice_expiry_date_field']);
         if (date('d', $rows['until']) > 25) {
             $period        = date("m.Y", strtotime("+1 month", strtotime("-5 days", $rows['until'])));
             $rows['until'] = $printer->tableData['data_fact_until'] ?? date("Y-m-t", strtotime("+1 month", strtotime("-5 days", $rows['until'])));
@@ -379,17 +378,17 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         if ($rows[1]['cant'] > 0) {
             $descr1 = "{$printer->tableData["manufacturer_name"]} {$printer->tableData["model_name"]} ($costCenterText$locationText$usageaddressText{$printer->tableData["serial"]})$statusText";
-            // The new default is to include the period, so if we don't have anything from the input we have to include it
+            // The new default is to include the period, so if we don't have anything from the input we have to include it.
             if (!isset($printerInputData['include_period']) || $printerInputData['include_period']) {
                 $descr1 .= " / $period";
             }
 
             $rows[1]['from'] = $printer->tableData['contor_bk_uf'] . ($printer->isColor() ? " - {$printer->tableData['contor_col_uf']}" : '');
 
-            if ($printer->tableData['val_cop_inclus'] > 0) {
+            if ($printer->tableData['included_copy_value_field'] > 0) {
                 $untilPart  = ($printer->tableData['contor_bk_ui'] > 0) ? "{$printer->tableData['contor_bk_ui']} $row2Subject" : '';
                 $untilPart .= ($printer->isColor() && $printer->tableData['contor_col_ui'] > 0) ? (empty($untilPart) ? '' : ' si ') . "{$printer->tableData['contor_col_uf']} $row3Subject" : '';
-                if ($usedValue <= $printer->tableData['val_cop_inclus']) {
+                if ($usedValue <= $printer->tableData['included_copy_value_field']) {
                     $descr1 .= " pana la $untilPart";
                 }
 
@@ -399,7 +398,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 }
 
                 $rows[1]['to'] .= $printer->tableData['contor_col_ui'] > 0 ? $printer->tableData['contor_col_ui'] : "";
-            } elseif ($printer->tableData['cop_bk_inclus'] > 0 || $printer->tableData['cop_col_inclus'] > 0) {
+            } elseif ($printer->tableData['cop_bk_inclus'] > 0 || $printer->tableData['included_copies_col_field'] > 0) {
                 $rows[1]['to']   = 0;
                 $rows[1]['from'] = 0;
                 $descr1         .= ' de la ';
@@ -411,14 +410,14 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     }
 
                     $descr1 .= " $row2Subject";
-                    if ($printer->tableData['cop_col_echiv'] || $printer->tableData['cop_col_inclus']) {
+                    if ($printer->tableData['cop_col_echiv'] || $printer->tableData['included_copies_col_field']) {
                         $descr1 .= ", ";
                     }
                 }
 
-                if ($printer->tableData['cop_col_echiv'] || $printer->tableData['cop_col_inclus']) {
+                if ($printer->tableData['cop_col_echiv'] || $printer->tableData['included_copies_col_field']) {
                     $descr1 .= "de la {$printer->tableData['contor_col_uf']}";
-                    if ($printer->tableData['cop_col_inclus'] || $printer->tableData['cop_col_echiv']) {
+                    if ($printer->tableData['included_copies_col_field'] || $printer->tableData['cop_col_echiv']) {
                         $descr1 .= ' la ' . min($printer->tableData['contor_col_ui'], $allowedCounterColor);
                     }
 
@@ -436,7 +435,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     }
                 }
 
-                if (!empty($printer->tableData['cop_col_inclus'])) {
+                if (!empty($printer->tableData['included_copies_col_field'])) {
                     if (!empty($printer->tableData['cop_bk_inclus'])) {
                         $descr1        .= " si";
                         $rows[1]['to'] .= ' - ';
@@ -469,15 +468,15 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $row3Subject = 'copii suplimentare color';
         }
 
-        // Row 2 //
-        $codmat2 = (!empty($printerInputData['row_2']['codmat']) && !empty($printerInputData['row_2']['fixed'])) ? $printerInputData['row_2']['codmat'] : ($printer->tableData['printer_codmat'] . ($printer->tableData['printer_codmat'] === 'S045' ? '' : ($printer->tableData['val_cop_inclus'] > 0 ? 'V' : 'B')));
-        if ($printer->tableData['val_cop_inclus'] > 0) {
-            $val2            = ($usedValue - $printer->tableData['val_cop_inclus'] > 0) ? ($usedValue - $printer->tableData['val_cop_inclus']) * $printer->tableData['invoice_rate'] : 0;
+        // Row 2.
+        $codmat2 = (!empty($printerInputData['row_2']['codmat']) && !empty($printerInputData['row_2']['fixed'])) ? $printerInputData['row_2']['codmat'] : ($printer->tableData['printer_codmat'] . ($printer->tableData['printer_codmat'] === 'S045' ? '' : ($printer->tableData['included_copy_value_field'] > 0 ? 'V' : 'B')));
+        if ($printer->tableData['included_copy_value_field'] > 0) {
+            $val2            = ($usedValue - $printer->tableData['included_copy_value_field'] > 0) ? ($usedValue - $printer->tableData['included_copy_value_field']) * $printer->tableData['invoice_rate'] : 0;
             $cant2           = ($val2 > 0) ? 1 : 0;
             $descr2          = "$descrPart valoare copii suplimentare pana la $untilPart";
             $rows[2]['from'] = $printer->tableData['contor_bk_uf'];
         } else {
-            $val2  = $printer->tableData['tarif_cop_bl'] * $printer->tableData['invoice_rate'] * $printer->tableData['divizor_copii'];
+            $val2  = $printer->tableData['copy_price_bk_field'] * $printer->tableData['invoice_rate'] * $printer->tableData['divizor_copii'];
             $cant2 = (isset($printerInputData['row_2']['cant']) && ($printerInputData['row_2']['fixed'] ?? 0)) ? $printerInputData['row_2']['cant'] : (empty($codmat2) || empty($val2) ? 0 : $differenceCounterBlack / $printer->tableData['divizor_copii']);
             if ($printer->tableData['divizor_copii'] > 1) {
                 $divizorExplanation2 = " (" . ($cant2 * $printer->tableData['divizor_copii']) . "=$cant2*{$printer->tableData['divizor_copii']} copii)";
@@ -505,8 +504,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             'descr'  => !empty($buttons['refresh']) || !isset($printerInputData['row_2']['descr']) ? $descr2 : $printerInputData['row_2']['descr'],
         ];
 
-        // Row 3 //
-        $codmat3 = (!empty($printerInputData['row_3']['codmat']) && !empty($printerInputData['row_3']['fixed'])) ? $printerInputData['row_3']['codmat'] : ($printer->tableData['printer_codmat'] . ($printer->tableData['printer_codmat'] === 'S045' ? '' : ($printer->tableData['val_cop_inclus'] > 0 ? '' : 'C')));
+        // Row 3.
+        $codmat3 = (!empty($printerInputData['row_3']['codmat']) && !empty($printerInputData['row_3']['fixed'])) ? $printerInputData['row_3']['codmat'] : ($printer->tableData['printer_codmat'] . ($printer->tableData['printer_codmat'] === 'S045' ? '' : ($printer->tableData['included_copy_value_field'] > 0 ? '' : 'C')));
         $val3    = (empty($codmat3)) ? 0 : $printer->tableData['tarif_cop_col'] * $printer->tableData['invoice_rate'] * $printer->tableData['divizor_copii'];
         $cant3   = (isset($printerInputData['row_3']['cant']) && ($printerInputData['row_3']['fixed'] ?? 0)) ? $printerInputData['row_3']['cant'] : (empty($codmat3) || $val3 == 0 ? 0 : ($differenceCounterColor / $printer->tableData['divizor_copii']));
         if ($printer->tableData['divizor_copii'] > 1) {
@@ -515,7 +514,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $divizorExplanation3 = "";
         }
 
-        if ($printer->tableData['val_cop_inclus'] > 0) {
+        if ($printer->tableData['included_copy_value_field'] > 0) {
             $val3  = 0;
             $cant3 = 0;
         }
@@ -584,7 +583,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
     protected static function getInvoiceData(array $items, array $exportFileData): array
     {
-        // Nr comanda
+        // Nr comanda.
         if (str_starts_with(strtolower($items['first']['state']->fields['name']), 'pro')) {
             $defaultNrCmd =
                 explode('"', $items['first']['state']->fields['name'])[1] ??
@@ -594,12 +593,12 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $defaultNrCmd = $items['first']['tech']->fields['name'] ?? $items['first']['state']->fields['name'] ?? '';
         }
 
-        // Currency
-        $firstContractCurrency = floatval($items['first']['contract']['curs'] ?? 1) ?: 1;
+        // Currency.
+        $firstContractCurrency = floatval($items['first']['contract']['currency_field'] ?? 1) ?: 1;
 
         return IserviceToolBox::getInputVariables(
             [
-                'part_email_f1' => $items['first']['supplier']->customfields->fields['part_email_f1'],
+                'email_for_invoices_field' => $items['first']['supplier']->customfields->fields['email_for_invoices_field'],
                 'nrcmd' => $defaultNrCmd,
                 'doc_date' => date("Y-m-d"),
                 'invoice_rate' => $firstContractCurrency > 1 ? (IserviceToolBox::getExchangeRate('Euro') ?? $firstContractCurrency) : $firstContractCurrency,
@@ -607,7 +606,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 's039' => !$exportFileData['csv_exists'],
                 's039_include_status' => IserviceToolBox::getInputVariable('s039_include_status', str_starts_with(strtolower($items['first']['state']->fields['name']), 'pro')),
                 's039_include_period' => IserviceToolBox::getInputVariable('s039_include_period', 0),
-                's039_period_from' => $items['printers'][$items['first']['item']->getID()]->tableData['data_exp_fact'] ?? $items['routers'][$items['first']['item']->getID()]->tableData['data_exp_fact'],
+                's039_period_from' => $items['printers'][$items['first']['item']->getID()]->tableData['invoice_expiry_date_field'] ?? $items['routers'][$items['first']['item']->getID()]->tableData['invoice_expiry_date_field'],
                 's039_period_to' => $items['printers'][$items['first']['item']->getID()]->tableData['rows']['until'] ?? $items['routers'][$items['first']['item']->getID()]->tableData['data_fact_until'] ?? '',
 
                 'general_include_location' => false,
@@ -622,7 +621,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         );
     }
 
-    /**
+    /*
      * @param  $items
      * @param  $exportFileData
      * @param  $invoiceData
@@ -701,7 +700,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     'DOC_TIP' => 'TFAC',
                     'NRCMD' => $invoiceData['nrcmd'],
                     'DOC_DATA' => date("Y.m.d", strtotime($invoiceData['doc_date'])),
-                    'PART_COD' => $items['first']['supplier']->customfields->fields['cod_hmarfa'],
+                    'PART_COD' => $items['first']['supplier']->customfields->fields['hmarfa_code_field'],
                     'CODMAT' => $result['firstLine']['CODMAT'],
                     'CANT' => 1,
                     'DOC_VAL' => 0,
@@ -716,7 +715,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                             'DOC_TIP'  => 'TFAC',
                             'NRCMD'    => $invoiceData['nrcmd'],
                             'DOC_DATA' => date("Y.m.d", strtotime($invoiceData['doc_date'])),
-                            'PART_COD' => $items['first']['supplier']->customfields->fields['cod_hmarfa'],
+                            'PART_COD' => $items['first']['supplier']->customfields->fields['hmarfa_code_field'],
                             'CODMAT'   => $printer->tableData['rows'][$row]['codmat'],
                             'CANT'     => $printer->tableData['rows'][$row]['cant'],
                             'DOC_VAL'  => $printer->tableData['rows'][$row]['val'],
@@ -748,14 +747,14 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             }
 
             foreach ($items['routers'] ?? [] as $router) {
-                $usageaddressfield = $invoiceData['general_include_usageaddress'] ? "{$router->tableData['usageaddressfield']} - " : "";
-                $cost_center       = $invoiceData['general_include_cost_center'] ? "*{$router->tableData['costcenterfield']}* - " : "";
+                $usageaddressfield = $invoiceData['general_include_usageaddress'] ? "{$router->tableData['usage_address_field']} - " : "";
+                $cost_center       = $invoiceData['general_include_cost_center'] ? "*{$router->tableData['cost_center_field']}* - " : "";
 
                 $csvExportData[] = [
                     'DOC_TIP' => 'TFAC',
                     'NRCMD' => $invoiceData['nrcmd'],
                     'DOC_DATA' => date("Y.m.d", strtotime($invoiceData['doc_date'])),
-                    'PART_COD' => $items['first']['supplier']->customfields->fields['cod_hmarfa'],
+                    'PART_COD' => $items['first']['supplier']->customfields->fields['hmarfa_code_field'],
                     'CODMAT' => $invoiceData['codmat_router'],
                     'CANT' => self::numberFormat($router->tableData['cantitate']),
                     'DOC_VAL' => self::numberFormat($router->tableData['pret_unitar']),
@@ -787,16 +786,16 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 if (count($data) > 1 && $printerCustomfields->getFromDBByItemsId($data[0])) {
                     $updateData = [
                         $printerCustomfields->getIndexName() => $printerCustomfields->getID(),
-                        "data_fact" => $data[1],
-                        "data_exp_fact" => $data[2],
-                        "valfactfield" => $data[5] ?? null,
+                        "invoice_date_field" => $data[1],
+                        "invoice_expiry_date_field" => $data[2],
+                        "invoiced_value_field" => $data[5] ?? null,
                     ];
                     if ($data[3] !== '') {
-                        $updateData['total2_black_fact'] = $data[3];
+                        $updateData['invoiced_total_black_field'] = $data[3];
                     }
 
                     if ($data[4] !== '') {
-                        $updateData['total2_color_fact'] = $data[4];
+                        $updateData['invoiced_total_color_field'] = $data[4];
                     }
 
                     $printerCustomfields->update($updateData);
@@ -804,13 +803,13 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     // Display the updated fields
                     foreach (['printers', 'routers'] as $itemType) {
                         if (isset($items[$itemType][$data[0]])) {
-                            $items[$itemType][$data[0]]->tableData['data_exp_fact'] = $data[2];
-                            if ($data[3] !== '' && isset($items[$itemType][$data[0]]->tableData['total2_black_fact'])) {
-                                $items[$itemType][$data[0]]->tableData['total2_black_fact'] = $data[3];
+                            $items[$itemType][$data[0]]->tableData['invoice_expiry_date_field'] = $data[2];
+                            if ($data[3] !== '' && isset($items[$itemType][$data[0]]->tableData['invoiced_total_black_field'])) {
+                                $items[$itemType][$data[0]]->tableData['invoiced_total_black_field'] = $data[3];
                             }
 
-                            if ($data[4] !== '' && isset($items[$itemType][$data[0]]->tableData['total2_color_fact'])) {
-                                $items[$itemType][$data[0]]->tableData['total2_color_fact'] = $data[4];
+                            if ($data[4] !== '' && isset($items[$itemType][$data[0]]->tableData['invoiced_total_color_field'])) {
+                                $items[$itemType][$data[0]]->tableData['invoiced_total_color_field'] = $data[4];
                             }
                         }
                     }
@@ -1010,22 +1009,22 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $mailData    = $frontendData['mailData'];
         $invoiceData = $frontendData['invoiceData'];
-        /**
+        /*
         $magic_link_label = "Link magic partener:";
         $magic_link_button_name = "Genereaza";
         $magic_link_button_class = "";
-        if (!empty($items['first']['supplier']->customfields->fields['magic_link'])) {
+        if (!empty($items['first']['supplier']->customfields->fields['magic_link_field'])) {
             $magic_link = $items['first']['supplier']->getMagicLink();
             $magic_link_label = "<a href='$magic_link' target='_blank'>$magic_link_label</a>";
             $magic_link_button_name .= " nou";
             $magic_link_button_class = " new";
         }
         $magic_link_button = "<input type='submit' name='generate_magic_link' class='submit$magic_link_button_class' value='$magic_link_button_name'>";
-        if (empty($items['first']['supplier']->customfields->fields['part_cui'])) {
+        if (empty($items['first']['supplier']->customfields->fields['uic_field'])) {
             $magic_link_button = "<span style='color: red'>Partenerul nu are CUI!</span>";
         }
-        if ($items['first']['supplier']->customfields->fields['part_cui'] != $items['first']['supplier']->hMarfa_fields['cod1']) {
-            $part_cui = $items['first']['supplier']->customfields->fields['part_cui'];
+        if ($items['first']['supplier']->customfields->fields['uic_field'] != $items['first']['supplier']->hMarfa_fields['cod1']) {
+            $part_cui = $items['first']['supplier']->customfields->fields['uic_field'];
             $cod_cui = $items['first']['supplier']->hMarfa_fields['cod1'];
             $magic_link_button = "<span style='color: red'>CUI hMarfa si iService difera!<br>$part_cui != $cod_cui</span>";
         }
@@ -1034,7 +1033,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $form->openTable(['class' => 'no-border']);
 
         // $form->displayFieldTableRow($magic_link_label, $magic_link_button);
-        $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice') . ':', IserviceToolBox::getSumOfUnpaidInvoicesLink($items['first']['supplier']->getID(), $items['first']['supplier']->customfields->fields['cod_hmarfa']));
+        $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice') . ':', IserviceToolBox::getSumOfUnpaidInvoicesLink($items['first']['supplier']->getID(), $items['first']['supplier']->customfields->fields['hmarfa_code_field']));
         $form->displayFieldTableRow(
             "Nume " . $form->generateNewTabLink('partener', "$CFG_GLPI[root_doc]/front/supplier.form.php?id={$items['first']['supplier']->getID()}") . ':',
             $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['supplier']->fields["name"])
@@ -1052,8 +1051,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             "$items[invoice_total] + 19% TVA = <b>" . self::numberFormat($items['invoice_total'] * 1.19) . "</b> RON"
         );
         $form->displayFieldTableRow(
-            "<a href='mailto:$invoiceData[part_email_f1]?subject=$mailData[subject]&body=$mailData[body]'>Trimite email</a> către:",
-            $invoiceData['part_email_f1']
+            "<a href='mailto:$invoiceData[email_for_invoices_field]?subject=$mailData[subject]&body=$mailData[body]'>Trimite email</a> către:",
+            $invoiceData['email_for_invoices_field']
         );
 
         echo "<tr><td colspan='2'></td></tr>",
@@ -1077,11 +1076,11 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         );
         $form->displayFieldTableRow(
             'Cod partener hMarfa:',
-            $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "part_cod", $items['first']['supplier']->customfields->fields['cod_hmarfa'])
+            $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "part_cod", $items['first']['supplier']->customfields->fields['hmarfa_code_field'])
         );
 
         $rateButtonStyle = 'padding: 1px 5px;border-radius: 5px;';
-        $rateButtons     = "&nbsp;&nbsp;<input type='button' name='contract-currency-rate' class='submit' style='$rateButtonStyle' value='Contract: {$items['first']['contract']['curs']}' onClick='$(\"#invoice_rate\").val(\"{$items['first']['contract']['curs']}\");$(\"[name=refresh]\").click();'>";
+        $rateButtons     = "&nbsp;&nbsp;<input type='button' name='contract-currency-rate' class='submit' style='$rateButtonStyle' value='Contract: {$items['first']['contract']['currency_field']}' onClick='$(\"#invoice_rate\").val(\"{$items['first']['contract']['currency_field']}\");$(\"[name=refresh]\").click();'>";
         if ($invoiceData['invoice_rate'] > 1) {
             $official_rate = IserviceToolBox::getExchangeRate('Euro') ?? IserviceToolBox::$lastExchangeRateServiceError;
             $rateOnClick   = $official_rate === 'eroare' ? 'return false;' : "$(\"#invoice_rate\").val(\"$official_rate\");$(\"[name=refresh]\").click();";
@@ -1250,9 +1249,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             echo "                <span style='float: right; cursor: pointer;' onclick='$(\".toggle_{$printer->tableData['id']}\").toggle();'>Valoare ultima factura: <b>{$printer->tableData['val_ult_fact']}</b>$lastInvoiceValueCurrency</span>";
             echo "                </td></tr><tr><td style='padding: 0px 10px 10px 10px;'>";
             $printerInfo   = [];
-            $printerInfo[] = $printer->tableData['costcenterfield'] ?? '';
+            $printerInfo[] = $printer->tableData['cost_center_field'] ?? '';
             $printerInfo[] = $printer->tableData['location'] ?? '';
-            $printerInfo[] = $printer->tableData['usageaddressfield'] ?? '';
+            $printerInfo[] = $printer->tableData['usage_address_field'] ?? '';
             if (!is_numeric($printer->tableData['val_ult_fact'])) {
                 $subtotalColor = 'black';
             } else {
@@ -1287,7 +1286,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_TEXT,
                 "item[printer][{$printer->tableData['id']}][cost_center]",
-                $items['input'][$printer->tableData['id']]['cost_center'] ?? $printer->tableData['costcenterfield'],
+                $items['input'][$printer->tableData['id']]['cost_center'] ?? $printer->tableData['cost_center_field'],
                 false,
                 ['style' => 'width: 50px; margin-right: 10px']
             );
@@ -1301,7 +1300,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_TEXT,
                 "item[printer][{$printer->tableData['id']}][usageaddress]",
-                $items['input'][$printer->tableData['id']]['usageaddress'] ?? $printer->tableData['usageaddressfield'],
+                $items['input'][$printer->tableData['id']]['usageaddress'] ?? $printer->tableData['usage_address_field'],
                 false,
                 ['style' => 'width: 50px; margin-right: 10px']
             );
@@ -1372,7 +1371,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $form->displayTableRow(
                 [
                     'Perioadă de la (exp. fact.)',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][data_exp_fact]", $printer->tableData['data_exp_fact']),
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][invoice_expiry_date_field]", $printer->tableData['invoice_expiry_date_field']),
                     'Tip contract',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contract_type'], true)
                 ]
@@ -1404,7 +1403,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             if ($printer->tableData['cop_col_echiv']) {
                 $additionalColorCopies = "&nbsp;+&nbsp;<span style='color:green' title='{$printer->tableData['cop_col_echiv']} = {$printer->tableData['counter_difference_bk']} * {$printer->tableData['equalizer_coefficient']}'>{$printer->tableData['cop_col_echiv']} copii echiv.</span>";
             } elseif ($printer->tableData['cop_bk_echiv']) {
-                $additionalColorCopies = "&nbsp;(<span style='color:green'>" . ($printer->tableData['cop_col_inclus'] + $printer->tableData['counter_difference_col']) . " copii consumate</span>)";
+                $additionalColorCopies = "&nbsp;(<span style='color:green'>" . ($printer->tableData['included_copies_col_field'] + $printer->tableData['counter_difference_col']) . " copii consumate</span>)";
             } else {
                 $additionalColorCopies = '';
             }
@@ -1414,7 +1413,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     'Contor bk ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_bk_ui'], true),
                     'Nr copii col incluse',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['cop_col_inclus'] . $additionalColorCopies, true)
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['included_copies_col_field'] . $additionalColorCopies, true)
                 ]
             );
             $form->displayTableRow(
@@ -1422,7 +1421,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     'Contor col ultima factură',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_col_uf'], true),
                     'Val copii incluse',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['val_cop_inclus'], true)
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['included_copy_value_field'], true)
                 ]
             );
             $form->displayTableRow(
@@ -1430,7 +1429,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     'Contor col ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_col_ui'], true),
                     'Valoare contract',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['tarif_lunar1'], true)
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['monthly_fee_field'], true)
                 ]
             );
             if (strtotime($printer->tableData['data_ui']) < strtotime('-14 days')) {
@@ -1446,7 +1445,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     "Data " . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['data_ui'], true, ['style' => $lastInterventionColor]),
                     'Tarif copie bk',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['tarif_cop_bl'], true)
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['copy_price_bk_field'], true)
                 ]
             );
             $form->displayTableRow(
@@ -1500,17 +1499,17 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             echo "                            <td align='center'>{$router->tableData['id']}</td>\n";
             echo "                            <td><span class='name'>{$router->tableData['name']}</span></td>\n";
             echo "                            <td><span class='name'>{$router->tableData['location']}</span></td>\n";
-            echo "                            <td><span class='name'>{$router->tableData['costcenterfield']}</span></td>\n";
-            echo "                            <td><span class='name'>{$router->tableData['usageaddressfield']}</span></td>\n";
+            echo "                            <td><span class='name'>{$router->tableData['cost_center_field']}</span></td>\n";
+            echo "                            <td><span class='name'>{$router->tableData['usage_address_field']}</span></td>\n";
             echo "                            <td align='center'>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_TEXT,
-                "item[router][{$router->tableData['id']}][data_exp_fact]",
-                $router->tableData['data_exp_fact'],
+                "item[router][{$router->tableData['id']}][invoice_expiry_date_field]",
+                $router->tableData['invoice_expiry_date_field'],
                 true,
                 [
                     'style' => 'width:70%',
-                    'class' => 'data_exp_fact'
+                    'class' => 'invoice_expiry_date_field'
                 ]
             );
             echo "                            </td>\n";
@@ -1524,8 +1523,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 ['clear_btn' => false]
             );
             echo "                                </div>\n";
-            echo "                                <input type='hidden' class='data_fact_until_new' value='" . IserviceToolBox::addMonthToDate($router->tableData['data_exp_fact'], 1) . "'/>\n";
-            echo "                                <input type='hidden' class='submit ult_tichet_data_luc' value='" . date("Y-m-d", strtotime($router->tableData['data_ult_fact'])) . "'/>\n";
+            echo "                                <input type='hidden' class='data_fact_until_new' value='" . IserviceToolBox::addMonthToDate($router->tableData['invoice_expiry_date_field'], 1) . "'/>\n";
+            echo "                                <input type='hidden' class='submit ult_tichet_effective_date_field' value='" . date("Y-m-d", strtotime($router->tableData['data_ult_fact'])) . "'/>\n";
             echo "                            </td>\n";
             echo "                            <td align='center'>\n";
             $form->displayField(
@@ -1621,7 +1620,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "                    <i class='clickable fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
         echo "                    <input class='submit" . (empty($frontendData['import_disabled_reason']) ? '' : ' disabled') . "' name='import' style='color:red;' title='" . ($frontendData['import_disabled_reason'] ?: 'ATENȚIE! Apăsând butonul ștergeți fișierele csv!') . "' type='submit' value='Importat în hMarfa' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
         echo "                    <input class='submit" . (empty($frontendData['import_disabled_reason']) ? '' : ' disabled') . "' name='update' style='color:red;' title='" . ($frontendData['import_disabled_reason'] ?: '') . "' type='submit' value='Update facturare' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
-        echo "                    <a id='send_mail_2' class='vsubmit' href='mailto:{$frontendData['invoiceData']['part_email_f1']}?subject={$frontendData['mailData']['subject']}&body={$frontendData['mailData']['body']}' title='Trimite email către: {$frontendData['invoiceData']['part_email_f1']}'>Trimite email</a>";
+        echo "                    <a id='send_mail_2' class='vsubmit' href='mailto:{$frontendData['invoiceData']['email_for_invoices_field']}?subject={$frontendData['mailData']['subject']}&body={$frontendData['mailData']['body']}' title='Trimite email către: {$frontendData['invoiceData']['email_for_invoices_field']}'>Trimite email</a>";
         echo "                </td>\n";
         echo "            </tr>\n";
         echo "            <tr><td><br></td></tr>\n";
@@ -1693,7 +1692,6 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 echo "  months[years.indexOf('$year')].push('$month');\n";
                 echo "  backup_data[years.indexOf('$year')].push([]);\n";
                 foreach ($backupData[$year][$month] as $name) {
-                    // echo "debugger;";
                     echo "  backup_data[years.indexOf('$year')][months[years.indexOf('$year')].indexOf('$month')].push('$name');\n";
                 }
             }

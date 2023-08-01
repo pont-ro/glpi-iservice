@@ -23,7 +23,7 @@ class RouteManifest extends View
                         SELECT
                               t.id AS Nr_ticket
                             , t.name AS Title
-                            , data_luc AS Data_efectiva
+                            , t.effective_date_field AS Data_efectiva
                             , CONCAT(u.firstname,' ',u.realname) AS Atribuit
                             , e.name AS Partener
                             , e.address AS Adresa_Partener
@@ -31,8 +31,7 @@ class RouteManifest extends View
                             , ifnull(l.completename,'') AS Locatie_Aparat
                             , '________' AS Km_Oras
                             , '________' AS KM_P 
-                        FROM glpi_tickets t
-                        LEFT JOIN glpi_plugin_fields_ticketticketcustomfields tcf ON tcf.items_id = t.id and tcf.itemtype = 'Ticket'
+                        FROM glpi_plugin_iservice_tickets t
                         LEFT JOIN glpi_tickets_users tu ON tu.tickets_id = t.id AND tu.type = 2
                         LEFT JOIN glpi_suppliers_tickets ts ON ts.tickets_id = t.id
                         LEFT JOIN glpi_users u ON u.id = tu.users_id
@@ -41,13 +40,13 @@ class RouteManifest extends View
                         LEFT JOIN glpi_printers p ON p.ID = it.items_id
                         LEFT JOIN glpi_locations l ON l.id = t.locations_id
                         WHERE t.is_deleted = 0 AND t.status in (" . implode(',', [\Ticket::SOLVED, \Ticket::CLOSED]) . ")
-                          AND data_luc >= '[start_date]'
-                          AND data_luc <= '[end_date]'
+                          AND t.effective_date_field >= '[start_date]'
+                          AND t.effective_date_field <= '[end_date]'
                             AND CAST(t.id AS CHAR) LIKE '[tichet]'
                             AND e.name LIKE '[partener]'
                             AND ((p.name is null AND '[aparat]' = '%%') OR p.name LIKE '[aparat]')
                             AND ((l.name is null AND '[locatie]' = '%%') OR l.name LIKE '[locatie]')
-                            AND (tcf.no_travel is null or not tcf.no_travel = 1)
+                            AND (t.no_travel is null or not t.no_travel = 1)
                             [atribuit]
 								",
             'default_limit' => 50,

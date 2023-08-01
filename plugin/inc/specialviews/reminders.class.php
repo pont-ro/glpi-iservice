@@ -1,15 +1,25 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Reminders.php".
-class PluginIserviceView_Reminders extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use Glpi\Toolbox\Sanitizer;
+use GlpiPlugin\Iservice\Views\View;
+use Html;
+use Planning;
+use PluginIserviceReminder;
+use \Session;
+use Toolbox;
+
+class Reminders extends View
 {
 
-    static function getRowBackgroundClass($row_data)
+    public static function getRowBackgroundClass($row_data): string
     {
         return $row_data['state'] == Planning::TODO ? "tab_bg_3" : "tab_bg_1";
     }
 
-    static function getVisibilityDisplay($row_data)
+    public static function getVisibilityDisplay($row_data): string
     {
         switch ($row_data['visibility']) {
         case 1:
@@ -19,17 +29,17 @@ class PluginIserviceView_Reminders extends PluginIserviceView
         }
     }
 
-    static function getStatusDisplay($row_data)
+    public static function getStatusDisplay($row_data): string
     {
         return Planning::getState($row_data['state']);
     }
 
-    static function getTextDisplay($row_data)
+    public static function getTextDisplay($row_data): string
     {
-        return Html::clean(Toolbox::unclean_cross_side_scripting_deep($row_data['text']));
+        return Toolbox::stripTags(implode(' ', Sanitizer::decodeHtmlSpecialCharsRecursive($row_data['text'])));
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         $iservice_front   = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";

@@ -16,4 +16,21 @@ return [
             'GlpiPlugin\Iservice\Views\PriceList',
         ],
     ],
+    'specialViews' => [
+        'title' => _n('Special View', 'Special Views', Session::getPluralNumber(), 'iservice'),
+        'icon'  => 'ti ti-layout-grid2',
+        'classes' => [
+            'GlpiPlugin\Iservice\SpecialViews\Emaintenance',
+            'GlpiPlugin\Iservice\SpecialViews\Evaluation',
+            'GlpiPlugin\Iservice\SpecialViews\Extorders',
+            'GlpiPlugin\Iservice\SpecialViews\Intorders',
+            'GlpiPlugin\Iservice\SpecialViews\FacturiClient',
+            'GlpiPlugin\Iservice\SpecialViews\GlobalReadCounter',
+            'GlpiPlugin\Iservice\SpecialViews\LastNTickets',
+            'GlpiPlugin\Iservice\SpecialViews\Movements',
+            'GlpiPlugin\Iservice\SpecialViews\Operations',
+            'GlpiPlugin\Iservice\SpecialViews\Partners',
+            'GlpiPlugin\Iservice\SpecialViews\PendingEmails',
+        ],
+    ],
 ];

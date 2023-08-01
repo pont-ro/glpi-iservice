@@ -36,7 +36,7 @@ class View extends \CommonGLPI
     protected $table_prefix          = '';
     protected $table_suffix          = '';
     protected $widgets               = [];
-    // Setting variables
+    // Setting variables.
     protected $prefix;
     protected $name;
     protected $description;
@@ -73,7 +73,7 @@ class View extends \CommonGLPI
         'query' => '',
         'params' => [],
         'id_field' => 'id',
-        'itemtype' => '###error###', // this should be overriden as soon as possible!
+        'itemtype' => '###error###', // This should be overriden as soon as possible!
         'sub_view' => false,
         'default_limit' => 0,
         'mass_actions' => [],
@@ -94,7 +94,7 @@ class View extends \CommonGLPI
         'columns' => [],
         'actions' => [],
     ];
-    // Request variables
+    // Request variables.
     protected $reset;
     protected $limit;
     protected $detail;
@@ -119,7 +119,7 @@ class View extends \CommonGLPI
         'export_format' => 'csv',
         'filter_description' => '',
     ];
-    // Internal variables
+    // Internal variables.
     protected $exporting             = false;
     protected $export_data           = [];
     protected $query_count           = 0;
@@ -177,7 +177,7 @@ class View extends \CommonGLPI
         return "<span title='$text'>" . substr($text, $offset, $length - 3) . "...</span>";
     }
 
-    /**
+    /*
      * @return GlpiPlugin\Iservice\Views\View
      */
     public static function createFromSettings($settings, $table_prefix = '', $table_suffix = ''): array
@@ -195,8 +195,7 @@ class View extends \CommonGLPI
 
     public function getMachineName(): string
     {
-        $class_name = get_class($this);
-        return strtolower(strpos($class_name, "PluginIserviceView_") === 0 ? substr($class_name, strlen("PluginIserviceView_")) : $class_name);
+        return basename(str_replace('\\', '/', get_class($this)));
     }
 
     public function getRequestArrayName($add_detail_level = 0): string
@@ -371,7 +370,7 @@ class View extends \CommonGLPI
             }
 
             $filter .= isset($this->filters['postfix']) ? $this->filters['postfix'] : '';
-            $filter .= "</div>"; // view-filter
+            $filter .= "</div>"; // View-filter.
             ob_end_clean();
         }
 
@@ -1085,13 +1084,13 @@ class View extends \CommonGLPI
         $this->adjustQueryOrderBy();
 
         if (!$this->exporting) {
-            // Keep this before the form opening to be able to put a separate form in the prefix
+            // Keep this before the form opening to be able to put a separate form in the prefix.
             echo empty($this->prefix) ? "" : $this->prefix;
             echo "<h{$this->getHeadingLevel()} id='view-query-{$this->getRequestArrayName()}'>$this->name" . (empty($this->filter_description) ? "" : " - $this->filter_description") . "</h{$this->getHeadingLevel()}>";
             echo empty($this->description) ? "" : "<div class='filter-description'>$this->description</div>";
             if ($generate_form) {
                 $html->openForm(['method' => 'post', 'class' => 'iservice-form refresh-target', 'enctype' => 'multipart/form-data']);
-                // Default behaviour for enter is to filter
+                // Default behaviour for enter is to filter.
                 echo "<input type='submit' name='filter' value='filter' style='display:none' />";
             }
 

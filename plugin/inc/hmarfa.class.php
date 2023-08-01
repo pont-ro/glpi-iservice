@@ -14,7 +14,7 @@ class PluginIserviceHmarfa
     const EXPORT_MODE_TICKET       = 2;
     const EXPORT_MODE_MASS_INVOICE = 3;
 
-    public static function showExportForm($id, $mode = self::EXPORT_MODE_PRINTER)
+    public static function showExportForm($id, $mode = self::EXPORT_MODE_PRINTER): void
     {
         switch ($mode) {
         case self::EXPORT_MODE_PRINTER:
@@ -31,7 +31,7 @@ class PluginIserviceHmarfa
         }
     }
 
-    public static function showPrinterExportForm($id)
+    public static function showPrinterExportForm($id): void
     {
         global $DB, $CFG_PLUGIN_ISERVICE;
 
@@ -71,7 +71,7 @@ class PluginIserviceHmarfa
         $printerState->getFromDB($printer->fields['states_id']);
         $printerModel->getFromDB($printer->fields["printermodels_id"]);
         $printerLocation->getFromDB($printer->fields["locations_id"]);
-        $printerLocationName = $printer->customfields->fields["usageaddressfield"] ?? '';
+        $printerLocationName = $printer->customfields->fields["usage_address_field"] ?? '';
 
         if (isset($_POST['generate_magic_link'])) {
             PluginIservicePartner::generateNewMagicLink($infoCom->fields['suppliers_id']);
@@ -108,8 +108,8 @@ class PluginIserviceHmarfa
             $contract->getFromDB($DB->result($result, 0, "contracts_id"));
         }
 
-        $contract_customfields = new PluginFieldsContractcustomfield();
-        $contract_customfields->getFromDBByItemsId($contract->getID());
+        $contract_customfields = new PluginFieldsContractcontractcustomfield();
+        PluginIserviceDB::populateByItemsId($contract_customfields, $contract->getID());
 
         $contractType = new ContractType();
         if (!empty($contract->fields['contracttypes_id']) && $contractType->getFromDB($contract->fields['contracttypes_id'])) {
@@ -118,23 +118,23 @@ class PluginIserviceHmarfa
             $contractType = '';
         }
 
-        $nrcmd         = filter_input(INPUT_POST, 'nrcmd') ?: '000000';
-        $data_fact     = strtotime(filter_input(INPUT_POST, 'data_fact') ?: $printer->customfields->fields['data_fact']);
-        $data_exp_fact = strtotime(filter_input(INPUT_POST, 'data_exp_fact') ?: $printer->customfields->fields['data_exp_fact']);
-        $data_luc      = strtotime($printer->lastTicket()->fields['data_luc'] ?? '');
-        $part_email_f1 = filter_input(INPUT_POST, 'part_email_f1') ?: $enterprise->customfields->fields['part_email_f1'];
-        $fixed1        = filter_input(INPUT_POST, 'fixed1') ?: false;
-        $fixed2        = filter_input(INPUT_POST, 'fixed2') ?: false;
-        $fixed3        = filter_input(INPUT_POST, 'fixed3') ?: false;
+        $nrcmd                     = filter_input(INPUT_POST, 'nrcmd') ?: '000000';
+        $invoice_date_field        = strtotime(filter_input(INPUT_POST, 'invoice_date_field') ?: $printer->customfields->fields['invoice_date_field']);
+        $invoice_expiry_date_field = strtotime(filter_input(INPUT_POST, 'invoice_expiry_date_field') ?: $printer->customfields->fields['invoice_expiry_date_field']);
+        $effective_date            = strtotime($printer->lastTicket()->customfields->fields['effective_date_field'] ?? '');
+        $part_email_f1             = filter_input(INPUT_POST, 'email_for_invoices_field') ?: $enterprise->customfields->fields['email_for_invoices_field'];
+        $fixed1                    = filter_input(INPUT_POST, 'fixed1') ?: false;
+        $fixed2                    = filter_input(INPUT_POST, 'fixed2') ?: false;
+        $fixed3                    = filter_input(INPUT_POST, 'fixed3') ?: false;
 
-        $location    = (!empty($_POST['location'])) ? "{$printer->customfields->fields["usageaddressfield"]} - " : "";
-        $cost_center = (!empty($_POST['cost_center'])) ? "*{$printer->customfields->fields["costcenterfield"]}* - " : "";
+        $location    = (!empty($_POST['location'])) ? "{$printer->customfields->fields["usage_address_field"]} - " : "";
+        $cost_center = (!empty($_POST['cost_center'])) ? "*{$printer->customfields->fields["cost_center_field"]}* - " : "";
 
-        if ($data_exp_fact === false) {
-            $data_exp_fact = strtotime(date("Y-m-t"));
+        if ($invoice_expiry_date_field === false) {
+            $invoice_expiry_date_field = strtotime(date("Y-m-t"));
         }
 
-        $expDate = $data_exp_fact;
+        $expDate = $invoice_expiry_date_field;
         if (date('d', $expDate) > 25) {
             $period  = date("m.Y", strtotime("+1 month", strtotime("-5 days", $expDate)));
             $expDate = date("Y-m-t", strtotime("+1 month", strtotime("-5 days", $expDate)));
@@ -147,27 +147,27 @@ class PluginIserviceHmarfa
 
         $doc_date     = strtotime(filter_input(INPUT_POST, 'doc_date') ?: date("Y-m-d"));
         $exp_date     = strtotime(filter_input(INPUT_POST, 'exp_date') ?: $expDate);
-        $divizorCopii = (empty($contract_customfields->fields['divizor_pu']) || $contract_customfields->fields['divizor_pu'] == 0) ? 1 : $contract_customfields->fields['divizor_pu'];
+        $divizorCopii = (empty($contract_customfields->fields['copy_price_divider_field']) || $contract_customfields->fields['copy_price_divider_field'] == 0) ? 1 : $contract_customfields->fields['copy_price_divider_field'];
 
-        $contract_rate     = floatval((empty($contract_customfields->fields['curs']) || $contract_customfields->fields['curs'] == 0) ? 1 : $contract_customfields->fields['curs']);
+        $contract_rate     = floatval((empty($contract_customfields->fields['currency_field']) || $contract_customfields->fields['currency_field'] == 0) ? 1 : $contract_customfields->fields['currency_field']);
         $contract_currency = $contract_rate > 1 ? "EUR" : ($contract_rate < 1 ? "???" : "RON");
-        $contract_value    = $contract_customfields->fields['tarif_lunar1'] ?? 0;
+        $contract_value    = $contract_customfields->fields['monthly_fee_field'] ?? 0;
         $rate              = isset($_POST['rate']) ? (is_numeric($_POST['rate']) ? $_POST['rate'] : intval($_POST['rate'])) : (($contract_currency === "EUR" && $currency_error === null) ? $official_currency->EuroCaNumar : $contract_rate);
         $currency          = $rate > 1 ? "EUR" : ($rate < 1 ? "???" : "RON");
 
         // $rate: $printer->tableData['invoice_rate']
         // $divizorCopii: $printer->tableData['divizor_copii'];
-        $oldCounterBlack        = ($_POST['old_counter_black'] ?? $printer->customfields->fields['total2_black_fact']) ?: 0; // $printer->tableData['contor_bk_uf']
-        $oldCounterColor        = ($_POST['old_counter_color'] ?? $printer->customfields->fields['total2_color_fact']) ?: 0; // $printer->tableData['contor_col_uf']
+        $oldCounterBlack        = ($_POST['old_counter_black'] ?? $printer->customfields->fields['invoiced_total_black_field']) ?: 0; // $printer->tableData['contor_bk_uf']
+        $oldCounterColor        = ($_POST['old_counter_color'] ?? $printer->customfields->fields['invoiced_total_color_field']) ?: 0; // $printer->tableData['contor_col_uf']
         $newCounterBlack        = $printer->lastTicket()->fields['total2_black'] ?? 0; // $printer->tableData['contor_bk_ui']
         $newCounterColor        = $printer->lastTicket()->fields['total2_color'] ?? 0; // $printer->tableData['contor_col_ui']
-        $includedCopiesBlack    = $contract_customfields->fields['cop_bl_inclus'] ?? 0; // $printer->tableData['cop_bl_inclus']
-        $includedCopiesColor    = $contract_customfields->fields['cop_col_inclus'] ?? 0; // $printer->tableData['cop_col_inclus']
-        $includedCopiesValue    = $contract_customfields->fields['val_cop_inclus'] ?? 0; // $printer->tableData['val_cop_inclus']
-        $blackCopyPrice         = $contract_customfields->fields['tarif_cop_bl'] ?? 0; // $printer->tableData['tarif_cop_bl']
-        $colorCopyPrice         = $contract_customfields->fields['tarif_cop_col1'] ?? 0; // $printer->tableData['tarif_cop_col1']
-        $allowedCounterBlack    = $oldCounterBlack + $includedCopiesBlack; // $printer->tableData['contor_bk_uf'] + $printer->tableData['cop_bl_inclus']
-        $allowedCounterColor    = $oldCounterColor + $includedCopiesColor; // $printer->tableData['contor_col_uf'] + $printer->tableData['cop_col_inclus']
+        $includedCopiesBlack    = $contract_customfields->fields['included_copies_bk_field'] ?? 0; // $printer->tableData['included_copies_bk_field']
+        $includedCopiesColor    = $contract_customfields->fields['included_copies_col_field'] ?? 0; // $printer->tableData['included_copies_col_field']
+        $includedCopiesValue    = $contract_customfields->fields['included_copy_value_field'] ?? 0; // $printer->tableData['included_copy_value_field']
+        $blackCopyPrice         = $contract_customfields->fields['copy_price_bk_field'] ?? 0; // $printer->tableData['copy_price_bk_field']
+        $colorCopyPrice         = $contract_customfields->fields['copy_price_col_field'] ?? 0; // $printer->tableData['copy_price_col_field']
+        $allowedCounterBlack    = $oldCounterBlack + $includedCopiesBlack; // $printer->tableData['contor_bk_uf'] + $printer->tableData['included_copies_bk_field']
+        $allowedCounterColor    = $oldCounterColor + $includedCopiesColor; // $printer->tableData['contor_col_uf'] + $printer->tableData['included_copies_col_field']
         $differenceCounterBlack = $newCounterBlack - $allowedCounterBlack; // $printer->tableData['contor_bk_ui'] -
         $differenceCounterColor = $newCounterColor - $allowedCounterColor;
         if (in_array(strtolower($contractType), ['coluna_1', 'coluna_2', 'coluna_3', 'cotrim'])) {
@@ -295,11 +295,11 @@ class PluginIserviceHmarfa
 
         $printerTotal = number_format($cant1 * $val1, 2, '.', '');
         if ($cant2 > 0) {
-            $printerTotal += number_format($cant2 * $val2, 2, '.', '');
+            $printerTotal .= number_format($cant2 * $val2, 2, '.', '');
         }
 
         if ($cant3 > 0) {
-            $printerTotal += number_format($cant3 * $val3, 2, '.', '');
+            $printerTotal .= number_format($cant3 * $val3, 2, '.', '');
         }
 
         $safeEnterpriseName   = preg_replace('/[^a-zA-z0-9-]/', '-', trim($enterprise->fields["name"]));
@@ -451,45 +451,45 @@ class PluginIserviceHmarfa
                 }
 
                 if (!empty($include_period)) {
-                    $descr_array[] = "perioada facturata: de la " . date('d.m.y', $data_fact) . " pana la " . date('d.m.y', $data_luc);
+                    $descr_array[] = "perioada facturata: de la " . date('d.m.y', $invoice_date_field) . " pana la " . date('d.m.y', $effective_date);
                 }
 
                 $exportData .= "TFAC,$nrcmd," . date("Y.m.d", $doc_date) . ','
-                        . $enterprise->customfields->fields['cod_hmarfa'] . ','
+                        . $enterprise->customfields->fields['hmarfa_code_field'] . ','
                         . "$code,1,0,\"" . implode(', ', $descr_array) . "\"\r\n";
             }
 
             if ($cant1 > 0) {
                 $data1               = "TFAC,$nrcmd," . date("Y.m.d", $doc_date) . ','
-                        . $enterprise->customfields->fields['cod_hmarfa'] . ','
+                        . $enterprise->customfields->fields['hmarfa_code_field'] . ','
                         . $codmat1 . ','
                         . number_format($cant1, 2, '.', '') . ','
                         . number_format($val1, 2, '.', '')
                         . ",\"$descr1\"";
                 $exportData         .= "$data1\r\n";
-                $extendedExportData .= "$data1,\"{$printer->customfields->fields['costcenterfield']}\",\"$from_counter1\",\"$to_counter1\",\"$printerLocationName\",\"{$printer->fields['name']}\",\"{$printer->fields["serial"]}\"\r\n";
+                $extendedExportData .= "$data1,\"{$printer->customfields->fields['cost_center_field']}\",\"$from_counter1\",\"$to_counter1\",\"$printerLocationName\",\"{$printer->fields['name']}\",\"{$printer->fields["serial"]}\"\r\n";
             }
 
             if ($cant2 > 0) {
                 $data2               = "TFAC,$nrcmd," . date("Y.m.d", $doc_date) . ','
-                        . $enterprise->customfields->fields['cod_hmarfa'] . ','
+                        . $enterprise->customfields->fields['hmarfa_code_field'] . ','
                         . $codmat2 . ','
                         . number_format($cant2, 2, '.', '') . ','
                         . number_format($val2, 2, '.', '')
                         . ",\"$descr2\"";
                 $exportData         .= "$data2\r\n";
-                $extendedExportData .= "$data2,\"{$printer->customfields->fields['costcenterfield']}\",$from_counter2,$to_counter2,\"$printerLocationName\",\"{$printer->fields['name']}\",\"{$printer->fields["serial"]}\"\r\n";
+                $extendedExportData .= "$data2,\"{$printer->customfields->fields['cost_center_field']}\",$from_counter2,$to_counter2,\"$printerLocationName\",\"{$printer->fields['name']}\",\"{$printer->fields["serial"]}\"\r\n";
             }
 
             if ($cant3 > 0) {
                 $data3               = "TFAC,$nrcmd," . date("Y.m.d", $doc_date) . ','
-                        . $enterprise->customfields->fields['cod_hmarfa'] . ','
+                        . $enterprise->customfields->fields['hmarfa_code_field'] . ','
                         . $codmat3 . ','
                         . number_format($cant3, 2, '.', '') . ','
                         . number_format($val3, 2, '.', '')
                         . ",\"$descr3\"";
                 $exportData         .= "$data3\r\n";
-                $extendedExportData .= "$data3,\"{$printer->customfields->fields['costcenterfield']}\",$from_counter3,$to_counter3,\"$printerLocationName\",\"{$printer->fields['name']}\",\"{$printer->fields["serial"]}\"\r\n";
+                $extendedExportData .= "$data3,\"{$printer->customfields->fields['cost_center_field']}\",$from_counter3,$to_counter3,\"$printerLocationName\",\"{$printer->fields['name']}\",\"{$printer->fields["serial"]}\"\r\n";
             }
 
             file_put_contents($exportFileName, $exportData, FILE_APPEND);
@@ -512,21 +512,21 @@ class PluginIserviceHmarfa
             if (!$printer_customfields->update(
                 [
                     $printer->customfields->getIndexName() => $printer->customfields->getID(),
-                    "data_fact" => date('Y-m-d', $data_fact),
-                    "data_exp_fact" => date('Y-m-d', $data_exp_fact),
-                    "total2_black_fact" => $oldCounterBlack,
-                    "total2_color_fact" => $oldCounterColor,
+                    "invoice_date_field" => date('Y-m-d', $invoice_date_field),
+                    "invoice_expiry_date_field" => date('Y-m-d', $invoice_expiry_date_field),
+                    "invoiced_total_black_field" => $oldCounterBlack,
+                    "invoiced_total_color_field" => $oldCounterColor,
                 ]
             )
             ) {
                 die(sprintf(__("Error updating %s custom fields"), "Printer"));
             }
 
-            $supplier_customfields = new PluginFieldsSuppliercustomfield();
+            $supplier_customfields = new PluginFieldsSuppliersuppliercustomfield();
             if (!$supplier_customfields->update(
                 [
                     $enterprise->customfields->getIndexName() => $enterprise->customfields->getID(),
-                    'part_email_f1' => $part_email_f1
+                    'email_for_invoices_field' => $part_email_f1
                 ]
             )
             ) {
@@ -537,14 +537,14 @@ class PluginIserviceHmarfa
                 $printer_customfields = new PluginFieldsPrinterprintercustomfield();
                 foreach (explode("\r\n", file_get_contents($datFileName)) as $row) {
                     $data = explode(",", $row);
-                    if (count($data) > 3 && $printer_customfields->getFromDBByItemsId($data[0])) {
+                    if (count($data) > 3 && PluginIserviceDB::populateByItemsId($printer_customfields, $data[0])) {
                         $printer_customfields->update(
                             [
                                 $printer_customfields->getIndexName() => $printer_customfields->getID(),
-                                "data_fact" => $data[1],
-                                "data_exp_fact" => $data[2],
-                                "total2_black_fact" => $data[3],
-                                "total2_color_fact" => $data[4]
+                                "invoice_date_field" => $data[1],
+                                "invoice_expiry_date_field" => $data[2],
+                                "invoiced_total_black_field" => $data[3],
+                                "invoiced_total_color_field" => $data[4]
                             ]
                         );
                     }
@@ -594,7 +594,7 @@ class PluginIserviceHmarfa
         $magic_link_label        = "Link magic partener:";
         $magic_link_button_name  = "Genereaza";
         $magic_link_button_class = "";
-        if (!empty($enterprise->customfields->fields['magic_link'])) {
+        if (!empty($enterprise->customfields->fields['magic_link_field'])) {
             $magic_link              = $enterprise->getMagicLink();
             $magic_link_label        = "<a href='$magic_link'>$magic_link_label</a>";
             $magic_link_button_name .= " nou";
@@ -602,12 +602,12 @@ class PluginIserviceHmarfa
         }
 
         $magic_link_button = "<input type='submit' name='generate_magic_link' class='submit$magic_link_button_class' value='$magic_link_button_name'>";
-        if (empty($enterprise->customfields->fields['part_cui'])) {
+        if (empty($enterprise->customfields->fields['uic_field'])) {
             $magic_link_button = "<span style='color: red'>Partenerul nu are CUI!</span>";
         }
 
-        if ($enterprise->customfields->fields['part_cui'] != $enterprise->hMarfa_fields['cod1']) {
-            $part_cui          = $enterprise->customfields->fields['part_cui'];
+        if ($enterprise->customfields->fields['uic_field'] != $enterprise->hMarfa_fields['cod1']) {
+            $part_cui          = $enterprise->customfields->fields['uic_field'];
             $cod_cui           = $enterprise->hMarfa_fields['cod1'];
             $magic_link_button = "<span style='color: red'>CUI hMarfa si iService difera!<br>$part_cui != $cod_cui</span>";
         }
@@ -618,20 +618,20 @@ class PluginIserviceHmarfa
         echo self::generateInputFieldRow($prefix, $magic_link_button, $magic_link_label);
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $enterprise->fields["name"], true), "Nume <a href='" . GLPI_ROOT . "/front/supplier.form.php?id={$enterprise->getID()}'>partener</a>:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printerLocation->fields["name"] ?? '', true), "Locatie:", 'se va folosi pentru managementul cartuselor');
-        echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printer->customfields->fields["costcenterfield"], true), "Centru de cost:", 'se va folosi pentru calculul de subtotaluri la clientii cu mai multe centre de cost');
-        echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printer->customfields->fields["usageaddressfield"], true), "Adresa de exploatare:", "adresa la care se afla aparatul");
+        echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printer->customfields->fields["cost_center_field"], true), "Centru de cost:", 'se va folosi pentru calculul de subtotaluri la clientii cu mai multe centre de cost');
+        echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printer->customfields->fields["usage_address_field"], true), "Adresa de exploatare:", "adresa la care se afla aparatul");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printerState->fields["name"], true), "Status:");
         echo "        <tr><td>Data ultima factura:</td><td><div class='dropdown_wrapper'>\n";
-        Html::showDateField("data_fact", ['value' => date("Y-m-d", $data_fact)]);
+        Html::showDateField("invoice_date_field", ['value' => date("Y-m-d", $invoice_date_field)]);
         echo "        </div></td></tr>\n";
         echo "        <tr><td>Data exp. factura:</td><td><div class='dropdown_wrapper'>\n";
-        Html::showDateField("data_exp_fact", ['value' => date("Y-m-d", $data_exp_fact)]);
+        Html::showDateField("invoice_expiry_date_field", ['value' => date("Y-m-d", $invoice_expiry_date_field)]);
         echo "        </div></td></tr>\n";
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "old_counter_black", $oldCounterBlack, true), "Contor black ultima factura:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "new_counter_black", $newCounterBlack, true), "Contor black ulitma interventie:", "Pentru a modifica, schimbati tichetul " . $printer->lastTicket()->getID());
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "old_counter_color", $oldCounterColor, true), "Contor color ultima factura:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "new_counter_color", $newCounterColor, true), "Contor color ultima interventie:", "Pentru a modifica, schimbati tichetul " . $printer->lastTicket()->getID());
-        echo self::generateInputFieldRow($prefix, self::generateInputField("", "data_luc", date("Y-m-d", $data_luc), true), "Data ultima interventie:", "Pentru a modifica, schimbati tichetul " . $printer->lastTicket()->getID());
+        echo self::generateInputFieldRow($prefix, self::generateInputField("", "effective_date_field", date("Y-m-d", $effective_date), true), "Data ultima interventie:", "Pentru a modifica, schimbati tichetul " . $printer->lastTicket()->getID());
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", empty($contract->fields['num']) ? '' : $contract->fields['num'], true), "Numar <a href='" . GLPI_ROOT . "/front/contract.form.php?id={$contract->getID()}'>contract</a>:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $contractType, true), "Tip contract:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $divizorCopii, true), "Divizor copii:");
@@ -643,7 +643,7 @@ class PluginIserviceHmarfa
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $colorCopyPrice, true, "", false, " $currency"), "Tarif copie color:");
         echo "        <tr>";
         echo "          <td><a class='vsubmit' href='mailto:$part_email_f1?subject=$mail_subject&body=$mail_body'>Trimite email către:</a></td>";
-        echo "          <td><textarea name='part_email_f1' style='width:150px;' rows='2'>$part_email_f1</textarea></td><td>\n";
+        echo "          <td><textarea name='email_for_invoices_field' style='width:150px;' rows='2'>$part_email_f1</textarea></td><td>\n";
         echo "        <tr>\n";
         echo "      </table>\n";
         echo "    </td></tr>\n";
@@ -680,7 +680,7 @@ class PluginIserviceHmarfa
         $checkboxes .= self::generateCheckboxField("&nbsp;&nbsp;", "s039", $s039, " S039");
         $checkboxes .= self::generateCheckboxField("&nbsp;&nbsp;", "include_status", $include_status, " Status", "' onclick='if($(this).is(\":checked\")){\$(\"#s039\").prop(\"checked\", true);}");
         $checkboxes .= self::generateCheckboxField("&nbsp;&nbsp;", "include_period", $include_period, " Perioada", "' onclick='if($(this).is(\":checked\")){\$(\"#s039\").prop(\"checked\", true);}");
-        echo self::generateInputFieldRow($prefix, self::generateInputField("", "part_cod", $enterprise->customfields->fields['cod_hmarfa'], true, "", false, $checkboxes), "Cod partener hMarfa:");
+        echo self::generateInputFieldRow($prefix, self::generateInputField("", "part_cod", $enterprise->customfields->fields['hmarfa_code_field'], true, "", false, $checkboxes), "Cod partener hMarfa:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "codmat1", $codmat1, false, ""), "Codul serviciului:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "val1", $val1, true, "width:72px;", false, " pe luna" . self::generateQuantityAndTotalFields(1, $cant1, $fixed1, number_format($val1 * $cant1, 2, '.', ''))), "Pret unitar in RON:");
         echo self::generateInputFieldRow($prefix, self::generateTextArea("", "descr1", $descr1, false, "width:470px;", true), "Descriere:");
@@ -821,7 +821,6 @@ class PluginIserviceHmarfa
                 echo "  months[years.indexOf('$year')].push('$month');\n";
                 echo "  backup_data[years.indexOf('$year')].push([]);\n";
                 foreach ($backupData[$year][$month] as $name) {
-                    // echo "debugger;";
                     echo "  backup_data[years.indexOf('$year')][months[years.indexOf('$year')].indexOf('$month')].push('$name');\n";
                 }
             }
@@ -918,7 +917,7 @@ class PluginIserviceHmarfa
         }
 
         $ticket = new PluginIserviceTicket();
-        $ticket->check($id, READ); // this includes a getFromDB()
+        $ticket->check($id, READ); // This includes a getFromDB().
 
         $export_types = [
             'factura' => [
@@ -930,7 +929,7 @@ class PluginIserviceHmarfa
                 'file_prefix' => 'A',
             ],
         ];
-        if (!in_array($ticket->customfields->fields['export_type'], array_keys($export_types))) {
+        if (!in_array($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'], array_keys($export_types))) {
             Html::displayErrorAndDie(__('Ticket has an invalid export type', 'iservice'));
         }
 
@@ -977,17 +976,17 @@ class PluginIserviceHmarfa
             }
         }
 
-        /**
- * Right side *
-*/
+        /*
+        * Right side *
+        */
         $right_side_header = new PluginIserviceHtml_table_row(
             '', [
                 new PluginIserviceHtml_table_cell(__('Partner information', 'iservice'), '', '', 7, 1, 'th')
             ]
         );
 
-        // Partner email
-        $ticket_partner_email     = IserviceToolBox::getInputVariable('ticket_partner_email', $partner->customfields->fields['part_email_f1']);
+        // Partner email.
+        $ticket_partner_email     = IserviceToolBox::getInputVariable('ticket_partner_email', $partner->customfields->fields['email_for_invoices_field']);
         $ticket_partner_email_row = new PluginIserviceHtml_table_row(
             '', [
                 new PluginIserviceHtml_table_cell('Email de trimis facturi: ', '', 'width: 20%'),
@@ -996,7 +995,7 @@ class PluginIserviceHmarfa
         );
         $partner_email_table      = new PluginIserviceHtml_table('tab_cadre_fixe', null, $ticket_partner_email_row);
 
-        // Partner info
+        // Partner info.
         $ticket_partner_sales_query = "
             SELECT
                     fr.nrfac AS Nr_Fact
@@ -1012,7 +1011,7 @@ class PluginIserviceHmarfa
             LEFT JOIN hmarfa_nommarfa n ON fr.codmat = n.cod
             WHERE NOT fr.tip IN ('AIMFS', 'TAIM')
                 AND NOT fr.codmat LIKE 'S%'
-                AND fa.codbenef = '{$partner->customfields->fields['cod_hmarfa']}'
+                AND fa.codbenef = '{$partner->customfields->fields['hmarfa_code_field']}'
             ORDER BY fa.datafac DESC, fr.nrfac DESC
             LIMIT 8
             ";
@@ -1048,7 +1047,7 @@ class PluginIserviceHmarfa
 
         $doc_date                = time();
         $safe_partner_name       = preg_replace('/[^a-zA-z0-9-]/', '-', $partner->fields["name"]);
-        $export_file_name_prefix = $export_types[$ticket->customfields->fields['export_type']]['file_prefix'];
+        $export_file_name_prefix = $export_types[$ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id']]['file_prefix'];
         $export_file_name_suffix = IserviceToolBox::getInputVariable('export_file_name_suffix');
 
         if ($restore) {
@@ -1128,8 +1127,8 @@ class PluginIserviceHmarfa
         $export_file_name_base        = "$export_file_name_prefix.$safe_partner_name";
         $export_file_name             = "$export_file_name_base.$safe_export_file_name_suffix.{$partner->getID()}.csv";
 
-        // S039-M
-        if ($ticket->customfields->fields['export_type'] === 'aviz' && !empty($printer)) {
+        // S039-M.
+        if ($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'] === 'aviz' && !empty($printer)) {
             $contract_item  = new Contract_Item();
             $contract_items = $contract_item->find("itemtype = 'Printer' and items_id = " . $printer->getId());
             $contract       = new Contract();
@@ -1142,52 +1141,52 @@ class PluginIserviceHmarfa
             }
 
             if (!$contract->isNewItem()) {
-                $export_data .= $export_types[$ticket->customfields->fields['export_type']]['doc_tip'] . ',';
+                $export_data .= $export_types[$ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id']]['doc_tip'] . ',';
                 $export_data .= $ticket->getID() . '-' . Dropdown::getDropdownName('glpi_users', $ticket->fields['_users_id_assign']) . ',';
                 $export_data .= date("Y.m.d", $doc_date) . ',';
-                $export_data .= $partner->customfields->fields['cod_hmarfa'] . ',';
+                $export_data .= $partner->customfields->fields['hmarfa_code_field'] . ',';
                 $export_data .= 'S039-M,1,0,"';
                 $export_data .= $contract->fields['num'] . "\"\r\n";
             }
         }
 
-        // Consumables on ticket
+        // Consumables on ticket.
         $cartridge           = new Cartridge();
         $total_amount        = 0;
         $used_cartridges     = [];
         $consumables_columns = null;
         foreach ($ticket_consumables as $ticket_consumable) {
-            // Preparing consumable data
+            // Preparing consumable data.
             $ticket_consumable['Cod_Articol'] = $ticket_consumable['plugin_iservice_consumables_id'];
 
             $consumable = new PluginIserviceConsumable();
             $consumable->getFromDB($ticket_consumable['Cod_Articol']);
-            $consumable_description                                            = IserviceToolBox::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? (($ticket->customfields->fields['export_type'] == 'aviz') ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
+            $consumable_description                                            = IserviceToolBox::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? (($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'] == 'aviz') ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
             $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']] = $consumable_description;
             $ticket_consumable['Descriere']                                    = $consumable->fields['Denumire'] . "<br>" . $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, "consumable_description_$ticket_consumable[Cod_Articol]", $consumable_description, false, ['style' => 'height:2.5em;']);
             $ticket_consumable['Cant']                                         = number_format($ticket_consumable['amount'], 2, '.', '');
             $consumable_history                                                = null;
             $gain                   = null;
             $average_delivery_price = null;
-            // History
-            $consumable->getHistoryTable($partner->customfields->fields['cod_hmarfa'], $consumable_history, $gain, $average_delivery_price);
+            // History.
+            $consumable->getHistoryTable($partner->customfields->fields['hmarfa_code_field'], $consumable_history, $gain, $average_delivery_price);
             $ticket_consumable['Istoric_Vanzari'] = $consumable_history;
-            // Gain
+            // Gain.
             $consumable_gain                  = IserviceToolBox::getInputVariable("consumable_gain_$ticket_consumable[Cod_Articol]", empty($gain) ? $sales_average_percent : $gain);
             $ticket_consumable[__('Average')] = $consumable_gain;
-            // Stock price
+            // Stock price.
             $ticket_consumable['Pret_Stoc'] = number_format($consumable->fields['Pret'], 2, '.', '');
-            // Recommended price
+            // Recommended price.
             $processed_pret_stoc           = intval(str_replace([',', '.'], '', $ticket_consumable['Pret_Stoc']));
             $ticket_consumable['Pret_Rec'] = empty($processed_pret_stoc) ? $average_delivery_price : number_format($ticket_consumable['Pret_Stoc'] * $consumable_gain, 2, '.', '');
-            // Euro price
+            // Euro price.
             if ($ticket_consumable['euro_price']) {
                 $ticket_consumable['Pret_Euro'] = number_format($ticket_consumable['price'], 2, '.', '');
             } else {
                 $ticket_consumable['Pret_Euro'] = 0;
             }
 
-            // Agreed price
+            // Agreed price.
             if ($ticket_consumable['euro_price']) {
                 $agreed_price                  = number_format($ticket_consumable['price'] * $currency_rate, 2, '.', '');
                 $ticket_consumable['Pret_Agr'] = "<span style='font-weight:bold' title='$ticket_consumable[price] * $currency_rate'>$agreed_price</span>";
@@ -1195,7 +1194,7 @@ class PluginIserviceHmarfa
                 $ticket_consumable['Pret_Agr'] = $agreed_price = number_format($ticket_consumable['price'], 2, '.', '');
             }
 
-            // Final price
+            // Final price.
             $final_price                                                 = intval($agreed_price) == 0 ? $ticket_consumable['Pret_Rec'] : $agreed_price;
             $final_final_price                                           = number_format(IserviceToolBox::getInputVariable("final_price_$ticket_consumable[Cod_Articol]", isset($ticket_consumable_prices[$ticket_consumable['Cod_Articol']]) ? $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] : $final_price), 2, '.', '');
             $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] = $final_final_price;
@@ -1219,19 +1218,19 @@ class PluginIserviceHmarfa
 
             $total_amount += $final_final_price * $ticket_consumable['Cant'];
 
-            // preparing export data
-            $export_data .= $export_types[$ticket->customfields->fields['export_type']]['doc_tip'] . ',';
+            // Preparing export data.
+            $export_data .= $export_types[$ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id']]['doc_tip'] . ',';
             $export_data .= $ticket->getID() . '-' . Dropdown::getDropdownName('glpi_users', $ticket->fields['_users_id_assign']) . ',';
             $export_data .= date("Y.m.d", $doc_date) . ',';
-            $export_data .= $partner->customfields->fields['cod_hmarfa'] . ',';
+            $export_data .= $partner->customfields->fields['hmarfa_code_field'] . ',';
             $export_data .= $ticket_consumable['Cod_Articol'] . ',';
             $export_data .= number_format($ticket_consumable['Cant'], 2, '.', '') . ',';
             $export_data .= number_format($final_final_price, 2, '.', '') . ',"';
             $export_data .= $consumable_description . "\"\r\n";
 
-            // Creating row to display
+            // Creating row to display.
             $consumables_rows[] = new PluginIserviceHtml_table_row('', $ticket_consumable);
-            // Preparing table header
+            // Preparing table header.
             if (empty($consumables_columns)) {
                 $consumables_columns = array_keys($ticket_consumable);
             }
@@ -1274,11 +1273,11 @@ class PluginIserviceHmarfa
             }
 
             if ($finished !== null) {
-                $ticket_customfields_input['exported'] = $finished;
+                $ticket_customfields_input['exported_field'] = $finished;
             }
 
             if (count($ticket_customfields_input) > 1) {
-                $ticket_customfields = new PluginFieldsTicketcustomfield();
+                $ticket_customfields = new PluginFieldsTicketticketcustomfield();
                 $ticket_customfields->update($ticket_customfields_input);
                 if ($_SESSION["MESSAGE_AFTER_REDIRECT"]) {
                     Html::displayMessageAfterRedirect();
@@ -1289,13 +1288,13 @@ class PluginIserviceHmarfa
 
             $partner_customfields_input = [
                 $partner->customfields->getIndexName() => $partner->customfields->getID(),
-                'part_email_f1' => $ticket_partner_email
+                'email_for_invoices_field' => $ticket_partner_email
             ];
-            $partner_customfields       = new PluginFieldsSuppliercustomfield();
+            $partner_customfields       = new PluginFieldsSuppliersuppliercustomfield();
             $partner_customfields->update($partner_customfields_input);
         }
 
-        if (!$ticket->customfields->fields['deliveredfield']) {
+        if (!$ticket->customfields->fields['delivered_field']) {
             $acknowledge_disabled_reason = $import_disabled_reason = $add_disabled_reason = $wait_disabled_reason = $export_disabled_reason = 'Finalizați livrarea înainte de export!';
         }
 
@@ -1333,7 +1332,7 @@ class PluginIserviceHmarfa
 
         $consumables_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', $consumables_header, $consumables_rows, 'text-align:center;');
 
-        // Action buttons
+        // Action buttons.
         $action_buttons = " <a class='vsubmit' href='$CFG_GLPI[root_doc]/plugins/iservice/front/view.php?view=tickets' target='_blank'>" . __('Ticket list', 'iservice') . "</a>";
         if ($ticket->getOrderStatus() === 0) {
             $action_buttons .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -1399,13 +1398,13 @@ class PluginIserviceHmarfa
             ]
         );
 
-        /**
- * Left side *
-*/
-        // Invoice info
+        /*
+        * Left side *
+        */
+        // Invoice info.
         $invoice_info_header = new PluginIserviceHtml_table_row('', new PluginIserviceHtml_table_cell(__('Invoice information', 'iservice'), '', '', 2, 1, 'th'));
 
-        // Currency rate
+        // Currency rate.
         $invoice_currency_rate = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'currency_rate', $currency_rate, false, ['style' => 'width: 4em;']);
         if ($currency_error === null) {
             $invoice_currency_rate .= "&nbsp;&nbsp;<input type='button' name='refresh' class='submit' value='BNR: $official_currency->EuroCaNumar' onClick='document.getElementsByName(\"currency_rate\")[0].value=\"$official_currency->EuroCaNumar\";'>";
@@ -1417,7 +1416,7 @@ class PluginIserviceHmarfa
 
         $invoice_info_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', $invoice_info_header, $invoice_info_rows);
 
-        // Ticket info
+        // Ticket info.
         ob_start();
         $ticket->showForm($id, ['mode' => PluginIserviceTicket::MODE_HMARFAEXPORT, 'form' => false]);
         $ticket_info_table = ob_get_contents();
@@ -1478,7 +1477,6 @@ class PluginIserviceHmarfa
                 echo "  months[years.indexOf('$year')].push('$month');\n";
                 echo "  backup_data[years.indexOf('$year')].push([]);\n";
                 foreach ($backupData[$year][$month] as $name) {
-                    // echo "debugger;";
                     echo "  backup_data[years.indexOf('$year')][months[years.indexOf('$year')].indexOf('$month')].push('$name');\n";
                 }
             }
@@ -1590,7 +1588,7 @@ class PluginIserviceHmarfa
         }
     }
 
-    /**
+    /*
      * @return int|null Return the time when hMarfaImport should run next
      *                  null if hMarfaImport was never run
      *                  empty string if hMarfaImport should have run more than 60 seconds ago
@@ -1598,7 +1596,7 @@ class PluginIserviceHmarfa
      */
     protected static function getNextImportTime()
     {
-        $cronTasks = IserviceToolBox::getQueryResult("select * from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
+        $cronTasks = PluginIserviceDB::getQueryResult("select * from glpi_crontasks where itemtype='PluginIserviceHMarfaImporter' and name='hMarfaImport'");
         $cronTask  = array_shift($cronTasks);
 
         if (empty($cronTask['lastrun'])) {

@@ -8,15 +8,15 @@ return [
           , count(cid) cartridge_count
           , group_concat('<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[id]=', cid, '\"  target=\"_blank\">', cid, '</a>' separator ', ') cartridge_ids
         from (
-          select c.id cid, c.FK_enterprise sid, count(t1.pid) printer_count
-          from glpi_cartridges c
+          select c.id cid, c.suppliers_id_field sid, count(t1.pid) printer_count
+          from glpi_plugin_iservice_cartridges c
           left join (
             select c.id cid, p.id pid, cl.id cartridge_location, cl.locations_id cartridge_location_parent, p.locations_id printer_location, pl.locations_id printer_location_parent
-            from glpi_cartridges c
-            left join glpi_locations cl on cl.id = c.FK_location
+            from glpi_plugin_iservice_cartridges c
+            left join glpi_locations cl on cl.id = c.locations_id_field
             join glpi_cartridgeitems_printermodels cp on cp.cartridgeitems_id = c.cartridgeitems_id
             join glpi_printers p on p.printermodels_id = cp.printermodels_id and p.is_deleted = 0
-            join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id = c.FK_enterprise
+            join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id = c.suppliers_id_field
             left join glpi_locations pl on pl.id = p.locations_id
             where coalesce(pl.locations_id, 0) = coalesce(cl.locations_id, 0)
           ) t1 on t1.cid = c.id

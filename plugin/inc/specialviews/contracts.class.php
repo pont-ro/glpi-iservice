@@ -1,7 +1,12 @@
 <?php
 
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+
 // Imported from iService2, needs refactoring. Original file: "Contracts.php".
-class PluginIserviceView_Contracts extends PluginIserviceView
+class Contracts extends View
 {
 
     static function getDocumentCountDisplay($row_data)
@@ -20,7 +25,7 @@ class PluginIserviceView_Contracts extends PluginIserviceView
         return "<span class='has-bootstrap-tooltip clickable' title='$title' data-new-title='Click pentru a vede Documentele' data-placement='right'>$row_data[document_count]</a>";
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         return [
@@ -32,20 +37,19 @@ class PluginIserviceView_Contracts extends PluginIserviceView
                             , c.name contract_name
                             , ct.name contract_type
                             , c.num contract_number
-                            , ccf.tarif_lunar1 contract_monthly_tarif
-                            , ccf.curs contract_rate
-                            , ccf.cop_bl_inclus contract_included_bk
-                            , ccf.cop_col_inclus contract_included_cl
-                            , ccf.tarif_cop_bl contract_tarif_bk
-                            , ccf.tarif_cop_col1 contract_tarif_cl
-                            , ccf.divizor_pu contract_divider_pu
+                            , c.monthly_fee_field contract_monthly_tarif
+                            , c.currency_field contract_rate
+                            , c.included_copies_bk_field contract_included_bk
+                            , c.included_copies_col_field contract_included_cl
+                            , c.copy_price_bk_field contract_tarif_bk
+                            , c.copy_price_col_field contract_tarif_cl
+                            , c.copy_price_divider_field contract_divider_pu
                             , COUNT(DISTINCT ci.items_id) item_count
                             , GROUP_CONCAT(CONCAT(p.id, ' - ', p.name) SEPARATOR '\n') items
                             , COUNT(DISTINCT di.items_id) document_count
                             , GROUP_CONCAT(DISTINCT(CONCAT(d.id, '|', d.filepath, '|', d.name)) SEPARATOR ',') documents
-                        FROM glpi_contracts c
+                        FROM glpi_plugin_iservice_contracts c
                         LEFT JOIN glpi_contracttypes ct ON ct.id = c.contracttypes_id
-                        LEFT JOIN glpi_plugin_fields_contractcustomfields ccf ON ccf.items_id = c.id and ccf.itemtype = 'Contract'
                         LEFT JOIN glpi_contracts_items ci on ci.contracts_id = c.id and ci.itemtype = 'Printer'
                         LEFT JOIN glpi_plugin_iservice_printers p on p.id = ci.items_id
                         LEFT JOIN glpi_documents_items di on di.items_id = c.id and di.itemtype = 'Contract'

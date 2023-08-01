@@ -67,8 +67,8 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                 e.phonenumber enterprise_tel,
                 e.fax enterprise_fax,
                 e.comment enterprise_comment,
-                ecf.email_for_invoices_field enterprise_email_facturi,
-                ecf.hmarfa_code_field,
+                e.email_for_invoices_field enterprise_email_facturi,
+                e.hmarfa_code_field,
                 p.id printer_id,
                 p.otherserial,
                 p.name printer_name,
@@ -77,26 +77,25 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                 p.comment printer_comment,
                 CONCAT(COALESCE(CONCAT(u.realname, ' '), ''), COALESCE(u.firstname,'')) tech_name,
                 s.name state,
-                pcf.week_nr_field,
-                pcf.plan_observations_field,
-                pcf.invoice_date_field,
-                pcf.em_field,
+                p.week_nr_field,
+                p.plan_observations_field,
+                p.invoice_date_field,
+                p.em_field,
                 htf.numar_facturi,
                 htf.total_facturi,
                 putc.ticket_count as ticket_count_by_item,
-                lct.data_luc last_closed_ticket_close_date
-            FROM glpi_printers p
+                lct.effective_date_field last_closed_ticket_close_date
+            FROM glpi_plugin_iservice_printers p
             JOIN glpi_infocoms i on i.items_id = p.id and i.itemtype = 'Printer'
-            JOIN glpi_suppliers e on e.id = i.suppliers_id
-            LEFT JOIN glpi_plugin_fields_printerprintercustomfields pcf on pcf.items_id = p.id and pcf.itemtype = 'Printer'
-            LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields ecf on ecf.items_id = e.id and ecf.itemtype = 'Supplier'
-            LEFT JOIN hmarfa_total_facturi htf on htf.codbenef = ecf.hmarfa_code_field
+            JOIN glpi_plugin_iservice_suppliers e on e.id = i.suppliers_id
+            LEFT JOIN hmarfa_total_facturi htf on htf.codbenef = e.hmarfa_code_field
             LEFT JOIN glpi_users u on u.ID = p.users_id_tech
             LEFT JOIN glpi_states s on s.ID = p.states_id
             LEFT JOIN glpi_plugin_iservice_printer_unclosed_ticket_counts putc ON putc.printers_id = p.id
             LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plt ON plt.printers_id = p.id
-            LEFT JOIN glpi_tickets lct on lct.id = plt.tickets_id
-            WHERE pcf.week_nr_field > 0 and p.is_deleted = 0 $tech_filter
+            LEFT JOIN glpi_plugin_iservice_tickets lct on lct.id = plt.tickets_id
+            LEFT JOIN glpi_plugin_fields_ticketticketcustomfields cft on lct.items_id = lct.id and lct.itemtype = 'Ticket'
+            WHERE p.week_nr_field > 0 and p.is_deleted = 0 $tech_filter
             GROUP BY p.id
             ORDER BY e.name
             ";
@@ -183,7 +182,6 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
             document.getElementById('year').value = new Date().getFullYear() - 1;
             return true;
         }
-        return false;
     }
 </script>
 

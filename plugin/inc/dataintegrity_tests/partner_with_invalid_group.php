@@ -2,10 +2,9 @@
 global $CFG_GLPI;
 return [
     'query' => "
-            select s.id, s.name, scf.groupfield
-            from glpi_suppliers s
-            left join glpi_plugin_fields_suppliercustomfields scf on scf.items_id = s.id and scf.itemtype = 'Supplier'
-            where s.is_deleted = 0 and coalesce(scf.groupfield, '') not like concat('%', scf.items_id, '%');
+            select s.id, s.name, s.group_field
+            from glpi_plugin_iservice_suppliers s
+            where s.is_deleted = 0 and coalesce(s.group_field, '') not like concat('%', s.items_id, '%');
             ",
     'test' => [
         'alert' => true,
@@ -15,7 +14,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} partners with invalid group',
-            'iteration_text' => "Partener <a href='$CFG_GLPI[root_doc]/front/supplier.form.php?id=[id]' target='_blank'>[name]</a> has group \"[groupfield]\", which does not include [id]",
+            'iteration_text' => "Partener <a href='$CFG_GLPI[root_doc]/front/supplier.form.php?id=[id]' target='_blank'>[name]</a> has group \"[group_field]\", which does not include [id]",
         ],
     ],
 ];

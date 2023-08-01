@@ -14,15 +14,22 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
  * */
 class PluginIserviceCartridgeItem extends CartridgeItem
 {
+    use PluginIserviceItem;
 
-    public function getSupportedTypes()
+    /*
+     *
+     * @var PluginFieldsCartridgeitemcartridgeitemcustomfield
+     */
+    public $customfields = null;
+
+    public function getSupportedTypes(): array
     {
-        $customfields = new PluginFieldsCartridgeitemcartridgecustomfield();
-        if (!$customfields->getFromDBByItemsId($this->getID())) {
+        $customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
+        if (!PluginIserviceDB::populateByItemsId($customfields, $this->getID())) {
             return [''];
         }
 
-        $supported_types = explode(',', $customfields->fields['supportedtypesfield']);
+        $supported_types = explode(',', $customfields->fields['supported_types_field']);
         array_walk($supported_types, 'trim');
         return $supported_types;
     }
@@ -32,26 +39,26 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return $this->getFromDBByCrit(["ref = '$ref'"]);
     }
 
-    static function getSupportedTypesByRef($ref)
+    public static function getSupportedTypesByRef($ref): array
     {
         $cartridgeitem = new self();
         $cartridgeitem->getFromDBByRef($ref);
         return $cartridgeitem->getSupportedTypes();
     }
 
-    static function getSupportedTypesById($id)
+    public static function getSupportedTypesById($id): array
     {
         $cartridgeitem = new self();
         $cartridgeitem->getFromDB($id);
         return $cartridgeitem->getSupportedTypes();
     }
 
-    static function getTable($classname = null)
+    public static function getTable($classname = null): string
     {
         return CartridgeItem::getTable($classname);
     }
 
-    static function dropdownChangeableForTicket($ticket, array $dropdown_options = [])
+    public static function dropdownChangeableForTicket($ticket, array $dropdown_options = []): bool|int
     {
         $changeable_cartridges = self::getChangeablesForTicket($ticket, $dropdown_options);
         if (empty($changeable_cartridges)) {
@@ -112,18 +119,18 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         $drawtable = !isset($dropdown_options['draw_table']) || $dropdown_options['draw_table'];
         echo $drawtable ? "<table style='table-layout:fixed;width:100%;'><tr><td>" : "";
         Dropdown::showFromArray($dropdown_options['name'], $options, $dropdown_options);
-        /**
+        /*
           echo "</td><td style='width:7em;'>";
           echo "<label for='_other_printer'>", __('Other printer', 'iservice'), "</label> <input type='checkbox' id='_other_printer' name='_other_printer' value='1'>";
           echo "</td><td style='width:7em;'>";
           echo "<label for='_other_location'>", __('Other location', 'iservice'), "</label> <input type='checkbox' id='_other_location' name='_other_location' value='1'>";
-          /*
-*/
+          /**/
+
         echo $drawtable ? "</td></tr></table>" : "";
         return count($options);
     }
 
-    static function tableChangeablesForTicket($ticket)
+    public static function tableChangeablesForTicket($ticket): string|bool
     {
         $changeable_cartridges = self::getChangeablesForTicket($ticket);
         if (empty($changeable_cartridges)) {
@@ -135,11 +142,11 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         foreach ($changeable_cartridges as $changeable_cartridge) {
             $cartridge_at_printer_location = $ticket->fields['locations_id'] == $changeable_cartridge['FK_location'];
             $location_condition            = empty($changeable_cartridge['location_parent_id']) ? "(l.locations_id is null or l.locations_id = 0)" : "l.locations_id = $changeable_cartridge[location_parent_id]";
-            $compatible_printers           = IserviceToolBox::getQueryResult(
+            $compatible_printers           = PluginIserviceDB::getQueryResult(
                 "
                 select count(1) cnt, l.id location_id
                 from glpi_printers p
-                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id = $changeable_cartridge[FK_enterprise]
+                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id = $changeable_cartridge[suppliers_id_field]
                 join glpi_cartridgeitems_printermodels cp on cp.printermodels_id = p.printermodels_id and cp.cartridgeitems_id = $changeable_cartridge[id]
                 left join glpi_locations l on l.id = p.locations_id
                 where p.is_deleted = 0 and p.id != {$ticket->fields['items_id']['Printer'][0]} and $location_condition
@@ -202,7 +209,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return $table;
     }
 
-    static function getChangeablesForTicket($ticket, array $options = [])
+    public static function getChangeablesForTicket($ticket, array $options = []): array|bool
     {
         if (!$ticket instanceof PluginIserviceTicket) {
             $ticket_id = (($ticket instanceof Ticket) && $ticket->getID() > 0) ? $ticket->getID() : intval($ticket);
@@ -227,7 +234,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 $mercurycodes = array_merge($mercurycodes, explode(',', $used_data['mercurycodes']));
             }
 
-            $used_condition = "AND ci.id NOT IN (SELECT items_id FROM glpi_plugin_fields_cartridgeitemcartridgecustomfields where mercurycodefield IN (" . implode(',', $mercurycodes) . "))";
+            $used_condition = "AND ci.id NOT IN (SELECT items_id FROM glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields where mercury_code_field IN (" . implode(',', $mercurycodes) . "))";
         } else {
             $used_condition = "";
         }
@@ -251,29 +258,29 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         }
 
         if ($supplier_id > 0) {
-            $supplier_condition = "FIND_IN_SET (c.FK_enterprise, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = $supplier_id))";
+            $supplier_condition = "FIND_IN_SET (c.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id))";
         } else {
-            $supplier_condition = 'c.FK_enterprise = 0';
+            $supplier_condition = 'c.suppliers_id_field = 0';
         }
 
         $query = "SELECT CONCAT(COUNT(*), ': ', GROUP_CONCAT(CONCAT('[', c.id, '] ', c.date_in) SEPARATOR ', ')) cpt
                        , ci.id
                        , ci.name
                        , ci.ref
-                       , c.FK_location
+                       , c.locations_id_field
                        , GROUP_CONCAT(c.id SEPARATOR ', ') cartridge_ids
                        , l.name location_name
                        , l.completename location_completename
                        , l.locations_id location_parent_id
                        , c.printers_id
-                       , c.FK_enterprise
+                       , c.suppliers_id_field
                   FROM glpi_cartridgeitems ci
-                  LEFT JOIN glpi_cartridges c ON c.cartridgeitems_id = ci.id $used_condition
-                  LEFT JOIN glpi_locations l ON l.id = c.FK_location
+                  LEFT JOIN glpi_plugin_iservice_cartridges c ON c.cartridgeitems_id = ci.id $used_condition
+                  LEFT JOIN glpi_locations l ON l.id = c.locations_id_field
                   JOIN glpi_plugin_iservice_consumables_tickets ct ON ct.amount > 0 AND ct.new_cartridge_ids LIKE CONCAT('%|', c.id, '|%')
                   WHERE $supplier_condition $location_condition $model_condition $date_condition
                     AND c.date_use IS null AND c.date_out IS null AND c.printers_id = 0
-                  GROUP BY c.cartridgeitems_id, COALESCE(c.FK_location, 0), c.printers_id
+                  GROUP BY c.cartridgeitems_id, COALESCE(c.locations_id_field, 0), c.printers_id
                   ";
 
         if (empty($options['order_by'])) {
@@ -282,10 +289,10 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $query .= "ORDER BY $options[order_by]";
         }
 
-        return IserviceToolBox::getQueryResult($query, '_');
+        return PluginIserviceDB::getQueryResult($query, '_');
     }
 
-    static function dropdownForTicket($ticket, array $dropdown_options = [])
+    public static function dropdownForTicket($ticket, array $dropdown_options = []): bool|int
     {
         $compatible_cartridges = self::getCompatiblesForTicket($ticket);
         if (empty($compatible_cartridges)) {
@@ -301,7 +308,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return Dropdown::showFromArray($dropdown_options['name'], $options, $dropdown_options) ? count($options) : false;
     }
 
-    static function getCompatiblesForTicket($ticket, array $dropdown_options = [])
+    public static function getCompatiblesForTicket($ticket, array $dropdown_options = []): bool|array
     {
         if (!$ticket instanceof PluginIserviceTicket) {
             $ticket_id = ($ticket instanceof Ticket) ? $ticket->getID() : intval($ticket);
@@ -326,7 +333,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         }
     }
 
-    static function getCompatiblesForPrinterId($printer_id, $dropdown_options = [])
+    public static function getCompatiblesForPrinterId($printer_id, $dropdown_options = []): bool|array
     {
         $printer = new Printer();
         if (!$printer->getFromDB($printer_id)) {
@@ -345,7 +352,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                       , ci.ref
                   FROM glpi_cartridgeitems ci
                   INNER JOIN glpi_cartridgeitems_printermodels cip ON cip.cartridgeitems_id = ci.id
-                  LEFT JOIN glpi_cartridges c ON c.cartridgeitems_id = ci.id AND c.FK_enterprise IS NULL $used_condition
+                  LEFT JOIN glpi_plugin_iservice_cartridges c ON c.cartridgeitems_id = ci.id AND c.suppliers_id_field IS NULL $used_condition
                   WHERE ci.is_deleted = 0 AND cip.printermodels_id = '" . $printer->fields["printermodels_id"] . "'
                   GROUP BY ci.id
                   ";
@@ -356,10 +363,10 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $query .= "ORDER BY $dropdown_options[order_by]";
         }
 
-        return IserviceToolBox::getQueryResult($query);
+        return PluginIserviceDB::getQueryResult($query);
     }
 
-    static function getCompatiblesForSupplierId($supplier_id, array $dropdown_options = [])
+    public static function getCompatiblesForSupplierId($supplier_id, array $dropdown_options = []): bool|array
     {
         if (isset($dropdown_options['used']) && !empty($dropdown_options['used']) && is_array($dropdown_options['used'])) {
             $used_condition = " AND c.id NOT in (" . implode(',', $dropdown_options['used']) . ")";
@@ -369,7 +376,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
         $query = "SELECT COUNT(*) AS cpt, ci.ref AS ref, ci.name AS name, ci.id
                   FROM glpi_cartridgeitems ci
-                  LEFT JOIN glpi_cartridges c ON c.cartridgeitems_id = ci.id AND c.FK_enterprise IS NULL $used_condition
+                  LEFT JOIN glpi_plugin_iservice_cartridges c ON c.cartridgeitems_id = ci.id AND c.suppliers_id_field IS NULL $used_condition
                   INNER JOIN glpi_cartridgeitems_printermodels cip ON cip.cartridgeitems_id = ci.id
                   INNER JOIN glpi_printers p ON p.printermodels_id = cip.printermodels_id
                   INNER JOIN glpi_infocoms ic ON ic.items_id = p.id AND itemtype = 'Printer'
@@ -384,10 +391,10 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $query .= "ORDER BY $dropdown_options[order_by]";
         }
 
-        return IserviceToolBox::getQueryResult($query);
+        return PluginIserviceDB::getQueryResult($query);
     }
 
-    static function getForPrinterAtSupplier($printer_id, $supplier_id)
+    public static function getForPrinterAtSupplier($printer_id, $supplier_id): array|bool
     {
         if (empty($printer_id) || empty($supplier_id)) {
             return [];
@@ -398,22 +405,22 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                     , ci.name
                     , ci.ref
                     , c.date_use
-                    , MAX(c.pages_use) pages_use
-                    , MAX(c.pages_color_use) pages_color_use
-                  FROM glpi_cartridges c
+                    , MAX(c.pages_use_field) pages_use
+                    , MAX(c.pages_color_use_field) pages_color_use
+                  FROM glpi_plugin_iservice_cartridges c
                   INNER JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
                   INNER JOIN glpi_cartridgeitems_printermodels cipm ON cipm.cartridgeitems_id = ci.id
                   INNER JOIN glpi_printers p ON p.printermodels_id = cipm.printermodels_id AND p.id = $printer_id
                   WHERE date_out IS NULL
-                    AND FIND_IN_SET (c.FK_enterprise, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = $supplier_id))
+                    AND FIND_IN_SET (c.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id))
                     AND (c.printers_id = $printer_id OR c.printers_id < 1 OR c.printers_id IS NULL)
                   GROUP BY c.date_use, c.cartridgeitems_id
                   ORDER BY ref";
 
-        return IserviceToolBox::getQueryResult($query, '_');
+        return PluginIserviceDB::getQueryResult($query, '_');
     }
 
-    static function searchChangeableById($needle, $haystack)
+    public static function searchChangeableById($needle, $haystack): bool|int
     {
         if (false !== ($index = array_search($needle, $haystack))) {
             return $index;
@@ -438,7 +445,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return false;
     }
 
-    static function dropdownPrintersForCartridge($cartridge)
+    public static function dropdownPrintersForCartridge($cartridge): ?string
     {
         if (!($cartridge instanceof Cartridge)) {
             $cartridge_id = intval($cartridge);
@@ -463,7 +470,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             LEFT JOIN glpi_locations l ON l.id = p.locations_id
             LEFT JOIN glpi_cartridgeitems_printermodels cp ON cp.printermodels_id = p.printermodels_id
             LEFT JOIN glpi_infocoms ic ON ic.items_id = p.id AND ic.itemtype = 'Printer'
-            WHERE cp.cartridgeitems_id = {$cartridge->fields['cartridgeitems_id']} AND FIND_IN_SET (ic.suppliers_id, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = {$cartridge->fields['FK_enterprise']})) $location_condition";
+            WHERE cp.cartridgeitems_id = {$cartridge->fields['cartridgeitems_id']} AND FIND_IN_SET (ic.suppliers_id, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$cartridge->fields['FK_enterprise']})) $location_condition";
 
         return Dropdown::show(
             'PluginIservicePrinter', [
@@ -473,15 +480,31 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         );
     }
 
-    static function getIdsByMercuryCode($mercury_code)
+    public static function getIdsByMercuryCode($mercury_code): array
     {
         $cartridge_item_ids    = [];
-        $cartridge_customfield = new PluginFieldsCartridgeitemcartridgecustomfield();
-        foreach ($cartridge_customfield->find("mercurycodefield = '$mercury_code'") as $ccf) {
+        $cartridge_customfield = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
+        foreach ($cartridge_customfield->find("mercury_code_field = '$mercury_code'") as $ccf) {
             $cartridge_item_ids[] = $ccf['items_id'];
         }
 
         return $cartridge_item_ids;
+    }
+
+    public function getFromDB($ID): bool
+    {
+        $this->customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
+        if (parent::getFromDB($ID)) {
+            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
+                return false;
+            }
+
+            // Further code possibility.
+            self::$item_cache[$ID] = $this;
+            return true;
+        }
+
+        return false;
     }
 
 }

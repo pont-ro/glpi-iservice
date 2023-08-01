@@ -5,15 +5,14 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-
 class PluginIserviceEmaintenance extends MailCollector {
 
     const DEFAULT_EMAIL = 'emaintenance@expertline.ro';
 
     const ACCEPTED_SENDERS = ['exlemservice@gmail.com', 'sendonly@rcm.ec1.srv.ygles.com'];
 
-    static function getTable($classname = null) {
+    public static function getTable($classname = null): string
+    {
         if (empty($classname)) {
             $classname = 'MailCollector';
         }
@@ -21,7 +20,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return parent::getTable($classname);
     }
 
-    static function getTypeName($nb = 0) {
+    public static function getTypeName($nb = 0): string
+    {
         return _n('E-maintenance', 'E-maintenance', $nb, 'iservice');
     }
 
@@ -32,7 +32,8 @@ class PluginIserviceEmaintenance extends MailCollector {
      *
      * @return -1 : done but not finish 1 : done with success
      * */
-    static function cronEm_Mailgate($task) {
+    public static function cronEm_Mailgate($task): int
+    {
 
         if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.em_mailgate'))) {
             $task->log("E-maintenance mailgate is disabled by configuration.\n");
@@ -56,23 +57,24 @@ class PluginIserviceEmaintenance extends MailCollector {
         $task->log("$message\n");
 
         if (empty($em->fetch_emails)) {
-            return 0; // Nothin to do
+            return 0; // Nothin to do.
         } elseif ($em->fetch_emails < $em->maxfetch_emails) {
-            return 1; // Done
+            return 1; // Done.
         }
 
-        return -1; // There are more messages to retrieve
+        return -1; // There are more messages to retrieve.
     }
 
-    static function getMailCollector($email = '') {
+    public static function getMailCollector($email = ''): array
+    {
         if (empty($email)) {
             $email = self::DEFAULT_EMAIL;
         }
 
-        return IserviceToolBox::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0];
+        return PluginIserviceDB::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0] ?? [];
     }
 
-    static function getCsvConfig($type = 'EM')
+    public static function getCsvConfig($type = 'EM'): array
     {
         return [
             'EM' => [
@@ -83,7 +85,7 @@ class PluginIserviceEmaintenance extends MailCollector {
                     'date_out' => 4,
                     'date_use' => 5,
                     'data_luc' => 6,
-                    'c102' => 8, // not sent any more, but we need this to check that the line contains enough data
+                    'c102' => 8, // Not sent any more, but we need this to check that the line contains enough data.
                     'c106' => 7, // * 106
                     'c109' => 8, // * 109
                 ],
@@ -116,12 +118,13 @@ class PluginIserviceEmaintenance extends MailCollector {
         ][$type];
     }
 
-    static function getDataFromCsvsForSpacelessSerial($spaceless_serial, $file_names = [])
+    public static function getDataFromCsvsForSpacelessSerial($spaceless_serial, $file_names = []): array|bool
     {
         return self::getDataFromCsvs($file_names, [$spaceless_serial])[$spaceless_serial] ?? false;
     }
 
-    static function getDataFromCsvs($file_names = [], $limit_serials = []) {
+    public static function getDataFromCsvs($file_names = [], $limit_serials = []): array
+    {
         if (empty($file_names)) {
             $file_names = self::getImportFilePaths();
         }
@@ -155,7 +158,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $data;
     }
 
-    static function getDataFromCsv($file_name, $type = 'EM', $limit_serials = []) {
+    public static function getDataFromCsv($file_name, $type = 'EM', $limit_serials = []): ?array
+    {
         $csv_config = self::getCsvConfig($type);
 
         if (!is_file($file_name) || false === ($handle = fopen($file_name, "r"))) {
@@ -346,10 +350,10 @@ class PluginIserviceEmaintenance extends MailCollector {
 
                 $result[$id]['partner_resolved_name'] = $supplier->fields['name'];
 
-                $printer_movements = IserviceToolBox::getQueryResult("
+                $printer_movements = PluginIserviceDB::getQueryResult("
                     select *
                     from glpi_plugin_iservice_movements m
-                    join glpi_plugin_fields_ticketcustomfields cft on cft.movement_id = m.id
+                    join glpi_plugin_fields_ticketticketcustomfields cft on cft.movement_id_field = m.id
                     where m.itemtype = 'Printer'
                       and m.items_id = {$printer->getID()}
                       and m.suppliers_id_old = {$supplier->getID()}
@@ -368,7 +372,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $result;
     }
 
-    static function getImportControl($button_caption, $import_file_path, $button_name = 'import', $input_name = 'import_file') {
+    public static function getImportControl($button_caption, $import_file_path, $button_name = 'import', $input_name = 'import_file'): string
+    {
         $real_import_file_path = self::getImportFilePath($import_file_path);
         $last_import_file_time = filemtime($real_import_file_path);
         return "
@@ -378,7 +383,8 @@ class PluginIserviceEmaintenance extends MailCollector {
                 </span>";
     }
 
-    static function getIwmImportControl($button_caption, $button_name = 'iwm_import', $input_name = 'iwm_import_file') {
+    public static function getIwmImportControl($button_caption, $button_name = 'iwm_import', $input_name = 'iwm_import_file'): string
+    {
         return "
                 <span style='margin-bottom:.2em;'>
                     <input type='file' name='$input_name' accept='.csv' style='border: 0px;'> 
@@ -386,19 +392,22 @@ class PluginIserviceEmaintenance extends MailCollector {
                 </span>";
     }
 
-    static function getAvitumImportControl($button_caption, $button_name = 'avitum_import') {
+    public static function getAvitumImportControl($button_caption, $button_name = 'avitum_import'): string
+    {
         return "
                 <span style='margin-bottom:.2em;'>
                     <input type='submit' class='submit' name='$button_name' value='$button_caption'>
                 </span>";
     }
 
-    static function getImportFilePath($import_file_path = '') {
+    public static function getImportFilePath($import_file_path = ''): ?string
+    {
         $import_file_paths = self::getImportFilePaths($import_file_path);
         return array_shift($import_file_paths);
     }
 
-    static function getImportFilePaths($import_file_path = '') {
+    public static function getImportFilePaths($import_file_path = ''): string|array
+    {
         if (is_file($import_file_path)) {
             return [$import_file_path];
         }
@@ -425,7 +434,8 @@ class PluginIserviceEmaintenance extends MailCollector {
     /**
      * @return \PluginIservicePrinter
      */
-    static function getPrinterFromEmailData($mail_data) {
+    public static function getPrinterFromEmailData($mail_data): ?PluginIservicePrinter
+    {
         $extended_data = self::getExtendedMailData($mail_data);
         if (!empty($extended_data['body_lines']['rds id'])) {
             $serial = $extended_data['body_lines']['rds id']['ending'];
@@ -446,7 +456,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         }
     }
 
-    static function getContentForTicket($mail_data, $html_format = true) {
+    public static function getContentForTicket($mail_data, $html_format = true): string
+    {
         $line_beginnings = [
             'alarm code' => 'first',
             'specified status' => 'first',
@@ -485,7 +496,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return implode($line_break, $result) . (empty($end_result) ? '' : (empty($result) ? '' : $line_break) . implode($line_break, $end_result));
     }
 
-    static function getExtendedMailData($mail_data) {
+    public static function getExtendedMailData($mail_data): array
+    {
         $mail_data['subject_parts'] = array_map('trim', explode('/', $mail_data['subject']));
         foreach (explode("\n", $mail_data['body']) as $line) {
             if (empty($mail_data['body_lines'])) {
@@ -521,7 +533,8 @@ class PluginIserviceEmaintenance extends MailCollector {
      *
      * @return if $display = false return messages result string
      * */
-    function collect($id, $display = 0) {
+    public function collect($id, $display = 0): ?string
+    {
         if (!$this->getFromDB($id)) {
             // TRANS: %s is the ID of the mailgate
             $msg = sprintf(__('Could not find mailgate %d'), $id);
@@ -537,7 +550,7 @@ class PluginIserviceEmaintenance extends MailCollector {
         $this->fetch_emails = 0;
 
         try {
-            // Connect to the Mail Box
+            // Connect to the Mail Box.
             $this->connect();
         } catch (Throwable $e) {
             $msg = __('Could not connect to mailgate server') . '<br/>' . $e->getMessage();
@@ -545,15 +558,15 @@ class PluginIserviceEmaintenance extends MailCollector {
         }
 
         $rejected = new NotImportedEmail();
-        // Clean from previous collect (from GUI, cron already truncate the table)
+        // Clean from previous collect (from GUI, cron already truncate the table).
         $rejected->deleteByCriteria(['mailcollectors_id' => $this->getID()]);
 
-        // Get Total Number of Unread Email in mail box
-        $count_messages = $this->getTotalMails(); // Total Mails in Inbox Return integer value
+        // Get Total Number of Unread Email in mail box.
+        $count_messages = $this->getTotalMails(); // Total Mails in Inbox Return integer value.
         $result         = ['error' => 0, 'refused' => 0, 'imported' => 0, 'auto_processed' => 0];
 
         do {
-            $this->storage->rewind();
+            $this->storage->rewind(); // TODO: confirm with hupu, storage is private, so we can't use it here.
             if (!$this->storage->valid()) {
                 break;
             }
@@ -588,7 +601,8 @@ class PluginIserviceEmaintenance extends MailCollector {
      * @param  \Laminas\Mail\Storage\Message $message Message.
      * @return string error, refused, imported or auto_processed
      */
-    protected function processEmail(string $uid, \Laminas\Mail\Storage\Message $message): string {
+    protected function processEmail(string $uid, \Laminas\Mail\Storage\Message $message): string
+    {
         $mail_data = $this->getMailData($message);
         $result    = null;
         try {
@@ -622,10 +636,10 @@ class PluginIserviceEmaintenance extends MailCollector {
             return empty($result) ? 'error' : $result;
         }
 
-        return 'error';
     }
 
-    protected function getMailData(\Laminas\Mail\Storage\Message $message) {
+    protected function getMailData(\Laminas\Mail\Storage\Message $message): array
+    {
         $headers = $this->getHeaders($message);
 
         $body = $this->getBody($message);
@@ -652,7 +666,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         ];
     }
 
-    protected function refuseMailData($mail_data) {
+    protected function refuseMailData($mail_data): string
+    {
         if (empty($mail_data['from']) || !in_array($mail_data['from'], self::ACCEPTED_SENDERS)) {
             return sprintf(__('Email rejected from %s', 'iservice'), $mail_data['from']);
         }
@@ -664,7 +679,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return false;
     }
 
-    protected function importMailData(&$mail_data) {
+    protected function importMailData(&$mail_data): int|bool
+    {
         $ememail                = new PluginIserviceEMEmail();
         $mail_data['suggested'] = '';
         if (null !== ($printer = self::getPrinterFromEmailData($mail_data))) {
@@ -763,7 +779,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return true;
     }
 
-    protected function autoAddTicketIfNoChangeableCartridge($ememail_id, $extended_data) {
+    protected function autoAddTicketIfNoChangeableCartridge($ememail_id, $extended_data): bool
+    {
         if (empty($ememail_id)) {
             return false;
         }
@@ -818,7 +835,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return true;
     }
 
-    protected function autoAddTicket($ememail_id, $extended_data, $override_data = []) {
+    protected function autoAddTicket($ememail_id, $extended_data, $override_data = []): PluginIserviceTicket|bool
+    {
         if (empty($ememail_id)) {
             return false;
         }
@@ -893,7 +911,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $ticket;
     }
 
-    protected function getCartridgeItemIndex($cartridge_item_ids, $from_object) {
+    protected function getCartridgeItemIndex($cartridge_item_ids, $from_object): ?string
+    {
         $cartridge_item_index = null;
         if (!is_array($cartridge_item_ids)) {
             $cartridge_item_ids = [$cartridge_item_ids];
@@ -919,7 +938,7 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $cartridge_item_index;
     }
 
-    protected static function getDateTimeFromString($string)
+    protected static function getDateTimeFromString($string): DateTime|bool
     {
         $formats = [
             'm-d-Y H:i A',
