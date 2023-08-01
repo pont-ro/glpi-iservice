@@ -229,6 +229,11 @@ return [
                 'type' => 'index',
                 'columns' => "(`partener`)",
             ],
+            [
+                'name' => 'data',
+                'type' => 'index',
+                'columns' => "(`data`)",
+            ],
         ],
     ],
     'hmarfa_lotm' => [
