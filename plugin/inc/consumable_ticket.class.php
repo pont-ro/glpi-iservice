@@ -43,7 +43,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
     public function prepareInputForAdd($input): array
     {
-        if (isset($input['locations_id']) && $input['locations_id'] < 0) {
+        if ($input['locations_id'] ?? -1 < 0) {
             $input['locations_id'] = 0;
         }
 

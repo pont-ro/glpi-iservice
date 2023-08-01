@@ -445,7 +445,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return false;
     }
 
-    public static function dropdownPrintersForCartridge($cartridge): ?string
+    public static function dropdownPrintersForCartridge($cartridge): string|bool|null
     {
         if (!($cartridge instanceof Cartridge)) {
             $cartridge_id = intval($cartridge);
