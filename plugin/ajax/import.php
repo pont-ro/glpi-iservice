@@ -268,9 +268,10 @@ if (empty($importConfig)) {
 }
 
 $foreignKeyData = getForeignKeyData($importConfig);
+$select         = $importConfig['select'] ?? '*';
 
 $oldItems = PluginIserviceDB::getQueryResult(
-    "SELECT * FROM $importConfig[oldTable]",
+    "SELECT $select FROM $importConfig[oldTable]",
     'id',
     new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
 );

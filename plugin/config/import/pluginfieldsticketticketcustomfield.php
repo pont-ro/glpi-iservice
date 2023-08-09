@@ -27,7 +27,8 @@ $fieldMap = json_decode(file_get_contents(PLUGIN_ISERVICE_DIR . '/install/custom
 
 return [
     'itemTypeClass' => PluginFieldsTicketticketcustomfield::class,
-    'oldTable'      => 'glpi_plugin_fields_ticketcustomfields',
+    'select'        => 'cft.*, t.data_luc, t.total2_black, t.total2_color',
+    'oldTable'      => "glpi_plugin_fields_ticketcustomfields cft LEFT JOIN glpi_tickets t ON t.id = cft.items_id AND cft.itemtype = 'Ticket'",
     'fieldMap'      => array_merge($additionalFields, $fieldMap),
     'forceValues'   => [
         'itemtype' => 'Ticket',
