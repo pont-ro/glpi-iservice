@@ -59,7 +59,7 @@ class PluginIserviceCartridge extends Cartridge
     public static function getEmptiablesByCartridge($cartridge, $limit = 0)
     {
         $mercury_code = ($cartridge instanceof Cartridge) ? $cartridge->fields['mercury_code_field'] : $cartridge['mercury_code_field'] ?? '';
-        $type_id      = ($cartridge instanceof Cartridge) ? $cartridge->fields['plugin_fields_typefielddropdowns_id'] : $cartridge['plugin_fields_typefielddropdowns_id'] ?? '';
+        $type_id      = ($cartridge instanceof Cartridge) ? $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'] : $cartridge['plugin_fields_cartridgeitemtypedropdowns_id'] ?? '';
         $printer_id   = ($cartridge instanceof Cartridge) ? $cartridge->fields['printers_id'] : $cartridge['printers_id'] ?? '';
         return self::getEmptyablesByParams($mercury_code, $type_id, $printer_id, $limit = 0);
     }
@@ -71,7 +71,7 @@ class PluginIserviceCartridge extends Cartridge
         $safe_mercury_code = trim($mercury_code);
         return PluginIservicePrinter::getInstalledCartridges(
             $printer_id,
-            "AND c.plugin_fields_typefielddropdowns_id = $safe_type_id AND LOCATE(\"'$safe_mercury_code'\", cfc.compatible_mercury_codes_field) > 0 $query_limit"
+            "AND c.plugin_fields_cartridgeitemtypedropdowns_id = $safe_type_id AND LOCATE(\"'$safe_mercury_code'\", cfc.compatible_mercury_codes_field) > 0 $query_limit"
         );
     }
 

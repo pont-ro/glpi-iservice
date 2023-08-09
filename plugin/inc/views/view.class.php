@@ -81,7 +81,7 @@ class View extends \CommonGLPI
         'style' => [],
         'show_filter_buttons' => true,
         'filter_buttons_align' => 'left',
-        'show_limit' => true,
+        'show_limit' => true, // TODO get from config
         'show_export' => false,
         'row_class' => '',
         'insert_empty_rows' => false,
@@ -1104,7 +1104,7 @@ class View extends \CommonGLPI
 
         $data = [];
         if ($this->instant_display || IserviceToolBox::getInputVariable('filtering')) {
-            $this->query_count = $this->getQueryCount();
+            $this->query_count = $this->show_limit ? $this->getQueryCount() : '';
             $this->adjustQueryLimit();
 
             global $DB;

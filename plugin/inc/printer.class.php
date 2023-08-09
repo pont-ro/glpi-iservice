@@ -60,7 +60,7 @@ class PluginIservicePrinter extends Printer
     {
         if ($this->has_cartridge_management === null) {
             $infocom              = new Infocom();
-            $supplier_customfield = new PluginFieldsSuppliercustomfield();
+            $supplier_customfield = new PluginFieldsSuppliersuppliercustomfield();
             if ($this->isNewItem() || !$infocom->getFromDBforDevice('Printer', $this->getID()) || !$supplier_customfield->getFromDBByItemsId($infocom->fields['suppliers_id'])) {
                 return false;
             }
@@ -423,7 +423,7 @@ class PluginIservicePrinter extends Printer
      *
      * @param  Printer $printer
      * @param  Supplier $supplier
-     * @param  PluginFieldsSuppliercustomfield $supplier_customfields
+     * @param  PluginFieldsSuppliersuppliercustomfield $supplier_customfields
      * @param  boolean $readonly
      *
      * @return string
@@ -771,10 +771,10 @@ class PluginIservicePrinter extends Printer
     {
         return PluginIserviceDB::getQueryResult(
             "
-                select c.*, ci.mercury_code_field mercury_code, ci.compatible_mercury_codes_field compatible_mercury_codes, ci.atc_field atc, ci.name, c.plugin_fields_typefielddropdowns_id type_id, tfd.completename type_name
+                select c.*, ci.mercury_code_field mercury_code, ci.compatible_mercury_codes_field compatible_mercury_codes, ci.atc_field atc, ci.name, c.plugin_fields_cartridgeitemtypedropdowns_id type_id, tfd.completename type_name
                 from glpi_cartridges c
                 join glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
-                left join glpi_plugin_fields_typefielddropdowns tfd on tfd.id = c.plugin_fields_typefielddropdowns_id
+                left join glpi_plugin_fields_cartridgeitemtypedropdowns tfd on tfd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
                 where printers_id = $printer_id AND NOT date_use IS null AND date_out IS null $additional_condition
                 "
         );

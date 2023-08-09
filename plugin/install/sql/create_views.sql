@@ -27,7 +27,6 @@ select
     `p`.`is_deleted` as `is_deleted`,
     `p`.`init_pages_counter` as `init_pages_counter`,
     `p`.`last_pages_counter` as `last_pages_counter`,
-#     `p`.`initial_color_pages` as `initial_color_pages`, todo: confirm this with hupu
     `p`.`users_id` as `users_id`,
     `p`.`groups_id` as `groups_id`,
     `p`.`states_id` as `states_id`,
@@ -81,20 +80,11 @@ select
     c.id as id,
     c.entities_id as entities_id,
     c.cartridgeitems_id as cartridgeitems_id,
-    c.plugin_fields_typefielddropdowns_id as plugin_fields_typefielddropdowns_id,
     c.printers_id as printers_id,
-    c.fk_enterprise as fk_enterprise,
-    c.fk_location as fk_location,
-    c.fk_state as fk_state,
     c.date_in as date_in,
     c.date_use as date_use,
-    c.tickets_id_use as tickets_id_use,
     c.date_out as date_out,
-    c.tickets_id_out as tickets_id_out,
     c.pages as pages,
-    c.pages_color_use as pages_color_use,
-    c.printed_pages as printed_pages,
-    c.printed_pages_color as printed_pages_color,
     c.date_mod as date_mod,
     c.date_creation as date_creation,
     cfc.id as cfid,
@@ -104,7 +94,9 @@ select
     cfc.pages_color_field as pages_color_field,
     cfc.pages_use_field as pages_use_field,
     cfc.pages_color_use_field as pages_color_use_field,
-    cfc.printed_pages_field as printed_pages_field
+    cfc.printed_pages_field as printed_pages_field,
+    cfc.suppliers_id_field as suppliers_id_field,
+    cfc.locations_id_field as locations_id_field
 from glpi_cartridges c
      left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge';
 

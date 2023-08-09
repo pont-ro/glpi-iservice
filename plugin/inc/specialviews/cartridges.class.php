@@ -203,7 +203,7 @@ class Cartridges extends View
             join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
             join glpi_plugin_iservice_cartridges_tickets ct on ct.cartridges_id = c.id
             where cfci.mercury_code_field in ($row_data[compatible_mercury_codes])
-              and c.plugin_fields_typefielddropdowns_id = $row_data[type_id]
+              and c.plugin_fields_cartridgeitemtypedropdowns_id = $row_data[type_id]
               and ct.tickets_id = $row_data[saved_out_ticket_id]
             "
         );
@@ -305,7 +305,7 @@ class Cartridges extends View
                         FROM glpi_plugin_iservice_cartridges c
                         INNER JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
                         $printer_model_join
-                        LEFT JOIN glpi_plugin_fields_typefielddropdowns ctd ON ctd.id = c.plugin_fields_typefielddropdowns_id
+                        LEFT JOIN glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
                         LEFT JOIN glpi_suppliers s ON s.id = c.suppliers_id_field
                         LEFT JOIN glpi_locations l ON l.id = c.locations_id_field
                         LEFT JOIN glpi_locations ll on ll.id = l.locations_id

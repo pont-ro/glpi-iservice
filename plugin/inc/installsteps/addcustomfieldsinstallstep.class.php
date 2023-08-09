@@ -10,7 +10,7 @@ use Session;
 
 class AddCustomFieldsInstallStep
 {
-    const CLEANUP_ON_UNINSTALL = true;
+    const CLEANUP_ON_UNINSTALL = false;
 
     const CONTAINERS = [
         [

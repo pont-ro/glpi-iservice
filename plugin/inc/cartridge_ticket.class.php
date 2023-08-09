@@ -233,7 +233,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         $c_result = $DB->query(
             "SELECT 
                       ct.id IDD
-                    , ct.plugin_fields_typefielddropdowns_id selected_type_id
+                    , ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type_id
                     , ct.cartridges_id_emptied
                     , c.id
                     , ci.id cid
@@ -413,7 +413,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             PluginIserviceCartridge::dropdownEmptyablesByCartridge(
                 [
                     'mercury_code_field' => $cartridge['mercurycode'],
-                    'plugin_fields_typefielddropdowns_id' => $cartridge['selected_type_id'],
+                    'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge['selected_type_id'],
                     'printers_id' => $cartridge['pid'],
                 ], [
                     'comments' => false,
@@ -737,9 +737,9 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             return "Could not find cartridge with id $cartridge_id to install it.";
         }
 
-        if (false !== ($index = CartridgeItem::getSameCartridgeIndex($installed_cartridges, $cartridgeitem_custom_field->fields['mercury_code_field'], $cartridge->fields['plugin_fields_typefielddropdowns_id']))) {
-            if ($installed_cartridges[$index]['type_id'] != $cartridge->fields['plugin_fields_typefielddropdowns_id']) {
-                return "Type of cartridge to install ({$cartridge->fields['plugin_fields_typefielddropdowns_id']}) differs from type of installed cartridge ({$installed_cartridges[$index]['type_id']}) for the same mercury code ({$installed_cartridges[$index]['mercury_code']})";
+        if (false !== ($index = CartridgeItem::getSameCartridgeIndex($installed_cartridges, $cartridgeitem_custom_field->fields['mercury_code_field'], $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']))) {
+            if ($installed_cartridges[$index]['type_id'] != $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']) {
+                return "Type of cartridge to install ({$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']}) differs from type of installed cartridge ({$installed_cartridges[$index]['type_id']}) for the same mercury code ({$installed_cartridges[$index]['mercury_code']})";
             }
 
             $old_cartridge                  = new Cartridge();
@@ -750,7 +750,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
 
             $printed_pages       = $old_cartridge->fields['printed_pages'] + $total2_black - $old_cartridge->fields['pages_use'];
             $printed_pages_color = $old_cartridge->fields['printed_pages_color'] + $total2_color - $old_cartridge->fields['pages_color_use'];
-            if (in_array($old_cartridge->fields['plugin_fields_typefielddropdowns_id'], [2, 3, 4])) {
+            if (in_array($old_cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'], [2, 3, 4])) {
                 $printed_pages_to_compare = $printed_pages_color;
             } else {
                 $printed_pages_to_compare = $printed_pages + $printed_pages_color;
@@ -789,7 +789,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 '_no_message' => true,
                 'printers_id' => $printer_id,
                 'FK_enterprise' => $supplier_id,
-                'FK_location' => empty($location_id) ? '0' : $location_id,
+                'locations_id_field' => empty($location_id) ? '0' : $location_id,
                 'date_use' => $install_time,
                 'tickets_id_use' => $ticket_id,
                 'date_out' => 'NULL',
@@ -822,7 +822,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             $old_cartridge,
             "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `glpi_cartridges`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
             join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = id and cfc.itemtype = 'Cartridge'
-            where cfc.tickets_id_out = $ticket_id and cfci.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1"
+            where cfc.tickets_id_out = $ticket_id and cfci.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
         )
         ) {
             $old_cartridge->update(
@@ -905,10 +905,10 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             [
                 $cartridge->getIndexName() => $cartridge->getID(),
                 '_no_message' => true,
-                'plugin_fields_typefielddropdowns_id' => $type_id,
+                'plugin_fields_cartridgeitemtypedropdowns_id' => $type_id,
                 'printers_id' => $printer_id,
                 'FK_enterprise' => $supplier_id,
-                'FK_location' => empty($location_id) ? '0' : $location_id,
+                'locations_id_field' => empty($location_id) ? '0' : $location_id,
                 'date_use' => $install_time,
                 'tickets_id_use' => $ticket_id,
                 'date_out' => 'NULL',
@@ -937,7 +937,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             if (!PluginIserviceDB::populateByQuery(
                 $old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `glpi_cartridges`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem' 
             join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = id and cfc.itemtype = 'Cartridge'
-            where cfc.tickets_id_out = $ticket_id and cfc.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1"
+            where cfc.tickets_id_out = $ticket_id and cfc.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
             )
             ) {
                 $uninstalled_multiplier = -1;

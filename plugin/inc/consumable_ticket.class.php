@@ -83,7 +83,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         $c_result = $DB->query(
             "SELECT 
                      ct.id IDD
-                   , ct.plugin_fields_typefielddropdowns_id
+                   , ct.plugin_fields_cartridgeitemtypedropdowns_id
                    , ct.locations_id
                    , ct.create_cartridge
                    , ct.amount
@@ -244,7 +244,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             echo "</td>";
             echo "<td class='center'>";
 
-            $in_cm = PluginIserviceDB::getQueryResult("SELECT cartridge_management FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = $suppliers_id");
+            $in_cm = PluginIserviceDB::getQueryResult("SELECT cartridge_management FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $suppliers_id");
             if (!$in_cm[0]['cartridge_management']) {
                 $force_cartridge_creation = 0;
                 $cartridge_creation_title = "Aparatul nu este in Management cartușe";
@@ -633,14 +633,14 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         $success = true;
         $amount  = empty($input['amount']) ? 0 : $input['amount'];
         if ($amount < 0 && $cartridge_management_enabled) {
-            $location_condition         = isset($input['locations_id']) ? "FK_location = $input[locations_id]" : "(FK_location < 1 OR FK_location is NULL)";
+            $location_condition         = isset($input['locations_id']) ? "locations_id_field = $input[locations_id]" : "(locations_id_field < 1 OR locations_id_field is NULL)";
             $query                      = "
                 SELECT c.* 
-                FROM glpi_cartridges c
+                FROM glpi_plugin_iservice_cartridges c
                 JOIN glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
                 WHERE ci.ref = '{$input['plugin_iservice_consumables_id']}'
                   AND (COALESCE(c.printers_id, 0) = 0 OR c.printers_id = -1) AND c.date_out IS NULL
-                  AND FIND_IN_SET (c.FK_enterprise, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))";
+                  AND FIND_IN_SET (c.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))";
             $query_with_location        = "$query AND $location_condition";
             $cartridges_to_delete       = PluginIserviceDB::getQueryResult("$query_with_location ORDER BY c.id LIMIT " . -$amount);
             $cartridges_to_delete_count = count($cartridges_to_delete);
@@ -648,7 +648,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 $cartridges_to_delete             = PluginIserviceDB::getQueryResult($query);
                 $cartridges_to_delete_by_location = [];
                 foreach ($cartridges_to_delete as $cartridge_to_delete) {
-                    $cartridges_to_delete_by_location[$cartridge_to_delete['FK_location']][] = $cartridge_to_delete;
+                    $cartridges_to_delete_by_location[$cartridge_to_delete['locations_id_field']][] = $cartridge_to_delete;
                 }
 
                 foreach ($cartridges_to_delete_by_location as $location_id => $cartridges_to_delete_by_location_group) {
@@ -704,15 +704,15 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         $amount            = empty($input['amount']) ? 0 : $input['amount'];
         $success           = true;
         if ($amount < 0 && $assigned_supplier->hasCartridgeManagement()) {
-            $location_condition   = empty($input['locations_id']) ? "(FK_location < 1 OR FK_location is NULL)" : "FK_location = $input[locations_id]";
+            $location_condition   = empty($input['locations_id']) ? "(locations_id_field < 1 OR locations_id_field is NULL)" : "locations_id_field = $input[locations_id]";
             $query                = "
                 SELECT c.id 
-                FROM glpi_cartridges c
+                FROM glpi_plugin_iservice_cartridges c
                 JOIN glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
                 WHERE ci.ref = '{$consumable_ticket->fields['plugin_iservice_consumables_id']}'
                   AND printers_id = 0
                   AND $location_condition
-                  AND FIND_IN_SET (FK_enterprise, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))
+                  AND FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))
                   AND date_out is null
                 ORDER BY c.date_in
                 LIMIT " . -$amount;

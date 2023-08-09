@@ -29,14 +29,14 @@ BEGIN
     FROM glpi_plugin_iservice_cartridges c1
     LEFT JOIN glpi_locations l1 ON l1.id = c1.locations_id_field
     JOIN glpi_infocoms ic on ic.items_id = c1.printers_id and ic.itemtype = 'Printer'
-    JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = ic.suppliers_id AND cfs.itemtype = 'Supplier'
+    JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON cfs.items_id = ic.suppliers_id AND cfs.itemtype = 'Supplier'
     JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci1 ON cfci1.items_id = c1.cartridgeitems_id AND cfci1.itemtype = 'CartridgeItem'
     JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci2 ON FIND_IN_SET(cfci2.mercury_code_field, replace(cfci1.compatible_mercury_codes_field, "'", "")) and cfci2.itemtype = 'CartridgeItem'
     JOIN glpi_plugin_iservice_cartridges c2 ON c2.cartridgeitems_id = cfci2.items_id
     LEFT JOIN glpi_locations l2 ON l2.id = c2.locations_id_field
     WHERE c1.id = cartridgeId
       AND c2.date_use IS NULL AND c2.date_out IS NULL
-      AND FIND_IN_SET (c2.suppliers_id_field, cfs.groupfield)
+      AND FIND_IN_SET (c2.suppliers_id_field, cfs.group_field)
       AND COALESCE(c2.printers_id, 0) = 0
       AND (cfci1.plugin_fields_cartridgeitemtypedropdowns_id = cfci2.plugin_fields_cartridgeitemtypedropdowns_id or COALESCE(cfci2.plugin_fields_cartridgeitemtypedropdowns_id, 0) = 0)
       AND (c2.locations_id_field = c1.locations_id_field OR COALESCE(l1.locations_id, 0) = COALESCE(l2.locations_id, 0))

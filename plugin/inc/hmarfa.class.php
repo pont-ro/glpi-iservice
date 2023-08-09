@@ -1214,7 +1214,7 @@ class PluginIserviceHmarfa
             unset($ticket_consumable['new_cartridge_ids']);
             unset($ticket_consumable['cartridgeitem_name']);
             unset($ticket_consumable['plugin_iservice_consumables_id']);
-            unset($ticket_consumable['plugin_fields_typefielddropdowns_id']);
+            unset($ticket_consumable['plugin_fields_cartridgeitemtypedropdowns_id']);
 
             $total_amount += $final_final_price * $ticket_consumable['Cant'];
 

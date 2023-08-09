@@ -15,6 +15,7 @@ use Ticket;
 
 class Tickets extends View
 {
+    public static $rightname = 'plugin_iservice_view_tickets';
 
     public static function getTicketStatusDisplay($row_data): string
     {
@@ -197,7 +198,7 @@ class Tickets extends View
         }
     }
 
-    public static function getSerialDisplay($row_data): string
+    public static function getSerialDisplay($row_data): ?string
     {
         if (!Session::haveRight('plugin_iservice_printer', READ)) {
             return $row_data['printer_serial'];
@@ -481,13 +482,13 @@ class Tickets extends View
             'columns' => [
                 'status' => [
                     'title' => 'Stare tichet',
-                    'format' => 'function:PluginIserviceView_Tickets::getTicketStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketStatusDisplay($row);',
                     'align' => 'center',
                 ],
                 'ticket_id' => [
                     'title' => 'Număr',
                     'align' => 'center',
-                    'format' => 'function:PluginIserviceView_Tickets::getTicketIdDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketIdDisplay($row);',
                 ],
                 'ticket_name' => [
                     'title' => 'Titlu',
@@ -514,7 +515,7 @@ class Tickets extends View
                 ],
                 'supplier_name' => [
                     'title' => 'Partener',
-                    'format' => 'function:PluginIserviceView_Tickets::getSupplierDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getSupplierDisplay($row);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
@@ -533,7 +534,7 @@ class Tickets extends View
                 ],
                 'printer_serial' => [
                     'title' => 'Număr serie',
-                    'format' => 'function:PluginIserviceView_Tickets::getSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getSerialDisplay($row);',
                 ],
                 'date_open' => [
                     'title' => 'Data deschiderii',
@@ -547,7 +548,7 @@ class Tickets extends View
                 ],
                 'tech_assign_name' => [
                     'title' => 'Tehnician alocat',
-                    'format' => 'function:PluginIserviceView_Tickets::getTicketAssignTechDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketAssignTechDisplay($row);',
                 ],
                 'ticket_category' => [
                     'title' => 'Categorie'

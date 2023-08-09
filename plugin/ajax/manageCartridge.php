@@ -73,7 +73,7 @@ case 'change_location':
     }
 
 case 'force_location':
-    $update_data = ['id' => $id, "FK_location" => empty($location_id) ? '0' : $location_id];
+    $update_data = ['id' => $id, "locations_id_field" => empty($location_id) ? '0' : $location_id];
     if (!empty($supplier_id)) {
         $update_data["FK_enterprise"] = $supplier_id;
     }
@@ -127,7 +127,7 @@ case 'use':
     }
     break;
 case 'force_type':
-    $update_data = ['id' => $id, "plugin_fields_typefielddropdowns_id" => $type_id];
+    $update_data = ['id' => $id, "plugin_fields_cartridgeitemtypedropdowns_id" => $type_id];
     if ($cartridge->update($update_data)) {
         die(IserviceToolBox::RESPONSE_OK);
     }

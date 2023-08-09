@@ -386,7 +386,7 @@ return [
             'create_cartridge' => 'tinyint(1) not null default \'0\'',
             'tickets_id' => 'int unsigned not null default \'0\'',
             'plugin_iservice_consumables_id' => 'varchar(15) not null default \'0\'',
-            'plugin_fields_typefielddropdowns_id' => 'int unsigned null default null',
+            'plugin_fields_cartridgeitemtypedropdowns_id' => 'int unsigned null default null',
             'amount' => 'decimal(11,2) not null default \'0.00\'',
             'price' => 'decimal(11,2) not null default \'0.00\'',
             'euro_price' => 'tinyint(1) not null default \'0\'',
@@ -429,9 +429,9 @@ return [
                 'columns' => "(`plugin_iservice_consumables_id`)",
             ],
             [
-                'name' => 'plugin_fields_typefielddropdowns_id',
+                'name' => 'plugin_fields_cartridgeitemtypedropdowns_id',
                 'type' => 'index',
-                'columns' => "(`plugin_fields_typefielddropdowns_id`)",
+                'columns' => "(`plugin_fields_cartridgeitemtypedropdowns_id`)",
             ],
         ],
     ],
@@ -441,7 +441,7 @@ return [
             'tickets_id' => 'int unsigned not null default \'0\'',
             'cartridges_id' => 'int unsigned not null default \'0\'',
             'locations_id' => 'int unsigned not null default \'0\'',
-            'plugin_fields_typefielddropdowns_id' => 'int unsigned not null default \'0\'',
+            'plugin_fields_cartridgeitemtypedropdowns_id' => 'int unsigned not null default \'0\'',
             'cartridges_id_emptied' => 'int unsigned null default null',
         ],
         'indexes' => [
@@ -471,9 +471,9 @@ return [
                 'columns' => "(`locations_id`)",
             ],
             [
-                'name' => 'plugin_fields_typefielddropdowns_id',
+                'name' => 'plugin_fields_cartridgeitemtypedropdowns_id',
                 'type' => 'index',
-                'columns' => "(`plugin_fields_typefielddropdowns_id`)",
+                'columns' => "(`plugin_fields_cartridgeitemtypedropdowns_id`)",
             ],
             [
                 'name' => 'cartridges_id_emptied',
@@ -708,7 +708,6 @@ return [
         'columns' => [
             'id' => 'int unsigned not null auto_increment',
             'itemtype' => 'varchar(255) not null',
-            'tickets_id' => 'int unsigned not null',
             'items_id' => 'int unsigned not null',
             'suppliers_id_old' => 'int unsigned not null',
             'suppliers_id' => 'int unsigned not null',
@@ -740,11 +739,6 @@ return [
                 'name' => 'primary key',
                 'type' => '',
                 'columns' => "(`id`)",
-            ],
-            [
-                'name' => 'tickets_id',
-                'type' => 'index',
-                'columns' => "(`tickets_id`)",
             ],
             [
                 'name' => 'items_id',

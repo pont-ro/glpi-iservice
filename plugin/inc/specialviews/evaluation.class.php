@@ -282,7 +282,7 @@ class Evaluation extends View
                         'columns' => [
                             'status' => [
                                 'title' => 'Stare tichet',
-                                'format' => 'function:PluginIserviceView_Tickets::getTicketStatusDisplay($row);',
+                                'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketStatusDisplay($row);',
                                 'align' => 'center',
                             ],
                             'ticket_id' => [
@@ -324,7 +324,7 @@ class Evaluation extends View
                             ],
                             'tech_assign_name' => [
                                 'title' => 'Tehnician alocat',
-                                'format' => 'function:PluginIserviceView_Tickets::getTicketAssignTechDisplay($row);',
+                                'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketAssignTechDisplay($row);',
                             ],
                             'printer_serial' => [
                                 'title' => 'Număr serie',

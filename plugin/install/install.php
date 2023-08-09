@@ -55,6 +55,7 @@ class PluginIserviceInstall
         $result = $result && AddCustomFieldsInstallStep::do();
         $result = $result && CreateViewsInstallStep::do();
         $result = $result && CreateStoredProceduresInstallStep::do();
+        // TODO: optimize tables install step (ex. add indexes where needed)
         $result = $result && HandleProfileRightsInstallStep::do();
         return $result && CronTasksInstallStep::do();
     }

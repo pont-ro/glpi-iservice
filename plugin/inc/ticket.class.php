@@ -2436,11 +2436,11 @@ class PluginIserviceTicket extends Ticket
     {
         $this->customfields = new PluginFieldsTicketticketcustomfield();
         if (parent::getFromDB($ID)) {
-            if (!$this->customfields->getFromDBByItemsId($ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
+            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
                 return false;
             }
 
-            $this->fields['items_id']['Printer'] = array_column(IserviceToolBox::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
+            $this->fields['items_id']['Printer'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
 
             // Further code poosibility.
             self::$item_cache[$ID] = $this;
@@ -2499,12 +2499,12 @@ class PluginIserviceTicket extends Ticket
         $cartridge_item_data = explode('l', $cartridgeitems_id, 2);
         $cartridge_item_id   = $cartridge_item_data[0];
         $base_condition      = "AND EXISTS (SELECT * FROM glpi_plugin_iservice_consumables_tickets WHERE amount > 0 AND new_cartridge_ids LIKE CONCAT('%|', glpi_cartridges.id, '|%'))";
-        $location_condition  = 'AND (FK_location IS null OR FK_location < 1)';
+        $location_condition  = 'AND (locations_id_field IS null OR locations_id_field < 1)';
         $printer_condition   = 'AND printers_id = 0 AND date_use IS null AND date_out IS null';
         $date_condition      = empty($install_date) ? '' : "AND date_in <= '$install_date'";
         if (count($cartridge_item_data) > 1) {
             $cartridge_item_data = explode('p', $cartridge_item_data[1], 2);
-            $location_condition  = "AND FK_location = $cartridge_item_data[0]";
+            $location_condition  = "AND locations_id_field = $cartridge_item_data[0]";
             if (count($cartridge_item_data) > 1) {
                 $printer_condition = "AND printers_id = $cartridge_item_data[1] AND date_out IS null";
             }
@@ -2544,7 +2544,7 @@ class PluginIserviceTicket extends Ticket
 
         $used_types = PluginIserviceDB::getQueryResult(
             "
-            select ct.plugin_fields_typefielddropdowns_id selected_type
+            select ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type
             from glpi_plugin_iservice_cartridges_tickets ct
             join glpi_cartridges c on c.id = ct.cartridges_id
             where ct.tickets_id = {$this->getID()}
@@ -2554,7 +2554,7 @@ class PluginIserviceTicket extends Ticket
 
         foreach (explode(',', $cartridge_customfields->fields['supported_types_field']) as $supported_type) {
             if (!in_array($supported_type, array_column($used_types, 'selected_type'))) {
-                $cartridge->fields['plugin_fields_typefielddropdowns_id'] = $supported_type;
+                $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'] = $supported_type;
                 break;
             }
         }
@@ -2566,7 +2566,7 @@ class PluginIserviceTicket extends Ticket
                 'add' => 'add',
                 'tickets_id' => $this->getID(),
                 'cartridges_id' => $cartridge_id_to_install,
-                'plugin_fields_typefielddropdowns_id' => $cartridge->fields['plugin_fields_typefielddropdowns_id'],
+                'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'],
                 'cartridges_id_emptied' => empty($first_emptiable_cartridge[$cartridge->getIndexName()]) ? 'NULL' : $first_emptiable_cartridge[$cartridge->getIndexName()],
                 '_no_message' => true
             ]
