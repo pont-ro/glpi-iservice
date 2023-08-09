@@ -5,6 +5,7 @@ namespace GlpiPlugin\Iservice\Specialviews;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
+use PluginIserviceTicket;
 use \Session;
 use \PluginIserviceEmaintenance;
 use \PluginIserviceHtml;
@@ -244,6 +245,7 @@ class Emaintenance extends View
                         ",
             'show_filter_buttons' => 'false',
             'default_limit' => 30,
+            'show_limit' => (new View())->settings_defaults['show_limit'],
             'filters' => [
                 'id' => [
                     'type' => self::FILTERTYPE_TEXT,

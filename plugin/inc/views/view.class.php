@@ -2,6 +2,7 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
+use PluginIserviceConfig;
 use \PluginIserviceHtml;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use \Session;
@@ -81,7 +82,7 @@ class View extends \CommonGLPI
         'style' => [],
         'show_filter_buttons' => true,
         'filter_buttons_align' => 'left',
-        'show_limit' => true, // TODO get from config
+        'show_limit' => true,
         'show_export' => false,
         'row_class' => '',
         'insert_empty_rows' => false,
@@ -141,6 +142,8 @@ class View extends \CommonGLPI
         if ($load_settings) {
             $this->loadSettings();
         }
+
+        $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false');
     }
 
     public static function getMenuName(): string
