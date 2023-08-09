@@ -32,10 +32,6 @@ return [
                 'itemtype' => 'Entity_Reminder',
                 'label' => _n('Entity Reminder', 'Entity Reminders', Session::getPluralNumber()),
             ],
-            'download' => [
-                'itemtype' => 'PluginIserviceDownload',
-                'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
-            ],
             'contact' => [
                 'itemtype' => 'Contact',
                 'label' => _n('Contact', 'Contacts', Session::getPluralNumber()),
@@ -233,6 +229,10 @@ return [
             'infocom' => [
                 'itemtype' => 'Infocom',
                 'label' => _n('Infocom', 'Infocoms', Session::getPluralNumber()),
+            ],
+            'download' => [
+                'itemtype' => 'PluginIserviceDownload',
+                'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
             ],
             'log' => [
                 'itemtype' => 'Log',
