@@ -252,7 +252,10 @@ $input = IserviceToolBox::getInputVariables(
 );
 
 if ($input['itemType'] == 'clearSourceDb') {
-    PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/config/import/clearSourceDb.sql');
+    PluginIserviceDB::runScriptFile(
+        PLUGIN_ISERVICE_DIR . '/config/import/clearSourceDb.sql',
+        new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
+    );
     echo IserviceToolBox::RESPONSE_OK;
     return;
 }
