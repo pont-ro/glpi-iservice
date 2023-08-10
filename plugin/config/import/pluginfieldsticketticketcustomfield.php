@@ -40,4 +40,8 @@ return [
         'movement2_id_field'          => 'PluginIserviceMovement',
         'em_mail_id_field'            => 'PluginIserviceEMEmail',
     ],
+    'handleMissingForeignKeys' => [
+        'movement_id_field'  => ['add' => 100000000],
+        'movement2_id_field' => ['add' => 100000000],
+    ],
 ];
