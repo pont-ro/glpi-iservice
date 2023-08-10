@@ -323,7 +323,7 @@ do {
         } else {
             $itemData['id'] = $foundId;
             if (!$item->update($itemData)) {
-                // NOTE: Not all items can be updates, for example glpi_items_tickets that belong to a closed ticket.
+                // NOTE: Not all items can be updated, for example glpi_items_tickets that belong to a closed ticket.
                 $errors[]                                              = "Could not update $itemTypeClass object with data: " . json_encode($itemData);
                 $errors['itemsNotUpdated'][$itemTypeClass]['old_id'][] = $oldItem['id'];
             };
@@ -342,7 +342,7 @@ if ($oldItemsCount === count($errors['retry'] ?? [])) {
 }
 
 if (!empty($errors)) {
-    trigger_error(json_encode($errors), E_USER_WARNING);
+    trigger_error(json_encode($errors, JSON_PRETTY_PRINT), E_USER_WARNING);
 }
 
 echo empty($errors) ? IserviceToolBox::RESPONSE_OK : json_encode($errors);
