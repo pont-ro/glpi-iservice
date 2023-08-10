@@ -256,7 +256,6 @@ if ($input['itemType'] == 'clearSourceDb') {
         PLUGIN_ISERVICE_DIR . '/config/import/clearSourceDb.sql',
         new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
     );
-    echo IserviceToolBox::RESPONSE_OK;
     return;
 }
 

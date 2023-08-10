@@ -10,5 +10,8 @@ return [
         'users_id_recipient'   => 'User',
         'itilcategories_id'    => 'ITILCategory',
         'locations_id'         => 'Location',
-    ]
+    ],
+    'handleMissingForeignKeys' => [
+        'itilcategories_id' => ['add' => 100000000], // Confirm with hupu: setting invalid value will lead to error, we should se to 0 instead.
+    ],
 ];

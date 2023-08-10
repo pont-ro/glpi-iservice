@@ -37,4 +37,7 @@ return [
         'suppliers_id_field'   => 'Supplier',
         'locations_id_field'   => 'Location',
     ],
+    'handleMissingForeignKeys' => [
+        'locations_id_field'   => ['add' => 100000000],
+    ],
 ];
