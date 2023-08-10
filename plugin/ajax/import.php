@@ -251,14 +251,6 @@ $input = IserviceToolBox::getInputVariables(
     ]
 );
 
-if ($input['itemType'] == 'clearSourceDb') {
-    PluginIserviceDB::runScriptFile(
-        PLUGIN_ISERVICE_DIR . '/config/import/clearSourceDb.sql',
-        new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
-    );
-    return;
-}
-
 $configFileName = PLUGIN_ISERVICE_DIR . '/config/import/' . strtolower("$input[itemType].php");
 if (empty($input['itemType']) || !file_exists($configFileName)) {
     die("Invalid item type: $input[itemType]");

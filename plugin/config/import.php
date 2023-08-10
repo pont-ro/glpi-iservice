@@ -4,10 +4,6 @@ return [
         'icon' => 'ti ti-settings',
         'title' => __('Various data', 'iservice'),
         'items' => [
-            'clearSourceDb' => [
-                'itemtype' => 'clearSourceDb',
-                'label' => __('Clear Source DB', 'iservice'),
-            ],
             'profile' => [
                 'itemtype' => 'Profile',
                 'label' => _n('Profile', 'Profiles', Session::getPluralNumber()),
