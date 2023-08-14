@@ -35,6 +35,20 @@ if (empty($importConfig['clearCondition'])) {
     $deleteQuery = "delete from {$item->getTable()} where {$importConfig['clearCondition']}";
 }
 
+if (!empty($importConfig['clearRelatedTable'])) {
+    if (empty($importConfig['clearCondition'])) {
+        $deleteRelatedQuery = "delete from {$importConfig['clearRelatedTable']} where itemtype = '$itemTypeClass'";
+    }
+
+    if (!empty($importConfig['clearCondition'])) {
+        $deleteRelatedQuery = "delete rt from {$importConfig['clearRelatedTable']} rt left join $item->getTable() it on rt.items_id = it.id AND rt.itemtype = '$itemTypeClass'";
+    }
+}
+
+if (!empty($importConfig['clearRelatedTable']) && !PluginIserviceDB::getQueryResult($deleteRelatedQuery)) {
+    die("Could not clear related table {$importConfig['clearRelatedTable']} for $itemTypeClass object");
+}
+
 if (!PluginIserviceDB::getQueryResult($deleteQuery)) {
     die("Could not clear table {$item->getTable()} for $itemTypeClass object");
 }

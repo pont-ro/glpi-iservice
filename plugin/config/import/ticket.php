@@ -12,6 +12,7 @@ return [
         'locations_id'         => 'Location',
     ],
     'handleMissingForeignKeys' => [
-        'itilcategories_id' => ['add' => 100000000], // Confirm with hupu: setting invalid value will lead to error, we should se to 0 instead.
+        'itilcategories_id' => ['force' => 0],
     ],
+    'clearRelatedTable' => 'glpi_plugin_formcreator_issues',
 ];

@@ -20,6 +20,14 @@ return [
                 'itemtype' => 'User',
                 'label' => _n('User', 'Users', Session::getPluralNumber()),
             ],
+            'userEmail' => [
+                'itemtype' => 'UserEmail',
+                'label' => _n('User Email', 'User Emails', Session::getPluralNumber()),
+            ],
+            'profileUser' => [
+                'itemtype' => 'Profile_User',
+                'label' => _n('Profile User', 'Profiles Users', Session::getPluralNumber()),
+            ],
             'reminder' => [
                 'itemtype' => 'Reminder',
                 'label' => _n('Reminder', 'Reminders', Session::getPluralNumber()),
@@ -51,7 +59,7 @@ return [
                 'label' => _n('Supplier', 'Suppliers', Session::getPluralNumber()),
             ],
             'supplier_customfields' => [
-                'itemtype' => 'SupplierCustomfield',
+                'itemtype' => 'PluginFieldsSuppliersuppliercustomfield',
                 'label' => _n('Supplier Custom Field', 'Supplier Custom Fields', Session::getPluralNumber(), 'iservice'),
             ],
             'contactSupplier' => [

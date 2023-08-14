@@ -1,5 +1,16 @@
 start transaction;
 
+    update glpi_users set is_deleted = 0, password = '$2y$10$vl4x5QN2nARBuUMu2TeRiu1SW7UMkkRuYumI2.yaFVWjHRic9AeZO' where name = 'glpi';
+
+    update glpi_useremails
+    set email = concat(email, '@invalid.email')
+    where email not regexp '^[a-za-z0-9._%+-]+@[a-za-z0-9.-]+\\.[a-za-z]{2,4}$';
+
+
+commit;
+
+start transaction;
+
     create table if not exists glpi_infocoms_deleted_rows as select * from glpi_infocoms WHERE id = -1;
 
     insert into glpi_infocoms_deleted_rows
@@ -94,12 +105,12 @@ start transaction;
     select it.*
     from glpi_items_tickets it
              left join glpi_tickets t on it.tickets_id = t.id
-    where t.id IS NULL AND it.tickets_id != 0;
+    where t.id IS NULL;
 
     delete it
     from glpi_items_tickets it
              left join glpi_tickets t on it.tickets_id = t.id
-    where t.id IS NULL AND it.tickets_id != 0;
+    where t.id IS NULL;
 
 commit;
 
@@ -231,11 +242,11 @@ start transaction;
     select ct.*
     from glpi_plugin_iservice_consumables_tickets ct
              left join glpi_tickets t on ct.tickets_id = t.id
-    where t.id is null AND ct.tickets_id != 0;
+    where t.id is null;
 
     delete ct
     from glpi_plugin_iservice_consumables_tickets ct
              left join glpi_tickets t on ct.tickets_id = t.id
-    where t.id is null AND ct.tickets_id != 0;
+    where t.id is null;
 
 commit;
