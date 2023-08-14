@@ -154,7 +154,7 @@ class Intorders extends View
                 ) o
                 WHERE order_id LIKE '[order_id]'
                     AND ((ticket_id IS NULL AND '[ticket_id]' = '%%') OR ticket_id LIKE '[ticket_id]')
-                    AND order_status_id in ('[order_status]')
+                    AND order_status_id in ([order_status])
                     AND create_date < '[create_date]'
                     AND consumable_code LIKE '[consumable_code]'
                     AND ((consumable_name IS NULL AND '[consumable_name]' = '%%') OR consumable_name LIKE '[consumable_name]')

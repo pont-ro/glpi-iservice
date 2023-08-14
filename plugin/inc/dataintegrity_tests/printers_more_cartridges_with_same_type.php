@@ -15,7 +15,7 @@ return [
         from glpi_plugin_iservice_cartridges c
         join glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
         join glpi_printers p on p.id = c.printers_id
-        join glpi_suppliers s on s.id = c.FK_enterprise
+        join glpi_suppliers s on s.id = c.suppliers_id_field
         left join glpi_plugin_fields_cartridgeitemtypedropdowns td on td.id = ci.plugin_fields_cartridgeitemtypedropdowns_id 
         where printers_id > 0 and date_use is not null and date_out is null and (ci.ref like 'cton%' or ci.ref like 'ccat%')
         group by p.id, s.id, ci.plugin_fields_cartridgeitemtypedropdowns_id 

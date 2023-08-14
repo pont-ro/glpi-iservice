@@ -2499,12 +2499,12 @@ class PluginIserviceTicket extends Ticket
         $cartridge_item_data = explode('l', $cartridgeitems_id, 2);
         $cartridge_item_id   = $cartridge_item_data[0];
         $base_condition      = "AND EXISTS (SELECT * FROM glpi_plugin_iservice_consumables_tickets WHERE amount > 0 AND new_cartridge_ids LIKE CONCAT('%|', glpi_cartridges.id, '|%'))";
-        $location_condition  = 'AND (FK_location IS null OR FK_location < 1)';
+        $location_condition  = 'AND (locations_id_field IS null OR locations_id_field < 1)';
         $printer_condition   = 'AND printers_id = 0 AND date_use IS null AND date_out IS null';
         $date_condition      = empty($install_date) ? '' : "AND date_in <= '$install_date'";
         if (count($cartridge_item_data) > 1) {
             $cartridge_item_data = explode('p', $cartridge_item_data[1], 2);
-            $location_condition  = "AND FK_location = $cartridge_item_data[0]";
+            $location_condition  = "AND locations_id_field = $cartridge_item_data[0]";
             if (count($cartridge_item_data) > 1) {
                 $printer_condition = "AND printers_id = $cartridge_item_data[1] AND date_out IS null";
             }
@@ -2512,11 +2512,11 @@ class PluginIserviceTicket extends Ticket
 
         $cartridge              = new Cartridge();
         $cartridge_customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
-        $cartridges             = $cartridge->find("FK_enterprise = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
+        $cartridges             = $cartridge->find("suppliers_id_field = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
 
         // First check the cartridges at the given partner. If there are none, check the partners in the same group.
         if (count($cartridges) === 0) {
-            $cartridges = $cartridge->find("FIND_IN_SET (FK_enterprise, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
+            $cartridges = $cartridge->find("FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
         }
 
         if (count($cartridges) === 0) {

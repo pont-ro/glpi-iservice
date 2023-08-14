@@ -110,7 +110,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $index          = $changeable_cartridge['id'];
             if (!empty($changeable_cartridge['location_name'])) {
                 $cartridge_name .= " din locația $changeable_cartridge[location_completename]";
-                $index          .= "l" . $changeable_cartridge['FK_location'];
+                $index          .= "l" . $changeable_cartridge['locations_id_field'];
             }
 
             $options[$index] = sprintf(__('%1$s (%2$s)'), $cartridge_name, $changeable_cartridge["cpt"]);
@@ -140,7 +140,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         $table  = "<table id='printer-changeable-cartridges' class='wide80'>";
         $table .= "<tr><td colspan=2><b>Adaugă cartușe cu aviz negativ pe tichet:</b></td></tr>";
         foreach ($changeable_cartridges as $changeable_cartridge) {
-            $cartridge_at_printer_location = $ticket->fields['locations_id'] == $changeable_cartridge['FK_location'];
+            $cartridge_at_printer_location = $ticket->fields['locations_id'] == $changeable_cartridge['locations_id_field'];
             $location_condition            = empty($changeable_cartridge['location_parent_id']) ? "(l.locations_id is null or l.locations_id = 0)" : "l.locations_id = $changeable_cartridge[location_parent_id]";
             $compatible_printers           = PluginIserviceDB::getQueryResult(
                 "
@@ -174,7 +174,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 $force_disabled = 'force-disabled';
             }
 
-            $table .= "<input type='checkbox' class='add-cartridge toggler-checkbox $force_disabled' data-group='$changeable_cartridge[id]' data-for='cartridge-count-$changeable_cartridge[FK_location]-$changeable_cartridge[id]' data-warning-not='warn-ccount-$changeable_cartridge[FK_location]-$changeable_cartridge[id]' $checked/>";
+            $table .= "<input type='checkbox' class='add-cartridge toggler-checkbox $force_disabled' data-group='$changeable_cartridge[id]' data-for='cartridge-count-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]' data-warning-not='warn-ccount-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]' $checked/>";
             $table .= "</td><td>";
             if ($cartridge_at_printer_location) {
                 $table .= "<b>";
@@ -192,15 +192,15 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             }
 
             if (count($compatible_printers) === 0 && !$cartridge_at_printer_location) {
-                $table .= "<br><span $warn_class id='warn-ccount-$changeable_cartridge[FK_location]-$changeable_cartridge[id]'><i class='fa fa-exclamation-circle' style='color:red'></i>cartușul trebuie selectat deoarece mutați ultimul apart compatibil cu el!</span>";
-            } elseif (!array_key_exists($changeable_cartridge['FK_location'], array_column($compatible_printers, 'cnt', 'location_id'))) {
+                $table .= "<br><span $warn_class id='warn-ccount-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]'><i class='fa fa-exclamation-circle' style='color:red'></i>cartușul trebuie selectat deoarece mutați ultimul apart compatibil cu el!</span>";
+            } elseif (!array_key_exists($changeable_cartridge['locations_id_field'], array_column($compatible_printers, 'cnt', 'location_id'))) {
                 $warn_message = $cartridge_at_printer_location ? "mutați ultimul apart compatibil cu acest cartuș de la locație!" : "nu mai aveți aparte compatibile cu acest cartuș la această locație!";
-                $table       .= "<br><span $warn_class id='warn-ccount-$changeable_cartridge[FK_location]-$changeable_cartridge[id]'><i class='fa fa-exclamation-triangle' style='color:orange'></i>$warn_message</span>";
+                $table       .= "<br><span $warn_class id='warn-ccount-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]'><i class='fa fa-exclamation-triangle' style='color:orange'></i>$warn_message</span>";
             }
 
             $table .= "</td><td>";
             $count  = explode(':', $changeable_cartridge['cpt'])[0];
-            $table .= "<input type='edit' id='cartridge-count-$changeable_cartridge[FK_location]-$changeable_cartridge[id]' data-param-name='cartridge-count[$changeable_cartridge[FK_location]][$changeable_cartridge[ref]]' style='display:none; width:1em;' value='$count' />";
+            $table .= "<input type='edit' id='cartridge-count-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]' data-param-name='cartridge-count[$changeable_cartridge[locations_id_field]][$changeable_cartridge[ref]]' style='display:none; width:1em;' value='$count' />";
             $table .= "</td></tr>";
         }
 
@@ -456,7 +456,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         }
 
         $cartridge_location = new Location();
-        $cartridge_location->getFromDB($cartridge->fields['FK_location']);
+        $cartridge_location->getFromDB($cartridge->fields['locations_id_field']);
 
         if (isset($cartridge_location->fields['locations_id']) && $cartridge_location->fields['locations_id'] > 0) {
             $location_condition = 'AND p.locations_id in (SELECT id FROM glpi_locations where locations_id = ' . $cartridge_location->fields['locations_id'] . ')';
@@ -470,7 +470,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             LEFT JOIN glpi_locations l ON l.id = p.locations_id
             LEFT JOIN glpi_cartridgeitems_printermodels cp ON cp.printermodels_id = p.printermodels_id
             LEFT JOIN glpi_infocoms ic ON ic.items_id = p.id AND ic.itemtype = 'Printer'
-            WHERE cp.cartridgeitems_id = {$cartridge->fields['cartridgeitems_id']} AND FIND_IN_SET (ic.suppliers_id, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$cartridge->fields['FK_enterprise']})) $location_condition";
+            WHERE cp.cartridgeitems_id = {$cartridge->fields['cartridgeitems_id']} AND FIND_IN_SET (ic.suppliers_id, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$cartridge->fields['suppliers_id_field']})) $location_condition";
 
         return Dropdown::show(
             'PluginIservicePrinter', [

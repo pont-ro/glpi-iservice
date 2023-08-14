@@ -938,7 +938,7 @@ class PluginIserviceEmaintenance extends MailCollector
         foreach ($cartridge_item_ids as $cartridge_item_id) {
             foreach ($changeable_cartridges as $changeable_cartridge) {
                 if (isset($changeable_cartridge['id']) && $changeable_cartridge['id'] == $cartridge_item_id) {
-                    $cartridge_item_index = $changeable_cartridge['id'] . (empty($changeable_cartridge['location_name']) ? '' : ("l" . $changeable_cartridge['FK_location']));
+                    $cartridge_item_index = $changeable_cartridge['id'] . (empty($changeable_cartridge['location_name']) ? '' : ("l" . $changeable_cartridge['locations_id_field']));
                     break;
                 }
             }
