@@ -1,6 +1,6 @@
 start transaction;
 
-    update glpi_users set is_deleted = 0, password = '$2y$10$vl4x5QN2nARBuUMu2TeRiu1SW7UMkkRuYumI2.yaFVWjHRic9AeZO' where name = 'glpi';
+    update glpi_users set is_deleted = 0, password = '$2y$10$AaeYg1Xid03Oueh4PWXXv.qefusg3KTHgVTlqwOeoGqt0BINDMVWy' where name = 'glpi';
 
     update glpi_useremails
     set email = concat(email, '@invalid.email')

@@ -762,7 +762,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $installed_cartridges[$index]['id'],
                     'date_out' => $install_time,
-                    'tickets_id_out' => $ticket_id,
+                    'tickets_id_out_field' => $ticket_id,
                     'pages' => $total2_black,
                     'pages_color' => $total2_color,
                     'printed_pages' => $printed_pages,
@@ -822,7 +822,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             $old_cartridge,
             "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `glpi_cartridges`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
             join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = id and cfc.itemtype = 'Cartridge'
-            where cfc.tickets_id_out = $ticket_id and cfci.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
+            where cfc.tickets_id_out_field = $ticket_id and cfci.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
         )
         ) {
             $old_cartridge->update(
@@ -830,7 +830,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $old_cartridge->getID(),
                     'date_out' => 'NULL',
-                    'tickets_id_out' => 'NULL',
+                    'tickets_id_out_field' => 'NULL',
                     'pages' => '0',
                     'pages_color' => '0',
                     'printed_pages' => $old_cartridge->fields['printed_pages'] + $old_cartridge->fields['pages_use'] - $cartridge->fields['pages_use'],
@@ -881,7 +881,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $emptied_cartridge_id,
                     'date_out' => $install_time,
-                    'tickets_id_out' => $ticket_id,
+                    'tickets_id_out_field' => $ticket_id,
                     'pages' => $total2_black,
                     'pages_color' => $total2_color,
                     'printed_pages' => $old_cartridge->fields['printed_pages'] + $total2_black - $old_cartridge->fields['pages_use'],
@@ -937,7 +937,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             if (!PluginIserviceDB::populateByQuery(
                 $old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `glpi_cartridges`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem' 
             join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = id and cfc.itemtype = 'Cartridge'
-            where cfc.tickets_id_out = $ticket_id and cfc.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
+            where cfc.tickets_id_out_field = $ticket_id and cfc.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_cartridges`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
             )
             ) {
                 $uninstalled_multiplier = -1;
@@ -954,7 +954,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $old_cartridge->getID(),
                     'date_out' => 'NULL',
-                    'tickets_id_out' => 'NULL',
+                    'tickets_id_out_field' => 'NULL',
                     'pages' => '0',
                     'pages_color' => '0',
                     'printed_pages' => $old_cartridge->fields['printed_pages'] + $old_cartridge->fields['pages_use'] - $cartridge->fields['pages_use'],

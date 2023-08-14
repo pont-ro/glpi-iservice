@@ -22,8 +22,8 @@ return [
                         order by t2.effective_date_field, t2.id
                         limit 1
                     ), t.total2_black_field) black_difference
-                , t.total2_color_filed
-                , t.total2_color_filed - coalesce(
+                , t.total2_color_field
+                , t.total2_color_field - coalesce(
                     (
                         select t2.total2_color_field
                         from glpi_plugin_iservice_tickets t2
@@ -47,7 +47,7 @@ return [
                         order by t2.effective_date_field, t2.id
                         limit 1
                     ), 0) next_tid
-                , (select t2.effective_date_field from glpi_tickets t2 where t2.id = next_tid) next_data_luc
+                , (select t2.effective_date_field from glpi_plugin_iservice_tickets t2 where t2.id = next_tid) next_data_luc
             from glpi_plugin_iservice_tickets t
             join glpi_items_tickets it on it.tickets_id = t.id and it.itemtype = 'Printer'
             where t.is_deleted = 0

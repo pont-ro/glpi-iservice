@@ -85,8 +85,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 echo __('You have no compatible cartridges', 'iservice');
             }
 
-            if (!empty($ticket->customfields->fields['cartridge_install'])) {
-                echo ' (', sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install']))), ')';
+            if (!empty($ticket->customfields->fields['cartridge_install_date_field'])) {
+                echo ' (', sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))), ')';
             }
 
             echo '!';
@@ -239,7 +239,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $used_condition = "";
         }
 
-        $date_condition = empty($ticket->customfields->fields['cartridge_install']) ? '' : "AND c.date_in <= '{$ticket->customfields->fields['cartridge_install']}'";
+        $date_condition = empty($ticket->customfields->fields['cartridge_install_date_field']) ? '' : "AND c.date_in <= '{$ticket->customfields->fields['cartridge_install_date_field']}'";
 
         if ($printer_id < 1 || !empty($options['ignore_location'])) {
             $location_condition = '';

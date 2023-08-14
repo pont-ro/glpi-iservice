@@ -1672,7 +1672,7 @@ class PluginIserviceTicket extends Ticket
         // Cartridge change date.
         $prepared_data['field_hidden']['_cartridge_installation'] = $prepared_data['field_hidden']['_change_cartridge'];
         if ($prepared_data['field_hidden']['_cartridge_installation']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_cartridge_installation', $id > 0 ? $this->customfields->fields['cartridge_install'] : (empty($this->fields['_cartridge_installation']) ? '' : $this->fields['_cartridge_installation']));
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_cartridge_installation', $id > 0 ? $this->customfields->fields['cartridge_install_date_field'] : (empty($this->fields['_cartridge_installation']) ? '' : $this->fields['_cartridge_installation']));
         } else {
             $cartridge_installation_buttons = [
                 'Azi' => date("Y-m-d"),
@@ -1683,7 +1683,7 @@ class PluginIserviceTicket extends Ticket
                 __('Change date', 'iservice'), $form->generateField(
                     PluginIserviceHtml::FIELDTYPE_DATE,
                     '_cartridge_installation',
-                    $id > 0 ? $this->customfields->fields['cartridge_install'] : $this->fields['_cartridge_installation'],
+                    $id > 0 ? $this->customfields->fields['cartridge_install_date_field'] : $this->fields['_cartridge_installation'],
                     $prepared_data['field_readonly']['_cartridge_installation'],
                     ['buttons' => $cartridge_installation_buttons]
                 )
