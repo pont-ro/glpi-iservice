@@ -10,5 +10,9 @@ return [
         'users_id_recipient'   => 'User',
         'itilcategories_id'    => 'ITILCategory',
         'locations_id'         => 'Location',
-    ]
+    ],
+    'handleMissingForeignKeys' => [
+        'itilcategories_id' => ['force' => 0],
+    ],
+    'clearRelatedTable' => 'glpi_plugin_formcreator_issues',
 ];

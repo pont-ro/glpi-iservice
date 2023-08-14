@@ -38,7 +38,7 @@ class PluginIserviceExtOrder extends CommonDBTM
 
         $input['modify_date'] = date('Y-m-d H:i:s');
 
-        if ($input['plugin_iservice_orderstatuses_id'] != $this->fields['plugin_iservice_orderstatuses_id'] || isset($input['_add'])) {
+        if ($input['plugin_iservice_orderstatuses_id'] != ($this->fields['plugin_iservice_orderstatuses_id'] ?? null) || isset($input['_add'])) {
             $input['_status_change']['add']                                  = 'add';
             $input['_status_change']['_no_message']                          = true;
             $input['_status_change']['type']                                 = 'plugin_iservice_extorder';

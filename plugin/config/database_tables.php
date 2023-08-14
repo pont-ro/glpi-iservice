@@ -390,7 +390,7 @@ return [
             'amount' => 'decimal(11,2) not null default \'0.00\'',
             'price' => 'decimal(11,2) not null default \'0.00\'',
             'euro_price' => 'tinyint(1) not null default \'0\'',
-            'new_cartridge_ids' => 'varchar(200) null default null',
+            'new_cartridge_ids' => 'varchar(600) null default null',
         ],
         'indexes' => [
             [

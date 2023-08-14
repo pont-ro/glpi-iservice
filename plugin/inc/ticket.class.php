@@ -1672,7 +1672,7 @@ class PluginIserviceTicket extends Ticket
         // Cartridge change date.
         $prepared_data['field_hidden']['_cartridge_installation'] = $prepared_data['field_hidden']['_change_cartridge'];
         if ($prepared_data['field_hidden']['_cartridge_installation']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_cartridge_installation', $id > 0 ? $this->customfields->fields['cartridge_install'] : (empty($this->fields['_cartridge_installation']) ? '' : $this->fields['_cartridge_installation']));
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_cartridge_installation', $id > 0 ? $this->customfields->fields['cartridge_install_date_field'] : (empty($this->fields['_cartridge_installation']) ? '' : $this->fields['_cartridge_installation']));
         } else {
             $cartridge_installation_buttons = [
                 'Azi' => date("Y-m-d"),
@@ -1683,7 +1683,7 @@ class PluginIserviceTicket extends Ticket
                 __('Change date', 'iservice'), $form->generateField(
                     PluginIserviceHtml::FIELDTYPE_DATE,
                     '_cartridge_installation',
-                    $id > 0 ? $this->customfields->fields['cartridge_install'] : $this->fields['_cartridge_installation'],
+                    $id > 0 ? $this->customfields->fields['cartridge_install_date_field'] : $this->fields['_cartridge_installation'],
                     $prepared_data['field_readonly']['_cartridge_installation'],
                     ['buttons' => $cartridge_installation_buttons]
                 )
@@ -2512,11 +2512,11 @@ class PluginIserviceTicket extends Ticket
 
         $cartridge              = new Cartridge();
         $cartridge_customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
-        $cartridges             = $cartridge->find("FK_enterprise = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
+        $cartridges             = $cartridge->find("suppliers_id_field = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
 
         // First check the cartridges at the given partner. If there are none, check the partners in the same group.
         if (count($cartridges) === 0) {
-            $cartridges = $cartridge->find("FIND_IN_SET (FK_enterprise, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
+            $cartridges = $cartridge->find("FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
         }
 
         if (count($cartridges) === 0) {

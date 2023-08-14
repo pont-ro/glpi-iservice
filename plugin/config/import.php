@@ -4,10 +4,6 @@ return [
         'icon' => 'ti ti-settings',
         'title' => __('Various data', 'iservice'),
         'items' => [
-            'clearSourceDb' => [
-                'itemtype' => 'clearSourceDb',
-                'label' => __('Clear Source DB', 'iservice'),
-            ],
             'profile' => [
                 'itemtype' => 'Profile',
                 'label' => _n('Profile', 'Profiles', Session::getPluralNumber()),
@@ -24,6 +20,14 @@ return [
                 'itemtype' => 'User',
                 'label' => _n('User', 'Users', Session::getPluralNumber()),
             ],
+            'userEmail' => [
+                'itemtype' => 'UserEmail',
+                'label' => _n('User Email', 'User Emails', Session::getPluralNumber()),
+            ],
+            'profileUser' => [
+                'itemtype' => 'Profile_User',
+                'label' => _n('Profile User', 'Profiles Users', Session::getPluralNumber()),
+            ],
             'reminder' => [
                 'itemtype' => 'Reminder',
                 'label' => _n('Reminder', 'Reminders', Session::getPluralNumber()),
@@ -32,13 +36,13 @@ return [
                 'itemtype' => 'Entity_Reminder',
                 'label' => _n('Entity Reminder', 'Entity Reminders', Session::getPluralNumber()),
             ],
-            'download' => [
-                'itemtype' => 'PluginIserviceDownload',
-                'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
-            ],
             'contact' => [
                 'itemtype' => 'Contact',
                 'label' => _n('Contact', 'Contacts', Session::getPluralNumber()),
+            ],
+            'pluginFieldsCartridgeItemTypeDropdown' => [
+                'itemtype' => 'PluginFieldsCartridgeitemtypeDropdown',
+                'label' => _n('Plugin Fields Cartridge Item type Dropdown', 'Plugin Fields Cartridge Items types Dropdown', Session::getPluralNumber()),
             ],
         ]
     ],
@@ -55,7 +59,7 @@ return [
                 'label' => _n('Supplier', 'Suppliers', Session::getPluralNumber()),
             ],
             'supplier_customfields' => [
-                'itemtype' => 'SupplierCustomfield',
+                'itemtype' => 'PluginFieldsSuppliersuppliercustomfield',
                 'label' => _n('Supplier Custom Field', 'Supplier Custom Fields', Session::getPluralNumber(), 'iservice'),
             ],
             'contactSupplier' => [
@@ -95,40 +99,6 @@ return [
             'printerCustomField' => [
                 'itemtype' => 'PluginFieldsPrinterprintercustomfield',
                 'label' => _n('Printer Custom Field', 'Printer Custom Fields', Session::getPluralNumber()),
-            ],
-        ]
-    ],
-    'cartridges' => [
-        'icon' => 'ti ti-ink-pen',
-        'title' => _n('Cartridge', 'Cartridges', Session::getPluralNumber()),
-        'items' => [
-            'cartridgeitemtype' => [
-                'itemtype' => 'CartridgeItemType',
-                'label' => _n('Cartridge Item type', 'Cartridge Items types', Session::getPluralNumber()),
-            ],
-            'cartridgeitem' => [
-                'itemtype' => 'CartridgeItem',
-                'label' => _n('Cartridge Item', 'Cartridge Items', Session::getPluralNumber()),
-            ],
-            'pluginFieldsCartridgeItemTypeDropdown' => [
-                'itemtype' => 'PluginFieldsCartridgeitemtypeDropdown',
-                'label' => _n('Plugin Fields Cartridge Item type Dropdown', 'Plugin Fields Cartridge Items types Dropdown', Session::getPluralNumber()),
-            ],
-            'cartridgeItemCustomField' => [
-                'itemtype' => 'PluginFieldsCartridgeitemcartridgeitemcustomfield',
-                'label' => _n('Cartridge Item CCustom Field', 'Cartridge Item Custom Fields', Session::getPluralNumber()),
-            ],
-            'cartridge' => [
-                'itemtype' => 'Cartridge',
-                'label' => _n('Cartridge', 'Cartridges', Session::getPluralNumber()),
-            ],
-            'cartridgeCustomField' => [
-                'itemtype' => 'PluginFieldsCartridgecartridgecustomfield',
-                'label' => _n('Cartridge Custom Field', 'Cartridge Custom Fields', Session::getPluralNumber()),
-            ],
-            'cartridgeItemPrinterModel' => [
-                'itemtype' => 'CartridgeItem_PrinterModel',
-                'label' => _n('Cartridge Item Printer Model', 'Cartridge Items Printer Models', Session::getPluralNumber()),
             ],
         ]
     ],
@@ -204,6 +174,36 @@ return [
             ],
         ]
     ],
+    'cartridges' => [
+        'icon' => 'ti ti-ink-pen',
+        'title' => _n('Cartridge', 'Cartridges', Session::getPluralNumber()),
+        'items' => [
+            'cartridgeitemtype' => [
+                'itemtype' => 'CartridgeItemType',
+                'label' => _n('Cartridge Item type', 'Cartridge Items types', Session::getPluralNumber()),
+            ],
+            'cartridgeitem' => [
+                'itemtype' => 'CartridgeItem',
+                'label' => _n('Cartridge Item', 'Cartridge Items', Session::getPluralNumber()),
+            ],
+            'cartridgeItemCustomField' => [
+                'itemtype' => 'PluginFieldsCartridgeitemcartridgeitemcustomfield',
+                'label' => _n('Cartridge Item CCustom Field', 'Cartridge Item Custom Fields', Session::getPluralNumber()),
+            ],
+            'cartridge' => [
+                'itemtype' => 'Cartridge',
+                'label' => _n('Cartridge', 'Cartridges', Session::getPluralNumber()),
+            ],
+            'cartridgeCustomField' => [
+                'itemtype' => 'PluginFieldsCartridgecartridgecustomfield',
+                'label' => _n('Cartridge Custom Field', 'Cartridge Custom Fields', Session::getPluralNumber()),
+            ],
+            'cartridgeItemPrinterModel' => [
+                'itemtype' => 'CartridgeItem_PrinterModel',
+                'label' => _n('Cartridge Item Printer Model', 'Cartridge Items Printer Models', Session::getPluralNumber()),
+            ],
+        ]
+    ],
     'orders' => [
         'icon' => 'ti ti-truck-delivery',
         'title' => _n('Order', 'Orders', Session::getPluralNumber()),
@@ -233,6 +233,10 @@ return [
             'infocom' => [
                 'itemtype' => 'Infocom',
                 'label' => _n('Infocom', 'Infocoms', Session::getPluralNumber()),
+            ],
+            'download' => [
+                'itemtype' => 'PluginIserviceDownload',
+                'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
             ],
             'log' => [
                 'itemtype' => 'Log',

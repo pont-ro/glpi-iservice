@@ -95,6 +95,7 @@ select
     cfc.pages_use_field as pages_use_field,
     cfc.pages_color_use_field as pages_color_use_field,
     cfc.printed_pages_field as printed_pages_field,
+    cfc.printed_pages_color_field as printed_pages_color_field,
     cfc.suppliers_id_field as suppliers_id_field,
     cfc.locations_id_field as locations_id_field
 from glpi_cartridges c

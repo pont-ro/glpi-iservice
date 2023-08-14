@@ -18,7 +18,7 @@ $fieldsContainer = new PluginFieldsContainer();
 $fieldsContainer->getFromDBByCrit(['name' => 'cartridgecustomfield']);
 $fieldsContainerId = $fieldsContainer->getField('id');
 
-if (empty($fieldsContainerId) || $fieldsContainerId == NOT_AVAILABLE) {
+if (empty($fieldsContainerId) || $fieldsContainerId === NOT_AVAILABLE) {
     return null;
 }
 
@@ -36,5 +36,8 @@ return [
         'tickets_id_out_field' => 'Ticket',
         'suppliers_id_field'   => 'Supplier',
         'locations_id_field'   => 'Location',
+    ],
+    'handleMissingForeignKeys' => [
+        'locations_id_field'   => ['add' => 100000000],
     ],
 ];

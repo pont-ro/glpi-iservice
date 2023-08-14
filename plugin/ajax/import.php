@@ -129,6 +129,8 @@ function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyDat
         if (empty($foreignKeyData[$itemType][$result[$fieldName]])) {
             if (!empty($handleMissingForeignKeys[$fieldName]['add'])) {
                 $foreignKeyData[$itemType][$result[$fieldName]] = $result[$fieldName] + $handleMissingForeignKeys[$fieldName]['add'];
+            } elseif (isset($handleMissingForeignKeys[$fieldName]['force'])) {
+                $foreignKeyData[$itemType][$result[$fieldName]] = $handleMissingForeignKeys[$fieldName]['force'];
             } else {
                 $errors[]                          = "Cannot find new id for $itemType object with id {$result[$fieldName]}. Was it imported?";
                 $errors['missingIds'][$itemType][] = $result[$fieldName];
@@ -251,12 +253,6 @@ $input = IserviceToolBox::getInputVariables(
     ]
 );
 
-if ($input['itemType'] == 'clearSourceDb') {
-    PluginIserviceDB::runScriptFile(PLUGIN_ISERVICE_DIR . '/config/import/clearSourceDb.sql');
-    echo IserviceToolBox::RESPONSE_OK;
-    return;
-}
-
 $configFileName = PLUGIN_ISERVICE_DIR . '/config/import/' . strtolower("$input[itemType].php");
 if (empty($input['itemType']) || !file_exists($configFileName)) {
     die("Invalid item type: $input[itemType]");
@@ -268,9 +264,10 @@ if (empty($importConfig)) {
 }
 
 $foreignKeyData = getForeignKeyData($importConfig);
+$select         = $importConfig['select'] ?? '*';
 
 $oldItems = PluginIserviceDB::getQueryResult(
-    "SELECT * FROM $importConfig[oldTable]",
+    "SELECT $select FROM $importConfig[oldTable]",
     'id',
     new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
 );
@@ -328,7 +325,7 @@ do {
         } else {
             $itemData['id'] = $foundId;
             if (!$item->update($itemData)) {
-                // NOTE: Not all items can be updates, for example glpi_items_tickets that belong to a closed ticket.
+                // NOTE: Not all items can be updated, for example glpi_items_tickets that belong to a closed ticket.
                 $errors[]                                              = "Could not update $itemTypeClass object with data: " . json_encode($itemData);
                 $errors['itemsNotUpdated'][$itemTypeClass]['old_id'][] = $oldItem['id'];
             };
@@ -347,7 +344,7 @@ if ($oldItemsCount === count($errors['retry'] ?? [])) {
 }
 
 if (!empty($errors)) {
-    trigger_error(json_encode($errors), E_USER_WARNING);
+    trigger_error(json_encode($errors, JSON_PRETTY_PRINT), E_USER_WARNING);
 }
 
 echo empty($errors) ? IserviceToolBox::RESPONSE_OK : json_encode($errors);

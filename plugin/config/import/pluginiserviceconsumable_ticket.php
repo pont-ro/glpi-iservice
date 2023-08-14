@@ -37,5 +37,8 @@ return [
         'locations_id'                                => 'Location',
         'tickets_id'                                  => 'Ticket',
         'plugin_fields_cartridgeitemtypedropdowns_id' => 'PluginFieldsCartridgeitemtypeDropdown'
-    ]
+    ],
+    'handleMissingForeignKeys' => [
+        'plugin_fields_cartridgeitemtypedropdowns_id' => ['add' => 100000000],
+    ],
 ];

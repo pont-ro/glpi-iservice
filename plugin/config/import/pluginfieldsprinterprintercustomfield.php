@@ -11,18 +11,18 @@ $additionalFields = [
     ]
 ];
 
-$fieldMap = json_decode(file_get_contents(PLUGIN_ISERVICE_DIR . '/install/customfields/contract_customfields.json'), true);
+$fieldMap = json_decode(file_get_contents(PLUGIN_ISERVICE_DIR . '/install/customfields/printer_customfields.json'), true);
 
 
 return [
-    'itemTypeClass' => PluginFieldsContractcontractcustomfield::class,
-    'oldTable'      => 'glpi_plugin_fields_contractcustomfields',
+    'itemTypeClass' => PluginFieldsPrinterprintercustomfield::class,
+    'oldTable'      => 'glpi_plugin_fields_printercustomfields',
     'fieldMap'      => array_merge($additionalFields, $fieldMap),
     'forceValues'   => [
-        'itemtype' => 'Contract',
+        'itemtype' => 'Printer',
     ],
     'foreignKeys'   => [
-        'items_id'                    => 'Contract',
+        'items_id'                    => 'Printer',
         'plugin_fields_containers_id' => 'PluginFieldsContainer',
     ],
 ];
