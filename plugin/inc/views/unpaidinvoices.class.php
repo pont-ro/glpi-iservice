@@ -182,11 +182,11 @@ class UnpaidInvoices extends View
                 ],
                 'invoice_confirmation' => [
                     'title' => 'Confirmat',
-                    'format' => 'function:PluginIserviceView_Unpaid_Invoices::getInvoiceConfirmationDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\UnpaidInvoices::getInvoiceConfirmationDisplay($row);',
                 ],
                 'cod' => [
                     'title' => 'Cod',
-                    'format' => 'function:PluginIserviceView_Unpaid_Invoices::getCodDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\UnpaidInvoices::getCodDisplay($row);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/view.php?view=partners&partners0[partener]=[nume_client_glpi]',
                     ],

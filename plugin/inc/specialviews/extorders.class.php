@@ -74,7 +74,7 @@ class Extorders extends View
 						GROUP BY eo.id
 						) o
 						WHERE order_id LIKE '[order_id]'
-						  AND order_status_id in ('[order_status]')
+						  AND order_status_id in ([order_status])
 						  AND create_date < '[create_date]'
 							AND ((intorders IS NULL AND '[intorders]' = '%%') OR intorders LIKE '[intorders]')
 							AND ((supplier_name IS NULL AND '[supplier_name]' = '%%') OR supplier_name LIKE '[supplier_name]')

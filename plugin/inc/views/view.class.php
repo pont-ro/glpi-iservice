@@ -139,11 +139,11 @@ class View extends \CommonGLPI
     {
         $this->table_prefix = $table_prefix;
         $this->table_suffix = $table_suffix;
+        $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false');
+
         if ($load_settings) {
             $this->loadSettings();
         }
-
-        $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false');
     }
 
     public static function getMenuName(): string
