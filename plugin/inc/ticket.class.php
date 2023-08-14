@@ -2512,11 +2512,11 @@ class PluginIserviceTicket extends Ticket
 
         $cartridge              = new Cartridge();
         $cartridge_customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
-        $cartridges             = $cartridge->find("FK_enterprise = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
+        $cartridges             = $cartridge->find("suppliers_id_field = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
 
         // First check the cartridges at the given partner. If there are none, check the partners in the same group.
         if (count($cartridges) === 0) {
-            $cartridges = $cartridge->find("FIND_IN_SET (FK_enterprise, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
+            $cartridges = $cartridge->find("FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
         }
 
         if (count($cartridges) === 0) {

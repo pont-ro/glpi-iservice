@@ -470,7 +470,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             LEFT JOIN glpi_locations l ON l.id = p.locations_id
             LEFT JOIN glpi_cartridgeitems_printermodels cp ON cp.printermodels_id = p.printermodels_id
             LEFT JOIN glpi_infocoms ic ON ic.items_id = p.id AND ic.itemtype = 'Printer'
-            WHERE cp.cartridgeitems_id = {$cartridge->fields['cartridgeitems_id']} AND FIND_IN_SET (ic.suppliers_id, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$cartridge->fields['FK_enterprise']})) $location_condition";
+            WHERE cp.cartridgeitems_id = {$cartridge->fields['cartridgeitems_id']} AND FIND_IN_SET (ic.suppliers_id, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$cartridge->fields['suppliers_id_field']})) $location_condition";
 
         return Dropdown::show(
             'PluginIservicePrinter', [
