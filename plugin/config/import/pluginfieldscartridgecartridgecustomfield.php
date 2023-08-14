@@ -18,7 +18,7 @@ $fieldsContainer = new PluginFieldsContainer();
 $fieldsContainer->getFromDBByCrit(['name' => 'cartridgecustomfield']);
 $fieldsContainerId = $fieldsContainer->getField('id');
 
-if (empty($fieldsContainerId) || $fieldsContainerId == NOT_AVAILABLE) {
+if (empty($fieldsContainerId) || $fieldsContainerId === NOT_AVAILABLE) {
     return null;
 }
 
