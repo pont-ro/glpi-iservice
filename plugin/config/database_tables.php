@@ -598,6 +598,21 @@ return [
                 'type' => '',
                 'columns' => "(`id`)",
             ],
+            [
+                'name' => 'printers_id',
+                'type' => 'index',
+                'columns' => "(`printers_id`)",
+            ],
+            [
+                'name' => 'suppliers_id',
+                'type' => 'index',
+                'columns' => "(`suppliers_id`)",
+            ],
+            [
+                'name' => 'users_id_tech',
+                'type' => 'index',
+                'columns' => "(`users_id_tech`)",
+            ],
         ],
     ],
     'glpi_plugin_iservice_extorders' => [
