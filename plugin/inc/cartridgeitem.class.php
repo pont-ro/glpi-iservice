@@ -405,8 +405,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                     , ci.name
                     , ci.ref
                     , c.date_use
-                    , MAX(c.pages_use_field) pages_use
-                    , MAX(c.pages_color_use_field) pages_color_use
+                    , MAX(c.pages_use_field) pages_use_field
+                    , MAX(c.pages_color_use_field) pages_color_use_field
                   FROM glpi_plugin_iservice_cartridges c
                   INNER JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
                   INNER JOIN glpi_cartridgeitems_printermodels cipm ON cipm.cartridgeitems_id = ci.id
@@ -426,7 +426,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             return $index;
         }
 
-        $cartridgeitem = new CartridgeItem();
+        $cartridgeitem = new PluginIserviceCartridgeItem();
         if (!$cartridgeitem->getFromDB($needle) || count($haystack) < 1) {
             return false;
         }
@@ -449,7 +449,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
     {
         if (!($cartridge instanceof Cartridge)) {
             $cartridge_id = intval($cartridge);
-            $cartridge    = new Cartridge();
+            $cartridge    = new PluginIserviceCartridge();
             if (!$cartridge->getFromDB($cartridge_id)) {
                 return null;
             }

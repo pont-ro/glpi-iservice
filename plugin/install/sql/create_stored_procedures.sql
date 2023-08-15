@@ -64,7 +64,7 @@ BEGIN
     LEFT JOIN glpi_locations l2 on l2.id = p.locations_id
     JOIN glpi_infocoms ic ON ic.itemtype = 'Printer'
                          AND ic.items_id = p.id
-                         AND FIND_IN_SET (ic.suppliers_id, cfs.groupfield)
+                         AND FIND_IN_SET (ic.suppliers_id, cfs.group_field)
     WHERE c.id = cartridgeId
       AND (c.locations_id_field = p.locations_id OR COALESCE(l1.locations_id, 0) = COALESCE(l2.locations_id, 0))
     ;
@@ -83,14 +83,14 @@ CREATE FUNCTION `getCartridgeDaysToEmpty`(
 BEGIN
     DECLARE days DECIMAL(5,2);
     SELECT ROUND(IF(cfci.atc_field = 0, 1000, cfci.atc_field) * IF(cfci.life_coefficient_field = 0, 1000, cfci.life_coefficient_field) * CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id
-           WHEN 2 THEN IF (cfp.uccfield = 0, 1, cfp.uccfield) / IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-           WHEN 3 THEN IF(cfp.ucmfield = 0, 1, cfp.ucmfield) / IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-           WHEN 4 THEN IF(cfp.ucyfield = 0, 1, cfp.ucyfield) / IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-           ELSE IF(cfp.ucbkfield = 0, 1, cfp.ucbkfield) / IF(cfp.dailybkaveragefield = 0, 180, cfp.dailybkaveragefield)
+           WHEN 2 THEN IF (cfp.uc_cyan_field = 0, 1, cfp.uc_cyan_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+           WHEN 3 THEN IF(cfp.uc_magenta_field = 0, 1, cfp.uc_magenta_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+           WHEN 4 THEN IF(cfp.uc_yellow_field = 0, 1, cfp.uc_yellow_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+           ELSE IF(cfp.uc_bk_field = 0, 1, cfp.uc_bk_field) / IF(cfp.daily_bk_average_field = 0, 180, cfp.daily_bk_average_field)
          END) INTO days
     FROM glpi_cartridges c
     LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.itemtype = 'CartridgeItem' AND cfci.items_id = c.cartridgeitems_id
-    LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
+    LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
     WHERE c.id = cartridgeId;
     RETURN coalesce(days, 180);
 END//
@@ -114,16 +114,16 @@ BEGIN
         IF(cfci.atc_field = 0, 1000, cfci.atc_field) atc
       , IF(cfci.life_coefficient_field = 0, 1, cfci.life_coefficient_field) lc
       , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
-          WHEN 2 THEN IF (cfp.uccfield = 0, 1, cfp.uccfield)
-          WHEN 3 THEN IF(cfp.ucmfield = 0, 1, cfp.ucmfield)
-          WHEN 4 THEN IF(cfp.ucyfield = 0, 1, cfp.ucyfield)
-          ELSE IF(cfp.ucbkfield = 0, 1, cfp.ucbkfield)
+          WHEN 2 THEN IF (cfp.uc_cyan_field = 0, 1, cfp.uc_cyan_field)
+          WHEN 3 THEN IF(cfp.uc_magenta_field = 0, 1, cfp.uc_magenta_field)
+          WHEN 4 THEN IF(cfp.uc_yellow_field = 0, 1, cfp.uc_yellow_field)
+          ELSE IF(cfp.uc_bk_field = 0, 1, cfp.uc_bk_field)
         END uc
       , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
-          WHEN 2 THEN IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-          WHEN 3 THEN IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-          WHEN 4 THEN IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-          ELSE IF(cfp.dailybkaveragefield = 0, 180, cfp.dailybkaveragefield)
+          WHEN 2 THEN IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+          WHEN 3 THEN IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+          WHEN 4 THEN IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+          ELSE IF(cfp.daily_bk_average_field = 0, 180, cfp.daily_bk_average_field)
         END da
       , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
           WHEN 2 THEN cfp.total2_color -- plct.total2_color_field
@@ -189,11 +189,11 @@ BEGIN
     SELECT
         cfp.data_luc -- plct.effective_date_field
       , CASE color WHEN 1 THEN cfp.total2_color /* plct.total2_color_field */ ELSE cfp.total2_black /* plct.total2_black_field */ END
-      , CASE color WHEN 1 THEN cfp.dailycoloraveragefield ELSE cfp.dailybkaveragefield END
+      , CASE color WHEN 1 THEN cfp.daily_color_average_field ELSE cfp.daily_bk_average_field END
     INTO lastDataLuc, lastCounter, dailyAverage
     FROM glpi_plugin_iservice_printers p
     -- LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
-    JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.itemtype = 'Printer' AND  cfp.items_id = p.id
+    JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND  cfp.items_id = p.id
     WHERE p.id = printerId;
 
     RETURN lastCounter + DATEDIFF(NOW(), lastDataLuc) * dailyAverage;

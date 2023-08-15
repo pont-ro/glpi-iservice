@@ -221,7 +221,6 @@ select
     cfs.plugin_fields_containers_id as plugin_fields_containers_id,
     cfs.uic_field as uic_field,
     cfs.crn_field as crn_field,
-    cfs.part_cont1 as part_cont1,
     cfs.intervention_sheet_model_field as intervention_sheet_model_field,
     cfs.hmarfa_code_field as hmarfa_code_field,
     cfs.address_field as address_field,

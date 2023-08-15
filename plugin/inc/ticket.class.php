@@ -2510,7 +2510,7 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-        $cartridge              = new Cartridge();
+        $cartridge              = new PluginIserviceCartridge();
         $cartridge_customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
         $cartridges             = $cartridge->find("suppliers_id_field = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
 

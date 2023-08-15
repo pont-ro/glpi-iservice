@@ -70,4 +70,14 @@ trait PluginIserviceItem
         return $this->get($db->fetchAssoc($result)['id']);
     }
 
+    public function update(array $input, $history = 1, $options = [])
+    {
+        $model = new parent;
+        $model->getFromDB($this->getID());
+        $result = $model->update($input, $history, $options);
+
+        return $result && $this->customfields->update(array_merge($input, ['id' => $this->customfields->getID()]), $history, $options);
+
+    }
+
 }

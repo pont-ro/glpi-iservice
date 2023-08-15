@@ -148,7 +148,7 @@ class PluginIservicePrinter extends Printer
         $printer_customfields  = new PluginFieldsPrinterprintercustomfield();
         $supplier              = new Supplier();
         $supplier_customfields = new PluginFieldsSuppliersuppliercustomfield();
-        $contract              = new Contract();
+        $contract              = new PluginIserviceContract();
         $contract_customfields = new PluginFieldsContractcontractcustomfield();
 
         $accessible_printer_ids = self::getAccessibleIds();
@@ -512,7 +512,7 @@ class PluginIservicePrinter extends Printer
         $output .= $form->generateFieldTableRow('Număr Registru Comerț', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][crn_field]', $supplier_customfields->fields['crn_field'], $readonly));
 
         // Model fisa de interventie.
-        $output .= $form->generateFieldTableRow('Model fișă de intervenție', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][model]', $supplier_customfields->fields['model'], $readonly));
+        $output .= $form->generateFieldTableRow('Model fișă de intervenție', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][intervention_sheet_model_field]', $supplier_customfields->fields['intervention_sheet_model_field'], $readonly));
 
         // HMarfa code.
         $output .= $form->generateFieldTableRow('Cod Partener hMarfa', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][hmarfa_code_field]', $supplier_customfields->fields['hmarfa_code_field'], $readonly));
@@ -531,7 +531,7 @@ class PluginIservicePrinter extends Printer
     {
         if ($contract === null) {
             $readonly = true;
-            $contract = new Contract();
+            $contract = new PluginIserviceContract();
             $contract->getEmpty();
             $contract_customfields = new PluginFieldsContractcontractcustomfield();
             $contract_customfields->getEmpty();
@@ -771,10 +771,10 @@ class PluginIservicePrinter extends Printer
     {
         return PluginIserviceDB::getQueryResult(
             "
-                select c.*, ci.mercury_code_field mercury_code, ci.compatible_mercury_codes_field compatible_mercury_codes, ci.atc_field atc, ci.name, c.plugin_fields_cartridgeitemtypedropdowns_id type_id, tfd.completename type_name
-                from glpi_cartridges c
+                select c.*, ci.mercury_code_field mercury_code, ci.compatible_mercury_codes_field compatible_mercury_codes, ci.atc_field atc, ci.name, ci.plugin_fields_cartridgeitemtypedropdowns_id type_id, tfd.completename type_name
+                from glpi_plugin_iservice_cartridges c
                 join glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
-                left join glpi_plugin_fields_cartridgeitemtypedropdowns tfd on tfd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
+                left join glpi_plugin_fields_cartridgeitemtypedropdowns tfd on tfd.id = ci.plugin_fields_cartridgeitemtypedropdowns_id
                 where printers_id = $printer_id AND NOT date_use IS null AND date_out IS null $additional_condition
                 "
         );

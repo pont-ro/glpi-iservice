@@ -15,8 +15,8 @@ Session::checkLoginUser();
 global $CFG_GLPI;
 
 $cartridge_id    = filter_input(INPUT_GET, 'cartridge_id');
-$pages_use       = filter_input(INPUT_GET, 'pages_use');
-$pages_color_use = filter_input(INPUT_GET, 'pages_color_use');
+$pages_use       = filter_input(INPUT_GET, 'pages_use_field');
+$pages_color_use = filter_input(INPUT_GET, 'pages_color_use_field');
 
 echo "<table class='no-border'><tr><td style='text-align:right;'>";
 $date_field_id = Html::showDateField('date', ['value' => date('Y-m-d')]);

@@ -29,7 +29,7 @@ $type_id     = IserviceToolBox::getInputVariable('type_id');
 $location_id = IserviceToolBox::getInputVariable('location_id');
 $supplier_id = IserviceToolBox::getInputVariable('supplier_id');
 
-$cartridge = new Cartridge();
+$cartridge = new PluginIserviceCartridge();
 if (!$cartridge->getFromDB($id)) {
     die(sprintf(__("Invalid cartridge id: %d", "iservice"), $id));
 }
@@ -91,7 +91,7 @@ case 'remove_from_printer':
         die(sprintf(__("Cartridge %d is empty, it is not installed on a printer", "iservice"), $id));
     }
 
-    if ($cartridge->update(['id' => $id, 'printers_id' => '0', 'date_use' => 'NULL', 'date_out' => 'NULL', 'pages_use' => 0, 'pages_color_use' => 0])) {
+    if ($cartridge->update(['id' => $id, 'printers_id' => '0', 'date_use' => 'NULL', 'date_out' => 'NULL', 'pages_use_field' => 0, 'pages_color_use_field' => 0])) {
         global $DB;
         if (!$DB->query("delete from glpi_iservice_cartridges_tickets where cartridges_id = $id")) {
             (__("Could not remove cartridge from the installer ticket."));
@@ -117,9 +117,9 @@ case 'use':
             'id' => $id,
             'date_out' => $install_date,
             'pages' => $counter_black,
-            'pages_color' => $counter_color,
-            'printed_pages' => $cartridge->fields['printed_pages'] + $counter_black - $cartridge->fields['pages_use'],
-            'printed_pages_color' => $cartridge->fields['printed_pages'] + $counter_color - $cartridge->fields['pages_color_use'],
+            'pages_color_field' => $counter_color,
+            'printed_pages_field' => $cartridge->fields['printed_pages_field'] + $counter_black - $cartridge->fields['pages_use_field'],
+            'printed_pages_color_field' => $cartridge->fields['printed_pages_field'] + $counter_color - $cartridge->fields['pages_color_use_field'],
         ]
     )
     ) {

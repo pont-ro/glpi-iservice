@@ -211,7 +211,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             if (!empty($consumable['new_cartridge_ids'])) {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
                 if (empty($ticket->consumable_data['delivery_date'])) {
-                    $cartridge = new Cartridge();
+                    $cartridge = new PluginIserviceCartridge();
                     foreach ($cartridge->find("id in ($cartridge_ids)") as $cartr) {
                         $ticket->consumable_data['delivery_date'] = $cartr['date_in'];
                     }
@@ -244,8 +244,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             echo "</td>";
             echo "<td class='center'>";
 
-            $in_cm = PluginIserviceDB::getQueryResult("SELECT cartridge_management FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $suppliers_id");
-            if (!$in_cm[0]['cartridge_management']) {
+            $in_cm = PluginIserviceDB::getQueryResult("SELECT cm_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $suppliers_id");
+            if (!$in_cm[0]['cm_field']) {
                 $force_cartridge_creation = 0;
                 $cartridge_creation_title = "Aparatul nu este in Management cartușe";
             }

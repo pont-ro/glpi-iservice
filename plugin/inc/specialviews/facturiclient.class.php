@@ -1,6 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Facturi_Client.php".
+// File and class will be renamed after review.
 namespace GlpiPlugin\Iservice\Specialviews;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;

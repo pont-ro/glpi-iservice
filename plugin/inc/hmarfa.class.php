@@ -103,7 +103,7 @@ class PluginIserviceHmarfa
 
         $result   = $DB->query($query);
         $number   = $DB->numrows($result);
-        $contract = new Contract();
+        $contract = new PluginIserviceContract();
         if ($number > 0) {
             $contract->getFromDB($DB->result($result, 0, "contracts_id"));
         }
@@ -1131,7 +1131,7 @@ class PluginIserviceHmarfa
         if ($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'] === 'aviz' && !empty($printer)) {
             $contract_item  = new Contract_Item();
             $contract_items = $contract_item->find("itemtype = 'Printer' and items_id = " . $printer->getId());
-            $contract       = new Contract();
+            $contract       = new PluginIserviceContract();
             if (count($contract_items) > 0) {
                 foreach ($contract_items as $item) {
                     if ($contract->getFromDB($item['contracts_id'])) {
@@ -1151,7 +1151,7 @@ class PluginIserviceHmarfa
         }
 
         // Consumables on ticket.
-        $cartridge           = new Cartridge();
+        $cartridge           = new PluginIserviceCartridge();
         $total_amount        = 0;
         $used_cartridges     = [];
         $consumables_columns = null;
@@ -1202,7 +1202,7 @@ class PluginIserviceHmarfa
 
             $cartridge_ids = str_replace('|', '', $ticket_consumable['new_cartridge_ids']);
             foreach ($cartridge->find("id in ($cartridge_ids) and not date_use is null") as $cartr) {
-                $used_cartridges[$cartr['id']] = ['id' => $cartr['id'], 'ticket_use' => $cartr['tickets_id_use']];
+                $used_cartridges[$cartr['id']] = ['id' => $cartr['id'], 'ticket_use' => $cartr['tickets_id_use_field']];
             }
 
             unset($ticket_consumable['id']);
