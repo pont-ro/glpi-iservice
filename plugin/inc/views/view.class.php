@@ -1412,6 +1412,7 @@ class View extends \CommonGLPI
 
     protected function evalIfFunction($string, $global_variables = []): string
     {
+        $row = $row ?? [];
         if (strpos($string, 'function:') === 0) {
             $eval_before = '';
             foreach (array_keys($global_variables) as $variable_name) {

@@ -4,6 +4,7 @@
 namespace GlpiPlugin\Iservice\Specialviews;
 
 use GlpiPlugin\Iservice\Views\View;
+use \CommonITILActor;
 
 class LastNTickets extends View
 {

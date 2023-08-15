@@ -27,9 +27,13 @@ class FacturiClient extends View
     protected $partner       = null;
     protected $client_access = false;
 
-    public static function getRowBackgroundClass($row_data)
+    public static function getRowBackgroundClass($rowData)
     {
-        return $row_data['valoare_neincasata'] == 0 ? "bg_payed" : ($row_data['valoare_neincasata'] == $row_data['valoare'] ? "bg_not_payed" : "bg_partially_payed");
+        if (empty($rowData)) {
+            return "";
+        }
+
+        return $rowData['valoare_neincasata'] == 0 ? "bg_payed" : ($rowData['valoare_neincasata'] == $rowData['valoare'] ? "bg_not_payed" : "bg_partially_payed");
     }
 
     public static function getDataPlataDisplay($row_data)
@@ -141,7 +145,7 @@ class FacturiClient extends View
 
         ob_start();
         echo '<br/><h1>Ultimele 5 tichete cu categoria "Plati" pentru clientul ' . self::getName($partner, $client_access) . '</h1>';
-        $view = Views::getView('last_n_tickets', false);
+        $view = Views::getView('GlpiPlugin\Iservice\Specialviews\LastNTickets', false);
         $view->customize(['type' => LastNTickets::TYPE_PLATI, 'n' => 10, 'supplier_id' => $partner->getID()]);
         $view->display(true, false, 0, false);
         $suffix = ob_get_contents();
@@ -216,7 +220,7 @@ class FacturiClient extends View
                         ",
             'default_limit' => 10,
             'show_limit' => Session::haveRight('plugin_iservice_view_facturi_client', UPDATE),
-            'row_class' => 'function:FacturiClient::getRowBackgroundClass($row);',
+            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getRowBackgroundClass($row);',
             'filters' => [
                 'nrfac' => [
                     'type' => 'text',
@@ -334,7 +338,7 @@ class FacturiClient extends View
                 'data_plata' => [
                     'title' => 'Achitat',
                     'tooltip' => 'Accesări ale linkului magic',
-                    'format' => 'function:FacturiClient::getDataPlataDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getDataPlataDisplay($row);',
                     'align' => 'center',
                     'style' => 'white-space: nowrap;',
                     'link' => [
@@ -372,7 +376,7 @@ class FacturiClient extends View
                 'download' => [
                     'title' => 'Descarcă',
                     'align' => 'center',
-                    'format' => "function:FacturiClient::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link_field']}');",
+                    'format' => "function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link_field']}');",
                 ],
             ],
         ];
