@@ -250,3 +250,21 @@ start transaction;
     where t.id is null;
 
 commit;
+
+start transaction;
+
+    create table if not exists glpi_itilfollowups_deleted_rows as
+        select * from glpi_itilfollowups WHERE id = -1;
+
+    insert into glpi_itilfollowups_deleted_rows
+    select f.*
+    from glpi_itilfollowups f
+             left join glpi_tickets t on f.items_id = t.id and f.itemtype = 'Ticket'
+    where t.id is null;
+
+    delete f
+    from glpi_itilfollowups f
+             left join glpi_tickets t on f.items_id = t.id and f.itemtype = 'Ticket'
+    where t.id is null;
+
+commit;
