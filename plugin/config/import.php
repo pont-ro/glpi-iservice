@@ -172,6 +172,10 @@ return [
                 'itemtype' => 'PluginIserviceConsumable_Ticket',
                 'label' => _n('Consumable Ticket', 'Consumable Tickets', Session::getPluralNumber()),
             ],
+            'itilFollowup' => [
+                'itemtype' => 'ITILFollowup',
+                'label' => _n('ITIL Followup', 'ITIL Followups', Session::getPluralNumber()),
+            ],
         ]
     ],
     'cartridges' => [
