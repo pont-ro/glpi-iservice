@@ -82,6 +82,11 @@ return [
                 'type' => 'index',
                 'columns' => "(`codmat`)",
             ],
+            [
+                'name' => 'nrfac',
+                'type' => 'index',
+                'columns' => "(`nrfac`)",
+            ],
         ],
     ],
     'hmarfa_facturi' => [

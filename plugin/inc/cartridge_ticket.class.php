@@ -736,7 +736,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         if (!$cartridge->getFromDB($cartridge_id) || !$cartridgeitem_custom_field->getFromDBByItemsId($cartridge->fields['cartridgeitems_id'])) {
             return "Could not find cartridge with id $cartridge_id to install it.";
         }
-            // TODO: check what is getSameCartridgeIndex
+
         if (false !== ($index = CartridgeItem::getSameCartridgeIndex($installed_cartridges, $cartridgeitem_custom_field->fields['mercury_code_field'], $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']))) {
             if ($installed_cartridges[$index]['type_id'] != $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']) {
                 return "Type of cartridge to install ({$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']}) differs from type of installed cartridge ({$installed_cartridges[$index]['type_id']}) for the same mercury code ({$installed_cartridges[$index]['mercury_code']})";
