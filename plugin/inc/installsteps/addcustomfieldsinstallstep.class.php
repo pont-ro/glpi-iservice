@@ -252,8 +252,7 @@ class AddCustomFieldsInstallStep
 
             $fields = $field->find(
                 [
-                    'name'                        => $fieldData['name'],
-                    'plugin_fields_containers_id' => $containerData['id'],
+                    'name' => $fieldData['name'],
                 ]
             );
 
