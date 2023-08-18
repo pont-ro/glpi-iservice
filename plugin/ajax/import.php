@@ -243,6 +243,7 @@ function mapNewCartridgeIds(string $cartridgeIds, array &$errors): string
 
     return implode(',', $cartridgeIdsToMap);
 }
+
 function mapGroupField(string $groupField, array &$errors): string
 {
     $supplierIdsToMap = explode(',', $groupField);
@@ -337,6 +338,12 @@ do {
                 $errors['itemsNotAdded'][$itemTypeClass]['old_id'][] = $oldItem['id'];
                 continue;
             };
+
+            if (!empty($importConfig['updateFieldsAfterItemCreated']) && !$item->update(array_merge($itemData, ['id' => $item->getID()]))) {
+                $errors[] = "Could not update newly created $itemTypeClass object with data: " . json_encode($itemData);
+
+                $errors['newItemsNotUpdated'][$itemTypeClass]['old_id'][] = $oldItem['id'];
+            }
 
             $itemMap->add(
                 [
