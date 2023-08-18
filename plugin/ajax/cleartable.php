@@ -41,7 +41,8 @@ if (!empty($importConfig['clearRelatedTable'])) {
     }
 
     if (!empty($importConfig['clearCondition'])) {
-        $deleteRelatedQuery = "delete rt from {$importConfig['clearRelatedTable']} rt left join $item->getTable() it on rt.items_id = it.id AND rt.itemtype = '$itemTypeClass'";
+        $deleteRelatedQuery = "delete rt from {$importConfig['clearRelatedTable']} rt left join (select * from {$item->getTable()} where {$importConfig['clearCondition']})
+    it on rt.items_id = it.id AND rt.itemtype = '$itemTypeClass'";
     }
 }
 
