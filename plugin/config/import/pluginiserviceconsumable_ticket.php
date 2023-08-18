@@ -30,7 +30,7 @@ return [
             'name' => 'euro_price',
         ],
         [
-            'name' => 'new_cartridge_ids',
+            'name' => 'new_cartridge_ids', // This field is mapped with dedicated method: mapNewCartridgeIds.
         ],
     ],
     'foreignKeys'   => [
