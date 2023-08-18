@@ -38,7 +38,7 @@ BEGIN
       AND c2.date_use IS NULL AND c2.date_out IS NULL
       AND FIND_IN_SET (c2.suppliers_id_field, cfs.group_field)
       AND COALESCE(c2.printers_id, 0) = 0
-      AND (cfci1.plugin_fields_cartridgeitemtypedropdowns_id = cfci2.plugin_fields_cartridgeitemtypedropdowns_id or COALESCE(cfci2.plugin_fields_cartridgeitemtypedropdowns_id, 0) = 0)
+      AND (c1.plugin_fields_cartridgeitemtypedropdowns_id = c2.plugin_fields_cartridgeitemtypedropdowns_id or COALESCE(c2.plugin_fields_cartridgeitemtypedropdowns_id, 0) = 0)
       AND (c2.locations_id_field = c1.locations_id_field OR COALESCE(l1.locations_id, 0) = COALESCE(l2.locations_id, 0))
       ;
     RETURN cartridgeCount;
@@ -82,13 +82,13 @@ CREATE FUNCTION `getCartridgeDaysToEmpty`(
     SQL SECURITY INVOKER
 BEGIN
     DECLARE days DECIMAL(5,2);
-    SELECT ROUND(IF(cfci.atc_field = 0, 1000, cfci.atc_field) * IF(cfci.life_coefficient_field = 0, 1000, cfci.life_coefficient_field) * CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id
+    SELECT ROUND(IF(cfci.atc_field = 0, 1000, cfci.atc_field) * IF(cfci.life_coefficient_field = 0, 1000, cfci.life_coefficient_field) * CASE c.plugin_fields_cartridgeitemtypedropdowns_id
            WHEN 2 THEN IF (cfp.uc_cyan_field = 0, 1, cfp.uc_cyan_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
            WHEN 3 THEN IF(cfp.uc_magenta_field = 0, 1, cfp.uc_magenta_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
            WHEN 4 THEN IF(cfp.uc_yellow_field = 0, 1, cfp.uc_yellow_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
            ELSE IF(cfp.uc_bk_field = 0, 1, cfp.uc_bk_field) / IF(cfp.daily_bk_average_field = 0, 180, cfp.daily_bk_average_field)
          END) INTO days
-    FROM glpi_cartridges c
+    FROM glpi_plugin_iservice_cartridges c
     LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.itemtype = 'CartridgeItem' AND cfci.items_id = c.cartridgeitems_id
     LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
     WHERE c.id = cartridgeId;

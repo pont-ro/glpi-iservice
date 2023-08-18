@@ -199,11 +199,11 @@ class Cartridges extends View
         $cartridges = IserviceToolBox::getQueryResult(
             "
             select c.id
-            from glpi_cartridges c
+            from glpi_plugin_iservice_cartridges c
             join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
             join glpi_plugin_iservice_cartridges_tickets ct on ct.cartridges_id = c.id
             where cfci.mercury_code_field in ($row_data[compatible_mercury_codes])
-              and cfci.plugin_fields_cartridgeitemtypedropdowns_id = $row_data[type_id]
+              and c.plugin_fields_cartridgeitemtypedropdowns_id = $row_data[type_id]
               and ct.tickets_id = $row_data[saved_out_ticket_id]
             "
         );
@@ -264,7 +264,7 @@ class Cartridges extends View
             'query' => "
                         SELECT
                             c.id 
-                          , ci.plugin_fields_cartridgeitemtypedropdowns_id type_id
+                          , c.plugin_fields_cartridgeitemtypedropdowns_id type_id
                           , c.date_in
                           , c.date_use
                           , c.tickets_id_use_field saved_installer_ticket_id

@@ -97,7 +97,8 @@ select
     cfc.printed_pages_field as printed_pages_field,
     cfc.printed_pages_color_field as printed_pages_color_field,
     cfc.suppliers_id_field as suppliers_id_field,
-    cfc.locations_id_field as locations_id_field
+    cfc.locations_id_field as locations_id_field,
+    cfc.plugin_fields_cartridgeitemtypedropdowns_id as plugin_fields_cartridgeitemtypedropdowns_id
 from glpi_cartridges c
      left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge';
 
@@ -370,7 +371,7 @@ from glpi_plugin_iservice_cartridges c1
 where c2.date_use is null and c2.date_out is null
     and find_in_set (c2.suppliers_id_field, cfs.group_field)
     and coalesce(c2.printers_id, 0) = 0
-    and (cfci1.plugin_fields_cartridgeitemtypedropdowns_id  = cfci2.plugin_fields_cartridgeitemtypedropdowns_id  or coalesce(cfci2.plugin_fields_cartridgeitemtypedropdowns_id , 0) = 0)
+    and (c1.plugin_fields_cartridgeitemtypedropdowns_id  = c2.plugin_fields_cartridgeitemtypedropdowns_id  or coalesce(cfci2.plugin_fields_cartridgeitemtypedropdowns_id , 0) = 0)
     and (c2.locations_id_field = c1.locations_id_field or coalesce(l1.locations_id, 0) = coalesce(l2.locations_id, 0))
 group by c1.id;
 

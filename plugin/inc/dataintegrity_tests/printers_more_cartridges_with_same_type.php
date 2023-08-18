@@ -8,7 +8,7 @@ return [
           , s.id sid
           , s.name supplier
           , ci.mercury_code_field mercury_code
-          , ci.plugin_fields_cartridgeitemtypedropdowns_id  type_id
+          , c.plugin_fields_cartridgeitemtypedropdowns_id  type_id
           , coalesce(td.completename, 'unknown') type_name
           , count(c.id) `count`
           , GROUP_CONCAT(c.id SEPARATOR ', ') ids
@@ -16,9 +16,9 @@ return [
         join glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
         join glpi_printers p on p.id = c.printers_id
         join glpi_suppliers s on s.id = c.suppliers_id_field
-        left join glpi_plugin_fields_cartridgeitemtypedropdowns td on td.id = ci.plugin_fields_cartridgeitemtypedropdowns_id 
+        left join glpi_plugin_fields_cartridgeitemtypedropdowns td on td.id = c.plugin_fields_cartridgeitemtypedropdowns_id 
         where printers_id > 0 and date_use is not null and date_out is null and (ci.ref like 'cton%' or ci.ref like 'ccat%')
-        group by p.id, s.id, ci.plugin_fields_cartridgeitemtypedropdowns_id 
+        group by p.id, s.id, c.plugin_fields_cartridgeitemtypedropdowns_id 
         ) st
         where st.`count` > 1
         ",
