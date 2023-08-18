@@ -220,7 +220,7 @@ class FacturiClient extends View
                         ",
             'default_limit' => 10,
             'show_limit' => Session::haveRight('plugin_iservice_view_facturi_client', UPDATE),
-            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getRowBackgroundClass($row);',
+            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getRowBackgroundClass($row_data);',
             'filters' => [
                 'nrfac' => [
                     'type' => 'text',
