@@ -136,7 +136,7 @@ class Operations extends View
                         AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
                         AND t.name LIKE '[ticket_name]'
                         AND t.content LIKE '[ticket_content]'
-                        AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[data_luc]')
+                        AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date_field]')
                         [printer_id]
                     GROUP BY t.id
                 ) t
@@ -152,9 +152,9 @@ class Operations extends View
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => "AND p.id = %d",
                 ],
-                'data_luc' => [
+                'effective_date_field' => [
                     'type' => self::FILTERTYPE_DATE,
-                    'header' => 'data_luc',
+                    'header' => 'effective_date_field',
                     'header_caption' => '< ',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date('Y-m-d'),

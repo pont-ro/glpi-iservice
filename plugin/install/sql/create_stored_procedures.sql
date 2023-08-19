@@ -137,7 +137,7 @@ BEGIN
           WHEN 4 THEN t.total2_color_field
           ELSE t.total2_black_field
         END counter_use
-      , cfp.data_luc -- plct.effective_date_field
+      , cfp.effective_date_field -- plct.effective_date_field
     INTO atc, lc, uc, da, counter_last, counter_use, last_data_luc
     FROM glpi_plugin_iservice_cartridges c
     LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.itemtype = 'CartridgeItem' AND cfci.items_id = c.cartridgeitems_id
@@ -187,7 +187,7 @@ BEGIN
     DECLARE lastDataLuc DATETIME;
     
     SELECT
-        cfp.data_luc -- plct.effective_date_field
+        cfp.effective_date_field -- plct.effective_date_field
       , CASE color WHEN 1 THEN cfp.total2_color /* plct.total2_color_field */ ELSE cfp.total2_black /* plct.total2_black_field */ END
       , CASE color WHEN 1 THEN cfp.daily_color_average_field ELSE cfp.daily_bk_average_field END
     INTO lastDataLuc, lastCounter, dailyAverage

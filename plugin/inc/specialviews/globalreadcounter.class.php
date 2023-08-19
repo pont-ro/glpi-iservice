@@ -50,7 +50,7 @@ class GlobalReadCounter extends View
         }
 
         $display_data = [];
-        foreach (['data_luc', 'total2_black', 'total2_color', 'date_use', 'date_out'] as $field_name) {
+        foreach (['effective_date_field', 'total2_black', 'total2_color', 'date_use', 'date_out'] as $field_name) {
             // $import_data[$field_name] is an array in case of an error
             $display_data[$field_name] = is_array($import_data[$field_name]) ? '' : $import_data[$field_name];
         }
@@ -60,7 +60,7 @@ class GlobalReadCounter extends View
             "Date citite din fișier:\n" .
             "&nbsp;- Client: $import_data[partner_name] ($import_data[partner_id] - $import_data[partner_resolved_name])\n" .
             "&nbsp;- Aparat: $row_data[spaceless_serial]\n" .
-            "&nbsp;&nbsp;&nbsp;- data citirii: $display_data[data_luc]\n" .
+            "&nbsp;&nbsp;&nbsp;- data citirii: $display_data[effective_date_field]\n" .
             "&nbsp;&nbsp;&nbsp;- contor black: $display_data[total2_black]\n" .
             "&nbsp;&nbsp;&nbsp;- contor color: $display_data[total2_color]\n" .
             "&nbsp;&nbsp;&nbsp;- data instalarii: $display_data[date_use]\n" .
@@ -85,7 +85,7 @@ class GlobalReadCounter extends View
         $data_difference = round((time() - strtotime($param_data['row_data']['last_data_luc'])) / (60 * 60 * 24));
         $estimate_value  = '';
         $icon_click      = "";
-        foreach (['total2_black', 'total2_color', 'data_luc'] as $fieldname) {
+        foreach (['total2_black', 'total2_color', 'effective_date_field'] as $fieldname) {
             switch ($fieldname) {
             case 'total2_black':
                 $estimate_value = $param_data['row_data']['last_total2_black'] + ($param_data['row_data']['daily_bk_average_field'] * $data_difference);
@@ -99,7 +99,7 @@ class GlobalReadCounter extends View
                     $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_color'], $param_data['row_data']['daily_color_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 }
                 break;
-            case 'data_luc':
+            case 'effective_date_field':
                 $estimate_value = date("Y-m-d h:m:s");
                 break;
             }
@@ -265,7 +265,7 @@ class GlobalReadCounter extends View
                         'name' => 'total2_black',
                         'empty_value' => '[last_total2_black]',
                         'min_value' => '[last_total2_black]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][data_luc]"]',
+                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Black2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
@@ -288,7 +288,7 @@ class GlobalReadCounter extends View
                         'name' => 'total2_color',
                         'empty_value' => '[last_total2_color]',
                         'min_value' => '[last_total2_color]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][data_luc]"]',
+                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Color2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
@@ -314,13 +314,13 @@ class GlobalReadCounter extends View
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_DATETIME,
-                        'name' => 'data_luc',
+                        'name' => 'effective_date_field',
                         'empty_value' => date('Y-m-d H:i:s'),
                         'min_value' => '[last_data_luc]',
                         'label' => 'Data citire pentru [serial]',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'data_luc',
+                            'index' => 'effective_date_field',
                             'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
                             'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
                             'minimum_error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',

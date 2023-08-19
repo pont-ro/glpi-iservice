@@ -418,7 +418,7 @@ class Printers extends View
                             , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_name
                             , ue.name external_user
                             , g.completename supergroup
-                            , plt.data_luc last_data_luc
+                            , plt.effective_date_field last_data_luc
                             , plt.total2_black last_total2_black
                             , p.invoiced_total_black_field
                             , plt.total2_color last_total2_color
