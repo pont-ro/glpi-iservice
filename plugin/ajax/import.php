@@ -45,6 +45,10 @@ function processItemData(array $oldItemData, array $importConfig, array &$foreig
         $result['new_cartridge_ids'] = mapNewCartridgeIds($result['new_cartridge_ids'], $errors);
     }
 
+    if (!empty($result['group_field'])) {
+        $result['group_field'] = mapGroupField($result['group_field'], $errors);
+    }
+
     return escapeValues($result);
 }
 
@@ -217,9 +221,9 @@ function getCriteria(array $importConfig, array $itemData): array
     return $criteria;
 }
 
-function mapNewCartridgeIds(string $CartridgeIds, array &$errors): string
+function mapNewCartridgeIds(string $cartridgeIds, array &$errors): string
 {
-    $cartridgeIdsToMap = explode(',', $CartridgeIds);
+    $cartridgeIdsToMap = explode(',', $cartridgeIds);
     $foreignKeyMap     = new PluginIserviceImportMapping();
 
     foreach ($cartridgeIdsToMap as &$cartridgeId) {
@@ -238,6 +242,26 @@ function mapNewCartridgeIds(string $CartridgeIds, array &$errors): string
     }
 
     return implode(',', $cartridgeIdsToMap);
+}
+
+function mapGroupField(string $groupField, array &$errors): string
+{
+    $supplierIdsToMap = explode(',', $groupField);
+    $foreignKeyMap    = new PluginIserviceImportMapping();
+
+    foreach ($supplierIdsToMap as &$supplierId) {
+        if ($foreignKeyMap->getFromDBByCrit(['itemtype' => 'Supplier', 'old_id' => $supplierId ])) {
+            $newSupplierId = $foreignKeyMap->getField('items_id');
+        }
+
+        if (empty($newSupplierId) || $newSupplierId == 'N/A') {
+            $supplierId = 'old_' . $newSupplierId;
+        } else {
+            $supplierId = $newSupplierId;
+        }
+    }
+
+    return implode(',', $supplierIdsToMap);
 }
 
 // -------------------
@@ -314,6 +338,12 @@ do {
                 $errors['itemsNotAdded'][$itemTypeClass]['old_id'][] = $oldItem['id'];
                 continue;
             };
+
+            if (!empty($importConfig['updateFieldsAfterItemCreated']) && !$item->update(array_merge($itemData, ['id' => $item->getID()]))) {
+                $errors[] = "Could not update newly created $itemTypeClass object with data: " . json_encode($itemData);
+
+                $errors['newItemsNotUpdated'][$itemTypeClass]['old_id'][] = $oldItem['id'];
+            }
 
             $itemMap->add(
                 [
