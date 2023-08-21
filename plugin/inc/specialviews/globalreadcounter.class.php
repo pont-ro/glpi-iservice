@@ -347,7 +347,7 @@ class GlobalReadCounter extends View
                         'default' => 1,
                     ],
                 ],
-                'no_travel' => [
+                'no_travel_field' => [
                     'title' => 'Fără deplasare',
                     'align' => 'center',
                     'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),

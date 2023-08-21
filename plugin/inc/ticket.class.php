@@ -1003,21 +1003,20 @@ class PluginIserviceTicket extends Ticket
 
     protected static function getConditionForSupplier($supplier_id = 0, $open = null, $order = 'asc', $additional_condition = '', $additional_join = ''): string
     {
-        $join           = "JOIN glpi_tickets t ON t.id = `glpi_suppliers_tickets`.tickets_id AND t.is_deleted = 0
+        $join           = "JOIN glpi_plugin_iservice_tickets t ON t.id = `glpi_suppliers_tickets`.tickets_id AND t.is_deleted = 0
                  LEFT JOIN
                     (SELECT COUNT(git.tickets_id) item_count, git.tickets_id 
                      FROM glpi_items_tickets git
                      WHERE git.itemtype = 'Printer'
                      GROUP BY git.tickets_id 
                     ) ic on ic.tickets_id = t.id
-                LEFT JOIN glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
                  $additional_join
                  ";
         $open_condition = $open === null ? "" : "t.status " . ($open ? "!=" : "=") . Ticket::CLOSED . " AND";
         return "$join WHERE $open_condition ic.item_count IS NULL
                 AND `glpi_suppliers_tickets`.suppliers_id = $supplier_id
                 AND `glpi_suppliers_tickets`.type = " . CommonITILActor::ASSIGN . " $additional_condition
-                ORDER BY t.effective_date $order, t.id $order";
+                ORDER BY t.effective_date_field $order, t.id $order";
     }
 
     public function displayResult($result_type, $result): string
@@ -1720,9 +1719,9 @@ class PluginIserviceTicket extends Ticket
 
         // Without moving.
         if ($prepared_data['field_hidden']['_without_moving']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_without_moving', $id > 0 ? $this->customfields->fields['no_travel'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']));
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_without_moving', $id > 0 ? $this->customfields->fields['no_travel_field'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']));
         } else {
-            $form->displayFieldTableRow('Fără deplasare', $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_without_moving', $id > 0 ? $this->customfields->fields['no_travel'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']), $prepared_data['field_readonly']['_without_moving']));
+            $form->displayFieldTableRow('Fără deplasare', $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_without_moving', $id > 0 ? $this->customfields->fields['no_travel_field'] : (empty($prepared_data['default_values']['_without_moving']) ? '' : $prepared_data['default_values']['_without_moving']), $prepared_data['field_readonly']['_without_moving']));
         }
 
         // Save work progress.

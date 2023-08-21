@@ -1524,7 +1524,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             );
             echo "                                </div>\n";
             echo "                                <input type='hidden' class='data_fact_until_new' value='" . IserviceToolBox::addMonthToDate($router->tableData['invoice_expiry_date_field'], 1) . "'/>\n";
-            echo "                                <input type='hidden' class='submit ult_tichet_effective_date_field' value='" . date("Y-m-d", strtotime($router->tableData['data_ult_fact'])) . "'/>\n";
+            echo "                                <input type='hidden' class='submit last_ticket_effective_date_field' value='" . date("Y-m-d", strtotime($router->tableData['data_ult_fact'])) . "'/>\n";
             echo "                            </td>\n";
             echo "                            <td align='center'>\n";
             $form->displayField(

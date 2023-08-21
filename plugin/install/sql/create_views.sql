@@ -104,7 +104,8 @@ select
     cfc.pages_color_field as pages_color_field,
     cfc.pages_use_field as pages_use_field,
     cfc.pages_color_use_field as pages_color_use_field,
-    cfc.printed_pages_field as printed_pages_field
+    cfc.printed_pages_field as printed_pages_field,
+    cfc.plugin_fields_cartridgeitemtypedropdowns_id as plugin_fields_cartridgeitemtypedropdowns_id
 from glpi_cartridges c
      left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge';
 
@@ -291,7 +292,7 @@ select
     cft.contact_phone_field as contact_phone_field,
     cft.device_observations_field as device_observations_field,
     cft.movement_id_field as movement_id_field,
-    cft.no_travel as no_travel,
+    cft.no_travel_field as no_travel_field,
     cft.movement2_id_field as movement2_id_field,
     cft.without_paper_field as without_paper_field,
     cft.plugin_fields_ticketexporttypedropdowns_id as plugin_fields_ticketexporttypedropdowns_id,
