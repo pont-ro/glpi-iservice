@@ -187,8 +187,8 @@ BEGIN
     DECLARE lastDataLuc DATETIME;
     
     SELECT
-        cfp.effective_date_field -- plct.effective_date_field
-      , CASE color WHEN 1 THEN cfp.total2_color /* plct.total2_color_field */ ELSE cfp.total2_black /* plct.total2_black_field */ END
+        p.last_effective_date_field -- plct.effective_date_field
+      , CASE color WHEN 1 THEN p.last_total2_color /* plct.total2_color_field */ ELSE p.last_total2_black /* plct.total2_black_field */ END
       , CASE color WHEN 1 THEN cfp.daily_color_average_field ELSE cfp.daily_bk_average_field END
     INTO lastDataLuc, lastCounter, dailyAverage
     FROM glpi_plugin_iservice_printers p
