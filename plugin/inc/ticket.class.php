@@ -262,7 +262,7 @@ class PluginIserviceTicket extends Ticket
                         self::MODE_CARTRIDGEMANAGEMENT => true,
                     ],
                 ],
-                'total2_black' => [
+                'total2_black_field' => [
                     'hidden' => [
                         self::MODE_NONE => true,
                         self::MODE_CREATENORMAL => true,
@@ -276,7 +276,7 @@ class PluginIserviceTicket extends Ticket
                         self::MODE_HMARFAEXPORT => true,
                     ],
                 ],
-                'total2_color' => [
+                'total2_color_field' => [
                     'hidden' => [
                         self::MODE_NONE => true,
                         self::MODE_CREATENORMAL => true,
@@ -1118,7 +1118,7 @@ class PluginIserviceTicket extends Ticket
             Html::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea $movement întâi!</a>");
         } else {
             $movement = new PluginIserviceMovement();
-            $movement->getFromDB($this->customfields->fields['movement_id'] ?: $this->customfields->fields['movement2_id_field'] ?: -1);
+            $movement->getFromDB($this->customfields->fields['movement_id_field'] ?: $this->customfields->fields['movement2_id_field'] ?: -1);
         }
 
         // Begin form.
@@ -1209,8 +1209,8 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_movement_id']) {
             $ticket_customfields = new PluginFieldsTicketticketcustomfield();
-            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement_id_field = " . IserviceToolBox::getInputVariable('movement_id', -2), true)) {
-                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement_id')));
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement_id_field = " . IserviceToolBox::getInputVariable('movement_id_field', -2), true)) {
+                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement_id_field')));
             }
 
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_movement_id', $movement_id);
@@ -1220,8 +1220,8 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_movement2_id']) {
             $ticket_customfields = new PluginFieldsTicketticketcustomfield();
-            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement2_id_field = " . IserviceToolBox::getInputVariable('movement2_id', -2), true)) {
-                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement2_id')));
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE movement2_id_field = " . IserviceToolBox::getInputVariable('movement2_id_field', -2), true)) {
+                Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('movement2_id_field')));
             }
 
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_movement2_id', $movement2_id);
@@ -1231,8 +1231,8 @@ class PluginIserviceTicket extends Ticket
 
         if ($prepared_data['field_hidden']['_idemmailfield']) {
             $ticket_customfields = new PluginFieldsTicketticketcustomfield();
-            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE em_mail_id_field = " . IserviceToolBox::getInputVariable('idemmailfield', -2), true)) {
-                Html::displayErrorAndDie(sprintf(__("Ticket already exists for [EM] email %d", "iservice"), IserviceToolBox::getInputVariable('idemmailfield')));
+            if (PluginIserviceDB::populateByQuery($ticket_customfields, "WHERE em_mail_id_field = " . IserviceToolBox::getInputVariable('em_mail_id_field', -2), true)) {
+                Html::displayErrorAndDie(sprintf(__("Ticket already exists for [EM] email %d", "iservice"), IserviceToolBox::getInputVariable('em_mail_id_field')));
             }
 
             $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_idemmailfield', $idemmailfield);
@@ -1420,9 +1420,9 @@ class PluginIserviceTicket extends Ticket
                         new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_date_field'] ?? '', 'nowrap'),
                         new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_expiry_date_field'] ?? '', 'nowrap'),
                         $printer->customfields->fields['invoiced_total_color_field'] ?? '',
-                        $printer->lastClosedTicket()->fields['total2_color'] ?? '',
+                        $printer->lastClosedTicket()->fields['total2_color_field'] ?? '',
                         $printer->customfields->fields['invoiced_total_black_field'] ?? '',
-                        $printer->lastClosedTicket()->fields['total2_black'] ?? '',
+                        $printer->lastClosedTicket()->fields['total2_black_field'] ?? '',
                     ]
                 ), 'display: inline-block;text-align: center;'
             );
@@ -1436,19 +1436,19 @@ class PluginIserviceTicket extends Ticket
         // Counter required minumums.
         // We check if there are newer tickets.
         // We check only for closed tickets, as the counters are calculated on ticket close.
-        $total2_black_required_minimum = $last_closed_ticket->fields['total2_black'] ?? 0;
-        $total2_color_required_minimum = $last_closed_ticket->fields['total2_color'] ?? 0;
+        $total2_black_required_minimum = $last_closed_ticket->fields['total2_black_field'] ?? 0;
+        $total2_color_required_minimum = $last_closed_ticket->fields['total2_color_field'] ?? 0;
 
         // If there are newer closed tickets, we do not allow counter change, as counters on the cartridges will be messed up.
         if ($id > 0 && ($last_closed_ticket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
-            $prepared_data['field_readonly']['total2_black'] = true;
-            $prepared_data['field_readonly']['total2_color'] = true;
+            $prepared_data['field_readonly']['total2_black_field'] = true;
+            $prepared_data['field_readonly']['total2_color_field'] = true;
         }
 
         // If the ticket is closed or there are newer tickets, the required minimum is the already saved counter or the last intervention counter.
         if ($id > 0 && (($last_ticket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'] || $closed)) {
-            $total2_black_required_minimum = min($total2_black_required_minimum, $this->fields['total2_black']);
-            $total2_color_required_minimum = min($total2_color_required_minimum, $this->fields['total2_color']);
+            $total2_black_required_minimum = min($total2_black_required_minimum, $this->fields['total2_black_field']);
+            $total2_color_required_minimum = min($total2_color_required_minimum, $this->fields['total2_color_field']);
         }
 
         // effective_date_field required minimum.
@@ -1456,38 +1456,38 @@ class PluginIserviceTicket extends Ticket
 
         // Counter CSV data.
         $csv_data = PluginIserviceEmaintenance::getDataFromCsvsForSpacelessSerial($printer->getSpacelessSerial());
-        if (!empty($csv_data) && !$prepared_data['field_readonly']['total2_black']) {
+        if (!empty($csv_data) && !$prepared_data['field_readonly']['total2_black_field']) {
             $style   = '';
             $onclick = '';
             $title   = "Click pentru valoarea din CSV\nData contor: {$csv_data['effective_date_field']}\nContor black: ";
 
             $button_template = " <input class='submit' onclick='' title=' %2\$d' type='button' value='din CSV'/>";
 
-            if (!empty($csv_data['total2_black']['error'])) {
+            if (!empty($csv_data['total2_black_field']['error'])) {
                 $style  = "style='color: red;'";
-                $title .= $csv_data['total2_black']['error'];
+                $title .= $csv_data['total2_black_field']['error'];
             } else {
-                $title .= $csv_data['total2_black'];
-                if ($csv_data['total2_black'] < $total2_black_required_minimum) {
+                $title .= $csv_data['total2_black_field'];
+                if ($csv_data['total2_black_field'] < $total2_black_required_minimum) {
                     $style  = "style='color: red;'";
                     $title .= " < $total2_black_required_minimum (minim valid)!";
                 } else {
-                    $onclick .= sprintf("$(\"[name=total2_black]\").val(%d);", $csv_data['total2_black']);
+                    $onclick .= sprintf("$(\"[name=total2_black_field]\").val(%d);", $csv_data['total2_black_field']);
                 }
             }
 
             if ($color_printer || $plotter_printer) {
                 $title .= $plotter_printer ? "\nSuprafață printată:" : "\nContor color: ";
-                if (!empty($csv_data['total2_color']['error'])) {
+                if (!empty($csv_data['total2_color_field']['error'])) {
                     $style  = "style='color: red;'";
-                    $title .= $csv_data['total2_color']['error'];
+                    $title .= $csv_data['total2_color_field']['error'];
                 } else {
-                    $title .= $csv_data['total2_color'];
-                    if ($csv_data['total2_color'] < $total2_color_required_minimum) {
+                    $title .= $csv_data['total2_color_field'];
+                    if ($csv_data['total2_color_field'] < $total2_color_required_minimum) {
                         $style  = "style='color: red;'";
                         $title .= " < $total2_color_required_minimum (minim valid)!";
                     } else {
-                        $onclick .= sprintf("$(\"[name=total2_color]\").val(%d);", $csv_data['total2_color']);
+                        $onclick .= sprintf("$(\"[name=total2_color_field]\").val(%d);", $csv_data['total2_color_field']);
                     }
                 }
             }
@@ -1505,18 +1505,18 @@ class PluginIserviceTicket extends Ticket
         if (!$closed && $printer_id > 0 && !$printer->isRouter() && (empty($id) || ($last_ticket->customfields->fields['effective_date_field'] ?? '') <= $this->customfields->fields['effective_date_field']) && $last_closed_ticket->getID() > 0 && !$printer->customfields->fields['no_invoice_field']) {
             $last_effective_date     = new DateTime($last_closed_ticket->customfields->fields['effective_date_field'] ?? '');
             $days_since_last_counter = $last_effective_date->diff(new DateTime(empty($this->customfields->fields['effective_date_field']) ? null : $this->customfields->fields['effective_date_field']))->format("%a");
-            $estimated_black         = $last_closed_ticket->fields['total2_black'] + $printer->customfields->fields['daily_bk_average_field'] * $days_since_last_counter;
-            $estimated_color         = $last_closed_ticket->fields['total2_color'] + $printer->customfields->fields['daily_color_average_field'] * $days_since_last_counter;
+            $estimated_black         = $last_closed_ticket->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $days_since_last_counter;
+            $estimated_color         = $last_closed_ticket->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $days_since_last_counter;
             $title                   = "";
             $onclick                 = '';
             if ($estimated_black > 0) {
-                $title   .= "black: $estimated_black ({$last_closed_ticket->fields['total2_black']} + {$printer->customfields->fields['daily_bk_average_field']}*$days_since_last_counter)";
-                $onclick .= "$(\"[name=total2_black]\").val($estimated_black);";
+                $title   .= "black: $estimated_black ({$last_closed_ticket->fields['total2_black_field']} + {$printer->customfields->fields['daily_bk_average_field']}*$days_since_last_counter)";
+                $onclick .= "$(\"[name=total2_black_field]\").val($estimated_black);";
             }
 
             if (($color_printer || $plotter_printer) && $estimated_color > 0) {
-                $title   .= ", " . ($plotter_printer ? "suprafață hârtie" : "color") . ": $estimated_color ({$last_closed_ticket->fields['total2_color']} + {$printer->customfields->fields['daily_color_average_field']}*$days_since_last_counter)";
-                $onclick .= "$(\"[name=total2_color]\").val($estimated_color);";
+                $title   .= ", " . ($plotter_printer ? "suprafață hârtie" : "color") . ": $estimated_color ({$last_closed_ticket->fields['total2_color_field']} + {$printer->customfields->fields['daily_color_average_field']}*$days_since_last_counter)";
+                $onclick .= "$(\"[name=total2_color_field]\").val($estimated_color);";
             }
 
             // Uncomment this line to see date explanation.
@@ -1528,12 +1528,12 @@ class PluginIserviceTicket extends Ticket
         }
 
         // Counter calculation.
-        $total2_black = empty($id) ? $total2_black_required_minimum : ($this->fields['total2_black'] > $total2_black_required_minimum || $closed ? $this->fields['total2_black'] : $total2_black_required_minimum);
-        $total2_color = empty($id) ? ($total2_color_required_minimum) : ($this->fields['total2_color'] > $total2_color_required_minimum || $closed ? $this->fields['total2_color'] : $total2_color_required_minimum);
+        $total2_black = empty($id) ? $total2_black_required_minimum : ($this->fields['total2_black_field'] > $total2_black_required_minimum || $closed ? $this->fields['total2_black_field'] : $total2_black_required_minimum);
+        $total2_color = empty($id) ? ($total2_color_required_minimum) : ($this->fields['total2_color_field'] > $total2_color_required_minimum || $closed ? $this->fields['total2_color_field'] : $total2_color_required_minimum);
 
         // Black counter data.
-        if ($prepared_data['field_hidden']['total2_black']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'total2_black', $total2_black);
+        if ($prepared_data['field_hidden']['total2_black_field']) {
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'total2_black_field', $total2_black);
         } else {
             $label = $plotter_printer ? __('Consumed ink', 'iservice') : __('Black counter reading', 'iservice');
             if ($plotter_printer) {
@@ -1544,12 +1544,12 @@ class PluginIserviceTicket extends Ticket
                 $label     = __('Black counter reading', 'iservice');
             }
 
-            $form->displayFieldTableRow($label . $info_icon, $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'total2_black', $total2_black, $prepared_data['field_readonly']['total2_black'] || ($this->originalFields['status'] ?? '') == self::CLOSED, ['data-required-minimum' => $total2_black_required_minimum, 'data-estimated' => $estimated_black]) . $counter_black_suffix);
+            $form->displayFieldTableRow($label . $info_icon, $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'total2_black_field', $total2_black, $prepared_data['field_readonly']['total2_black_field'] || ($this->originalFields['status'] ?? '') == self::CLOSED, ['data-required-minimum' => $total2_black_required_minimum, 'data-estimated' => $estimated_black]) . $counter_black_suffix);
         }
 
         // Color counter data.
-        if ($prepared_data['field_hidden']['total2_color'] || (!$color_printer && !$plotter_printer)) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'total2_color', $total2_color);
+        if ($prepared_data['field_hidden']['total2_color_field'] || (!$color_printer && !$plotter_printer)) {
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'total2_color_field', $total2_color);
         } else {
             if ($plotter_printer) {
                 $info_icon = "";
@@ -1559,7 +1559,7 @@ class PluginIserviceTicket extends Ticket
                 $label     = __('Color counter reading', 'iservice');
             }
 
-            $form->displayFieldTableRow($label . $info_icon, $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'total2_color', $total2_color, $prepared_data['field_readonly']['total2_color'] || ($this->originalFields['status'] ?? '') == self::CLOSED, ['data-required-minimum' => $total2_color_required_minimum, 'data-estimated' => $estimated_color]));
+            $form->displayFieldTableRow($label . $info_icon, $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'total2_color_field', $total2_color, $prepared_data['field_readonly']['total2_color_field'] || ($this->originalFields['status'] ?? '') == self::CLOSED, ['data-required-minimum' => $total2_color_required_minimum, 'data-estimated' => $estimated_color]));
         }
 
         // Category.
@@ -1845,7 +1845,7 @@ class PluginIserviceTicket extends Ticket
         }
 
         // Services invoiced.
-        if (empty($this->customfields->fields['movement_id'])) {
+        if (empty($this->customfields->fields['movement_id_field'])) {
             $prepared_data['field_hidden']['_services_invoiced'] = true;
         } else {
             $prepared_data['field_readonly']['_services_invoiced'] = $movement->fields['invoice'];
@@ -1890,9 +1890,9 @@ class PluginIserviceTicket extends Ticket
 
         // Email de notificare.
         if ($prepared_data['field_hidden']['_notificationmailfield']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_notificationmailfield', $this->customfields->fields['notificationmailfield']);
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_notificationmailfield', $this->customfields->fields['notification_mail_field']);
         } else {
-            $form->displayFieldTableRow(__('Notification e-mail', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_notificationmailfield', $this->customfields->fields['notificationmailfield'], $prepared_data['field_readonly']['_notificationmailfield']));
+            $form->displayFieldTableRow(__('Notification e-mail', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_notificationmailfield', $this->customfields->fields['notification_mail_field'], $prepared_data['field_readonly']['_notificationmailfield']));
         }
 
         // Consumabile instalate.
@@ -2123,9 +2123,9 @@ class PluginIserviceTicket extends Ticket
             // unset($buttons['close']);
             // }
             // If it is a movement ticket, it cannot be closed until the services invoice is not created.
-            if ($this->customfields->fields['movement_id'] || $this->customfields->fields['movement2_id_field']) {
+            if ($this->customfields->fields['movement_id_field'] || $this->customfields->fields['movement2_id_field']) {
                 unset($buttons['services_export']);
-                if (($this->customfields->fields['movement_id']) && !$movement->fields['invoice']) {
+                if (($this->customfields->fields['movement_id_field']) && !$movement->fields['invoice']) {
                     unset($buttons['close']);
                 }
             }
@@ -2400,7 +2400,7 @@ class PluginIserviceTicket extends Ticket
     {
         $result = [];
 
-        $result['variables']['movement_id']        = IserviceToolBox::getInputVariable('movement_id', isset($this->customfields) ? $this->customfields->fields['movement_id'] : '');
+        $result['variables']['movement_id_field']        = IserviceToolBox::getInputVariable('movement_id_field', isset($this->customfields) ? $this->customfields->fields['movement_id_field'] : '');
         $result['variables']['movement2_id_field'] = IserviceToolBox::getInputVariable('movement2_id_field', isset($this->customfields) ? $this->customfields->fields['movement2_id_field'] : '');
         $result['variables']['em_mail_id_field']   = IserviceToolBox::getInputVariable('em_mail_id_field', isset($this->customfields) ? $this->customfields->fields['em_mail_id_field'] : '');
 
@@ -2909,7 +2909,7 @@ class PluginIserviceTicket extends Ticket
 
         $config_array = [
             'notification' => [
-                'to_addresses' => $ticket->customfields->fields['notificationmailfield'],
+                'to_addresses' => $ticket->customfields->fields['notification_mail_field'],
                 'subject' => $ticket->fields['name'],
                 'body' =>
                     "Pentru partenerul {$supplier->fields['name']}\n\n" .
@@ -2930,8 +2930,8 @@ class PluginIserviceTicket extends Ticket
                     "Partener: {$supplier->fields['name']}\n" .
                     "Nume aparat: {$printer->fields['name']}\n" .
                     "Serie aparat: {$printer->fields['serial']}\n" .
-                    (empty($ticket->fields['total2_black']) ? "" : "Contor alb-negru: {$ticket->fields['total2_black']}\n") .
-                    (empty($ticket->fields['total2_color']) ? "" : "Contor color: {$ticket->fields['total2_color']}\n") .
+                    (empty($ticket->fields['total2_black_field']) ? "" : "Contor alb-negru: {$ticket->fields['total2_black_field']}\n") .
+                    (empty($ticket->fields['total2_color_field']) ? "" : "Contor color: {$ticket->fields['total2_color_field']}\n") .
                     "Descriere tichet:\n" . strip_tags(IserviceToolBox::br2nl($ticket->fields['content'])) . "\n\n" .
                     "Adnotări:\n" . $followup->getShortForMail($ticket->getID()) . "\n"
             ],

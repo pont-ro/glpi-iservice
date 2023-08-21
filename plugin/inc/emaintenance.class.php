@@ -144,7 +144,7 @@ class PluginIserviceEmaintenance extends MailCollector
 
                 $overwrite = false;
                 // If we have newer valid data or the new and old data are both invalid, we overwrite.
-                foreach (['date_out', 'date_use', 'total2_black', 'total2_color'] as $fieldName) {
+                foreach (['date_out', 'date_use', 'total2_black_field', 'total2_color_field'] as $fieldName) {
                     if (!empty($counter_data[$fieldName]) && (empty($counter_data[$fieldName]['error']) || !empty($data[$spaceless_serial][$fieldName]['error']))) {
                         $data[$spaceless_serial][$fieldName] = $counter_data[$fieldName];
                         $overwrite                           = true;
@@ -188,8 +188,8 @@ class PluginIserviceEmaintenance extends MailCollector
 
             if (!empty($result[$id])) {
                 $result[$id] = [
-                    'total2_black' => '#empty#import#data#',
-                    'total2_color' => '#empty#import#data#',
+                    'total2_black_field' => '#empty#import#data#',
+                    'total2_color_field' => '#empty#import#data#',
                     'effective_date_field' => '#empty#import#data#',
                     'error' => "Există mai multe rânduri pentru seria $id"
                 ];
@@ -197,8 +197,8 @@ class PluginIserviceEmaintenance extends MailCollector
             }
 
             $result[$id] = [
-                'total2_black' => '#empty#import#data#',
-                'total2_color' => '#empty#import#data#',
+                'total2_black_field' => '#empty#import#data#',
+                'total2_color_field' => '#empty#import#data#',
                 'effective_date_field' => '#empty#import#data#',
             ];
             $printer     = new PluginIservicePrinter();
@@ -312,7 +312,7 @@ class PluginIserviceEmaintenance extends MailCollector
             }
 
             $error = false;
-            foreach (['date_use', 'effective_date_field', 'total2_black', 'total2_color'] as $field_name) {
+            foreach (['date_use', 'effective_date_field', 'total2_black_field', 'total2_color_field'] as $field_name) {
                 $error_variable_name = $field_name . "_error";
                 if ($$field_name === null && empty($$error_variable_name)) {
                     continue;
@@ -894,12 +894,12 @@ class PluginIserviceEmaintenance extends MailCollector
 
         $csv_data = self::getDataFromCsvs();
         if (!empty($csv_data[$extended_data['printer_spaceless_serial']])) {
-            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_black']['error'])) {
-                $ticket->fields['total2_black'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_black'];
+            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_black_field']['error'])) {
+                $ticket->fields['total2_black_field'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_black_field'];
             }
 
-            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_color']['error'])) {
-                $ticket->fields['total2_color'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_color'];
+            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_color_field']['error'])) {
+                $ticket->fields['total2_color_field'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_color_field'];
             }
         }
 

@@ -125,11 +125,11 @@ class LastNTickets extends View
                     'style' => 'white-space: nowrap;',
                     'visible' => $this->type === self::TYPE_FOR_PRINTER,
                 ],
-                'total2_black' => [
+                'total2_black_field' => [
                     'title' => 'Contor alb-negru',
                     'visible' => $this->type === self::TYPE_FOR_PRINTER,
                 ],
-                'total2_color' => [
+                'total2_color_field' => [
                     'title' => 'Contor color',
                     'visible' => $this->type === self::TYPE_FOR_PRINTER,
                 ],
