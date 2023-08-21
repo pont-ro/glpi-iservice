@@ -339,7 +339,7 @@ do {
                 continue;
             };
 
-            if (!empty($importConfig['updateFieldsAfterItemCreated']) && !$item->update(array_merge($itemData, ['id' => $item->getID()]))) {
+            if (!empty($importConfig['updateAfterCreate']) && !$item->update(array_merge($itemData, ['id' => $item->getID()]))) {
                 $errors[] = "Could not update newly created $itemTypeClass object with data: " . json_encode($itemData);
 
                 $errors['newItemsNotUpdated'][$itemTypeClass]['old_id'][] = $oldItem['id'];
