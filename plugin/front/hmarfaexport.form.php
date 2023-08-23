@@ -1,8 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "hmarfaexport.form.php".
-define('GLPI_ROOT', '../../..');
-require_once GLPI_ROOT . '/inc/includes.php';
+require "../inc/includes.php";
 
 Session::checkRight('plugin_iservice_hmarfa', READ);
 
@@ -14,7 +13,10 @@ if (empty($mode)) {
 
 $self = filter_input(INPUT_SERVER, 'PHP_SELF');
 
-PluginIserviceHtml::header(__('hMarfa export', 'iservice'), $self);
+Html::header(
+    __("hMarfa export", "iservice"),
+    $_SERVER['PHP_SELF']
+);
 
 if (empty($id)) {
     switch ($mode) {
@@ -31,4 +33,3 @@ if (empty($id)) {
 
 PluginIserviceHmarfa::showExportForm($id, $mode);
 
-Html::footer();

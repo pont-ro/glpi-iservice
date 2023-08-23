@@ -13,6 +13,7 @@ use Toolbox;
 
 class Reminders extends View
 {
+    public static $rightname = 'plugin_iservice_view_reminders';
 
     public static function getRowBackgroundClass($row_data): string
     {
@@ -77,7 +78,7 @@ class Reminders extends View
 							[user_id]
 						",
             'default_limit' => 50,
-            'row_class' => 'function:PluginIserviceView_Reminders::getRowBackgroundClass($row);',
+            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getRowBackgroundClass($row_data);',
             'filters' => [
                 'date' => [
                     'type' => self::FILTERTYPE_DATE,
@@ -141,18 +142,18 @@ class Reminders extends View
                 ],
                 'visibility' => [
                     'title' => 'Public',
-                    'format' => 'function:PluginIserviceView_Reminders::getVisibilityDisplay($row);'
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getVisibilityDisplay($row);'
                 ],
                 'user_name' => [
                     'title' => 'Redactor',
                 ],
                 'state' => [
                     'title' => 'Status',
-                    'format' => 'function:PluginIserviceView_Reminders::getStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getStatusDisplay($row);',
                 ],
                 'text' => [
                     'title' => 'Descriere',
-                    'format' => 'function:PluginIserviceView_Reminders::getTextDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getTextDisplay($row);',
                 ],
             ],
         ];

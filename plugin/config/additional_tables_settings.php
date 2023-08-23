@@ -20,4 +20,33 @@ return [
             ],
         ],
     ],
+    'glpi_plugin_fields_cartridgecartridgecustomfields' => [
+        'indexes' => [
+            [
+                'name' => 'tickets_id_use_field',
+                'type' => 'index',
+                'columns' => "(`tickets_id_use_field`)",
+            ],
+            [
+                'name' => 'tickets_id_out_field',
+                'type' => 'index',
+                'columns' => "(`tickets_id_out_field`)",
+            ],
+            [
+                'name' => 'suppliers_id_field',
+                'type' => 'index',
+                'columns' => "(`suppliers_id_field`)",
+            ],
+            [
+                'name' => 'locations_id_field',
+                'type' => 'index',
+                'columns' => "(`locations_id_field`)",
+            ],
+            [
+                'name' => 'plugin_fields_cartridgeitemtypedropdowns_id',
+                'type' => 'index',
+                'columns' => "(`plugin_fields_cartridgeitemtypedropdowns_id`)",
+            ],
+        ],
+    ],
 ];

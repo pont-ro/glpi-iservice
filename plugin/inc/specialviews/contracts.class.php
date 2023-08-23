@@ -8,7 +8,7 @@ use \Session;
 // Imported from iService2, needs refactoring. Original file: "Contracts.php".
 class Contracts extends View
 {
-
+    public static $rightname = 'plugin_iservice_view_contracts';
     static function getDocumentCountDisplay($row_data)
     {
         global $CFG_GLPI;

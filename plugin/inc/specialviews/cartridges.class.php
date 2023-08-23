@@ -127,7 +127,7 @@ class Cartridges extends View
         return "<span $class title='$row_data[compatible_printer_names]'>$row_data[compatible_printers]</span>";
     }
 
-    public static function getPrinterNameDisplay($row_data): string
+    public static function getPrinterNameDisplay($row_data): ?string
     {
         if ($row_data['printer_deleted']) {
             return "<span style='color:red' title='Aparat șters'>$row_data[printer_name]</span>";
@@ -273,8 +273,8 @@ class Cartridges extends View
                           , c.pages_use_field
                           , c.pages_color_use_field
                           , c.printed_pages_field
-                          , c.printed_pages_field_color
-                          , c.printed_pages_field + c.printed_pages_field_color total_printed_pages
+                          , c.printed_pages_color_field
+                          , c.printed_pages_field + c.printed_pages_color_field total_printed_pages
                           , ci.id cartridgeitem_id
                           , ci.name
                           , ci.ref
@@ -354,7 +354,7 @@ class Cartridges extends View
                       AND ([date_out_null] (date_out IS null and '[date_out]' = '1980-01-01 23:59:59') OR date_out <= '[date_out]')
                       $restriction_filter
                 ",
-            'row_class' => 'function:PluginIserviceView_Cartridges::getRowBackgroundClass($row_data);',
+            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\Cartridges::getRowBackgroundClass($row_data);',
             'filters' => [
                 'filter_buttons_prefix' => // self::isRestrictedMode() ? '' :
                         " <input type='submit' class='submit noprint' name='filter' value='Toate' onclick='changeValByName(\"cartridges0[date_in]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_out]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use_null]\", 1);changeValByName(\"cartridges0[date_out_null]\", 1);'/>"
@@ -480,17 +480,17 @@ class Cartridges extends View
             'columns' => [
                 'id' => [
                     'title' => 'ID',
-                    'format' => 'function:default', // this will call PluginIserviceView_Cartridges::getIdDisplay($row);
+                    'format' => 'function:default', // this will call \GlpiPlugin\Iservice\Specialviews\Cartridges::getIdDisplay($row);
                 ],
                 'ref' => [
                     'title' => 'Cod produs',
-                    'format' => 'function:default', // this will call PluginIserviceView_Cartridges::getRefDisplay($row);
+                    'format' => 'function:default', // this will call \GlpiPlugin\Iservice\Specialviews\Cartridges::getRefDisplay($row);
                     'align' => 'center',
                 ],
                 'compatible_printers' => [
                     'title' => 'Ap. comp.',
                     'visible' => !self::isRestrictedMode(),
-                    'format' => 'function:default', // this will call PluginIserviceView_Cartridges::getCompatiblePrintersDisplay($row);
+                    'format' => 'function:default', // this will call \GlpiPlugin\Iservice\Specialviews\Cartridges::getCompatiblePrintersDisplay($row);
                     'align' => 'center',
                 ],
                 'name' => [
@@ -508,13 +508,13 @@ class Cartridges extends View
                 'printer_name' => [
                     'title' => 'Instalat in aparat',
                     // 'visible' => !self::isRestrictedMode(),
-                    'format' => 'function:default', // this will call PluginIserviceView_Cartridges::getPrinterNameDisplay($row);
+                    'format' => 'function:default', // this will call \GlpiPlugin\Iservice\Specialviews\Cartridges::getPrinterNameDisplay($row);
                 ],
                 'ticket_id' => [
                     'title' => 'Nr.&nbsp;tichet livrare',
                     'align' => 'center',
                     'visible' => !self::isRestrictedMode(),
-                    'format' => 'function:PluginIserviceView_Cartridges::getTicketIdDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Cartridges::getTicketIdDisplay($row);',
                 ],
                 'date_in' => [
                     'title' => 'Data livrării',
@@ -524,7 +524,7 @@ class Cartridges extends View
                     'title' => 'Nr.&nbsp;tichet instalare',
                     'visible' => !self::isRestrictedMode(),
                     'align' => 'center',
-                    'format' => 'function:default', // this will call PluginIserviceView_Cartridges::getInstallerTicketIdDisplay($row);
+                    'format' => 'function:default', // this will call \GlpiPlugin\Iservice\Specialviews\Cartridges::getInstallerTicketIdDisplay($row);
                 ],
                 'date_use' => [
                     'title' => 'Data instalării',
@@ -542,12 +542,12 @@ class Cartridges extends View
                 'date_out' => [
                     'title' => 'Data golirii',
                     'align' => 'center',
-                    'format' => 'function:default', // this will call PluginIserviceView_Cartridges::getDateOutDisplay($row);
+                    'format' => 'function:default', // this will call \GlpiPlugin\Iservice\Specialviews\Cartridges::getDateOutDisplay($row);
                 ],
                 'calculated_printed_pages' => [
                     'title' => 'Copii',
                     'align' => 'center',
-                    'format' => 'function:PluginIserviceView_Cartridges::getPrintedPagesDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Cartridges::getPrintedPagesDisplay($row);',
                     'visible' => !self::isRestrictedMode(),
                 ],
             ],

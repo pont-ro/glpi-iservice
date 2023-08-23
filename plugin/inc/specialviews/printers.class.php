@@ -17,6 +17,7 @@ use Ticket;
 
 class Printers extends View
 {
+    public static $rightname = 'plugin_iservice_view_printers';
     protected $enable_emaintenance_data_import = true;
 
     public static function getTicketStatusDisplay($row_data): string
@@ -289,7 +290,7 @@ class Printers extends View
         return $link;
     }
 
-    public static function getDataExpFactDisplay($row_data): string
+    public static function getInvoiceExpiryDateFieldDisplay($row_data): string
     {
         return "<span title='Data factură: $row_data[invoice_date_field]'>" . date('Y-m-d', strtotime($row_data['invoice_expiry_date_field'])) . "</span>";
     }
@@ -557,18 +558,18 @@ class Printers extends View
             'columns' => [
                 'ticket_status' => [
                     'title' => '',
-                    'format' => 'function:PluginIserviceView_Printers::getTicketStatusDisplay($row);',
-                    'export_format' => 'function:PluginIserviceView_Printers::getTicketStatusDisplayForExport($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketStatusDisplay($row);',
+                    'export_format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketStatusDisplayForExport($row);',
                     'align' => 'center',
                     'class' => 'noprint no-wrap',
                 ],
                 'printer_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:PluginIserviceView_Printers::getTicketPrinterDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketPrinterDisplay($row, $this->import_data);',
                 ],
                 'supplier_name' => [
                     'title' => 'Partener',
-                    'format' => 'function:PluginIserviceView_Printers::getSupplierDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getSupplierDisplay($row, $this->import_data);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'target' => '_blank',
@@ -577,7 +578,7 @@ class Printers extends View
                 ],
                 'location_complete_name' => [
                     'title' => 'Locație',
-                    'format' => 'function:PluginIserviceView_Printers::getLocationDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getLocationDisplay($row);',
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'usage_address_field' => [
@@ -598,12 +599,12 @@ class Printers extends View
                 ],
                 'otherserial' => [
                     'title' => 'Număr inventar',
-                    'format' => 'function:PluginIserviceView_Printers::getOtherSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getOtherSerialDisplay($row);',
                     'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
                 ],
                 'serial' => [
                     'title' => 'Număr serie',
-                    'format' => 'function:PluginIserviceView_Printers::getSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getSerialDisplay($row);',
                 ],
                 'last_data_luc' => [
                     'title' => 'Data lucrare u.i.',
@@ -627,7 +628,7 @@ class Printers extends View
                 'invoice_expiry_date_field' => [
                     'title' => 'Data exp.<br>factură',
                     'style' => 'white-space: nowrap;',
-                    'format' => 'function:default',  // This will call PluginIserviceView_Printers::getDataExpFactDisplay($row).
+                    'format' => 'function:default',  // This will call \GlpiPlugin\Iservice\Specialviews\Printers::getInvoiceExpiryDateFieldDisplay($row).
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'week_nr_field' => [
