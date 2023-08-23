@@ -49,4 +49,13 @@ return [
             ],
         ],
     ],
+    'glpi_plugin_fields_suppliersuppliercustomfields' => [
+        'indexes' => [
+            [
+                'name' => 'hmarfa_code_field',
+                'type' => 'index',
+                'columns' => "(`hmarfa_code_field`)",
+            ],
+        ],
+    ],
 ];

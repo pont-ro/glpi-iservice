@@ -147,6 +147,57 @@ from (((`glpi_printers` `p`
     left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
     left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id;
 
+create or replace view glpi_plugin_iservice_printers_basic as
+select
+    `p`.`id` as `id`,
+    concat(coalesce(concat(`p`.`serial`,' '),''),'(',`p`.`name`,')', coalesce(concat(' - ',`l`.`completename`),'')) as `name`,
+    `p`.`name` as `original_name`,
+    `p`.`contact` as `contact`,
+    `p`.`contact_num` as `contact_num`,
+    `p`.`users_id_tech` as `users_id_tech`,
+    `p`.`groups_id_tech` as `groups_id_tech`,
+    `p`.`serial` as `serial`,
+    `p`.`otherserial` as `otherserial`,
+    `p`.`comment` as `comment`,
+    `p`.`memory_size` as `memory_size`,
+    `p`.`locations_id` as `locations_id`,
+    `p`.`printertypes_id` as `printertypes_id`,
+    `p`.`printermodels_id` as `printermodels_id`,
+    `p`.`manufacturers_id` as `manufacturers_id`,
+    `p`.`is_deleted` as `is_deleted`,
+    `p`.`init_pages_counter` as `init_pages_counter`,
+    `p`.`last_pages_counter` as `last_pages_counter`,
+    `p`.`users_id` as `users_id`,
+    `p`.`groups_id` as `groups_id`,
+    `p`.`states_id` as `states_id`,
+    `cfp`.`id` as `cfid`,
+    `cfp`.`plugin_fields_containers_id` as `plugin_fields_containers_id`,
+    `cfp`.`invoice_date_field` as `invoice_date_field`,
+    `cfp`.`invoice_expiry_date_field` as `invoice_expiry_date_field`,
+    `cfp`.`invoiced_total_black_field` as `invoiced_total_black_field`,
+    `cfp`.`invoiced_total_color_field` as `invoiced_total_color_field`,
+    `cfp`.`invoiced_value_field` as `invoiced_value_field`,
+    `cfp`.`week_nr_field` as `week_nr_field`,
+    `cfp`.`plan_observations_field` as `plan_observations_field`,
+    `cfp`.`contact_gps_field` as `contact_gps_field`,
+    `cfp`.`em_field` as `em_field`,
+    `cfp`.`disable_em_field` as `disable_em_field`,
+    `cfp`.`last_read_field` as `last_read_field`,
+    `cfp`.`snooze_read_check_field` as `snooze_read_check_field`,
+    `cfp`.`daily_bk_average_field` as `daily_bk_average_field`,
+    `cfp`.`daily_color_average_field` as `daily_color_average_field`,
+    `cfp`.`uc_bk_field` as `uc_bk_field`,
+    `cfp`.`uc_cyan_field` as `uc_cyan_field`,
+    `cfp`.`uc_magenta_field` as `uc_magenta_field`,
+    `cfp`.`uc_yellow_field` as `uc_yellow_field`,
+    `cfp`.`cost_center_field` as `cost_center_field`,
+    `cfp`.`usage_address_field` as `usage_address_field`,
+    `cfp`.`no_invoice_field` as `no_invoice_field`
+from (`glpi_printers` `p`
+    left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
+         left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer';
+
+
 create or replace view glpi_plugin_iservice_printers_last_tickets as
 select
     distinct it.items_id printers_id,
