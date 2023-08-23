@@ -33,3 +33,4 @@ if (empty($id)) {
 
 PluginIserviceHmarfa::showExportForm($id, $mode);
 
+Html::footer();
