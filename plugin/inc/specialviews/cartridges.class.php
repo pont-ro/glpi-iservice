@@ -1,10 +1,19 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Cartridges.php".
-class PluginIserviceView_Cartridges extends PluginIserviceView
-{
+namespace GlpiPlugin\Iservice\Specialviews;
 
-    static function getRowBackgroundClass($row_data)
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use \CommonITILActor;
+use \PluginIserviceTicket;
+use \Session;
+
+class Cartridges extends View
+{
+    public static $rightname = 'plugin_iservice_view_cartridges';
+
+    public static function getRowBackgroundClass($row_data): string
     {
         if (!empty($row_data['date_out'])) {
             return empty($row_data['date_use']) ? 'bg_cartridge_revoked' : 'bg_cartridge_emptied';
@@ -13,7 +22,7 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
         }
     }
 
-    public static function getIdDisplay($row_data)
+    public static function getIdDisplay($row_data): string
     {
         global $CFG_GLPI;
         $ajax_link = $CFG_GLPI['root_doc'] . "/plugins/iservice/ajax/manageCartridge.php?id=$row_data[id]";
@@ -21,7 +30,7 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
             /**
             'remove_from_partner' => array(
                 'link' => "$ajax_link&operation=remove_from_partner",
-                'success' => 'function(message) {if(message !== "' . PluginIserviceCommon::RESPONSE_OK . '") {alert(message);} else {alert("' . __("Cartridge deleted from evidence", "iservice") . '");$("#row_actions_' . $row_data['id'] . '").closest("tr").remove();}}',
+                'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {alert("' . __("Cartridge deleted from evidence", "iservice") . '");$("#row_actions_' . $row_data['id'] . '").closest("tr").remove();}}',
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/bin_closed.png',
                 'title' => __('Delete from partner', 'iservice'),
                 'confirm' => "Sigur vreți să ștergeți cartușul $row_data[id]? Toate date legate de acest cartuș se vor pierde!",
@@ -45,12 +54,12 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/bin_closed.png',
                 'title' => __('Delete cartridge', 'iservice'),
                 'visible' => $_SESSION['glpiID'] == 8 && $row_data['ticket_id'] == null,
-                'onclick' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageCartridge.php?id=$row_data[id]&operation=delete_cartridge\", \"Sigur vreți să ștergeți cartușul $row_data[id]?\", function(message) {if(message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {alert(\"" . __("Cartridge deleted from database", "iservice") . "\");\$(\"#row_actions_$row_data[id]\").closest(\"tr\").remove();}});",
+                'onclick' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageCartridge.php?id=$row_data[id]&operation=delete_cartridge\", \"Sigur vreți să ștergeți cartușul $row_data[id]?\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"" . __("Cartridge deleted from database", "iservice") . "\");\$(\"#row_actions_$row_data[id]\").closest(\"tr\").remove();}});",
             ],
             /**
             'remove_from_printer' => array(
                 'link' => "$ajax_link&operation=remove_from_printer",
-                'success' => 'function(message) {if(message !== "' . PluginIserviceCommon::RESPONSE_OK . '") {alert(message);} else {$("form").submit();}}',
+                'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {$("form").submit();}}',
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_delete.png',
                 'title' => __('Uninstall from printer', 'iservice'),
                 'confirm' => "Cartușul va fi șters de pe tichetul de instalare!\\n\\nSigur vreți să dezinstalați acest cartuș de pe imprimanta $row_data[printer_name]?",
@@ -61,7 +70,7 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => "Marchează golit",
                 'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
-                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use=$row_data[pages_use]&pages_color_use=$row_data[pages_color_use]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $row_data['id']) . "\");",
+                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use_field=$row_data[pages_use_field]&pages_color_use_field=$row_data[pages_color_use_field]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $row_data['id']) . "\");",
             ),
             /**/
         ];
@@ -87,7 +96,7 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
         return $out;
     }
 
-    public static function getRefDisplay($row_data)
+    public static function getRefDisplay($row_data): string
     {
         $result = "$row_data[ref]" . (empty($row_data['cartridge_type']) ? '' : "<br>$row_data[cartridge_type]");
         if (self::isRestrictedMode() || !Session::haveRight('plugin_iservice_interface_original', READ)) {
@@ -108,17 +117,17 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
         }
 
         $title .= "\nMercury code (type): $row_data[mercury_code] (" . (empty($row_data['cartridge_type']) ? 'nedeterminat' : $row_data['cartridge_type']) . ")";
-        $title .= "\nLifetime (real lifetime): $row_data[atcfield] (" . $row_data['atcfield'] * $row_data['lcfield'] . ")";
+        $title .= "\nLifetime (real lifetime): $row_data[atc_field] (" . $row_data['atc_field'] * $row_data['life_coefficient_field'] . ")";
         return "<a href='$link' $style title='$title'>$result</a>";
     }
 
-    public static function getCompatiblePrintersDisplay($row_data)
+    public static function getCompatiblePrintersDisplay($row_data): string
     {
         $class = $row_data['compatible_printers'] ? "" : "class='error'";
         return "<span $class title='$row_data[compatible_printer_names]'>$row_data[compatible_printers]</span>";
     }
 
-    public static function getPrinterNameDisplay($row_data)
+    public static function getPrinterNameDisplay($row_data): string
     {
         if ($row_data['printer_deleted']) {
             return "<span style='color:red' title='Aparat șters'>$row_data[printer_name]</span>";
@@ -127,7 +136,7 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
         }
     }
 
-    public static function getInstallerTicketIdDisplay($row_data)
+    public static function getInstallerTicketIdDisplay($row_data): string
     {
         if (self::isRestrictedMode()) {
             return $row_data['installer_ticket_id'];
@@ -146,7 +155,7 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
         return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' $style title='$title'>$ticket_id</a>";
     }
 
-    public static function getTicketIdDisplay($row_data)
+    public static function getTicketIdDisplay($row_data): string
     {
         if (self::isRestrictedMode()) {
             return $row_data['ticket_id'];
@@ -164,37 +173,37 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
         return "<a href='$link' $style title='$title' target='_blank'>$row_data[ticket_id]</a>";
     }
 
-    public static function getPrintedPagesDisplay($row_data)
+    public static function getPrintedPagesDisplay($row_data): string
     {
         if (strtolower($row_data['printer_type']) == 'alb-negru') {
-            $value = $row_data['printed_pages'];
+            $value = $row_data['printed_pages_field'];
         } elseif ($row_data['ref'][0] === 'C') {
-            $value = in_array($row_data['type_id'], [2, 3, 4]) ? $row_data['printed_pages_color'] : $row_data['total_printed_pages'];
+            $value = in_array($row_data['type_id'], [2, 3, 4]) ? $row_data['printed_pages_color_field'] : $row_data['total_printed_pages'];
         } else {
             $value = $row_data['total_printed_pages'];
         }
 
-        return sprintf("<span title='Copii bk: %s\r\nCopii color: %s\r\nTotal  copii: %s'>%s</span>", $row_data['printed_pages'], $row_data['printed_pages_color'], $row_data['total_printed_pages'], $value);
+        return sprintf("<span title='Copii bk: %s\r\nCopii color: %s\r\nTotal  copii: %s'>%s</span>", $row_data['printed_pages_field'], $row_data['printed_pages_color_field'], $row_data['total_printed_pages'], $value);
     }
 
-    public static function getDateOutDisplay($row_data)
+    public static function getDateOutDisplay($row_data): ?string
     {
         if (empty($row_data['date_out'])) {
-            return;
+            return '';
         }
 
         if (empty($row_data['saved_out_ticket_id']) || self::isRestrictedMode()) {
             return $row_data['date_out'];
         }
 
-        $cartridges = PluginIserviceCommon::getQueryResult(
+        $cartridges = IserviceToolBox::getQueryResult(
             "
             select c.id
-            from glpi_cartridges c
-            join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
+            from glpi_plugin_iservice_cartridges c
+            join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
             join glpi_plugin_iservice_cartridges_tickets ct on ct.cartridges_id = c.id
-            where cfc.mercurycodefield in ($row_data[compatible_mercury_codes])
-              and c.plugin_fields_typefielddropdowns_id = $row_data[type_id]
+            where cfci.mercury_code_field in ($row_data[compatible_mercury_codes])
+              and c.plugin_fields_cartridgeitemtypedropdowns_id = $row_data[type_id]
               and ct.tickets_id = $row_data[saved_out_ticket_id]
             "
         );
@@ -207,17 +216,17 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
         return !self::inProfileArray('tehnician', 'admin', 'super-admin');
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
 
-        if (null !== ($printer_model_id = PluginIserviceCommon::getInputVariable('pmi'))) {
+        if (null !== ($printer_model_id = IserviceToolBox::getInputVariable('pmi'))) {
             $printer_model_join = "INNER JOIN glpi_cartridgeitems_printermodels cip ON cip.cartridgeitems_id = ci.id AND cip.printermodels_id = $printer_model_id";
         } else {
             $printer_model_join = '';
         }
 
-        if (null !== ($accessible_printer_ids = PluginIservicePrinter::getAccessibleIds())) {
+        if (null !== ($accessible_printer_ids = \PluginIservicePrinter::getAccessibleIds())) {
             if ('' == ($accessible_printer_ids_list = implode(',', $accessible_printer_ids))) {
                 $accessible_printer_ids_list = "0";
             }
@@ -233,8 +242,8 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
                 ";
             $restriction_filter = "
                 AND c.id IN (SELECT c1.id
-                         FROM glpi_cartridges c1
-                         LEFT JOIN glpi_locations l1 ON l1.id = c1.FK_location
+                         FROM glpi_plugin_iservice_cartridges c1
+                         LEFT JOIN glpi_locations l1 ON l1.id = c1.locations_id_field
                          LEFT JOIN glpi_cartridgeitems_printermodels cp1 ON cp1.cartridgeitems_id = c1.cartridgeitems_id
                          LEFT JOIN glpi_printers p1 ON p1.printermodels_id = cp1.printermodels_id
                          LEFT JOIN glpi_locations pl1 ON pl1.id = p1.locations_id
@@ -255,25 +264,25 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
             'query' => "
                         SELECT
                             c.id 
-                          , c.plugin_fields_typefielddropdowns_id type_id
+                          , c.plugin_fields_cartridgeitemtypedropdowns_id type_id
                           , c.date_in
                           , c.date_use
-                          , c.tickets_id_use saved_installer_ticket_id
+                          , c.tickets_id_use_field saved_installer_ticket_id
                           , c.date_out
-                          , c.tickets_id_out saved_out_ticket_id
-                          , c.pages_use
-                          , c.pages_color_use
-                          , c.printed_pages
-                          , c.printed_pages_color
-                          , c.printed_pages + c.printed_pages_color total_printed_pages
+                          , c.tickets_id_out_field saved_out_ticket_id
+                          , c.pages_use_field
+                          , c.pages_color_use_field
+                          , c.printed_pages_field
+                          , c.printed_pages_field_color
+                          , c.printed_pages_field + c.printed_pages_field_color total_printed_pages
                           , ci.id cartridgeitem_id
                           , ci.name
                           , ci.ref
-                          , cfc.mercurycodefield mercury_code
-                          , cfc.mercurycodesfield compatible_mercury_codes
-                          , cfc.supportedtypesfield supported_types
-                          , cfc.atcfield
-                          , cfc.lcfield
+                          , ci.mercury_code_field mercury_code
+                          , ci.compatible_mercury_codes_field compatible_mercury_codes
+                          , ci.supported_types_field supported_types
+                          , ci.atc_field
+                          , ci.life_coefficient_field
                           , ctd.name cartridge_type
                           , s.id partner_id
                           , s.name partner_name
@@ -293,13 +302,12 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
                           , sc.name partener_instalare
                           , (SELECT `count` FROM glpi_plugin_iservice_consumable_compatible_printers_counts WHERE id = c.id) compatible_printers
                           , (SELECT pids  FROM glpi_plugin_iservice_consumable_compatible_printers_counts WHERE id = c.id) compatible_printer_names
-                        FROM glpi_cartridges c
-                        INNER JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
-                        JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
+                        FROM glpi_plugin_iservice_cartridges c
+                        INNER JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
                         $printer_model_join
-                        LEFT JOIN glpi_plugin_fields_typefielddropdowns ctd ON ctd.id = c.plugin_fields_typefielddropdowns_id
-                        LEFT JOIN glpi_suppliers s ON s.id = c.FK_enterprise
-                        LEFT JOIN glpi_locations l ON l.id = c.FK_location
+                        LEFT JOIN glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
+                        LEFT JOIN glpi_suppliers s ON s.id = c.suppliers_id_field
+                        LEFT JOIN glpi_locations l ON l.id = c.locations_id_field
                         LEFT JOIN glpi_locations ll on ll.id = l.locations_id
                         LEFT JOIN glpi_printers p ON p.id = c.printers_id
                         LEFT JOIN glpi_printertypes pt ON pt.id = p.printertypes_id
@@ -318,7 +326,7 @@ class PluginIserviceView_Cartridges extends PluginIserviceView
                           AND ((p.name IS null AND '[printer_name]' = '%%') OR p.name LIKE '[printer_name]' OR p.serial LIKE '[printer_name]')
                           AND ((ct.tickets_id IS null AND '[ticket_id]' = '%%') OR ct.tickets_id LIKE '[ticket_id]')
                           AND ((crt.tickets_id IS null AND '[installer_ticket_id]' = '%%') OR crt.tickets_id LIKE '[installer_ticket_id]')
-                          AND ((c.tickets_id_out IS null AND '[saved_out_ticket_id]' = '%%') OR c.tickets_id_out LIKE '[saved_out_ticket_id]')
+                          AND ((c.tickets_id_out_field IS null AND '[saved_out_ticket_id]' = '%%') OR c.tickets_id_out_field LIKE '[saved_out_ticket_id]')
                           AND (c.date_in IS null OR c.date_in <= '[date_in]')
                           AND ([date_use_null] (c.date_use IS null and '[date_use]' = '1980-01-01 23:59:59') OR c.date_use <= '[date_use]')
                           AND ([date_out_null] (c.date_out IS null and '[date_out]' = '1980-01-01 23:59:59') OR c.date_out <= '[date_out]')

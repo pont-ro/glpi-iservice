@@ -16,4 +16,5 @@ return [
     'dataintegritytests.folder' => PLUGIN_ISERVICE_DIR . "/inc/dataintegrity_tests",
     'dataintegritytests.cache_timeout' => 3600, // 60 minutes
     'folder_integrity.report_file' => PLUGIN_ISERVICE_CACHE_DIR . "/unknown_directory_entries",
+    'open_ticket_limit' => 50,
 ];

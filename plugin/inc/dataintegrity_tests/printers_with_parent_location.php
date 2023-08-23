@@ -9,7 +9,7 @@ return [
         from glpi_plugin_iservice_printers p
         join glpi_infocoms i on i.items_id = p.id and i.itemtype = 'Printer'
         join glpi_suppliers s on s.id = i.suppliers_id and s.is_deleted = 0
-        join glpi_plugin_fields_suppliercustomfields fsc on fsc.items_id = s.id and fsc.forcelocationparentfield = 1
+        join glpi_plugin_fields_suppliersuppliercustomfields fsc on fsc.items_id = s.id and fsc.force_location_parent_field = 1
         join glpi_locations l ON l.id = p.locations_id and l.locations_id = 0
         where p.is_deleted = 0
         ",

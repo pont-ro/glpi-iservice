@@ -1,10 +1,25 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Extorders.php".
-class PluginIserviceView_Extorders extends PluginIserviceView
-{
+namespace GlpiPlugin\Iservice\Specialviews;
 
-    protected function getSettings()
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+use \PluginIserviceOrderStatus;
+use \PluginIserviceHtml;
+
+class Extorders extends View
+{
+    public static $rightname = 'plugin_iservice_view_extorders';
+
+    public static $icon = 'ti ti-box-margin';
+
+    public static function getName(): string
+    {
+        return __('Extorders', 'iService');
+    }
+
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         $iservice_front = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";

@@ -2,16 +2,15 @@
 global $CFG_GLPI;
 return [
     'query' => "
-        select c.id, c.ref, c.name, cfc.atcfield, cfc.supportedtypesfield, cfc.lcfield, cfc.mercurycodesfield
-        from glpi_cartridgeitems c
-        left join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'CartridgeItem'
-        where c.is_deleted = 0 and not c.ref like 'CCAI%'
-          and (   coalesce(c.ref, '') = ''
-               or coalesce(cfc.mercurycodefield, '') = ''
-               or coalesce(cfc.mercurycodesfield, '') = ''
-               or coalesce(cfc.atcfield, 0) = 0 
-               or coalesce(cfc.lcfield, 0) = 0 
-               or coalesce(cfc.supportedtypesfield, 0) = 0)
+        select ci.id, ci.ref, ci.name, ci.atc_field, ci.supported_types_field, ci.life_coefficient_field, ci.compatible_mercury_codes_field
+        from glpi_plugin_iservice_cartridge_items ci
+        where ci.is_deleted = 0 and not ci.ref like 'CCAI%'
+          and (   coalesce(ci.ref, '') = ''
+               or coalesce(ci.mercury_code_field, '') = ''
+               or coalesce(ci.compatible_mercury_codes_field, '') = ''
+               or coalesce(ci.atc_field, 0) = 0 
+               or coalesce(ci.life_coefficient_field, 0) = 0 
+               or coalesce(ci.supported_types_field, 0) = 0)
         ",
     'test' => [
         'alert' => true,
@@ -21,7 +20,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridge types with invalid customfield values',
-            'iteration_text' => "<a href='$CFG_GLPI[root_doc]/front/cartridgeitem.form.php?id=[id]' target='_blank'>[name] ([id])</a> with <i>supported types</i> <b>[supportedtypesfield]</b> and <i>hMarfa code</i> <b>[ref]</b> has <i>average total counter</i> <b>[atcfield]</b>, <i>life coefficient</i> <b>[lcfield]</b> and <i>supported mercurycodes</i> <b>[mercurycodesfield]</b>",
+            'iteration_text' => "<a href='$CFG_GLPI[root_doc]/front/cartridgeitem.form.php?id=[id]' target='_blank'>[name] ([id])</a> with <i>supported types</i> <b>[supported_types_field]</b> and <i>hMarfa code</i> <b>[ref]</b> has <i>average total counter</i> <b>[atc_field]</b>, <i>life coefficient</i> <b>[life_coefficient_field]</b> and <i>supported mercurycodes</i> <b>[compatible_mercury_codes_field]</b>",
         ],
     ],
 ];

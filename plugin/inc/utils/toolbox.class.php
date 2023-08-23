@@ -2,6 +2,10 @@
 
 namespace GlpiPlugin\Iservice\Utils;
 
+use DateTime;
+use PluginIserviceDB;
+use TValuta;
+
 if (!defined('INPUT_REQUEST')) {
     define('INPUT_REQUEST', 99);
 }
@@ -9,6 +13,10 @@ if (!defined('INPUT_REQUEST')) {
 class ToolBox
 {
     const RESPONSE_OK = 'OK';
+
+    protected static $exchangeRateService = null;
+
+    public static $lastExchangeRateServiceError = null;
 
     public static function getArrayInputVariable($variable_name, $default_value = null, $input_type = INPUT_REQUEST): ?array
     {
@@ -86,6 +94,92 @@ class ToolBox
         }
 
         return in_array($_SESSION["glpiactiveprofile"]["name"], $profiles);
+    }
+
+    public static function getExchangeRate($currency = 'Euro'): ?float
+    {
+        if (self::$exchangeRateService === null) {
+            if (!class_exists('TValuta')) {
+                include_once __DIR__ . '/TValuta.php';
+            }
+
+            self::$exchangeRateService = new TValuta();
+        }
+
+        try {
+            $propertyName = $currency . 'CaNumar';
+            return self::$exchangeRateService->$propertyName ?? null;
+        } catch (\Exception $ex) {
+            self::$lastExchangeRateServiceError = $ex->getMessage();
+        }
+
+        return null;
+    }
+
+    public static function numberFormat(float $number, int $decimals = 2, ?string $decimal_separator = '.', ?string $thousands_separator = '')
+    {
+        return number_format($number, $decimals, $decimal_separator, $thousands_separator);
+    }
+
+    public static function getValueFromInput($variable_name, $input, $empty_value = '', $return_index = 0)
+    {
+        if (!isset($input[$variable_name])) {
+            return $empty_value;
+        }
+
+        return is_array($input[$variable_name]) ? ($input[$variable_name][$return_index] ?? $empty_value) : $input[$variable_name];
+    }
+
+    public static function getItemsIdFromInput($input, $itemtype, $empty_value = '', $return_index = 0): int|string
+    {
+        if (!isset($input['items_id'])) {
+            return $empty_value;
+        }
+
+        if (is_array($input['items_id'])) {
+            return is_array($input['items_id'][$itemtype] ?? null) ? ($input['items_id'][$itemtype][$return_index] ?? $empty_value) : $empty_value;
+        } else {
+            return $input['items_id'];
+        }
+    }
+
+    public static function getSumOfUnpaidInvoicesLink($supplier_id, $supplier_code)
+    {
+        global $CFG_PLUGIN_ISERVICE;
+
+        $sum   = 0;
+        $query = "
+					SELECT sum(f.valinc-f.valpla) as total_facturi, count(*) as nr_facturi, min(f.datafac) datafac_min, max(f.datafac) datafac_max
+					FROM glpi_plugin_iservice_suppliers s
+					JOIN hmarfa_facturi f on f.codbenef = s.hmarfa_code_field AND f.tip like 'TF%' AND f.valinc-f.valpla > 0
+					WHERE s.id = $supplier_id AND f.valinc > f.valpla
+					GROUP BY s.id
+					";
+
+        foreach (PluginIserviceDB::getQueryResult($query) as $row) {
+            $sum = self::numberFormat($row['total_facturi']) . ' RON';
+            if ($row['total_facturi'] > 0) {
+                $date_now  = new DateTime();
+                $date_diff = $date_now->diff(new DateTime($row['datafac_min']))->format('%a');
+                $style     = $date_diff > 29 ? " style='color:red;'" : "";
+                if ($row['nr_facturi'] == 1) {
+                    $sum = sprintf("%s (1 factură din <span%s>%s</span>)", $sum, $style, $row['datafac_min']);
+                } else {
+                    $sum = sprintf("%s (%d facturi intre <span%s>%s și %s</span>)", $sum, $row['nr_facturi'], $style, $row['datafac_min'], $row['datafac_max']);
+                }
+            }
+        }
+
+        return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$supplier_code'>$sum</a>";
+    }
+
+    public static function clearAfterRedirectMessages($type = null)
+    {
+        if ($type === null) {
+            $_SESSION["MESSAGE_AFTER_REDIRECT"] = [];
+        } elseif (isset($_SESSION["MESSAGE_AFTER_REDIRECT"][$type])) {
+            $_SESSION["MESSAGE_AFTER_REDIRECT"][$type] = [];
+        }
     }
 
 }

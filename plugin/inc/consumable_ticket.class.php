@@ -13,7 +13,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginIserviceConsumable_Ticket extends CommonDBRelation
 {
 
-    // From CommonDBRelation
+    // From CommonDBRelation.
     public static $itemtype_1               = 'Ticket';
     public static $items_id_1               = 'tickets_id';
     public static $itemtype_2               = 'PluginIserviceConsumable';
@@ -21,7 +21,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
     public static $checkItem_2_Rights       = self::HAVE_VIEW_RIGHT_ON_ITEM;
     protected static $compatible_cartridges = [];
 
-    function getForbiddenStandardMassiveAction()
+    public function getForbiddenStandardMassiveAction(): array
     {
 
         $forbidden   = parent::getForbiddenStandardMassiveAction();
@@ -29,11 +29,11 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return $forbidden;
     }
 
-    function canCreateItem()
+    public function canCreateItem(): bool
     {
 
         $ticket = new Ticket();
-        // Not item linked for closed tickets
+        // Not item linked for closed tickets.
         if ($ticket->getFromDB($this->fields['tickets_id']) && in_array($ticket->fields['status'], $ticket->getClosedStatusArray())) {
             return false;
         }
@@ -41,23 +41,23 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return parent::canCreateItem();
     }
 
-    function prepareInputForAdd($input)
+    public function prepareInputForAdd($input): array
     {
-        if (isset($input['locations_id']) && $input['locations_id'] < 0) {
+        if ($input['locations_id'] ?? -1 < 0) {
             $input['locations_id'] = 0;
         }
 
         return parent::prepareInputForAdd($input);
     }
 
-    function getForTicket($id)
+    public function getForTicket($id): array|bool
     {
         $query       = "SELECT ct.*, c.Denumire, c.cartridgeitem_name FROM " . $this->getTable() . " ct LEFT JOIN glpi_plugin_iservice_consumables c ON c.id = ct.plugin_iservice_consumables_id WHERE " . self::$items_id_1 . " = $id ORDER BY id";
-        $result_data = PluginIserviceCommon::getQueryResult($query);
+        $result_data = PluginIserviceDB::getQueryResult($query);
         return empty($result_data) ? false : $result_data;
     }
 
-    static function showForTicket(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false)
+    public static function showForTicket(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false)
     {
         global $DB, $CFG_GLPI;
 
@@ -83,7 +83,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         $c_result = $DB->query(
             "SELECT 
                      ct.id IDD
-                   , ct.plugin_fields_typefielddropdowns_id
+                   , ct.plugin_fields_cartridgeitemtypedropdowns_id
                    , ct.locations_id
                    , ct.create_cartridge
                    , ct.amount
@@ -211,7 +211,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             if (!empty($consumable['new_cartridge_ids'])) {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
                 if (empty($ticket->consumable_data['delivery_date'])) {
-                    $cartridge = new Cartridge();
+                    $cartridge = new PluginIserviceCartridge();
                     foreach ($cartridge->find("id in ($cartridge_ids)") as $cartr) {
                         $ticket->consumable_data['delivery_date'] = $cartr['date_in'];
                     }
@@ -244,8 +244,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             echo "</td>";
             echo "<td class='center'>";
 
-            $in_cm = PluginIserviceCommon::getQueryResult("SELECT cartridge_management FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = $suppliers_id");
-            if (!$in_cm[0]['cartridge_management']) {
+            $in_cm = PluginIserviceDB::getQueryResult("SELECT cm_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $suppliers_id");
+            if (!$in_cm[0]['cm_field']) {
                 $force_cartridge_creation = 0;
                 $cartridge_creation_title = "Aparatul nu este in Management cartușe";
             }
@@ -328,7 +328,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return $number;
     }
 
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
 
         if (!$withtemplate) {
@@ -348,7 +348,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return '';
     }
 
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): ?bool
     {
 
         switch ($item->getType()) {
@@ -364,7 +364,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
     /**
      * Form for Followup on Massive action
      * */
-    static function showFormMassiveAction($ma)
+    public static function showFormMassiveAction($ma): void
     {
         global $CFG_GLPI;
 
@@ -381,20 +381,17 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         }
     }
 
-    /**
+    /*
      * @since version 0.85
      *
      * @see CommonDBTM::showMassiveActionsSubForm()
      * */
-    static function showMassiveActionsSubForm(MassiveAction $ma)
+    public static function showMassiveActionsSubForm(MassiveAction $ma): bool
     {
 
         switch ($ma->getAction()) {
+        case 'delete_item':
         case 'add_item' :
-            static::showFormMassiveAction($ma);
-            return true;
-
-        case 'delete_item' :
             static::showFormMassiveAction($ma);
             return true;
         }
@@ -402,12 +399,12 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return parent::showMassiveActionsSubForm($ma);
     }
 
-    /**
+    /*
      * @since version 0.85
      *
      * @see CommonDBTM::processMassiveActionsForOneItemtype()
      * */
-    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
+    public static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids): void
     {
 
         switch ($ma->getAction()) {
@@ -483,14 +480,14 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
     }
 
-    /**
+    /*
      * @since version 0.84
      *
      * @param $field
      * @param $values
      * @param $options   array
      * */
-    static function getSpecificValueToDisplay($field, $values, array $options = [])
+    public static function getSpecificValueToDisplay($field, $values, array $options = []): string
     {
         if (!is_array($values)) {
             $values = [$field => $values];
@@ -505,7 +502,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return parent::getSpecificValueToDisplay($field, $values, $options);
     }
 
-    /**
+    /*
      * @since version 0.84
      *
      * @param $field
@@ -515,7 +512,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
      *
      * @return string
      * */
-    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []): string
     {
         if (!is_array($values)) {
             $values = [$field => $values];
@@ -532,10 +529,10 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return parent::getSpecificValueToSelect($field, $name, $values, $options);
     }
 
-    /**
+    /*
      * Add a message on add action
      * */
-    function addMessageOnAddAction()
+    public function addMessageOnAddAction(): void
     {
         global $CFG_GLPI;
 
@@ -558,14 +555,14 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             }
 
             if (($name = $item->getName()) == NOT_AVAILABLE) {
-                // TRANS: %1$s is the itemtype, %2$d is the id of the item
+                // TRANS: %1$s is the itemtype, %2$d is the id of the item.
                 $item->fields['name'] = sprintf(__('Consumabil - ID %2$d'), $item->getID());
             }
 
             $display = (isset($this->input['_no_message_link']) ? $item->getNameID() : $item->getLink());
 
-            // Do not display quotes
-            // TRANS : %s is the description of the added item
+            // Do not display quotes.
+            // TRANS : %s is the description of the added item.
             Session::addMessageAfterRedirect(sprintf(__('%1$s: %2$s'), __('Consumable successfully added'), stripslashes($display)));
         }
     }
@@ -573,7 +570,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
     /**
      * Add a message on delete action
      * */
-    function addMessageOnPurgeAction()
+    public function addMessageOnPurgeAction(): void
     {
 
         if (!$this->maybeDeleted()) {
@@ -604,12 +601,12 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 $display = $item->getLink();
             }
 
-            // TRANS : %s is the description of the updated item
+            // TRANS : %s is the description of the updated item.
             Session::addMessageAfterRedirect(sprintf(__('%1$s: %2$s'), __('Consumable successfully deleted'), $display));
         }
     }
 
-    function add(array $input, $options = [], $history = true)
+    public function add(array $input, $options = [], $history = true): bool|int
     {
         if (!empty($options['printer']) && $options['printer'] instanceof PluginIservicePrinter) {
             $printer = $options['printer'];
@@ -626,33 +623,32 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
         $cartridge_management_enabled = $printer->hasCartridgeManagement();
 
-        /**
-*
-         *
- * @var PluginIservicePartner $assigned_supplier
-*/
+        /*
+        *
+        * @var PluginIservicePartner $assigned_supplier
+        */
         $assigned_supplier             = PluginIserviceTicket::get($input['tickets_id'])->getFirstAssignedPartner();
         $cartridge_management_enabled |= $assigned_supplier->hasCartridgeManagement();
 
         $success = true;
         $amount  = empty($input['amount']) ? 0 : $input['amount'];
         if ($amount < 0 && $cartridge_management_enabled) {
-            $location_condition         = isset($input['locations_id']) ? "FK_location = $input[locations_id]" : "(FK_location < 1 OR FK_location is NULL)";
+            $location_condition         = isset($input['locations_id']) ? "locations_id_field = $input[locations_id]" : "(locations_id_field < 1 OR locations_id_field is NULL)";
             $query                      = "
                 SELECT c.* 
-                FROM glpi_cartridges c
+                FROM glpi_plugin_iservice_cartridges c
                 JOIN glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
                 WHERE ci.ref = '{$input['plugin_iservice_consumables_id']}'
                   AND (COALESCE(c.printers_id, 0) = 0 OR c.printers_id = -1) AND c.date_out IS NULL
-                  AND FIND_IN_SET (c.FK_enterprise, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))";
+                  AND FIND_IN_SET (c.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))";
             $query_with_location        = "$query AND $location_condition";
-            $cartridges_to_delete       = PluginIserviceCommon::getQueryResult("$query_with_location ORDER BY c.id LIMIT " . -$amount);
+            $cartridges_to_delete       = PluginIserviceDB::getQueryResult("$query_with_location ORDER BY c.id LIMIT " . -$amount);
             $cartridges_to_delete_count = count($cartridges_to_delete);
             if ($cartridges_to_delete_count == 0) {
-                $cartridges_to_delete             = PluginIserviceCommon::getQueryResult($query);
+                $cartridges_to_delete             = PluginIserviceDB::getQueryResult($query);
                 $cartridges_to_delete_by_location = [];
                 foreach ($cartridges_to_delete as $cartridge_to_delete) {
-                    $cartridges_to_delete_by_location[$cartridge_to_delete['FK_location']][] = $cartridge_to_delete;
+                    $cartridges_to_delete_by_location[$cartridge_to_delete['locations_id_field']][] = $cartridge_to_delete;
                 }
 
                 foreach ($cartridges_to_delete_by_location as $location_id => $cartridges_to_delete_by_location_group) {
@@ -695,32 +691,32 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return parent::add($input, $options, $history);
     }
 
-    public function update(array $input, $history = 1, $options = [])
+    public function update(array $input, $history = 1, $options = []): bool
     {
         $consumable_ticket = new PluginIserviceConsumable_Ticket();
         $consumable_ticket->getFromDB($input['id']);
-        /**
-*
-         *
- * @var PluginIservicePartner $assigned_supplier
-*/
+
+        /*
+        *
+        * @var PluginIservicePartner $assigned_supplier
+        */
         $assigned_supplier = PluginIserviceTicket::get($consumable_ticket->fields['tickets_id'])->getFirstAssignedPartner();
         $amount            = empty($input['amount']) ? 0 : $input['amount'];
         $success           = true;
         if ($amount < 0 && $assigned_supplier->hasCartridgeManagement()) {
-            $location_condition   = empty($input['locations_id']) ? "(FK_location < 1 OR FK_location is NULL)" : "FK_location = $input[locations_id]";
+            $location_condition   = empty($input['locations_id']) ? "(locations_id_field < 1 OR locations_id_field is NULL)" : "locations_id_field = $input[locations_id]";
             $query                = "
                 SELECT c.id 
-                FROM glpi_cartridges c
+                FROM glpi_plugin_iservice_cartridges c
                 JOIN glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
                 WHERE ci.ref = '{$consumable_ticket->fields['plugin_iservice_consumables_id']}'
                   AND printers_id = 0
                   AND $location_condition
-                  AND FIND_IN_SET (FK_enterprise, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))
+                  AND FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))
                   AND date_out is null
                 ORDER BY c.date_in
                 LIMIT " . -$amount;
-            $cartridges_to_delete = PluginIserviceCommon::getQueryResult($query);
+            $cartridges_to_delete = PluginIserviceDB::getQueryResult($query);
             if (abs($amount) != count($cartridges_to_delete)) {
                 Session::addMessageAfterRedirect("Numărul cartușelor neinstalate la partener la locația selectată este mai mică decât " . (-$amount), false, ERROR);
                 $success = false;
@@ -735,7 +731,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return $success && parent::update($input, $history, $options);
     }
 
-    public static function TransformDropdownValue($suppliers_id, $items_id, $dropdown_data)
+    public static function TransformDropdownValue($suppliers_id, $items_id, $dropdown_data): string
     {
         if (in_array($dropdown_data['id'], self::getCompatibleCartridges($suppliers_id, $items_id))) {
             return $dropdown_data['name'] . " [*]";
@@ -744,7 +740,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         }
     }
 
-    public static function getCompatibleCartridges($suppliers_id, $items_id)
+    public static function getCompatibleCartridges($suppliers_id, $items_id): array
     {
         if (!isset(self::$compatible_cartridges["$suppliers_id - $items_id"])) {
             $ticket                                   = new PluginIserviceTicket();
@@ -756,7 +752,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return self::$compatible_cartridges["$suppliers_id - $items_id"];
     }
 
-    public static function updateNewCartridgeIdsFields()
+    public static function updateNewCartridgeIdsFields(): void
     {
         $consumable_tickets = new self();
         foreach ($consumable_tickets->find("not new_cartridge_ids like '|%|' and new_cartridge_ids != '' and not new_cartridge_ids is null") as $consumable_ticket) {

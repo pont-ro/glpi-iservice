@@ -206,7 +206,7 @@ jQuery(document).ready(function ($) {
         } else {
             $(this).val('partial');
             $(this).closest('tr').find('.switch-router-calculation-details-text').val('partial');
-            setGlpiDateField($(this).closest('tr').find('div.data_fact_until'), $(this).closest('tr').find('.ult_tichet_data_luc').val());
+            setGlpiDateField($(this).closest('tr').find('div.data_fact_until'), $(this).closest('tr').find('.last_ticket_effective_date_field').val());
             $(this).closest('tr').find('.switch-router-calculation-part-details').prop('disabled', false);
             $(this).closest('tr').find('.switch-router-calculation-part-details').removeClass('disabled');
         }
@@ -229,7 +229,7 @@ jQuery(document).ready(function ($) {
 
     function updateCalculationDetails($element) {
         var data_fact_until = $element.closest('tr').find('div.data_fact_until').find('input.flatpickr,input.flatpickr-input').val();
-        var data_exp = $element.closest('tr').find('.data_exp_fact').val();
+        var data_exp = $element.closest('tr').find('.invoice_expiry_date_field').val();
         var diff = getDateDiff(data_exp, data_fact_until);
         var addition_cantitate;
         var addition_unit_price;
@@ -274,7 +274,7 @@ jQuery(document).ready(function ($) {
     }
 
     function setDescription($element) {
-        var data_exp = $element.closest('tr').find('.data_exp_fact').val();
+        var data_exp = $element.closest('tr').find('.invoice_expiry_date_field').val();
         var data_fact_until =  $element.closest('tr').find('div.data_fact_until').find('input.flatpickr,input.flatpickr-input').val();
 
         var array = data_exp.split('-');
@@ -350,7 +350,7 @@ jQuery(document).ready(function ($) {
     });
 
     $('tr.calculates-total').each(function() {
-        var data_exp = $(this).closest('tr').find('.data_exp_fact').val();
+        var data_exp = $(this).closest('tr').find('.invoice_expiry_date_field').val();
         var data_fact_until = $(this).closest('tr').find('div.data_fact_until').find('input.flatpickr,input.flatpickr-input').val();
         var diff = getDateDiff(data_exp, data_fact_until);
         if ( (new Date(data_fact_until) >= new Date(data_exp))  && (diff.monthDiff > 0 || diff.dayDiff > 22) ) {

@@ -8,53 +8,53 @@ return [
             select
                   it.items_id         pid
                 , t.id                tid
-                , t.data_luc
-                , t.total2_black
-                , t.total2_black - coalesce(
+                , t.effective_date_field
+                , t.total2_black_field
+                , t.total2_black_field - coalesce(
                     (
-                        select t2.total2_black
-                        from glpi_tickets t2
+                        select t2.total2_black_field
+                        from glpi_plugin_iservice_tickets t2
                         join glpi_items_tickets it2 on it2.tickets_id = t2.id and it2.itemtype = 'Printer'
                         where t2.is_deleted = 0
                           and t2.status = " . Ticket::CLOSED . " 
                           and it2.items_id = it.items_id
-                          and (t2.data_luc > t.data_luc or (t2.data_luc = t.data_luc and t2.id > t.id))
-                        order by t2.data_luc, t2.id
+                          and (t2.effective_date_field > t.effective_date_field or (t2.effective_date_field = t.effective_date_field and t2.id > t.id))
+                        order by t2.effective_date_field, t2.id
                         limit 1
-                    ), t.total2_black) black_difference
-                , t.total2_color
-                , t.total2_color - coalesce(
+                    ), t.total2_black_field) black_difference
+                , t.total2_color_field
+                , t.total2_color_field - coalesce(
                     (
-                        select t2.total2_color
-                        from glpi_tickets t2
+                        select t2.total2_color_field
+                        from glpi_plugin_iservice_tickets t2
                         join glpi_items_tickets it2 on it2.tickets_id = t2.id and it2.itemtype = 'Printer'
                         where t2.is_deleted = 0
                           and t2.status = " . Ticket::CLOSED . " 
                           and it2.items_id = it.items_id
-                          and (t2.data_luc > t.data_luc or (t2.data_luc = t.data_luc and t2.id > t.id))
-                        order by t2.data_luc, t2.id
+                          and (t2.effective_date_field > t.effective_date_field or (t2.effective_date_field = t.effective_date_field and t2.id > t.id))
+                        order by t2.effective_date_field, t2.id
                         limit 1
-                    ), t.total2_color) color_difference
+                    ), t.total2_color_field) color_difference
                 , coalesce(
                     (
                         select t2.id
-                        from glpi_tickets t2
+                        from glpi_plugin_iservice_tickets t2
                         join glpi_items_tickets it2 on it2.tickets_id = t2.id and it2.itemtype = 'Printer'
                         where t2.is_deleted = 0
                           and t2.status = " . Ticket::CLOSED . " 
                           and it2.items_id = it.items_id
-                          and (t2.data_luc > t.data_luc or (t2.data_luc = t.data_luc and t2.id > t.id))
-                        order by t2.data_luc, t2.id
+                          and (t2.effective_date_field > t.effective_date_field or (t2.effective_date_field = t.effective_date_field and t2.id > t.id))
+                        order by t2.effective_date_field, t2.id
                         limit 1
                     ), 0) next_tid
-                , (select t2.data_luc from glpi_tickets t2 where t2.id = next_tid) next_data_luc
-            from glpi_tickets t
+                , (select t2.effective_date_field from glpi_plugin_iservice_tickets t2 where t2.id = next_tid) next_data_luc
+            from glpi_plugin_iservice_tickets t
             join glpi_items_tickets it on it.tickets_id = t.id and it.itemtype = 'Printer'
             where t.is_deleted = 0
               and t.status = " . Ticket::CLOSED . " 
               and it.items_id > 0
-              and t.data_luc > '$negative_counter_differences_since'
-            order by it.items_id, t.data_luc, t.id
+              and t.effective_date_field > '$negative_counter_differences_since'
+            order by it.items_id, t.effective_date_field, t.id
             ) q
         where q.black_difference > 0 or q.color_difference > 0
         ",
@@ -66,7 +66,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => "There are {count} negative counter differences beginning from $negative_counter_differences_since",
-            'iteration_text' => "Printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a> has negative counter difference (bk: -[black_difference], color: -[color_difference]) for tickets <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> from <i>[data_luc]</i> and <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[next_tid]&mode=9999' target='_blank'>[next_tid]</a> from <i>[next_data_luc]</i>",
+            'iteration_text' => "Printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a> has negative counter difference (bk: -[black_difference], color: -[color_difference]) for tickets <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> from <i>[effective_date_field]</i> and <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[next_tid]&mode=9999' target='_blank'>[next_tid]</a> from <i>[next_data_luc]</i>",
         ],
     ],
     'schedule' => [

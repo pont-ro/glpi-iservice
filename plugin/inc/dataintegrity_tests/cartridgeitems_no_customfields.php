@@ -1,10 +1,9 @@
 <?php
 return [
     'query' => "
-        select c.id, c.ref, c.name
-        from glpi_cartridgeitems c
-        left join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'CartridgeItem'
-        where c.is_deleted = 0 and cfc.id is null
+        select ci.id, ci.ref, ci.name
+        from glpi_plugin_iservice_cartridge_items ci
+        where ci.is_deleted = 0 and ci.id is null
         ",
     'test' => [
         'alert' => true,

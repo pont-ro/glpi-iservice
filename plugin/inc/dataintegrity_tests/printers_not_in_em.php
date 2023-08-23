@@ -13,11 +13,9 @@ return [
             , pm.name model
             , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
         from glpi_plugin_iservice_printers p
-        join glpi_printermodels pm on pm.id = p.printermodels_id
+        join plugin_iservice_printer_models pm on pm.id = p.printermodels_id
         join glpi_users u on u.id = p.users_id_tech
-        join glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer' and cfp.emaintenancefield = 0 and cfp.disableemfield = 0
-        join glpi_plugin_fields_printermodelprintermodelcustomfields cfpm on cfpm.items_id = p.printermodels_id and cfpm.itemtype = 'PrinterModel' and cfpm.emfield = 1
-        where p.is_deleted = 0
+        where p.is_deleted = 0 and p.em_field = 0 and p.disable_em_field = 0 and pm.em_compatible_field = 1
         ",
     'test' => [
         'type' => 'compare_query_count',

@@ -15,14 +15,14 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceCartridge_Ticket extends CommonDBRelation
 {
 
-    // From CommonDBRelation
+    // From CommonDBRelation.
     public static $itemtype_1         = 'Ticket';
     public static $items_id_1         = 'tickets_id';
     public static $itemtype_2         = 'Cartridge';
     public static $items_id_2         = 'cartridges_id';
     public static $checkItem_2_Rights = self::HAVE_VIEW_RIGHT_ON_ITEM;
 
-    function getForbiddenStandardMassiveAction()
+    public function getForbiddenStandardMassiveAction(): array
     {
 
         $forbidden   = parent::getForbiddenStandardMassiveAction();
@@ -30,11 +30,11 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $forbidden;
     }
 
-    function canCreateItem()
+    public function canCreateItem(): bool
     {
 
         $ticket = new Ticket();
-        // Not item linked for closed tickets
+        // Not item linked for closed tickets.
         if ($ticket->getFromDB($this->fields['tickets_id']) && in_array($ticket->fields['status'], $ticket->getClosedStatusArray())) {
             return false;
         }
@@ -42,7 +42,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return parent::canCreateItem();
     }
 
-    function prepareInputForAdd($input)
+    public function prepareInputForAdd($input): array
     {
         if (isset($input['locations_id']) && $input['locations_id'] < 0) {
             $input['locations_id'] = 0;
@@ -51,14 +51,14 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return parent::prepareInputForAdd($input);
     }
 
-    function getForTicket($id)
+    public function getForTicket($id): array|bool
     {
         $query       = "SELECT ct.*, ci.name FROM " . $this->getTable() . " ct LEFT JOIN glpi_cartridges c ON c.id = ct.cartridges_id LEFT JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id WHERE " . self::$items_id_1 . " = $id ORDER BY id";
-        $result_data = IserviceToolBox::getQueryResult($query);
+        $result_data = PluginIserviceDB::getQueryResult($query);
         return empty($result_data) ? false : $result_data;
     }
 
-    static function showForTicket(Ticket $ticket, &$required_fields, $generate_form = true, $readonly = false)
+    public static function showForTicket(Ticket $ticket, &$required_fields, $generate_form = true, $readonly = false): array|bool
     {
         global $DB;
 
@@ -78,11 +78,10 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         $used_ids   = [];
 
         $c_result = $DB->query(
-            "SELECT ct.id IDD, ci.id cid, ct.locations_id, c.id, ci.name, cfci.mercurycodesfield
+            "SELECT ct.id IDD, ci.id cid, ct.locations_id, c.id, ci.name, ci.compatible_mercury_codes_field
                          FROM glpi_plugin_iservice_cartridges_tickets ct
                          LEFT JOIN glpi_cartridges c ON c.id = ct.cartridges_id
-                         LEFT JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
-                         LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfci on cfci.items_id = ci.id and cfci.itemtype = 'CartridgeItem'
+                         LEFT JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
                          WHERE ct.tickets_id = $id ORDER BY ct.id"
         );
         if ($c_result) {
@@ -177,7 +176,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             echo "<tr class='tab_bg_1'>";
             if ($canedit) {
                 echo "<td width='10'>";
-                // Html::showMassiveActionCheckBox(__CLASS__, $cartridge["IDD"]);
+                // Html::showMassiveActionCheckBox(__CLASS__, $cartridge["IDD"]).
                 echo Html::getCheckbox(
                     [
                         'name' => "_plugin_iservice_cartridges_tickets[$cartridge[IDD]]",
@@ -211,7 +210,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $cartridges;
     }
 
-    static function showChangeableForTicket(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false)
+    public static function showChangeableForTicket(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false): int|bool
     {
         global $DB;
 
@@ -234,14 +233,14 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         $c_result = $DB->query(
             "SELECT 
                       ct.id IDD
-                    , ct.plugin_fields_typefielddropdowns_id selected_type_id
+                    , ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type_id
                     , ct.cartridges_id_emptied
                     , c.id
                     , ci.id cid
                     , ci.name
-                    , cfc.mercurycodefield mercurycode
-                    , cfc.mercurycodesfield mercurycodes
-                    , cfc.supportedtypesfield supportedtypes
+                    , ci.mercury_code_field mercurycode
+                    , ci.compatible_mercury_codes_field mercurycodes
+                    , ci.supported_types_field supportedtypes
                     , l.name location_name
                     , l.completename location_completename
                     , p.id pid
@@ -249,11 +248,10 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     , c.date_use
                     , c.date_out
                  FROM glpi_plugin_iservice_cartridges_tickets ct
-                 INNER JOIN glpi_cartridges c ON c.id = ct.cartridges_id
-                 INNER JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
-                 LEFT JOIN glpi_locations l ON l.id = c.FK_location
+                 INNER JOIN glpi_plugin_iservice_cartridges c ON c.id = ct.cartridges_id
+                 INNER JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
+                 LEFT JOIN glpi_locations l ON l.id = c.locations_id_field
                  LEFT JOIN glpi_printers p ON p.id = c.printers_id
-                 LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = ci.id and cfc.itemtype = 'CartridgeItem'
                  WHERE ct.tickets_id = $id ORDER BY ct.id"
         );
         if ($c_result) {
@@ -414,8 +412,8 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             echo "<td>";
             PluginIserviceCartridge::dropdownEmptyablesByCartridge(
                 [
-                    'mercurycodefield' => $cartridge['mercurycode'],
-                    'plugin_fields_typefielddropdowns_id' => $cartridge['selected_type_id'],
+                    'mercury_code_field' => $cartridge['mercurycode'],
+                    'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge['selected_type_id'],
                     'printers_id' => $cartridge['pid'],
                 ], [
                     'comments' => false,
@@ -450,7 +448,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $number;
     }
 
-    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
     {
 
         if (!$withtemplate) {
@@ -473,7 +471,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
     /**
      * Form for Followup on Massive action
      * */
-    static function showFormMassiveAction($ma)
+    public static function showFormMassiveAction($ma): void
     {
         global $CFG_GLPI;
 
@@ -490,12 +488,12 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         }
     }
 
-    /**
+    /*
      * @since version 0.85
      *
      * @see CommonDBTM::showMassiveActionsSubForm()
      * */
-    static function showMassiveActionsSubForm(MassiveAction $ma)
+    public static function showMassiveActionsSubForm(MassiveAction $ma): bool
     {
 
         switch ($ma->getAction()) {
@@ -511,12 +509,12 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return parent::showMassiveActionsSubForm($ma);
     }
 
-    /**
+    /*
      * @since version 0.85
      *
      * @see CommonDBTM::processMassiveActionsForOneItemtype()
      * */
-    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids)
+    public static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item, array $ids): void
     {
 
         switch ($ma->getAction()) {
@@ -592,14 +590,14 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
     }
 
-    /**
+    /*
      * @since version 0.84
      *
      * @param $field
      * @param $values
      * @param $options   array
      * */
-    static function getSpecificValueToDisplay($field, $values, array $options = [])
+    public static function getSpecificValueToDisplay($field, $values, array $options = []): string
     {
         if (!is_array($values)) {
             $values = [$field => $values];
@@ -614,7 +612,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return parent::getSpecificValueToDisplay($field, $values, $options);
     }
 
-    /**
+    /*
      * @since version 0.84
      *
      * @param $field
@@ -624,7 +622,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
      *
      * @return string
      * */
-    static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []): string
     {
         if (!is_array($values)) {
             $values = [$field => $values];
@@ -644,7 +642,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
     /**
      * Add a message on add action
      * */
-    function addMessageOnAddAction()
+    public function addMessageOnAddAction(): void
     {
         $addMessAfterRedirect = false;
         if (isset($this->input['_add'])) {
@@ -665,14 +663,14 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             }
 
             if (($name = $item->getName()) == NOT_AVAILABLE) {
-                // TRANS: %1$s is the itemtype, %2$d is the id of the item
+                // TRANS: %1$s is the itemtype, %2$d is the id of the item.
                 $item->fields['name'] = sprintf(__('Cartridge - ID %2$d'), $item->getID());
             }
 
             $display = (isset($this->input['_no_message_link']) ? $item->getNameID() : $item->getLink());
 
             // Do not display quotes
-            // TRANS : %s is the description of the added item
+            // TRANS : %s is the description of the added item.
             Session::addMessageAfterRedirect(sprintf(__('%1$s: %2$s'), __('Cartridge successfully added'), stripslashes($display)));
         }
     }
@@ -680,7 +678,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
     /**
      * Add a message on delete action
      * */
-    function addMessageOnPurgeAction()
+    public function addMessageOnPurgeAction(): void
     {
 
         if (!$this->maybeDeleted()) {
@@ -711,164 +709,27 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 $display = $item->getLink();
             }
 
-            // TRANS : %s is the description of the updated item
+            // TRANS : %s is the description of the updated item.
             Session::addMessageAfterRedirect(sprintf(__('%1$s: %2$s'), __('Consumable successfully deleted'), $display));
         }
     }
 
-    static function getForTicketId($ticket_id, $limit = null)
+    public static function getForTicketId($ticket_id, $limit = null): array
     {
         $cartridge_ticket = new self();
         return $cartridge_ticket->find("tickets_id = $ticket_id", [], $limit);
-        ;
     }
 
-    static function install($ticket_id, $cartridge_id, $printer_id, $supplier_id, $location_id, $total2_black, $total2_color, $install_time, $installed_cartridges = null)
+    public static function installWithType($ticket_id, $cartridge_id, $type_id, $emptied_cartridge_id, $printer_id, $supplier_id, $location_id, $total2_black, $total2_color, $install_time): string|int
     {
-        if (true) {
-            echo "The use of this funciton is deprecated.";
-            die;
-        }
-
-        $cartridge                  = new Cartridge();
-        $cartridgeitem_custom_field = new PluginFieldsCartridgeitemcartridgecustomfield();
-        if ($installed_cartridges === null) {
-            $installed_cartridges = PluginIservicePrinter::getInstalledCartridges($printer_id);
-        }
-
-        if (!$cartridge->getFromDB($cartridge_id) || !$cartridgeitem_custom_field->getFromDBByItemsId($cartridge->fields['cartridgeitems_id'])) {
-            return "Could not find cartridge with id $cartridge_id to install it.";
-        }
-
-        if (false !== ($index = CartridgeItem::getSameCartridgeIndex($installed_cartridges, $cartridgeitem_custom_field->fields['mercurycodefield'], $cartridge->fields['plugin_fields_typefielddropdowns_id']))) {
-            if ($installed_cartridges[$index]['type_id'] != $cartridge->fields['plugin_fields_typefielddropdowns_id']) {
-                return "Type of cartridge to install ({$cartridge->fields['plugin_fields_typefielddropdowns_id']}) differs from type of installed cartridge ({$installed_cartridges[$index]['type_id']}) for the same mercury code ({$installed_cartridges[$index]['mercury_code']})";
-            }
-
-            $old_cartridge                  = new Cartridge();
-            $old_cartridgeitem_customfields = new PluginFieldsCartridgeitemcartridgecustomfield();
-            if (!$old_cartridge->getFromDB($installed_cartridges[$index]['id'] || $old_cartridgeitem_customfields->getFromDBByItemsId($cartridge->fields['cartridgeitems_id']))) {
-                return "Could not find cartridge with id {$installed_cartridges[$index]['id']} to uninstall it.";
-            }
-
-            $printed_pages       = $old_cartridge->fields['printed_pages'] + $total2_black - $old_cartridge->fields['pages_use'];
-            $printed_pages_color = $old_cartridge->fields['printed_pages_color'] + $total2_color - $old_cartridge->fields['pages_color_use'];
-            if (in_array($old_cartridge->fields['plugin_fields_typefielddropdowns_id'], [2, 3, 4])) {
-                $printed_pages_to_compare = $printed_pages_color;
-            } else {
-                $printed_pages_to_compare = $printed_pages + $printed_pages_color;
-            }
-
-            $ignore_in_calculations = ($printed_pages_to_compare > $old_cartridgeitem_customfields->fields['atcfield'] * 1.6) || ($printed_pages_to_compare < $old_cartridgeitem_customfields->fields['atcfield'] * 0.4);
-            if (!$old_cartridge->update(
-                [
-                    '_no_message' => true,
-                    $old_cartridge->getIndexName() => $installed_cartridges[$index]['id'],
-                    'date_out' => $install_time,
-                    'tickets_id_out' => $ticket_id,
-                    'pages' => $total2_black,
-                    'pages_color' => $total2_color,
-                    'printed_pages' => $printed_pages,
-                    'printed_pages_color' => $printed_pages_color,
-                    'ignore_in_calculations' => $ignore_in_calculations ? 1 : 0
-                ]
-            )
-            ) {
-                return "Could not update old cartridge with id {$installed_cartridges[$index]['id']}";
-            }
-
-            if (!empty($GLOBALS['ECHO_CARTRIDGE_INSTALL_INFO'])) {
-                echo " Changed cartridge {$installed_cartridges[$index]['id']} with Mercury Code {$installed_cartridges[$index]['mercury_code']}. Total2_black: $total2_black, total2_color: $total2_color. Printed pages: {$old_cartridge->fields['printed_pages']}, printed color pages: {$old_cartridge->fields['printed_pages_color']}";
-            }
-
-            $uninstalled_multiplier = 1;
-        } else {
-            $uninstalled_multiplier = -1;
-        }
-
-        if (!$cartridge->update(
-            [
-                $cartridge->getIndexName() => $cartridge->getID(),
-                '_no_message' => true,
-                'printers_id' => $printer_id,
-                'FK_enterprise' => $supplier_id,
-                'FK_location' => empty($location_id) ? '0' : $location_id,
-                'date_use' => $install_time,
-                'tickets_id_use' => $ticket_id,
-                'date_out' => 'NULL',
-                'pages_use' => $total2_black,
-                'pages_color_use' => $total2_color,
-            ]
-        )
-        ) {
-            return "Could not update cartridge with id $cartridge_id";
-        }
-
-        return $uninstalled_multiplier * $cartridge->getID();
-    }
-
-    static function uninstall($ticket_id, $cartridge_id, $printer_id, $supplier_id, $location_id, $total2_black, $total2_color, $install_time, $installed_cartridges = null)
-    {
-        if (true) {
-            echo "The use of this funciton is deprecated.";
-            die;
-        }
-
-        $cartridge                  = new Cartridge();
-        $cartridgeitem_custom_field = new PluginFieldsCartridgeitemcartridgecustomfield();
-        if (!$cartridge->getFromDB($cartridge_id) || !$cartridgeitem_custom_field->getFromDBByItemsId($cartridge->fields['cartridgeitems_id'])) {
-            return "Could not find cartridge with id $cartridge_id to uninstall it.";
-        }
-
-        $old_cartridge = new Cartridge();
-        if (PluginIserviceDB::populateByQuery($old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = `glpi_cartridges`.cartridgeitems_id and cfc.itemtype = 'CartridgeItem' where tickets_id_out = $ticket_id and cfc.mercurycodefield in ({$cartridgeitem_custom_field->fields['mercurycodesfield']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1")) {
-            $old_cartridge->update(
-                [
-                    '_no_message' => true,
-                    $old_cartridge->getIndexName() => $old_cartridge->getID(),
-                    'date_out' => 'NULL',
-                    'tickets_id_out' => 'NULL',
-                    'pages' => '0',
-                    'pages_color' => '0',
-                    'printed_pages' => $old_cartridge->fields['printed_pages'] + $old_cartridge->fields['pages_use'] - $cartridge->fields['pages_use'],
-                    'printed_pages_color' => $old_cartridge->fields['printed_pages_color'] + $old_cartridge->fields['pages_use_color'] - $cartridge->fields['pages_use_color'],
-                    'ignore_in_calculations' => 0,
-                ]
-            );
-            $installed_multiplier = 1;
-        } else {
-            $installed_multiplier = -1;
-        }
-
-        if (!$cartridge->update(
-            [
-                $cartridge->getIndexName() => $cartridge->getID(),
-                '_no_message' => true,
-                'FK_enterprise' => $supplier_id,
-                'date_use' => 'NULL',
-                'tickets_id_use' => 'NULL',
-                'date_out' => 'NULL',
-                'pages_use' => 0,
-                'pages_color_use' => 0,
-            ]
-        )
-        ) {
-            return "Could not update cartridge with id $cartridge_id";
-        }
-
-        return $installed_multiplier * $cartridge->getID();
-    }
-
-    static function installWithType($ticket_id, $cartridge_id, $type_id, $emptied_cartridge_id, $printer_id, $supplier_id, $location_id, $total2_black, $total2_color, $install_time)
-    {
-        $cartridge                  = new Cartridge();
-        $cartridgeitem_custom_field = new PluginFieldsCartridgeitemcartridgecustomfield();
-        if (!$cartridge->getFromDB($cartridge_id) || !$cartridgeitem_custom_field->getFromDBByItemsId($cartridge->fields['cartridgeitems_id'])) {
+        $cartridge                  = new PluginIserviceCartridge();
+        $cartridgeitem_custom_field = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
+        if (!$cartridge->getFromDB($cartridge_id) || !PluginIserviceDB::populateByItemsId($cartridgeitem_custom_field, $cartridge->fields['cartridgeitems_id'])) {
             return "Could not find cartridge with id $cartridge_id to install it.";
         }
 
         if (!empty($emptied_cartridge_id)) {
-            $old_cartridge = new Cartridge();
+            $old_cartridge = new PluginIserviceCartridge();
             if (!$old_cartridge->getFromDB($emptied_cartridge_id)) {
                 return "Could not find cartridge with id $emptied_cartridge_id to uninstall it.";
             }
@@ -878,11 +739,11 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $emptied_cartridge_id,
                     'date_out' => $install_time,
-                    'tickets_id_out' => $ticket_id,
+                    'tickets_id_out_field' => $ticket_id,
                     'pages' => $total2_black,
-                    'pages_color' => $total2_color,
-                    'printed_pages' => $old_cartridge->fields['printed_pages'] + $total2_black - $old_cartridge->fields['pages_use'],
-                    'printed_pages_color' => $old_cartridge->fields['printed_pages_color'] + $total2_color - $old_cartridge->fields['pages_color_use'],
+                    'pages_color_field' => $total2_color,
+                    'printed_pages_field' => $old_cartridge->fields['printed_pages_field'] + $total2_black - $old_cartridge->fields['pages_use_field'],
+                    'printed_pages_color_field' => $old_cartridge->fields['printed_pages_color_field'] + $total2_color - $old_cartridge->fields['pages_color_use_field'],
                 ]
             )
             ) {
@@ -890,7 +751,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             }
 
             if (!empty($GLOBALS['ECHO_CARTRIDGE_INSTALL_INFO'])) {
-                echo " Changed cartridge $emptied_cartridge_id. Total2_black: $total2_black, total2_color: $total2_color. Printed pages: {$old_cartridge->fields['printed_pages']}, printed color pages: {$old_cartridge->fields['printed_pages_color']}";
+                echo " Changed cartridge $emptied_cartridge_id. Total2_black: $total2_black, total2_color: $total2_color. Printed pages: {$old_cartridge->fields['printed_pages_field']}, printed color pages: {$old_cartridge->fields['printed_pages_color_field']}";
             }
 
             $uninstalled_multiplier = 1;
@@ -902,15 +763,15 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             [
                 $cartridge->getIndexName() => $cartridge->getID(),
                 '_no_message' => true,
-                'plugin_fields_typefielddropdowns_id' => $type_id,
+                'plugin_fields_cartridgeitemtypedropdowns_id' => $type_id,
                 'printers_id' => $printer_id,
-                'FK_enterprise' => $supplier_id,
-                'FK_location' => empty($location_id) ? '0' : $location_id,
+                'suppliers_id_field' => $supplier_id,
+                'locations_id_field' => empty($location_id) ? '0' : $location_id,
                 'date_use' => $install_time,
-                'tickets_id_use' => $ticket_id,
+                'tickets_id_use_field' => $ticket_id,
                 'date_out' => 'NULL',
-                'pages_use' => $total2_black,
-                'pages_color_use' => $total2_color,
+                'pages_use_field' => $total2_black,
+                'pages_color_use_field' => $total2_color,
             ]
         )
         ) {
@@ -920,18 +781,23 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $uninstalled_multiplier * $cartridge->getID();
     }
 
-    static function uninstallWithType($ticket_id, $cartridge_id, $type_id, $emptied_cartridge_id, $printer_id, $supplier_id, $location_id, $total2_black, $total2_color, $install_time)
+    public static function uninstallWithType($ticket_id, $cartridge_id, $type_id, $emptied_cartridge_id, $printer_id, $supplier_id, $location_id, $total2_black, $total2_color, $install_time): string|int
     {
-        $cartridge                  = new Cartridge();
-        $cartridgeitem_custom_field = new PluginFieldsCartridgeitemcartridgecustomfield();
-        if (!$cartridge->getFromDB($cartridge_id) || !$cartridgeitem_custom_field->getFromDBByItemsId($cartridge->fields['cartridgeitems_id'])) {
+        $cartridge                  = new PluginIserviceCartridge();
+        $cartridgeitem_custom_field = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
+        if (!$cartridge->getFromDB($cartridge_id) || !PluginIserviceDB::populateByItemsId($cartridgeitem_custom_field, $cartridge->fields['cartridgeitems_id'])) {
             return "Could not find cartridge with id $cartridge_id to uninstall it.";
         }
 
-        $old_cartridge          = new Cartridge();
+        $old_cartridge          = new PluginIserviceCartridge();
         $uninstalled_multiplier = 0;
         if (empty($emptied_cartridge_id)) {
-            if (!PluginIserviceDB::populateByQuery($old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = `glpi_cartridges`.cartridgeitems_id and cfc.itemtype = 'CartridgeItem' where tickets_id_out = $ticket_id and cfc.mercurycodefield in ({$cartridgeitem_custom_field->fields['mercurycodesfield']}) and `glpi_cartridges`.plugin_fields_typefielddropdowns_id = {$cartridge->fields['plugin_fields_typefielddropdowns_id']} limit 1")) {
+            if (!PluginIserviceDB::populateByQuery(
+                $old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `glpi_cartridges`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem' 
+            join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = id and cfc.itemtype = 'Cartridge'
+            where cfc.tickets_id_out_field = $ticket_id and cfc.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_plugin_fields_cartridgecartridgecustomfields`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
+            )
+            ) {
                 $uninstalled_multiplier = -1;
             }
         } else {
@@ -946,11 +812,11 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $old_cartridge->getID(),
                     'date_out' => 'NULL',
-                    'tickets_id_out' => 'NULL',
+                    'tickets_id_out_field' => 'NULL',
                     'pages' => '0',
-                    'pages_color' => '0',
-                    'printed_pages' => $old_cartridge->fields['printed_pages'] + $old_cartridge->fields['pages_use'] - $cartridge->fields['pages_use'],
-                    'printed_pages_color' => $old_cartridge->fields['printed_pages_color'] + $old_cartridge->fields['pages_color_use'] - $cartridge->fields['pages_color_use'],
+                    'pages_color_field' => '0',
+                    'printed_pages_field' => $old_cartridge->fields['printed_pages_field'] + $old_cartridge->fields['pages_use_field'] - $cartridge->fields['pages_use_field'],
+                    'printed_pages_color_field' => $old_cartridge->fields['printed_pages_color_field'] + $old_cartridge->fields['pages_color_use_field'] - $cartridge->fields['pages_color_use_field'],
                 ]
             );
             $installed_multiplier = 1;
@@ -960,12 +826,12 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             [
                 $cartridge->getIndexName() => $cartridge->getID(),
                 '_no_message' => true,
-                'FK_enterprise' => $supplier_id,
+                'suppliers_id_field' => $supplier_id,
                 'date_use' => 'NULL',
-                'tickets_id_use' => 'NULL',
+                'tickets_id_use_field' => 'NULL',
                 'date_out' => 'NULL',
-                'pages_use' => 0,
-                'pages_color_use' => 0,
+                'pages_use_field' => 0,
+                'pages_color_use_field' => 0,
             ]
         )
         ) {

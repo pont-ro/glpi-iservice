@@ -1,4 +1,4 @@
-/* Imported from iService2, needs refactoring. */
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!50503 SET NAMES utf8mb4 */;
@@ -26,20 +26,20 @@ CREATE FUNCTION `getCartridgeChangeableCartridgeCount`(
 BEGIN
     DECLARE cartridgeCount INT;
     SELECT COUNT(DISTINCT c2.id) INTO cartridgeCount
-    FROM glpi_cartridges c1
-    LEFT JOIN glpi_locations l1 ON l1.id = c1.FK_location
+    FROM glpi_plugin_iservice_cartridges c1
+    LEFT JOIN glpi_locations l1 ON l1.id = c1.locations_id_field
     JOIN glpi_infocoms ic on ic.items_id = c1.printers_id and ic.itemtype = 'Printer'
-    JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = ic.suppliers_id AND cfs.itemtype = 'Supplier'
-    JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc1 ON cfc1.items_id = c1.cartridgeitems_id AND cfc1.itemtype = 'CartridgeItem'
-    JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc2 ON FIND_IN_SET(cfc2.mercurycodefield, replace(cfc1.mercurycodesfield, "'", "")) and cfc2.itemtype = 'CartridgeItem'
-    JOIN glpi_cartridges c2 ON c2.cartridgeitems_id = cfc2.items_id
-    LEFT JOIN glpi_locations l2 ON l2.id = c2.FK_location
+    JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON cfs.items_id = ic.suppliers_id AND cfs.itemtype = 'Supplier'
+    JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci1 ON cfci1.items_id = c1.cartridgeitems_id AND cfci1.itemtype = 'CartridgeItem'
+    JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci2 ON FIND_IN_SET(cfci2.mercury_code_field, replace(cfci1.compatible_mercury_codes_field, "'", "")) and cfci2.itemtype = 'CartridgeItem'
+    JOIN glpi_plugin_iservice_cartridges c2 ON c2.cartridgeitems_id = cfci2.items_id
+    LEFT JOIN glpi_locations l2 ON l2.id = c2.locations_id_field
     WHERE c1.id = cartridgeId
       AND c2.date_use IS NULL AND c2.date_out IS NULL
-      AND FIND_IN_SET (c2.FK_enterprise, cfs.groupfield)
+      AND FIND_IN_SET (c2.suppliers_id_field, cfs.group_field)
       AND COALESCE(c2.printers_id, 0) = 0
-      AND (c1.plugin_fields_typefielddropdowns_id = c2.plugin_fields_typefielddropdowns_id or COALESCE(c2.plugin_fields_typefielddropdowns_id, 0) = 0)
-      AND (c2.FK_location = c1.FK_location OR COALESCE(l1.locations_id, 0) = COALESCE(l2.locations_id, 0))
+      AND (c1.plugin_fields_cartridgeitemtypedropdowns_id = c2.plugin_fields_cartridgeitemtypedropdowns_id or COALESCE(c2.plugin_fields_cartridgeitemtypedropdowns_id, 0) = 0)
+      AND (c2.locations_id_field = c1.locations_id_field OR COALESCE(l1.locations_id, 0) = COALESCE(l2.locations_id, 0))
       ;
     RETURN cartridgeCount;
 END//
@@ -56,17 +56,17 @@ CREATE FUNCTION `getCartridgeCompatiblePrinterCount`(
 BEGIN
     DECLARE printerCount INT;
     SELECT COUNT(DISTINCT p.id) INTO printerCount
-    FROM glpi_cartridges c
-    LEFT JOIN glpi_locations l1 on l1.id = c.FK_location
-    LEFT JOIN glpi_plugin_fields_suppliercustomfields cfs on cfs.items_id = c.FK_enterprise and cfs.itemtype = 'Supplier'
+    FROM glpi_plugin_iservice_cartridges c
+    LEFT JOIN glpi_locations l1 on l1.id = c.locations_id_field
+    LEFT JOIN glpi_plugin_fields_suppliercustomfields cfs on cfs.items_id = c.suppliers_id_field and cfs.itemtype = 'Supplier'
     JOIN glpi_cartridgeitems_printermodels cp ON cp.cartridgeitems_id = c.cartridgeitems_id
     JOIN glpi_printers p ON p.printermodels_id = cp.printermodels_id
     LEFT JOIN glpi_locations l2 on l2.id = p.locations_id
     JOIN glpi_infocoms ic ON ic.itemtype = 'Printer'
                          AND ic.items_id = p.id
-                         AND FIND_IN_SET (ic.suppliers_id, cfs.groupfield)
+                         AND FIND_IN_SET (ic.suppliers_id, cfs.group_field)
     WHERE c.id = cartridgeId
-      AND (c.FK_location = p.locations_id OR COALESCE(l1.locations_id, 0) = COALESCE(l2.locations_id, 0))
+      AND (c.locations_id_field = p.locations_id OR COALESCE(l1.locations_id, 0) = COALESCE(l2.locations_id, 0))
     ;
     RETURN printerCount;
 END//
@@ -82,15 +82,15 @@ CREATE FUNCTION `getCartridgeDaysToEmpty`(
     SQL SECURITY INVOKER
 BEGIN
     DECLARE days DECIMAL(5,2);
-    SELECT ROUND(IF(cfc.atcfield = 0, 1000, cfc.atcfield) * IF(cfc.lcfield = 0, 1000, cfc.lcfield) * CASE c.plugin_fields_typefielddropdowns_id 
-           WHEN 2 THEN IF (cfp.uccfield = 0, 1, cfp.uccfield) / IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-           WHEN 3 THEN IF(cfp.ucmfield = 0, 1, cfp.ucmfield) / IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-           WHEN 4 THEN IF(cfp.ucyfield = 0, 1, cfp.ucyfield) / IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-           ELSE IF(cfp.ucbkfield = 0, 1, cfp.ucbkfield) / IF(cfp.dailybkaveragefield = 0, 180, cfp.dailybkaveragefield)
+    SELECT ROUND(IF(cfci.atc_field = 0, 1000, cfci.atc_field) * IF(cfci.life_coefficient_field = 0, 1000, cfci.life_coefficient_field) * CASE c.plugin_fields_cartridgeitemtypedropdowns_id
+           WHEN 2 THEN IF (cfp.uc_cyan_field = 0, 1, cfp.uc_cyan_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+           WHEN 3 THEN IF(cfp.uc_magenta_field = 0, 1, cfp.uc_magenta_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+           WHEN 4 THEN IF(cfp.uc_yellow_field = 0, 1, cfp.uc_yellow_field) / IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+           ELSE IF(cfp.uc_bk_field = 0, 1, cfp.uc_bk_field) / IF(cfp.daily_bk_average_field = 0, 180, cfp.daily_bk_average_field)
          END) INTO days
-    FROM glpi_cartridges c
-    LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.itemtype = 'CartridgeItem' AND cfc.items_id = c.cartridgeitems_id
-    LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
+    FROM glpi_plugin_iservice_cartridges c
+    LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.itemtype = 'CartridgeItem' AND cfci.items_id = c.cartridgeitems_id
+    LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
     WHERE c.id = cartridgeId;
     RETURN coalesce(days, 180);
 END//
@@ -111,40 +111,40 @@ BEGIN
     DECLARE addition INT;
     
     SELECT
-        IF(cfc.atcfield = 0, 1000, cfc.atcfield) atc
-      , IF(cfc.lcfield = 0, 1, cfc.lcfield) lc
-      , CASE cfc.plugin_fields_typefielddropdowns_id 
-          WHEN 2 THEN IF (cfp.uccfield = 0, 1, cfp.uccfield)
-          WHEN 3 THEN IF(cfp.ucmfield = 0, 1, cfp.ucmfield)
-          WHEN 4 THEN IF(cfp.ucyfield = 0, 1, cfp.ucyfield)
-          ELSE IF(cfp.ucbkfield = 0, 1, cfp.ucbkfield)
+        IF(cfci.atc_field = 0, 1000, cfci.atc_field) atc
+      , IF(cfci.life_coefficient_field = 0, 1, cfci.life_coefficient_field) lc
+      , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
+          WHEN 2 THEN IF (cfp.uc_cyan_field = 0, 1, cfp.uc_cyan_field)
+          WHEN 3 THEN IF(cfp.uc_magenta_field = 0, 1, cfp.uc_magenta_field)
+          WHEN 4 THEN IF(cfp.uc_yellow_field = 0, 1, cfp.uc_yellow_field)
+          ELSE IF(cfp.uc_bk_field = 0, 1, cfp.uc_bk_field)
         END uc
-      , CASE cfc.plugin_fields_typefielddropdowns_id 
-          WHEN 2 THEN IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-          WHEN 3 THEN IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-          WHEN 4 THEN IF(cfp.dailycoloraveragefield = 0, 180, cfp.dailycoloraveragefield)
-          ELSE IF(cfp.dailybkaveragefield = 0, 180, cfp.dailybkaveragefield)
+      , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
+          WHEN 2 THEN IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+          WHEN 3 THEN IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+          WHEN 4 THEN IF(cfp.daily_color_average_field = 0, 180, cfp.daily_color_average_field)
+          ELSE IF(cfp.daily_bk_average_field = 0, 180, cfp.daily_bk_average_field)
         END da
-      , CASE cfc.plugin_fields_typefielddropdowns_id 
-          WHEN 2 THEN cfp.total2_color -- plct.total2_color
-          WHEN 3 THEN cfp.total2_color -- plct.total2_color
-          WHEN 4 THEN cfp.total2_color -- plct.total2_color
-          ELSE cfp.total2_black -- plct.total2_black
+      , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
+          WHEN 2 THEN p.last_total2_color -- plct.total2_color_field
+          WHEN 3 THEN p.last_total2_color -- plct.total2_color_field
+          WHEN 4 THEN p.last_total2_color -- plct.total2_color_field
+          ELSE p.last_total2_color -- plct.total2_black_field
         END counter_last
-      , CASE cfc.plugin_fields_typefielddropdowns_id 
-          WHEN 2 THEN t.total2_color
-          WHEN 3 THEN t.total2_color
-          WHEN 4 THEN t.total2_color
-          ELSE t.total2_black
+      , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
+          WHEN 2 THEN t.total2_color_field
+          WHEN 3 THEN t.total2_color_field
+          WHEN 4 THEN t.total2_color_field
+          ELSE t.total2_black_field
         END counter_use
-      , cfp.data_luc -- plct.data_luc
+      ,p.effective_date -- plct.effective_date_field
     INTO atc, lc, uc, da, counter_last, counter_use, last_data_luc
-    FROM glpi_cartridges c
-    LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.itemtype = 'CartridgeItem' AND cfc.items_id = c.cartridgeitems_id
+    FROM glpi_plugin_iservice_cartridges c
+    LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.itemtype = 'CartridgeItem' AND cfci.items_id = c.cartridgeitems_id
     LEFT JOIN glpi_plugin_iservice_printers p ON p.id = c.printers_id
     -- LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
-    LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
-    LEFT JOIN glpi_tickets t on t.id = c.tickets_id_use
+    LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
+    LEFT JOIN glpi_plugin_iservice_tickets t on t.id = c.tickets_id_use_field
     WHERE c.id = cartridgeId;
               
     SET addition = 
@@ -187,13 +187,13 @@ BEGIN
     DECLARE lastDataLuc DATETIME;
     
     SELECT
-        cfp.data_luc -- plct.data_luc
-      , CASE color WHEN 1 THEN cfp.total2_color /* plct.total2_color */ ELSE cfp.total2_black /* plct.total2_black */ END
-      , CASE color WHEN 1 THEN cfp.dailycoloraveragefield ELSE cfp.dailybkaveragefield END
+        p.last_effective_date_field -- plct.effective_date_field
+      , CASE color WHEN 1 THEN p.last_total2_color /* plct.total2_color_field */ ELSE p.last_total2_black /* plct.total2_black_field */ END
+      , CASE color WHEN 1 THEN cfp.daily_color_average_field ELSE cfp.daily_bk_average_field END
     INTO lastDataLuc, lastCounter, dailyAverage
     FROM glpi_plugin_iservice_printers p
     -- LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
-    JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.itemtype = 'Printer' AND  cfp.items_id = p.id
+    JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND  cfp.items_id = p.id
     WHERE p.id = printerId;
 
     RETURN lastCounter + DATEDIFF(NOW(), lastDataLuc) * dailyAverage;
@@ -221,29 +221,28 @@ BEGIN
       END;
     
     SELECT
-        CASE cfc.plugin_fields_typefielddropdowns_id 
+        CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
           WHEN 2 THEN 1
           WHEN 3 THEN 1
           WHEN 4 THEN 1
           ELSE 0
         END
-      , CASE cfc.plugin_fields_typefielddropdowns_id 
-          WHEN 2 THEN t.total2_color
-          WHEN 3 THEN t.total2_color
-          WHEN 4 THEN t.total2_color
-          ELSE t.total2_black
+      , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
+          WHEN 2 THEN t.total2_color_field
+          WHEN 3 THEN t.total2_color_field
+          WHEN 4 THEN t.total2_color_field
+          ELSE t.total2_black_field
         END
     INTO color, installedCounter
-    FROM glpi_cartridges c
-    JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
-    JOIN glpi_tickets t on t.id = c.tickets_id_use
+    FROM glpi_plugin_iservice_cartridges c
+    JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
+    JOIN glpi_plugin_iservice_tickets t on t.id = c.tickets_id_use_field
     WHERE c.id = cartridgeId;
     
-    SELECT 100 *(addition + 1 - (getPrinterCounterEstimate(c.printers_id, color) - installedCounter) / cfc.atcfield)
+    SELECT 100 *(addition + 1 - (getPrinterCounterEstimate(c.printers_id, color) - installedCounter) / ci.atc_field)
     INTO percentage
     FROM glpi_cartridges c
-    JOIN glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
-    JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc ON cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
+    JOIN glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
     WHERE c.id = cartridgeId;
     
     RETURN percentage;
@@ -273,17 +272,17 @@ this_proc: BEGIN
   
   SELECT
       COUNT(t.id)
-    , MIN(CASE color WHEN 1 THEN t.total2_color ELSE t.total2_black + t.total2_color END)
-    , MAX(CASE color WHEN 1 THEN t.total2_color ELSE t.total2_black + t.total2_black END)
-    , MIN(t.data_luc)
-    , MAX(t.data_luc)
+    , MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2_black_field + t.total2_color_field END)
+    , MAX(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2_black_field + t.total2_black_field END)
+    , MIN(t.effective_date_field)
+    , MAX(t.effective_date_field)
   INTO
       ticketCount
     , minCounter
     , maxCounter
     , minDataLuc
     , maxDataLuc
-  FROM glpi_tickets t
+  FROM glpi_plugin_iservice_tickets t
   JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
   WHERE t.is_deleted = 0 AND t.`status` = 6;
   
@@ -304,14 +303,14 @@ this_proc: BEGIN
     -- but if we have minTicketCount tickets
     ELSE
       -- we calculate the average daily count
-      SELECT MIN(CASE color WHEN 1 THEN t.total2_color ELSE t.total2 END), MAX(CASE color WHEN 1 THEN t.total2_color ELSE t.total2 END), MIN(t.data_luc), MAX(t.data_luc)
+      SELECT MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MAX(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MIN(t.effective_date_field), MAX(t.effective_date_field)
       INTO minCounter, maxCounter, minDataLuc, maxDataLuc
       FROM (
-        SELECT t.total2_black + t.total2_color total2, t.total2_color, t.data_luc
-        FROM glpi_tickets t
+        SELECT t.total2_black_field + t.total2_color_field total2, t.total2_color_field, t.effective_date_field
+        FROM glpi_plugin_iservice_tickets t
         JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
         WHERE t.is_deleted = 0 AND t.`status` = 6
-        ORDER BY t.data_luc DESC
+        ORDER BY t.effective_date_field DESC
         LIMIT ticketCount
       ) t;
       SET dailyAverage = GREATEST(1, ROUND((maxCounter - minCounter) / DATEDIFF(maxDataLuc, minDataLuc)));
@@ -323,21 +322,21 @@ this_proc: BEGIN
   -- We calculate how many tickets were in the last minDayCount
   SELECT count(t.id)
   INTO countFirstDays
-  FROM glpi_tickets t
+  FROM glpi_plugin_iservice_tickets t
   JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
   WHERE t.is_deleted = 0 AND t.`status` = 6
-    AND DATEDIFF(maxDataLuc, t.data_luc) < minDayCount;
+    AND DATEDIFF(maxDataLuc, t.effective_date_field) < minDayCount;
 
   REPEAT
     SET countFirstDays = countFirstDays + 1;
-    SELECT MIN(CASE color WHEN 1 THEN t.total2_color ELSE t.total2 END), MAX(CASE color WHEN 1 THEN t.total2_color ELSE t.total2 END), MIN(t.data_luc), MAX(t.data_luc)
+    SELECT MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MAX(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MIN(t.effective_date_field), MAX(t.effective_date_field)
     INTO minCounter, maxCounter, minDataLuc, maxDataLuc
     FROM (
-      SELECT t.total2_black + t.total2_color total2, t.total2_color, t.data_luc
-      FROM glpi_tickets t
+      SELECT t.total2_black_field + t.total2_color_field total2, t.total2_color_field, t.effective_date_field
+      FROM glpi_plugin_iservice_tickets t
       JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
       WHERE t.is_deleted = 0 AND t.`status` = 6
-      ORDER BY t.data_luc DESC
+      ORDER BY t.effective_date_field DESC
       LIMIT countFirstDays
     ) t;
     IF maxCounter > minCounter THEN

@@ -1,10 +1,28 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Global_ReadCounter.php".
-class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+use \PluginIserviceTicket;
+use \PluginIserviceEmaintenance;
+use \PluginIservicePrinter;
+
+class GlobalReadCounter extends View
 {
 
-    static function getPrinterDisplay($row_data, $import_data)
+    public static $rightname = 'plugin_iservice_view_global_readcounter';
+
+    public static $icon = 'ti ti-brand-days-counter';
+
+    public static function getName(): string
+    {
+        return __('GlobalReadCounter', 'iService');
+    }
+
+    public static function getPrinterDisplay($row_data, $import_data): string
     {
         $hidden_data = "<input type='hidden' name='global_readcounter0[printer][$row_data[id]][items_id][Printer][0]' value='$row_data[id]' /><input type='hidden' name='global_readcounter0[printer][$row_data[id]][_suppliers_id_assign]' value='$row_data[supplier_id]' />";
         if ($import_data === null || isset($import_data[$row_data['spaceless_serial']])) {
@@ -14,16 +32,16 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
         return "$hidden_data<span style='color:red' title='Aparatul nu există în fișierul de import'>$row_data[printer_name]</span>";
     }
 
-    static function getOtherSerialDisplay($row_data)
+    public static function getOtherSerialDisplay($row_data): string
     {
-        if ($row_data['noinvoicefield']) {
+        if ($row_data['no_invoice_field']) {
             return "<span class='error' title='Aparat exclus din facturare'>" . $row_data['otherserial'] . "</span>";
         }
 
         return $row_data['otherserial'];
     }
 
-    static function getSupplierDisplay($row_data, $import_data)
+    public static function getSupplierDisplay($row_data, $import_data): ?string
     {
         if (empty($import_data[$row_data['spaceless_serial']])) {
             return $row_data['supplier_name'];
@@ -32,7 +50,7 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
         }
 
         $display_data = [];
-        foreach (['data_luc', 'total2_black', 'total2_color', 'date_use', 'date_out'] as $field_name) {
+        foreach (['effective_date_field', 'total2_black_field', 'total2_color_field', 'date_use', 'date_out'] as $field_name) {
             // $import_data[$field_name] is an array in case of an error
             $display_data[$field_name] = is_array($import_data[$field_name]) ? '' : $import_data[$field_name];
         }
@@ -42,9 +60,9 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
             "Date citite din fișier:\n" .
             "&nbsp;- Client: $import_data[partner_name] ($import_data[partner_id] - $import_data[partner_resolved_name])\n" .
             "&nbsp;- Aparat: $row_data[spaceless_serial]\n" .
-            "&nbsp;&nbsp;&nbsp;- data citirii: $display_data[data_luc]\n" .
-            "&nbsp;&nbsp;&nbsp;- contor black: $display_data[total2_black]\n" .
-            "&nbsp;&nbsp;&nbsp;- contor color: $display_data[total2_color]\n" .
+            "&nbsp;&nbsp;&nbsp;- data citirii: $display_data[effective_date_field]\n" .
+            "&nbsp;&nbsp;&nbsp;- contor black: $display_data[total2_black_field]\n" .
+            "&nbsp;&nbsp;&nbsp;- contor color: $display_data[total2_color_field]\n" .
             "&nbsp;&nbsp;&nbsp;- data instalarii: $display_data[date_use]\n" .
             "&nbsp;&nbsp;&nbsp;- data predarii: $display_data[date_out]"
         );
@@ -57,31 +75,31 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
         return "<span style='color:red' title='Partenereul are numele \"$row_data[supplier_name]\" în iService, dar \"{$import_data['partner_name']}\" în E-Maintenance'>$row_data[supplier_name]</span>$info";
     }
 
-    static function generateBadgeClickHandler($badge_type = "error")
+    public static function generateBadgeClickHandler($badge_type = "error"): string
     {
         global $param_data;
-        if (!empty($param_data['row_data']['noinvoicefield'])) {
+        if (!empty($param_data['row_data']['no_invoice_field'])) {
             return '';
         }
 
         $data_difference = round((time() - strtotime($param_data['row_data']['last_data_luc'])) / (60 * 60 * 24));
         $estimate_value  = '';
         $icon_click      = "";
-        foreach (['total2_black', 'total2_color', 'data_luc'] as $fieldname) {
+        foreach (['total2_black_field', 'total2_color_field', 'effective_date_field'] as $fieldname) {
             switch ($fieldname) {
-            case 'total2_black':
-                $estimate_value = $param_data['row_data']['last_total2_black'] + ($param_data['row_data']['dailybkaveragefield'] * $data_difference);
-                $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_black'], $param_data['row_data']['dailybkaveragefield'], $data_difference, $param_data['row_id'], $fieldname);
+            case 'total2_black_field':
+                $estimate_value = $param_data['row_data']['last_total2_black'] + ($param_data['row_data']['daily_bk_average_field'] * $data_difference);
+                $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_black'], $param_data['row_data']['daily_bk_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 break;
-            case 'total2_color':
-                if ($param_data['row_data']['dailycoloraveragefield'] == 0) {
+            case 'total2_color_field':
+                if ($param_data['row_data']['daily_color_average_field'] == 0) {
                     $estimate_value = 0;
                 } else {
-                    $estimate_value = $param_data['row_data']['last_total2_color'] + ($param_data['row_data']['dailycoloraveragefield'] * $data_difference);
-                    $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_color'], $param_data['row_data']['dailycoloraveragefield'], $data_difference, $param_data['row_id'], $fieldname);
+                    $estimate_value = $param_data['row_data']['last_total2_color'] + ($param_data['row_data']['daily_color_average_field'] * $data_difference);
+                    $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_color'], $param_data['row_data']['daily_color_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 }
                 break;
-            case 'data_luc':
+            case 'effective_date_field':
                 $estimate_value = date("Y-m-d h:m:s");
                 break;
             }
@@ -98,29 +116,29 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
         return "onclick='$icon_click'";
     }
 
-    static function generateEstimateBadgeText($text = null)
+    public static function generateEstimateBadgeText($text = null): string
     {
         global $param_data;
-        return ($param_data['row_data']['noinvoicefield'] ?? '') ? 'Aparat exclus din facturare' : $text ?? 'Click pentru estimare';
+        return ($param_data['row_data']['no_invoice_field'] ?? '') ? 'Aparat exclus din facturare' : $text ?? 'Click pentru estimare';
     }
 
-    static function generateErrorBadgeText()
+    public static function generateErrorBadgeText(): string
     {
         global $param_data;
-        return $param_data['row_data']['noinvoicefield'] ? 'Aparat exclus din facturare' : '';
+        return $param_data['row_data']['no_invoice_field'] ? 'Aparat exclus din facturare' : '';
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
-        $items                  = PluginIserviceCommon::getArrayInputVariable('global_readcounter0', null);
-        $import                 = PluginIserviceCommon::getInputVariable('import');
-        $iwm_import             = PluginIserviceCommon::getInputVariable('iwm_import');
-        $avitum_import          = PluginIserviceCommon::getInputVariable('avitum_import');
-        $mass_action_group_read = PluginIserviceCommon::getInputVariable('mass_action_group_read');
+        $items                  = IserviceToolBox::getArrayInputVariable('global_readcounter0', null);
+        $import                 = IserviceToolBox::getInputVariable('import');
+        $iwm_import             = IserviceToolBox::getInputVariable('iwm_import');
+        $avitum_import          = IserviceToolBox::getInputVariable('avitum_import');
+        $mass_action_group_read = IserviceToolBox::getInputVariable('mass_action_group_read');
         if (!empty($import)) {
             $default_itil_category = PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE;
-            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv(PluginIserviceCommon::getInputVariable('import_file'));
+            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv(IserviceToolBox::getInputVariable('import_file'));
         } elseif (!empty($iwm_import)) {
             $default_itil_category = PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE;
             $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'IW');
@@ -128,7 +146,7 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
             $default_itil_category = PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE;
             $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'AVITUM');
         } elseif (!empty($mass_action_group_read)) {
-            $items = PluginIserviceCommon::getArrayInputVariable('item', []);
+            $items = IserviceToolBox::getArrayInputVariable('item', []);
         }
 
         if (empty($default_itil_category)) {
@@ -153,7 +171,7 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
             $printer_condition = '1=2';
         }
 
-        $import_button        = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Importă din CSV EM', PluginIserviceCommon::getInputVariable('import_file', '')) : '';
+        $import_button        = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Importă din CSV EM', IserviceToolBox::getInputVariable('import_file', '')) : '';
         $import_button_IWM    = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getIwmImportControl('Importă din CSV IWM') : '';
         $import_button_AVITUM = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getAvitumImportControl('Importă din CSV AVITUM') : '';
 
@@ -167,20 +185,19 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
                             , " . PluginIservicePrinter::getSerialFieldForEM('p') . " spaceless_serial
                             , p.printertypes_id
                             , p.otherserial
-                            , cfp.dailybkaveragefield
-                            , cfp.dailycoloraveragefield
-                            , cfp.data_fact
-                            , cfp.noinvoicefield
-                            , cfp.total2_black_fact
-                            , cfp.total2_color_fact
-                            , cfp.usageaddressfield
-                            , plct.data_luc last_data_luc
-                            , COALESCE(plct.total2_black, 0) last_total2_black
-                            , COALESCE(plct.total2_color, 0) last_total2_color
+                            , p.daily_bk_average_field
+                            , p.daily_color_average_field
+                            , p.invoice_date_field
+                            , p.no_invoice_field
+                            , p.invoiced_total_black_field
+                            , p.invoiced_total_color_field
+                            , p.usage_address_field
+                            , plct.effective_date_field last_data_luc
+                            , COALESCE(plct.total2_black_field, 0) last_total2_black
+                            , COALESCE(plct.total2_color_field, 0) last_total2_color
                             , s.id supplier_id
                             , s.name supplier_name
                         FROM glpi_plugin_iservice_printers p
-                        LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.items_id = p.id and cfp.itemtype = 'Printer'
                         LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id
                         LEFT JOIN glpi_infocoms i ON i.items_id = p.id and i.itemtype = 'Printer'
                         LEFT JOIN glpi_suppliers s ON s.id = i.suppliers_id
@@ -195,11 +212,11 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
             'columns' => [
                 'printer_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:PluginIserviceView_Global_Readcounter::getPrinterDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getPrinterDisplay($row, $this->import_data);',
                 ],
                 'supplier_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:PluginIserviceView_Global_Readcounter::getSupplierDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getSupplierDisplay($row, $this->import_data);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'target' => '_blank',
@@ -212,9 +229,9 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
                 ],
                 'otherserial' => [
                     'title' => 'Număr inventar',
-                    'format' => 'function: PluginIserviceView_Global_ReadCounter::getOtherSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getOtherSerialDisplay($row);',
                 ],
-                'usageaddressfield' => [
+                'usage_address_field' => [
                     'title' => 'Adresa de exploatare',
                     'default_sort' => 'ASC',
                     'editable' => true,
@@ -245,20 +262,20 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_TEXT,
-                        'name' => 'total2_black',
+                        'name' => 'total2_black_field',
                         'empty_value' => '[last_total2_black]',
                         'min_value' => '[last_total2_black]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][data_luc]"]',
+                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Black2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'total2_black',
-                            'error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function: PluginIserviceView_Global_ReadCounter::generateErrorBadgeText();',
-                            'estimate_text' => 'function: PluginIserviceView_Global_ReadCounter::generateEstimateBadgeText();',
-                            'estimate_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler("estimate");'
+                            'index' => 'total2_black_field',
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
+                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
+                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler("estimate");'
                         ]
                     ],
                 ],
@@ -268,25 +285,25 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_TEXT,
-                        'name' => 'total2_color',
+                        'name' => 'total2_color_field',
                         'empty_value' => '[last_total2_color]',
                         'min_value' => '[last_total2_color]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][data_luc]"]',
+                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Color2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'total2_color',
-                            'error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function: PluginIserviceView_Global_ReadCounter::generateErrorBadgeText();',
-                            'estimate_text' => 'function: PluginIserviceView_Global_ReadCounter::generateEstimateBadgeText();',
-                            'estimate_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler("estimate");'
+                            'index' => 'total2_color_field',
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
+                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
+                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler("estimate");'
                         ],
                         'post_widget' => '
                             <script>
                                 if (![' . PluginIservicePrinter::ID_COLOR_TYPE . ', ' . PluginIservicePrinter::ID_PLOTTER_TYPE . '].includes([printertypes_id])) {
-                                    $("[name=\'global_readcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color\\\\]\']").parent().children().hide();
+                                    $("[name=\'global_readcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color_field\\\\]\']").parent().children().hide();
                                 }
                             </script>',
                     ],
@@ -297,17 +314,17 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_DATETIME,
-                        'name' => 'data_luc',
+                        'name' => 'effective_date_field',
                         'empty_value' => date('Y-m-d H:i:s'),
                         'min_value' => '[last_data_luc]',
                         'label' => 'Data citire pentru [serial]',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'data_luc',
-                            'error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function: PluginIserviceView_Global_ReadCounter::generateErrorBadgeText();',
-                            'minimum_error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'minimum_error_hint' => 'function: PluginIserviceView_Global_ReadCounter::generateEstimateBadgeText("Click pentru a estima toate valorile");'
+                            'index' => 'effective_date_field',
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
+                            'minimum_error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'minimum_error_hint' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText("Click pentru a estima toate valorile");'
                         ]
                     ],
                 ],
@@ -320,7 +337,7 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
                         'name' => '_dont_close',
                     ],
                 ],
-                'fara_hartii' => [
+                'without_paper_field' => [
                     'title' => 'Fără hârtii',
                     'align' => 'center',
                     'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
@@ -330,7 +347,7 @@ class PluginIserviceView_Global_ReadCounter extends PluginIserviceView
                         'default' => 1,
                     ],
                 ],
-                'fara_deplasare' => [
+                'no_travel_field' => [
                     'title' => 'Fără deplasare',
                     'align' => 'center',
                     'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),

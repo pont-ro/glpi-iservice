@@ -13,7 +13,7 @@ Session::checkLoginUser();
 global $CFG_GLPI;
 
 $cartridge_id = filter_input(INPUT_GET, 'cartridge_id');
-$cartridge    = new Cartridge();
+$cartridge    = new PluginIserviceCartridge();
 if (!$cartridge->getFromDB($cartridge_id)) {
     echo "<span style='color:red'>IntError: Not found cartridge # $cartridge_id</span>";
     exit;
@@ -25,8 +25,8 @@ $input_id = PluginIserviceCartridgeItem::dropdownPrintersForCartridge($cartridge
 // $onclick = "ajaxCall(\"$link\" + \$(\"#dropdown_printers_id$input_id\").val(), \"\", function(message) {if(message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {\$(\"form\").submit();}})";
 // echo " <img src='$CFG_GLPI[root_doc]/plugins/iservice/pics/app_go_green.png' style='cursor: pointer;' title='" . __('Save') . "' onclick='$onclick'/>";
 $cartridgeitem_id = $cartridge->fields['cartridgeitems_id'];
-if (!empty($cartridge->fields['FK_location'])) {
-    $cartridgeitem_id .= "l" . $cartridge->fields['FK_location'];
+if (!empty($cartridge->fields['locations_id_field'])) {
+    $cartridgeitem_id .= "l" . $cartridge->fields['locations_id_field'];
 }
 
 $href    = PluginIserviceTicket::getFormModeUrl(PluginIserviceTicket::MODE_READCOUNTER) . "&_cartridgeitem_id=$cartridgeitem_id&_cartridge_id=$cartridge_id&items_id[Printer][0]=";

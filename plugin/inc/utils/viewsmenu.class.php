@@ -24,10 +24,10 @@ class ViewsMenu
 
     public static function getMenuConfig(): array
     {
-        $menuConfig = $_SESSION['plugin']['iservice']['viewMenuClasses'] ?? null;
+        $menuConfig = $_SESSION['plugin']['iservice']['menuConfig'] ?? null;
 
         if (empty($menuConfig)) {
-            $menuConfig = $_SESSION['plugin']['iservice']['viewMenuClasses'] = self::getMenuConfigFromConfigFile();
+            $menuConfig = $_SESSION['plugin']['iservice']['menuConfig'] = self::getMenuConfigFromConfigFile();
         }
 
         return $menuConfig;

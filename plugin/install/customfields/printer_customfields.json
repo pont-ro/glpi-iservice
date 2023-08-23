@@ -197,6 +197,7 @@
     },
     {
         "name": "last_read_field",
+        "old_name": "lastreadfield",
         "label": [
             "Last read",
             "Data ultima citire din CSV"
@@ -210,6 +211,7 @@
     },
     {
         "name": "snooze_read_check_field",
+        "old_name": "snoozereadcheckfield",
         "label": [
             "Snooze read check",
             "Amână verificarea citirii până"
@@ -318,6 +320,7 @@
     },
     {
         "name": "cost_center_field",
+        "old_name": "costcenterfield",
         "label": [
             "Cost center",
             "Centru de cost"
@@ -331,6 +334,7 @@
     },
     {
         "name": "usage_address_field",
+        "old_name": "usageaddressfield",
         "label": [
             "Usage address",
             "Adresa de folosire"
@@ -344,6 +348,7 @@
     },
     {
         "name": "no_invoice_field",
+        "old_name": "noinvoicefield",
         "label": [
             "No Invoice",
             "Exclus din facturare"

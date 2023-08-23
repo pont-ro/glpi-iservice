@@ -2,8 +2,8 @@
 global $CFG_PLUGIN_ISERVICE;
 return [
     'query' => "
-        select c.id, c.tickets_id_use tid, c.date_use
-        from glpi_cartridges c
+        select c.id, c.tickets_id_use_field tid, c.date_use
+        from glpi_plugin_iservice_cartridges c
         where c.printers_id = 0 and c.date_use is not null
         ",
     'test' => [

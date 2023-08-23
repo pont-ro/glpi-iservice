@@ -1,6 +1,8 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "getLocationDropdown.php".
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 // Direct access to file
 if (strpos($_SERVER['PHP_SELF'], "getLocationDropdown.php")) {
     include '../../../inc/includes.php';
@@ -51,6 +53,6 @@ $location_input_id         = Dropdown::show(
 echo "</span></td><td style='border:0;padding:0;'>";
 $link            = "$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageCartridge.php?id=$cartridge_id&operation=change_location&location_id=";
 $ajax_call_param = "\"$link\" + \$(\"#dropdown_locations_id$location_input_id\").val() + \"&supplier_id=$supplier_id\"";
-$onclick         = "ajaxCall($ajax_call_param, \"\", function(message) {if(message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {\$(\"form\").submit();}})";
+$onclick         = "ajaxCall($ajax_call_param, \"\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"form\").submit();}})";
 echo "<img src='$CFG_GLPI[root_doc]/plugins/iservice/pics/app_go_green.png' style='cursor: pointer;' title='" . __('Save') . "' onclick='$onclick'/>";
 echo "</td></tr></table>";

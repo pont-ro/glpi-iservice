@@ -7,13 +7,13 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 return [
     'query' => "
         select c.id, s1.name p1name, p.id pid, p.name pname, s2.id p2id, s2.name p2name
-        from glpi_cartridges c
+        from glpi_plugin_iservice_cartridges c
         join glpi_printers p on p.id = c.printers_id
         join glpi_infocoms ic on ic.items_id = c.printers_id and ic.itemtype = 'Printer'
-        left join glpi_suppliers s1 on s1.id = c.FK_enterprise
+        left join glpi_suppliers s1 on s1.id = c.suppliers_id_field
         left join glpi_suppliers s2 on s2.id = ic.suppliers_id
         where c.date_use is not null and c.date_out is null
-          and c.FK_enterprise != ic.suppliers_id
+          and c.suppliers_id_field != ic.suppliers_id
         ",
     'test' => [
         'alert' => true,

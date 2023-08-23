@@ -7,18 +7,18 @@ return [
           , p.serial
           , s.id sid
           , s.name supplier
-          , cfc.mercurycodefield mercury_code
-          , c.plugin_fields_typefielddropdowns_id type_id
+          , cfci.mercury_code_field mercury_code
+          , c.plugin_fields_cartridgeitemtypedropdowns_id type_id
           , td.completename type_name
           , count(c.id) `count`
           , GROUP_CONCAT(c.id SEPARATOR ', ') ids
-        from glpi_cartridges c
-        join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = c.cartridgeitems_id and cfc.itemtype = 'CartridgeItem'
+        from glpi_plugin_iservice_cartridges c
+        join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
         join glpi_printers p on p.id = c.printers_id
-        join glpi_suppliers s on s.id = c.FK_enterprise
-        left join glpi_plugin_fields_typefielddropdowns td on td.id = c.plugin_fields_typefielddropdowns_id
+        join glpi_suppliers s on s.id = c.suppliers_id_field
+        left join glpi_plugin_fields_cartridgeitemtypedropdowns td on td.id = c.plugin_fields_cartridgeitemtypedropdowns_id
         where printers_id > 0 and date_use is not null and date_out is null
-        group by p.id, s.id, cfc.mercurycodefield, c.plugin_fields_typefielddropdowns_id
+        group by p.id, s.id, cfci.mercury_code_field, c.plugin_fields_cartridgeitemtypedropdowns_id
         ) st
         where st.`count` > 1
         ",

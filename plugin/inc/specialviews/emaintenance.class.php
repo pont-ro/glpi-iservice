@@ -1,10 +1,28 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Emaintenance.php".
-class PluginIserviceView_Emaintenance extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use \PluginIserviceTicket;
+use \Session;
+use \PluginIserviceEmaintenance;
+use \PluginIserviceHtml;
+
+class Emaintenance extends View
 {
 
-    static function getIDDisplay($row_data)
+    public static $rightname = 'plugin_iservice_view_emaintenance';
+
+    public static $icon = 'ti ti-tools';
+
+    public static function getName(): string
+    {
+        return __('E-Maintenance', 'iService');
+    }
+
+    public static function getIDDisplay($row_data)
     {
         global $CFG_PLUGIN_ISERVICE;
 
@@ -24,7 +42,7 @@ class PluginIserviceView_Emaintenance extends PluginIserviceView
                 'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageEMMail.php?id=$row_data[id]&operation=invalidate",
                 'onclick' => 'ajaxCall',
                 'confirm' => "",
-                'success' => 'function(message) {if(message !== "' . PluginIserviceCommon::RESPONSE_OK . '") {alert(message);} else {$("#actions_' . $row_data['id'] . '").closest("tr").css("background", "red");}}',
+                'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {$("#actions_' . $row_data['id'] . '").closest("tr").css("background", "red");}}',
                 'html' => "<i class='fa fa-file fa-2x clickable' style='color:red; vertical-align: middle;' title='Invalidează'></i>",
             ],
             'body' => self::getBodyDisplay($row_data),
@@ -63,7 +81,7 @@ class PluginIserviceView_Emaintenance extends PluginIserviceView
             $display = 'none';
         }
 
-        $success_function = 'function(message) {if(message !== "' . PluginIserviceCommon::RESPONSE_OK . '") {alert(message);} else {$("#eme_read_' . $id . '").toggle();$("#eme_unread_' . $id . '").toggle();}}';
+        $success_function = 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {$("#eme_read_' . $id . '").toggle();$("#eme_unread_' . $id . '").toggle();}}';
         $displayed_id     = str_pad($id, 6, 0, STR_PAD_LEFT);
         return "<a id='$dom_id' href='#' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageEMMail.php?id=$id&operation=$operation\", \"\", $success_function); return false;'  style='display: $display;' title='$title'>$displayed_id <i class='fa fa-file fa-2x' style='color: $color; vertical-align: middle;'></i></a>";
     }
@@ -137,7 +155,7 @@ class PluginIserviceView_Emaintenance extends PluginIserviceView
         } else {
             $name          = self::getSubjectForDisplay($row_data);
             $content       = urlencode(self::getContentForTicket($row_data));
-            $ticket_button = "<a href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&idemmailfield=$row_data[id]&data_luc=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
+            $ticket_button = "<a href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
         }
 
         return $ticket_button;
@@ -168,13 +186,13 @@ class PluginIserviceView_Emaintenance extends PluginIserviceView
         return PluginIserviceEmaintenance::getContentForTicket($row_data, $html_format);
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         global $CFG_PLUGIN_ISERVICE;
 
-        $max_emails       = PluginIserviceCommon::getInputVariable('max_emails', 50);
-        $mailcollector_id = PluginIserviceCommon::getInputVariable('id', PluginIserviceEmaintenance::getMailCollector()['id']);
+        $max_emails       = IserviceToolBox::getInputVariable('max_emails', 50);
+        $mailcollector_id = IserviceToolBox::getInputVariable('id', PluginIserviceEmaintenance::getMailCollector()['id'] ?? null);
 
         ob_start();
         $html = new PluginIserviceHtml();
@@ -205,14 +223,13 @@ class PluginIserviceView_Emaintenance extends PluginIserviceView
                           , tc.items_id ticket_id
                           , p.name printer_name
                           , p.serial printer_serial
-                          , pc.usageaddressfield printer_usageaddress
-                          , pc.costcenterfield costcenter
+                          , p.usage_address_field printer_usageaddress
+                          , p.cost_center_field costcenter
                           , s.name supplier_name
                           , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_name
                         FROM glpi_plugin_iservice_ememails eme
-                        LEFT JOIN glpi_plugin_fields_ticketcustomfields tc on tc.idemmailfield = eme.id and tc.itemtype = 'Ticket'
-                        LEFT JOIN glpi_printers p on p.id = eme.printers_id
-                        LEFT JOIN glpi_plugin_fields_printercustomfields pc on pc.items_id = p.id and pc.itemtype = 'Printer'
+                        LEFT JOIN glpi_plugin_fields_ticketticketcustomfields tc on tc.em_mail_id_field = eme.id and tc.itemtype = 'Ticket'
+                        LEFT JOIN glpi_plugin_iservice_printers p on p.id = eme.printers_id
                         LEFT JOIN glpi_suppliers s ON s.id = eme.suppliers_id
                         LEFT JOIN glpi_users u ON u.id = eme.users_id_tech
                         WHERE eme.read in ([read])
@@ -223,7 +240,7 @@ class PluginIserviceView_Emaintenance extends PluginIserviceView
                           AND ((p.name is null AND '[printer_name]' = '%%') OR p.name LIKE '[printer_name]')
                           AND ((s.name is null AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
                           AND ((p.serial is null AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
-                          AND ((pc.costcenterfield is null AND '[costcenter]' = '%%') OR pc.costcenterfield like '[costcenter]')
+                          AND ((p.cost_center_field is null AND '[costcenter]' = '%%') OR p.cost_center_field like '[costcenter]')
                           [tech_id]
                         ",
             'show_filter_buttons' => 'false',

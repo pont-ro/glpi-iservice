@@ -1,15 +1,29 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Printers.php".
-class PluginIserviceView_Printers extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use PluginFieldsPrinterprintercustomfield;
+use PluginIserviceCartridgeItem;
+use PluginIserviceDB;
+use \Session;
+use \PluginIserviceEmaintenance;
+use \PluginIservicePrinter;
+use \PluginIserviceMovement;
+use \PluginIserviceTicket;
+use Ticket;
+
+class Printers extends View
 {
     protected $enable_emaintenance_data_import = true;
 
-    static function getTicketStatusDisplay($row_data)
+    public static function getTicketStatusDisplay($row_data): string
     {
         global $CFG_GLPI;
-        $export_color                  = $row_data['data_exp_fact'] < date("Y-m-d", strtotime("-14days")) ? '_red' : '_green';
-        $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usageaddressfield] - $row_data[supplier_name]");
+        $export_color                  = $row_data['invoice_expiry_date_field'] < date("Y-m-d", strtotime("-14days")) ? '_red' : '_green';
+        $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                       = [
             'readcounter' => [
                 'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_READCOUNTER . "&items_id[Printer][0]=$row_data[printer_id]",
@@ -118,12 +132,12 @@ class PluginIserviceView_Printers extends PluginIserviceView
         return $out;
     }
 
-    static function getTicketStatusDisplayForExport($row_data)
+    public static function getTicketStatusDisplayForExport($row_data): string|bool
     {
         return Ticket::getStatus($row_data['ticket_status']);
     }
 
-    static function getTicketPrinterDisplay($row_data, $import_data)
+    public static function getTicketPrinterDisplay($row_data, $import_data): string
     {
         global $CFG_GLPI;
         $href    = $CFG_GLPI['root_doc'] . "/front/printer.form.php?id=$row_data[printer_id]";
@@ -146,7 +160,7 @@ class PluginIserviceView_Printers extends PluginIserviceView
             $printer .= "<span style='color:deeppink' title='Aparatul există în fișierul de import, dar nu este setat în iService'> [EM]</span>";
         }
 
-        if ($row_data['cartridge_management']) {
+        if ($row_data['cm_field']) {
             $printer .= " [CM]";
             $title   .= "\r\n\r\nManagement de cartușe activ";
             $style    = "color: green;";
@@ -185,7 +199,7 @@ class PluginIserviceView_Printers extends PluginIserviceView
         return "<a href='$href' title='$title' $style target='_blank'>$printer</a>";
     }
 
-    static function getSupplierDisplay($row_data, $import_data)
+    public static function getSupplierDisplay($row_data, $import_data): string
     {
         $title = "Tel: $row_data[supplier_tel]\r\nFax: $row_data[supplier_fax]\r\nObservații: $row_data[supplier_comment]\r\nEmail trimis facturi: $row_data[supplier_email_facturi]";
         $color = 'green';
@@ -205,9 +219,9 @@ class PluginIserviceView_Printers extends PluginIserviceView
         return "<span style='color:$color' title='$title'>$row_data[supplier_name]</span>";
     }
 
-    static function getLocationDisplay($row_data)
+    public static function getLocationDisplay($row_data): string
     {
-        if (empty($row_data['cartridge_management'])) {
+        if (empty($row_data['cm_field'])) {
             return $row_data['location_complete_name'] ?: '======';
         }
 
@@ -248,24 +262,24 @@ class PluginIserviceView_Printers extends PluginIserviceView
         return "<span title='$title' $style>" . ($row_data['location_complete_name'] ?: '======') . "</span>";
     }
 
-    static function getOtherSerialDisplay($row_data)
+    public static function getOtherSerialDisplay($row_data): string
     {
-        if ($row_data['noinvoicefield']) {
+        if ($row_data['no_invoice_field']) {
             return "<span class='error' title='Aparat exclus din facturare'>" . $row_data['otherserial'] . "</span>";
         }
 
         return $row_data['otherserial'];
     }
 
-    static function getSerialDisplay($row_data)
+    public static function getSerialDisplay($row_data): string
     {
         if (!Session::haveRight('plugin_iservice_printer', READ)) {
             return $row_data['serial'];
         }
 
-        if (!empty($row_data['gps'])) {
+        if (!empty($row_data['contact_gps_field'])) {
             $style = "style='color:blue;font-style:italic;'";
-            $gps   = "\n(GPS: $row_data[gps])";
+            $gps   = "\n(GPS: $row_data[contact_gps_field])";
         } else {
             $gps   = "";
             $style = "";
@@ -275,9 +289,9 @@ class PluginIserviceView_Printers extends PluginIserviceView
         return $link;
     }
 
-    static function getDataExpFactDisplay($row_data)
+    public static function getDataExpFactDisplay($row_data): string
     {
-        return "<span title='Data factură: $row_data[data_fact]'>" . date('Y-m-d', strtotime($row_data['data_exp_fact'])) . "</span>";
+        return "<span title='Data factură: $row_data[invoice_date_field]'>" . date('Y-m-d', strtotime($row_data['invoice_expiry_date_field'])) . "</span>";
     }
 
     protected function getRightCondition($printer_table_alias = 'p.')
@@ -305,28 +319,28 @@ class PluginIserviceView_Printers extends PluginIserviceView
         return $right_condition;
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
 
-        $printer_counters_button = PluginIserviceCommon::inProfileArray('client') ? '' :
+        $printer_counters_button = IserviceToolBox::inProfileArray('client') ? '' :
             "<a class='vsubmit' href='view.php?view=printercounters2' target='_blank'>" . __('Printer counters', 'iservice') . " v2</a>";
 
-        $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', PluginIserviceCommon::getInputVariable('import_file', '')) : '';
+        $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
         if ($this->enable_emaintenance_data_import) {
-            $this->import_data = PluginIserviceEmaintenance::getDataFromCsvs(PluginIserviceEmaintenance::getImportFilePaths(PluginIserviceCommon::getInputVariable('import_file', '')));
+            $this->import_data = PluginIserviceEmaintenance::getDataFromCsvs(PluginIserviceEmaintenance::getImportFilePaths(IserviceToolBox::getInputVariable('import_file', '')));
         }
 
-        $import = PluginIserviceCommon::getArrayInputVariable('import');
+        $import = IserviceToolBox::getArrayInputVariable('import');
         if (!empty($import)) {
-            $printer_customfields = new PluginFieldsPrintercustomfield();
-            $emaintenance_query   = "select " . PluginIservicePrinter::getSerialFieldForEM() . " id, pc.id customfield_id from glpi_plugin_fields_printercustomfields pc join glpi_printers p on p.id = pc.items_id and pc.itemtype='Printer' where pc.emaintenancefield = 1";
-            foreach (PluginIserviceCommon::getQueryResult($emaintenance_query) as $id => $printer_customfield) {
+            $printer_customfields = new PluginFieldsPrinterprintercustomfield();
+            $emaintenance_query   = "select " . PluginIservicePrinter::getSerialFieldForEM() . " id, p.cfid customfield_id from glpi_plugin_iservice_printers p where p.em_field = 1";
+            foreach (PluginIserviceDB::getQueryResult($emaintenance_query) as $id => $printer_customfield) {
                 if (!array_key_exists($id, $this->import_data)) {
                     $printer_customfields->update(
                         [
                             'id' => $printer_customfield['customfield_id'],
-                            'emaintenancefield' => 0
+                            'em_field' => 0
                         ]
                     );
                 }
@@ -337,19 +351,19 @@ class PluginIserviceView_Printers extends PluginIserviceView
                     continue;
                 }
 
-                if ($printer_customfields->getFromDBByQuery("JOIN glpi_printers p ON p.id = items_id and itemtype = 'Printer' AND p.is_deleted = 0 WHERE " . PluginIservicePrinter::getSerialFieldForEM() . " = '$id' LIMIT 1")) {
+                if (PluginIserviceDB::populateByQuery($printer_customfields, "JOIN glpi_printers p ON p.id = items_id and itemtype = 'Printer' AND p.is_deleted = 0 WHERE " . PluginIservicePrinter::getSerialFieldForEM() . " = '$id' LIMIT 1")) {
                     $printer_customfields->update(
                         [
                             'id' => $printer_customfields->getID(),
-                            'emaintenancefield' => 1
+                            'em_field' => 1
                         ]
                     );
                 }
             }
         }
 
-        if (false !== ($cid = PluginIserviceCommon::getInputVariable('cid', false))) {
-            $contract_title     = " pentru contractul " . PluginIserviceCommon::getInputVariable('contract_name');
+        if (false !== ($cid = IserviceToolBox::getInputVariable('cid', false))) {
+            $contract_title     = " pentru contractul " . IserviceToolBox::getInputVariable('contract_name');
             $contract_join      = "LEFT JOIN glpi_contracts_items ci on ci.items_id = p.id and ci.itemtype = 'Printer'";
             $contract_condition = "AND ci.contracts_id = $cid";
         } else {
@@ -404,50 +418,48 @@ class PluginIserviceView_Printers extends PluginIserviceView
                             , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_name
                             , ue.name external_user
                             , g.completename supergroup
-                            , plt.data_luc last_data_luc
-                            , plt.total2_black last_total2_black
-                            , cfp.total2_black_fact
-                            , plt.total2_color last_total2_color
-                            , cfp.total2_color_fact
-                            , cfp.data_exp_fact
-                            , CAST(cfp.data_fact as DATE) data_fact
-                            , cfp.week_nr
-                            , cfp.emaintenancefield emaintenance
-                            , cfp.disableemfield disableem
-                            , cfp.gps
-                            , cfp.usageaddressfield
-                            , cfp.noinvoicefield
-                            , cfs.part_email_f1 supplier_email_facturi
-                            , cfs.cartridge_management
+                            , plt.effective_date_field last_data_luc
+                            , plt.total2_black_field last_total2_black
+                            , p.invoiced_total_black_field
+                            , plt.total2_color_field last_total2_color
+                            , p.invoiced_total_color_field
+                            , p.invoice_expiry_date_field
+                            , CAST(p.invoice_date_field as DATE) invoice_date_field
+                            , p.week_nr_field
+                            , p.em_field emaintenance
+                            , p.disable_em_field disableem
+                            , p.contact_gps_field
+                            , p.usage_address_field
+                            , p.no_invoice_field
+                            , s.email_for_invoices_field supplier_email_facturi
+                            , s.cm_field
                             , t2.codbenef
                             , t2.numar_facturi_neplatite
                         FROM glpi_plugin_iservice_printers p
                         LEFT JOIN glpi_plugin_iservice_printers_last_tickets plt ON plt.printers_id = p.id
                         LEFT JOIN glpi_printertypes pt ON pt.id = p.printertypes_id
                         LEFT JOIN glpi_infocoms i ON i.items_id = p.id and i.itemtype = 'Printer'
-                        LEFT JOIN glpi_suppliers s ON s.id = i.suppliers_id
+                        LEFT JOIN glpi_plugin_iservice_suppliers s ON s.id = i.suppliers_id
                         LEFT JOIN glpi_locations l ON l.id = p.locations_id
                         LEFT JOIN glpi_users u ON u.id = p.users_id_tech
                         LEFT JOIN glpi_users ue ON ue.id = p.users_id
                         LEFT JOIN glpi_groups g ON g.id = p.groups_id
-                        LEFT JOIN glpi_plugin_fields_printercustomfields cfp ON cfp.items_id = p.id and cfp.itemtype = 'Printer'
-                        LEFT JOIN glpi_plugin_fields_suppliercustomfields cfs ON cfs.items_id = s.id and cfs.itemtype = 'Supplier'
                         LEFT JOIN glpi_states st ON st.id = p.states_id
                         LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite
                                    FROM hmarfa_facturi 
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
                                    AND valinc-valpla > 0
-                                   GROUP BY codbenef) t2 ON t2.codbenef = cfs.cod_hmarfa
+                                   GROUP BY codbenef) t2 ON t2.codbenef = s.hmarfa_code_field
                         $contract_join
                         WHERE p.is_deleted = 0 {$this->getRightCondition()} $contract_condition
                             AND p.original_name LIKE '[printer_name]'
                             AND p.otherserial LIKE '[otherserial]'
                             AND p.serial LIKE '[serial]'
                             AND ((s.name is null AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
-                            AND ((cfp.usageaddressfield is null AND '[usageaddressfield]' = '%%') OR cfp.usageaddressfield LIKE '[usageaddressfield]')
+                            AND ((p.usage_address_field is null AND '[usage_address_field]' = '%%') OR p.usage_address_field LIKE '[usage_address_field]')
                             AND ((l.completename is null AND '[printer_location]' = '%%') OR l.completename LIKE '[printer_location]')
                             AND ((st.name is null AND '[printer_status]' = '%%') OR st.name LIKE '[printer_status]')
-                            AND ((cfp.week_nr is null AND '[week_nr]' = '%%') OR cfp.week_nr LIKE '[week_nr]')
+                            AND ((p.week_nr_field is null AND '[week_nr_field]' = '%%') OR p.week_nr_field LIKE '[week_nr_field]')
                             [tech_id]
                             [supplier_id]
                             [em_disabled]
@@ -483,7 +495,7 @@ class PluginIserviceView_Printers extends PluginIserviceView
                 ],
                 'em_disabled' => [
                     'type' => self::FILTERTYPE_CHECKBOX,
-                    'format' => 'AND cfp.disableemfield = 1',
+                    'format' => 'AND p.disable_em_field = 1',
                     'header' => 'printer_name',
                     'header_caption' => 'Doar cele excluse din EM ',
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
@@ -523,16 +535,16 @@ class PluginIserviceView_Printers extends PluginIserviceView
                     'format' => '%%%s%%',
                     'header' => 'printer_status',
                 ],
-                'usageaddressfield' => [
+                'usage_address_field' => [
                     'type' => self::FILTERTYPE_TEXT,
                     'caption' => 'Adresa de exploatare',
                     'format' => '%%%s%%',
-                    'header' => 'usageaddressfield',
+                    'header' => 'usage_address_field',
                 ],
-                'week_nr' => [
+                'week_nr_field' => [
                     'type' => self::FILTERTYPE_TEXT,
                     'format' => '%%%s%%',
-                    'header' => 'week_nr',
+                    'header' => 'week_nr_field',
                     'style' => 'width: 1em;'
                 ],
                 'printer_location' => [
@@ -568,7 +580,7 @@ class PluginIserviceView_Printers extends PluginIserviceView
                     'format' => 'function:PluginIserviceView_Printers::getLocationDisplay($row);',
                     'visible' => !self::inProfileArray('client'),
                 ],
-                'usageaddressfield' => [
+                'usage_address_field' => [
                     'title' => 'Adresa de exploatare',
                     'editable' => true,
                     'edit_settings' => [
@@ -601,24 +613,24 @@ class PluginIserviceView_Printers extends PluginIserviceView
                 'last_total2_black' => [
                     'title' => 'Black2 u.i.',
                 ],
-                'total2_black_fact' => [
+                'invoiced_total_black_field' => [
                     'title' => 'Black2 facturat',
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'last_total2_color' => [
                     'title' => 'Color2 u.i.',
                 ],
-                'total2_color_fact' => [
+                'invoiced_total_color_field' => [
                     'title' => 'Color2 facturat',
                     'visible' => !self::inProfileArray('client'),
                 ],
-                'data_exp_fact' => [
+                'invoice_expiry_date_field' => [
                     'title' => 'Data exp.<br>factură',
                     'style' => 'white-space: nowrap;',
-                    'format' => 'function:default',  // this will call PluginIserviceView_Printers::getDataExpFactDisplay($row);
+                    'format' => 'function:default',  // This will call PluginIserviceView_Printers::getDataExpFactDisplay($row).
                     'visible' => !self::inProfileArray('client'),
                 ],
-                'week_nr' => [
+                'week_nr_field' => [
                     'title' => 'Nr.<br>săpt.',
                     'class' => 'noprint',
                     'align' => 'center',

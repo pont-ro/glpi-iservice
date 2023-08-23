@@ -6,13 +6,13 @@ global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
 return [
     'query' => "
-        select c.id cid, c.FK_location l1id, l1.completename l1_name, p.id pid, p.name pname, p.locations_id l2id, l2.completename l2_name
-        from glpi_cartridges c
-        left join glpi_locations l1 on l1.id = c.FK_location
+        select c.id cid, c.locations_id_field l1id, l1.completename l1_name, p.id pid, p.name pname, p.locations_id l2id, l2.completename l2_name
+        from glpi_plugin_iservice_cartridges c
+        left join glpi_locations l1 on l1.id = c.locations_id_field
         join glpi_printers p on p.id = c.printers_id
         left join glpi_locations l2 on l2.id = p.locations_id
         where c.date_use is not null and c.date_out is null
-          and coalesce(case c.FK_location when -1 then 0 else c.FK_location end, 0) != coalesce(case p.locations_id when -1 then 0 else p.locations_id end, 0)
+          and coalesce(case c.locations_id_field when -1 then 0 else c.locations_id_field end, 0) != coalesce(case p.locations_id when -1 then 0 else p.locations_id end, 0)
         ",
     'test' => [
         'alert' => true,

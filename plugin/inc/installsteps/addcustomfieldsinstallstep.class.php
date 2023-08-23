@@ -10,11 +10,11 @@ use Session;
 
 class AddCustomFieldsInstallStep
 {
-    const CLEANUP_ON_UNINSTALL = true;
+    const CLEANUP_ON_UNINSTALL = false;
 
     const CONTAINERS = [
         [
-            'name'      => 'printercustomfield',
+            'name'      => 'customfield',
             'label'     => 'Printer Custom Fields',
             'itemtypes' => ['Printer'],
             'type'      => 'tab',
@@ -24,7 +24,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 1,
         ],
         [
-            'name'      => 'ticketcustomfield',
+            'name'      => 'customfield',
             'label'     => 'Ticket Custom Fields',
             'itemtypes' => ['Ticket'],
             'type'      => 'tab',
@@ -34,7 +34,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 2,
         ],
         [
-            'name'      => 'suppliercustomfield',
+            'name'      => 'customfield',
             'label'     => 'Supplier Custom Fields',
             'itemtypes' => ['Supplier'],
             'type'      => 'tab',
@@ -44,7 +44,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 3,
         ],
         [
-            'name'      => 'contractcustomfield',
+            'name'      => 'customfield',
             'label'     => 'Contract Custom Fields',
             'itemtypes' => ['Contract'],
             'type'      => 'tab',
@@ -54,17 +54,27 @@ class AddCustomFieldsInstallStep
             'old_id'    => 4,
         ],
         [
-            'name'      => 'cartridgecustomfield',
-            'label'     => 'Cartridge Custom Fields',
+            'name'      => 'customfield',
+            'label'     => 'Cartridge Item Custom Fields',
             'itemtypes' => ['CartridgeItem'],
             'type'      => 'tab',
             'subtype'   => null,
             'is_active' => '1',
-            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/cartridge_customfields.json',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/cartridgeitem_customfields.json',
             'old_id'    => 5,
         ],
         [
-            'name'      => 'printermodelcustomfield',
+            'name'      => 'customfield',
+            'label'     => 'Cartridge Custom Fields',
+            'itemtypes' => ['Cartridge'],
+            'type'      => 'tab',
+            'subtype'   => null,
+            'is_active' => '1',
+            'fields'    => PLUGIN_ISERVICE_DIR . '/install/customfields/cartridge_customfields.json',
+            'old_id'    => null,
+        ],
+        [
+            'name'      => 'customfield',
             'label'     => 'Printer Model Custom Fields',
             'itemtypes' => ['PrinterModel'],
             'type'      => 'tab',
@@ -118,13 +128,15 @@ class AddCustomFieldsInstallStep
 
         if (count($containers) === 0) {
             $containerData['id'] = $container->add($containerData);
-            $mapping->add(
-                [
-                    'itemtype' => PluginFieldsContainer::class,
-                    'items_id' => $containerData['id'],
-                    'old_id'   => $containerData['old_id'],
-                ]
-            );
+            if (!empty($containerData['old_id'])) {
+                $mapping->add(
+                    [
+                        'itemtype' => PluginFieldsContainer::class,
+                        'items_id' => $containerData['id'],
+                        'old_id'   => $containerData['old_id'],
+                    ]
+                );
+            }
         } else {
             $containerData['id']        = array_shift($containers)['id'];
             $containerData['itemtypes'] = self::encodeItemTypes($containerData['itemtypes']);
@@ -240,8 +252,7 @@ class AddCustomFieldsInstallStep
 
             $fields = $field->find(
                 [
-                    'name'                        => $fieldData['name'],
-                    'plugin_fields_containers_id' => $containerData['id'],
+                    'name' => $fieldData['name'],
                 ]
             );
 

@@ -5,15 +5,17 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-
-class PluginIserviceEmaintenance extends MailCollector {
+class PluginIserviceEmaintenance extends MailCollector
+{
 
     const DEFAULT_EMAIL = 'emaintenance@expertline.ro';
 
     const ACCEPTED_SENDERS = ['exlemservice@gmail.com', 'sendonly@rcm.ec1.srv.ygles.com'];
 
-    static function getTable($classname = null) {
+    protected $protectedStorage;
+
+    public static function getTable($classname = null): string
+    {
         if (empty($classname)) {
             $classname = 'MailCollector';
         }
@@ -21,7 +23,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return parent::getTable($classname);
     }
 
-    static function getTypeName($nb = 0) {
+    public static function getTypeName($nb = 0): string
+    {
         return _n('E-maintenance', 'E-maintenance', $nb, 'iservice');
     }
 
@@ -32,7 +35,8 @@ class PluginIserviceEmaintenance extends MailCollector {
      *
      * @return -1 : done but not finish 1 : done with success
      * */
-    static function cronEm_Mailgate($task) {
+    public static function cronEm_Mailgate($task): int
+    {
 
         if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.em_mailgate'))) {
             $task->log("E-maintenance mailgate is disabled by configuration.\n");
@@ -56,23 +60,24 @@ class PluginIserviceEmaintenance extends MailCollector {
         $task->log("$message\n");
 
         if (empty($em->fetch_emails)) {
-            return 0; // Nothin to do
+            return 0; // Nothing to do.
         } elseif ($em->fetch_emails < $em->maxfetch_emails) {
-            return 1; // Done
+            return 1; // Done.
         }
 
-        return -1; // There are more messages to retrieve
+        return -1; // There are more messages to retrieve.
     }
 
-    static function getMailCollector($email = '') {
+    public static function getMailCollector($email = ''): array
+    {
         if (empty($email)) {
             $email = self::DEFAULT_EMAIL;
         }
 
-        return IserviceToolBox::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0];
+        return PluginIserviceDB::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0] ?? [];
     }
 
-    static function getCsvConfig($type = 'EM')
+    public static function getCsvConfig($type = 'EM'): array
     {
         return [
             'EM' => [
@@ -82,8 +87,8 @@ class PluginIserviceEmaintenance extends MailCollector {
                     'partner_id' => 1,
                     'date_out' => 4,
                     'date_use' => 5,
-                    'data_luc' => 6,
-                    'c102' => 8, // not sent any more, but we need this to check that the line contains enough data
+                    'effective_date_field' => 6,
+                    'c102' => 8, // Not sent anymore, but we need this to check that the line contains enough data.
                     'c106' => 7, // * 106
                     'c109' => 8, // * 109
                 ],
@@ -106,7 +111,7 @@ class PluginIserviceEmaintenance extends MailCollector {
                     'partner_name' => 0,
                     'date_out' => 5,
                     'date_use' => 6,
-                    'data_luc' => 7,
+                    'effective_date_field' => 7,
                     'c102' => 8,
                     'c106' => 9,
                     'c109' => 10,
@@ -116,12 +121,13 @@ class PluginIserviceEmaintenance extends MailCollector {
         ][$type];
     }
 
-    static function getDataFromCsvsForSpacelessSerial($spaceless_serial, $file_names = [])
+    public static function getDataFromCsvsForSpacelessSerial($spaceless_serial, $file_names = []): array|bool
     {
         return self::getDataFromCsvs($file_names, [$spaceless_serial])[$spaceless_serial] ?? false;
     }
 
-    static function getDataFromCsvs($file_names = [], $limit_serials = []) {
+    public static function getDataFromCsvs($file_names = [], $limit_serials = []): array
+    {
         if (empty($file_names)) {
             $file_names = self::getImportFilePaths();
         }
@@ -130,24 +136,24 @@ class PluginIserviceEmaintenance extends MailCollector {
 
         foreach (array_reverse($file_names) as $file_name) {
             foreach (self::getDataFromCsv($file_name, 'EM', $limit_serials) as $spaceless_serial => $counter_data) {
-                // If we have no data so far for this serial, we save the data
+                // If we have no data so far for this serial, we save the data.
                 if (empty($data[$spaceless_serial])) {
                     $data[$spaceless_serial] = $counter_data;
                     continue;
                 }
 
                 $overwrite = false;
-                // If we have newer valid data or the new and old data are both invalid, we overwrite
-                foreach (['date_out', 'date_use', 'total2_black', 'total2_color'] as $fieldName) {
+                // If we have newer valid data or the new and old data are both invalid, we overwrite.
+                foreach (['date_out', 'date_use', 'total2_black_field', 'total2_color_field'] as $fieldName) {
                     if (!empty($counter_data[$fieldName]) && (empty($counter_data[$fieldName]['error']) || !empty($data[$spaceless_serial][$fieldName]['error']))) {
                         $data[$spaceless_serial][$fieldName] = $counter_data[$fieldName];
                         $overwrite                           = true;
                     }
                 }
 
-                // If we overwrote something, we overwrite the data_luc also
-                if ($overwrite && !empty($counter_data['data_luc']) && (empty($counter_data['data_luc']['error']) || !empty($data[$spaceless_serial]['data_luc']['error']))) {
-                    $data[$spaceless_serial]['data_luc'] = $counter_data['data_luc'];
+                // If we overwrote something, we overwrite the effective_date_field also.
+                if ($overwrite && !empty($counter_data['effective_date_field']) && (empty($counter_data['effective_date_field']['error']) || !empty($data[$spaceless_serial]['effective_date_field']['error']))) {
+                    $data[$spaceless_serial]['effective_date_field'] = $counter_data['effective_date_field'];
                 }
             }
         }
@@ -155,7 +161,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $data;
     }
 
-    static function getDataFromCsv($file_name, $type = 'EM', $limit_serials = []) {
+    public static function getDataFromCsv($file_name, $type = 'EM', $limit_serials = []): ?array
+    {
         $csv_config = self::getCsvConfig($type);
 
         if (!is_file($file_name) || false === ($handle = fopen($file_name, "r"))) {
@@ -181,18 +188,18 @@ class PluginIserviceEmaintenance extends MailCollector {
 
             if (!empty($result[$id])) {
                 $result[$id] = [
-                    'total2_black' => '#empty#import#data#',
-                    'total2_color' => '#empty#import#data#',
-                    'data_luc' => '#empty#import#data#',
+                    'total2_black_field' => '#empty#import#data#',
+                    'total2_color_field' => '#empty#import#data#',
+                    'effective_date_field' => '#empty#import#data#',
                     'error' => "Există mai multe rânduri pentru seria $id"
                 ];
                 continue;
             }
 
             $result[$id] = [
-                'total2_black' => '#empty#import#data#',
-                'total2_color' => '#empty#import#data#',
-                'data_luc' => '#empty#import#data#',
+                'total2_black_field' => '#empty#import#data#',
+                'total2_color_field' => '#empty#import#data#',
+                'effective_date_field' => '#empty#import#data#',
             ];
             $printer     = new PluginIservicePrinter();
             if (!$printer->getFromDBByEMSerial($id)) {
@@ -241,9 +248,9 @@ class PluginIserviceEmaintenance extends MailCollector {
                     }
                 }
             } elseif ($type == 'AVITUM') {
-                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['data_luc']]))) {
+                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['effective_date_field']]))) {
                     $data_luc       = '';
-                    $data_luc_error = $data[$csv_config['columns']['data_luc']] . " nu este o dată validă";
+                    $data_luc_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
                 } else {
                     $data_luc = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
                 }
@@ -282,9 +289,9 @@ class PluginIserviceEmaintenance extends MailCollector {
                     }
                 }
             } else {
-                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['data_luc']]))) {
+                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['effective_date_field']]))) {
                     $data_luc       = '';
-                    $data_luc_error = $data[$csv_config['columns']['data_luc']] . " nu este o dată validă";
+                    $data_luc_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
                 } else {
                     $data_luc = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
                 }
@@ -295,17 +302,17 @@ class PluginIserviceEmaintenance extends MailCollector {
                     $result[$id]['warning'][] = 'Data instalării aparatului este invalidă: ' . $data[$csv_config['columns']['date_use']];
                 }
 
-                // black counter is counter 109
+                // Black counter is counter 109.
                 $total2_black_error = ($total2_black = is_numeric($data[$csv_config['columns']['c109']]) ? $data[$csv_config['columns']['c109']] : false) === false ? "Valoarea \"{$data[$csv_config['columns']['c109']]}\" pentru contorul 109 nu este număr" : null;
 
                 if ($printer->isColor()) {
-                    // color counter is counter 106
+                    // Color counter is counter 106.
                     $total2_color_error = ($total2_color = is_numeric($data[$csv_config['columns']['c106']]) ? $data[$csv_config['columns']['c106']] : false) === false ? "Valoarea \"{$data[$csv_config['columns']['c106']]}\" pentru contorul 106 nu este număr" : null;
                 }
             }
 
             $error = false;
-            foreach (['date_use', 'data_luc', 'total2_black', 'total2_color'] as $field_name) {
+            foreach (['date_use', 'effective_date_field', 'total2_black_field', 'total2_color_field'] as $field_name) {
                 $error_variable_name = $field_name . "_error";
                 if ($$field_name === null && empty($$error_variable_name)) {
                     continue;
@@ -315,8 +322,8 @@ class PluginIserviceEmaintenance extends MailCollector {
                 $error                   |= !empty($$error_variable_name);
             }
 
-            if ($error && !isset($result[$id]['data_luc']['error'])) {
-                $result[$id]['data_luc'] = '#empty#import#data#';
+            if ($error && !isset($result[$id]['effective_date_field']['error'])) {
+                $result[$id]['effective_date_field'] = '#empty#import#data#';
             }
 
             $result[$id]['date_out']              = '??';
@@ -331,32 +338,34 @@ class PluginIserviceEmaintenance extends MailCollector {
                 if ($date_out === null) {
                     continue;
                 } elseif ($date_out < $date_use) {
-                    $result[$id]['data_luc'] = '#empty#import#data#';
+                    $result[$id]['effective_date_field'] = '#empty#import#data#';
                     $result[$id]['error']    = "Aparatul a fost predat înainte să fie instalat!";
                     continue;
                 }
 
                 $supplier = new Supplier();
-                if (!$supplier->getFromDB( $data[$csv_config['columns']['partner_id'] ?? -1] ?? $printer->fields['supplier_id'])) {
-                    // change this to get the supplier from infocom
-                        $result[$id]['data_luc'] = '#empty#import#data#';
+                if (!$supplier->getFromDB($data[$csv_config['columns']['partner_id'] ?? -1] ?? $printer->fields['supplier_id'])) {
+                    // Change this to get the supplier from infocom.
+                        $result[$id]['effective_date_field'] = '#empty#import#data#';
                         $result[$id]['error']    = "Partenerul nu poate fi identificat";
                         continue;
                 }
 
                 $result[$id]['partner_resolved_name'] = $supplier->fields['name'];
 
-                $printer_movements = IserviceToolBox::getQueryResult("
+                $printer_movements = PluginIserviceDB::getQueryResult(
+                    "
                     select *
                     from glpi_plugin_iservice_movements m
-                    join glpi_plugin_fields_ticketcustomfields cft on cft.movement_id = m.id
+                    join glpi_plugin_fields_ticketticketcustomfields cft on cft.movement_id_field = m.id
                     where m.itemtype = 'Printer'
                       and m.items_id = {$printer->getID()}
                       and m.suppliers_id_old = {$supplier->getID()}
                       and m.init_date > '$date_use'
-                ");
+                "
+                );
                 if (count($printer_movements) < 1) {
-                    $result[$id]['data_luc'] = '#empty#import#data#';
+                    $result[$id]['effective_date_field'] = '#empty#import#data#';
                     $result[$id]['error']    = "Nu există mutare cu tichet retragere creat mai recent de $date_use,\ncare retrage aparatul {$printer->fields['name']} de la {$supplier->fields['name']},\ndeși acesta a fost predat la data de $date_out!";
                     continue;
                 }
@@ -368,7 +377,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $result;
     }
 
-    static function getImportControl($button_caption, $import_file_path, $button_name = 'import', $input_name = 'import_file') {
+    public static function getImportControl($button_caption, $import_file_path, $button_name = 'import', $input_name = 'import_file'): string
+    {
         $real_import_file_path = self::getImportFilePath($import_file_path);
         $last_import_file_time = filemtime($real_import_file_path);
         return "
@@ -378,7 +388,8 @@ class PluginIserviceEmaintenance extends MailCollector {
                 </span>";
     }
 
-    static function getIwmImportControl($button_caption, $button_name = 'iwm_import', $input_name = 'iwm_import_file') {
+    public static function getIwmImportControl($button_caption, $button_name = 'iwm_import', $input_name = 'iwm_import_file'): string
+    {
         return "
                 <span style='margin-bottom:.2em;'>
                     <input type='file' name='$input_name' accept='.csv' style='border: 0px;'> 
@@ -386,19 +397,22 @@ class PluginIserviceEmaintenance extends MailCollector {
                 </span>";
     }
 
-    static function getAvitumImportControl($button_caption, $button_name = 'avitum_import') {
+    public static function getAvitumImportControl($button_caption, $button_name = 'avitum_import'): string
+    {
         return "
                 <span style='margin-bottom:.2em;'>
                     <input type='submit' class='submit' name='$button_name' value='$button_caption'>
                 </span>";
     }
 
-    static function getImportFilePath($import_file_path = '') {
+    public static function getImportFilePath($import_file_path = ''): ?string
+    {
         $import_file_paths = self::getImportFilePaths($import_file_path);
         return array_shift($import_file_paths);
     }
 
-    static function getImportFilePaths($import_file_path = '') {
+    public static function getImportFilePaths($import_file_path = ''): string|array
+    {
         if (is_file($import_file_path)) {
             return [$import_file_path];
         }
@@ -422,10 +436,11 @@ class PluginIserviceEmaintenance extends MailCollector {
         return array_slice($file_paths, 0, 3, true);
     }
 
-    /**
+    /*
      * @return \PluginIservicePrinter
      */
-    static function getPrinterFromEmailData($mail_data) {
+    public static function getPrinterFromEmailData($mail_data): ?PluginIservicePrinter
+    {
         $extended_data = self::getExtendedMailData($mail_data);
         if (!empty($extended_data['body_lines']['rds id'])) {
             $serial = $extended_data['body_lines']['rds id']['ending'];
@@ -446,7 +461,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         }
     }
 
-    static function getContentForTicket($mail_data, $html_format = true) {
+    public static function getContentForTicket($mail_data, $html_format = true): string
+    {
         $line_beginnings = [
             'alarm code' => 'first',
             'specified status' => 'first',
@@ -470,14 +486,14 @@ class PluginIserviceEmaintenance extends MailCollector {
 
             $formated_line = ($html_format ? "<b>" : "") . $line_data['beginning'] . ($html_format ? "</b>" : "") . ": " . $line_data['ending'];
             switch ($line_beginnings[$line_beginning]) {
-                case 'first':
-                    $result[] = $formated_line;
-                    break;
-                case 'last':
-                    $end_result[] = $formated_line;
-                    break;
-                default:
-                    break;
+            case 'first':
+                $result[] = $formated_line;
+                break;
+            case 'last':
+                $end_result[] = $formated_line;
+                break;
+            default:
+                break;
             }
         }
 
@@ -485,7 +501,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return implode($line_break, $result) . (empty($end_result) ? '' : (empty($result) ? '' : $line_break) . implode($line_break, $end_result));
     }
 
-    static function getExtendedMailData($mail_data) {
+    public static function getExtendedMailData($mail_data): array
+    {
         $mail_data['subject_parts'] = array_map('trim', explode('/', $mail_data['subject']));
         foreach (explode("\n", $mail_data['body']) as $line) {
             if (empty($mail_data['body_lines'])) {
@@ -521,9 +538,10 @@ class PluginIserviceEmaintenance extends MailCollector {
      *
      * @return if $display = false return messages result string
      * */
-    function collect($id, $display = 0) {
+    public function collect($id, $display = 0): ?string
+    {
         if (!$this->getFromDB($id)) {
-            // TRANS: %s is the ID of the mailgate
+            // TRANS: %s is the ID of the mailgate.
             $msg = sprintf(__('Could not find mailgate %d'), $id);
             return $display ? Session::addMessageAfterRedirect($msg, false, ERROR) : $msg;
         }
@@ -537,7 +555,7 @@ class PluginIserviceEmaintenance extends MailCollector {
         $this->fetch_emails = 0;
 
         try {
-            // Connect to the Mail Box
+            // Connect to the Mail Box.
             $this->connect();
         } catch (Throwable $e) {
             $msg = __('Could not connect to mailgate server') . '<br/>' . $e->getMessage();
@@ -545,30 +563,29 @@ class PluginIserviceEmaintenance extends MailCollector {
         }
 
         $rejected = new NotImportedEmail();
-        // Clean from previous collect (from GUI, cron already truncate the table)
+        // Clean from previous collect (from GUI, cron already truncate the table).
         $rejected->deleteByCriteria(['mailcollectors_id' => $this->getID()]);
 
-        // Get Total Number of Unread Email in mail box
-        $count_messages = $this->getTotalMails(); // Total Mails in Inbox Return integer value
+        // Get Total Number of Unread Email in mailbox.
+        $count_messages = $this->getTotalMails(); // Total Mails in Inbox Return integer value.
         $result         = ['error' => 0, 'refused' => 0, 'imported' => 0, 'auto_processed' => 0];
 
         do {
-            $this->storage->rewind();
-            if (!$this->storage->valid()) {
+            $this->protectedStorage->rewind();
+            if (!$this->protectedStorage->valid()) {
                 break;
             }
 
             try {
                 $this->fetch_emails++;
-                $result[$this->processEmail($this->storage->getUniqueId($this->storage->key()), $this->storage->current())] += 1;
+                $result[$this->processEmail($this->protectedStorage->getUniqueId($this->protectedStorage->key()), $this->protectedStorage->current())] += 1;
             } catch (\Exception $e) {
                 Toolbox::logInFile('mailgate', sprintf(__('Message is invalid: %1$s') . '<br/>', $e->getMessage()));
                 $result['error'] += 1;
             }
-        } while ($this->storage->valid() && ($this->fetch_emails < $this->maxfetch_emails));
+        } while ($this->protectedStorage->valid() && ($this->fetch_emails < $this->maxfetch_emails));
 
-        //
-        // TRANS: %1$d, %2$d, %3$d, %4$d and %5$d are number of messages
+        // TRANS: %1$d, %2$d, %3$d, %4$d and %5$d are number of messages.
         $msg = sprintf(
             __('Number of messages: available=%1$d, already imported=%2$d, retrieved=%3$d, refused=%4$d, errors=%5$d, blacklisted=%6$d'),
             $count_messages,
@@ -584,11 +601,13 @@ class PluginIserviceEmaintenance extends MailCollector {
     /**
      * Processes the email given by the uid.
      *
-     * @param  string $uid The uid of the message from the storage.
-     * @param  \Laminas\Mail\Storage\Message $message Message.
+     * @param string $uid The uid of the message from the storage.
+     * @param \Laminas\Mail\Storage\Message $message Message.
+     *
      * @return string error, refused, imported or auto_processed
      */
-    protected function processEmail(string $uid, \Laminas\Mail\Storage\Message $message): string {
+    protected function processEmail(string $uid, \Laminas\Mail\Storage\Message $message): string
+    {
         $mail_data = $this->getMailData($message);
         $result    = null;
         try {
@@ -609,30 +628,32 @@ class PluginIserviceEmaintenance extends MailCollector {
             return empty($result) ? 'error' : $result;
         } catch (Exception $ex) {
             $not_imported_email = new NotImportedEmail();
-            $not_imported_email->add([
-                'from' => $mail_data['from'],
-                'to' => $mail_data['to'],
-                'mailcollectors_id' => $this->getID(),
-                'date' => $_SESSION["glpi_currenttime"],
-                'subject' => $ex->getMessage(),
-                'messageid' => $mail_data['message_id'],
-                'reason' => NotImportedEmail::MATCH_NO_RULE
-            ]);
+            $not_imported_email->add(
+                [
+                    'from' => $mail_data['from'],
+                    'to' => $mail_data['to'],
+                    'mailcollectors_id' => $this->getID(),
+                    'date' => $_SESSION["glpi_currenttime"],
+                    'subject' => $ex->getMessage(),
+                    'messageid' => $mail_data['message_id'],
+                    'reason' => NotImportedEmail::MATCH_NO_RULE
+                ]
+            );
             $this->deleteMails($uid, self::REFUSED_FOLDER);
             return empty($result) ? 'error' : $result;
         }
 
-        return 'error';
     }
 
-    protected function getMailData(\Laminas\Mail\Storage\Message $message) {
+    protected function getMailData(\Laminas\Mail\Storage\Message $message): array
+    {
         $headers = $this->getHeaders($message);
 
         $body = $this->getBody($message);
-// if (!empty($this->charset) && !$this->body_converted && mb_detect_encoding($body) != 'UTF-8') {
-// $body = Toolbox::encodeInUtf8($body, $this->charset);
-// $this->body_converted = true;
-// }
+        // if (!empty($this->charset) && !$this->body_converted && mb_detect_encoding($body) != 'UTF-8') {
+        // $body = Toolbox::encodeInUtf8($body, $this->charset);
+        // $this->body_converted = true;
+        // }
         if (!Toolbox::seems_utf8($body)) {
             $body = Toolbox::encodeInUtf8($body);
         }
@@ -652,7 +673,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         ];
     }
 
-    protected function refuseMailData($mail_data) {
+    protected function refuseMailData($mail_data): string
+    {
         if (empty($mail_data['from']) || !in_array($mail_data['from'], self::ACCEPTED_SENDERS)) {
             return sprintf(__('Email rejected from %s', 'iservice'), $mail_data['from']);
         }
@@ -664,7 +686,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return false;
     }
 
-    protected function importMailData(&$mail_data) {
+    protected function importMailData(&$mail_data): int|bool
+    {
         $ememail                = new PluginIserviceEMEmail();
         $mail_data['suggested'] = '';
         if (null !== ($printer = self::getPrinterFromEmailData($mail_data))) {
@@ -726,16 +749,18 @@ class PluginIserviceEmaintenance extends MailCollector {
         return false;
     }
 
-    protected function autoAddTonerBottleReplacementTicket($ememail_id, $extended_data) {
+    protected function autoAddTonerBottleReplacementTicket($ememail_id, $extended_data)
+    {
         if (false === ($ticket = $this->autoAddTicket($ememail_id, $extended_data, ['_users_id_assign' => PluginIserviceTicket::USER_ID_READER]))) {
             return false;
         }
 
-        // Add cartridge to the ticket
+        // Add cartridge to the ticket.
         return $this->autoAddCatridgeToTonerBottleReplacementTicket($ticket, $ememail_id, $extended_data);
     }
 
-    protected function autoAddCatridgeToTonerBottleReplacementTicket($ticket, $ememail_id, $extended_data) {
+    protected function autoAddCatridgeToTonerBottleReplacementTicket($ticket, $ememail_id, $extended_data)
+    {
         $ememail = new PluginIserviceEMEmail();
         if (empty($extended_data['body_lines']['toner mercury code'])) {
             $ememail->update(['id' => $ememail_id, 'read' => 0, 'process_result' => "Could not detect Toner Mercury Code"]);
@@ -763,7 +788,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return true;
     }
 
-    protected function autoAddTicketIfNoChangeableCartridge($ememail_id, $extended_data) {
+    protected function autoAddTicketIfNoChangeableCartridge($ememail_id, $extended_data): bool
+    {
         if (empty($ememail_id)) {
             return false;
         }
@@ -795,7 +821,7 @@ class PluginIserviceEmaintenance extends MailCollector {
 
         $ticket->fields['items_id']['Printer'][0] = $extended_data['printers_id'];
         if (!empty($extended_data['suppliers_id'])) {
-            // This field value will be needed to get the changeable cartridges
+            // This field value will be needed to get the changeable cartridges.
             $ticket->fields['_suppliers_id_assign'] = $extended_data['suppliers_id'];
         }
 
@@ -806,19 +832,20 @@ class PluginIserviceEmaintenance extends MailCollector {
             $ememail->update(['id' => $ememail_id, 'read' => 0, 'process_result' => "Cartridge with mercury code {$extended_data['body_lines']['toner mercury code']['ending']} could not be found in iService"]);
             return false;
         } elseif ($cartridge_item_index === null) {
-            // If there is no changeable cartridge, create a ticket
+            // If there is no changeable cartridge, create a ticket.
             if (!$this->autoAddTicket($ememail_id, $extended_data)) {
                 return false;
             }
         }
 
-        // In any success case the mail should be marked as read
+        // In any success case the mail should be marked as read.
         $ememail->update(['id' => $ememail_id, 'read' => 1]);
 
         return true;
     }
 
-    protected function autoAddTicket($ememail_id, $extended_data, $override_data = []) {
+    protected function autoAddTicket($ememail_id, $extended_data, $override_data = []): PluginIserviceTicket|bool
+    {
         if (empty($ememail_id)) {
             return false;
         }
@@ -844,12 +871,12 @@ class PluginIserviceEmaintenance extends MailCollector {
             return false;
         }
 
-        // Prepare ticket data
+        // Prepare ticket data.
         $ticket->prepareForShow(['mode' => PluginIserviceTicket::MODE_CREATENORMAL]);
         $ticket->explodeArrayFields();
         $data_luc    = self::getDateTimeFromString($extended_data['body_lines']['occurred']['ending'] ?? '') ?: self::getDateTimeFromString($extended_data['date']);
         $ticket_data = [
-            // This field value will be needed to get the changeable cartridges
+            // This field value will be needed to get the changeable cartridges.
             'items_id' => ['Printer' => [$extended_data['printers_id']]],
             'locations_id' => $extended_data['printer']->fields['locations_id'],
             '_users_id_assign' => $extended_data['users_id_tech'],
@@ -858,25 +885,25 @@ class PluginIserviceEmaintenance extends MailCollector {
             '_idemmailfield' => $ememail_id,
             '_without_moving' => 1,
             '_without_papers' => 1,
-            'data_luc' => $data_luc->format('Y-m-d H:i:s'),
+            'effective_date_field' => $data_luc->format('Y-m-d H:i:s'),
         ];
         if (!empty($extended_data['suppliers_id'])) {
-            // This field value will be needed to get the changeable cartridges
+            // This field value will be needed to get the changeable cartridges.
             $ticket_data['_suppliers_id_assign'] = $extended_data['suppliers_id'];
         }
 
         $csv_data = self::getDataFromCsvs();
         if (!empty($csv_data[$extended_data['printer_spaceless_serial']])) {
-            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_black']['error'])) {
-                $ticket->fields['total2_black'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_black'];
+            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_black_field']['error'])) {
+                $ticket->fields['total2_black_field'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_black_field'];
             }
 
-            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_color']['error'])) {
-                $ticket->fields['total2_color'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_color'];
+            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_color_field']['error'])) {
+                $ticket->fields['total2_color_field'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_color_field'];
             }
         }
 
-        // Add ticket
+        // Add ticket.
         $merged_ticket_data = array_merge($ticket->fields, $ticket_data);
         if (!empty($override_data) && is_array($override_data)) {
             $merged_ticket_data = array_merge($merged_ticket_data, $override_data);
@@ -893,7 +920,8 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $ticket;
     }
 
-    protected function getCartridgeItemIndex($cartridge_item_ids, $from_object) {
+    protected function getCartridgeItemIndex($cartridge_item_ids, $from_object): ?string
+    {
         $cartridge_item_index = null;
         if (!is_array($cartridge_item_ids)) {
             $cartridge_item_ids = [$cartridge_item_ids];
@@ -910,7 +938,7 @@ class PluginIserviceEmaintenance extends MailCollector {
         foreach ($cartridge_item_ids as $cartridge_item_id) {
             foreach ($changeable_cartridges as $changeable_cartridge) {
                 if (isset($changeable_cartridge['id']) && $changeable_cartridge['id'] == $cartridge_item_id) {
-                    $cartridge_item_index = $changeable_cartridge['id'] . (empty($changeable_cartridge['location_name']) ? '' : ("l" . $changeable_cartridge['FK_location']));
+                    $cartridge_item_index = $changeable_cartridge['id'] . (empty($changeable_cartridge['location_name']) ? '' : ("l" . $changeable_cartridge['locations_id_field']));
                     break;
                 }
             }
@@ -919,7 +947,7 @@ class PluginIserviceEmaintenance extends MailCollector {
         return $cartridge_item_index;
     }
 
-    protected static function getDateTimeFromString($string)
+    protected static function getDateTimeFromString($string): DateTime|bool
     {
         $formats = [
             'm-d-Y H:i A',
@@ -938,6 +966,60 @@ class PluginIserviceEmaintenance extends MailCollector {
         }
 
         return false;
+    }
+
+    public function connect(): void
+    {
+        $config = Toolbox::parseMailServerConnectString($this->fields['host']);
+
+        $params = [
+            'host'      => $config['address'],
+            'user'      => $this->fields['login'],
+            'password'  => (new GLPIKey())->decrypt($this->fields['passwd']),
+            'port'      => $config['port']
+        ];
+
+        if ($config['ssl']) {
+            $params['ssl'] = 'SSL';
+        }
+
+        if ($config['tls']) {
+            $params['ssl'] = 'TLS';
+        }
+
+        if (!empty($config['mailbox'])) {
+            $params['folder'] = $config['mailbox'];
+        }
+
+        if ($config['validate-cert'] === false) {
+            $params['novalidatecert'] = true;
+        }
+
+        try {
+            $storage = Toolbox::getMailServerStorageInstance($config['type'], $params);
+            if ($storage === null) {
+                throw new \Exception(sprintf(__('Unsupported mail server type:%s.'), $config['type']));
+            }
+
+            $this->protectedStorage = $storage;
+            if ($this->fields['errors'] > 0) {
+                $this->update(
+                    [
+                        'id'     => $this->getID(),
+                        'errors' => 0
+                    ]
+                );
+            }
+        } catch (\Exception $e) {
+            $this->update(
+                [
+                    'id'     => $this->getID(),
+                    'errors' => ($this->fields['errors'] + 1)
+                ]
+            );
+            // Any errors will cause an Exception.
+            throw $e;
+        }
     }
 
 }

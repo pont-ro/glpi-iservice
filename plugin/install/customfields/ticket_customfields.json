@@ -23,7 +23,7 @@
     },
     {
         "name": "device_observations_field",
-        "old_name": "observatii_aparat",
+        "old_name": "observatii",
         "label": ["Device observations","Observații aparat"],
         "type": "text",
         "ranking": "30",
@@ -44,7 +44,7 @@
         "mandatory": "0"
     },
     {
-        "name": "no_travel",
+        "name": "no_travel_field",
         "old_name": "fara_deplasare",
         "label": ["No travel","Fără deplasare"],
         "type": "yesno",
@@ -77,7 +77,7 @@
         "mandatory": "0"
     },
     {
-        "name": "exporttypefield",
+        "name": "ticketexporttype",
         "old_name": "export_type",
         "label": ["Export type","Tip export"],
         "type": "dropdown",
@@ -160,6 +160,42 @@
         "label": ["Notification mail","Email de notificare"],
         "type": "text",
         "ranking": "160",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "total2_black_field",
+        "old_name": "total2_black",
+        "old_table_name": "glpi_tickets",
+        "label": ["Total2 black","Total2 negru"],
+        "type": "number",
+        "ranking": "170",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "total2_color_field",
+        "old_name": "total2_color",
+        "old_table_name": "glpi_tickets",
+        "label": ["Total2 color","Total2 color"],
+        "type": "number",
+        "ranking": "180",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "effective_date_field",
+        "old_name": "data_luc",
+        "old_table_name": "glpi_tickets",
+        "label": ["Effective date","Data efectivă"],
+        "type": "datetime",
+        "ranking": "190",
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",

@@ -1,10 +1,29 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Operations.php".
-class PluginIserviceView_Operations extends PluginIserviceView
+namespace GlpiPlugin\Iservice\Specialviews;
+
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\View;
+use \Session;
+use \Ticket;
+use \CommonITILObject;
+use \PluginIserviceTicket;
+use \PluginIservicePrinter;
+
+class Operations extends View
 {
 
-    static function getTicketStatusDisplay($row_data)
+    public static $rightname = 'plugin_iservice_view_operations';
+
+    public static $icon = 'ti ti-timeline-event';
+
+    public static function getName(): string
+    {
+        return __('Operations', 'iService');
+    }
+
+    public static function getTicketStatusDisplay($row_data): string
     {
         global $CFG_GLPI;
         $actions = [
@@ -46,9 +65,9 @@ class PluginIserviceView_Operations extends PluginIserviceView
         return $out;
     }
 
-    static function getTicketConsumablesDisplay($row_data)
+    public static function getTicketConsumablesDisplay($row_data): string
     {
-        $export_type = empty($row_data['export_type']) ? '' : ucfirst("$row_data[export_type]<br>");
+        $export_type = empty($row_data['plugin_fields_ticketexporttypedropdowns_id']) ? '' : ucfirst("$row_data[plugin_fields_ticketexporttypedropdowns_id]<br>");
         if ($row_data['ticket_exported']) {
             return "<b>$export_type</b>$row_data[ticket_consumables]";
         } else {
@@ -56,7 +75,7 @@ class PluginIserviceView_Operations extends PluginIserviceView
         }
     }
 
-    protected function getSettings()
+    protected function getSettings(): array
     {
         global $CFG_GLPI;
         $ticket_status_options = [
@@ -74,20 +93,20 @@ class PluginIserviceView_Operations extends PluginIserviceView
                     SELECT
                           t.status
                         , t.solvedate date_solve
-                        , t.data_luc
+                        , t.effective_date_field
                         , t.id ticket_id
                         , t.name ticket_name
                         , t.content ticket_content
-                        , t.total2_black + coalesce(t.total2_color, 0) ticket_counter_total
-                        , t.total2_black ticket_counter_black
-                        , t.total2_color ticket_counter_color
-                        , tcf.contact ticket_contact
-                        , tcf.numar_contact ticket_contact_num
-                        , tcf.observatii ticket_comment
-                        , tcf.status_aparat ticket_status
-                        , tcf.fara_hartii ticket_without_papers
-                        , tcf.exported ticket_exported
-                        , tcf.export_type
+                        , t.total2_black_field + coalesce(t.total2_color_field, 0) ticket_counter_total
+                        , t.total2_black_field ticket_counter_black
+                        , t.total2_color_field ticket_counter_color
+                        , t.contact_name_field ticket_contact
+                        , t.contact_phone_field ticket_contact_num
+                        , t.device_observations_field ticket_comment
+                        /*, t.status_aparat ticket_printer_status*/
+                        , t.without_paper_field ticket_without_papers
+                        , t.exported_field ticket_exported
+                        , t.plugin_fields_ticketexporttypedropdowns_id
                         , l.completename ticket_location
                         , p.id printer_id
                         , s.id supplier_id
@@ -97,21 +116,19 @@ class PluginIserviceView_Operations extends PluginIserviceView
                            FROM glpi_plugin_iservice_consumables_tickets ct
                            WHERE ct.tickets_id = t.id) ticket_consumables
                         , ct.cartridges ticket_cartridges
-                    FROM glpi_tickets t
-                    LEFT JOIN glpi_plugin_fields_ticketcustomfields tcf ON tcf.items_id = t.id and tcf.itemtype = 'Ticket'
+                    FROM glpi_plugin_iservice_tickets t
                     LEFT JOIN glpi_itilfollowups tf ON tf.items_id = t.id and tf.itemtype = 'Ticket'
-                    LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
+                    JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
                     LEFT JOIN glpi_printers p ON p.id = it.items_id
                     LEFT JOIN glpi_suppliers_tickets st ON st.tickets_id = t.id AND st.type = " . CommonITILObject::ASSIGNED . "
                     LEFT JOIN glpi_suppliers s ON s.id = st.suppliers_id
                     LEFT JOIN glpi_locations l ON l.id = t.locations_id
                     -- LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '<br>(', c.id,')') SEPARATOR '<br>') cartridges
-                    LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '&nbsp;<span title=\"', IF(cfc.plugin_fields_typefielddropdowns_id IN (2,3,4), t.total2_color, t.total2_black + coalesce(t.total2_color, 0)), ' + (', cfc.atcfield, ' * ', cfc.lcfield, ')', '\">(pana&nbsp;', IF(cfc.plugin_fields_typefielddropdowns_id IN (2,3,4), t.total2_color, t.total2_black + coalesce(t.total2_color, 0)) + ROUND(cfc.atcfield * cfc.lcfield), ')</span><br>[', c.id,COALESCE(CONCAT(' -> ',cat.cartridges_id_emptied),' -> <span style=\"color:red;\" title=\"nu golește nimic\">!!!</span>'),']') SEPARATOR '<br>') cartridges
+                    LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '&nbsp;<span title=\"', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)), ' + (', ci.atc_field, ' * ', ci.life_coefficient_field, ')', '\">(pana&nbsp;', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)) + ROUND(ci.atc_field * ci.life_coefficient_field), ')</span><br>[', c.id,COALESCE(CONCAT(' -> ',cat.cartridges_id_emptied),' -> <span style=\"color:red;\" title=\"nu golește nimic\">!!!</span>'),']') SEPARATOR '<br>') cartridges
                                 FROM glpi_plugin_iservice_cartridges_tickets cat
-                                LEFT JOIN glpi_tickets t ON t.id = cat.tickets_id
+                                LEFT JOIN glpi_plugin_iservice_tickets t ON t.id = cat.tickets_id
                                 LEFT JOIN glpi_cartridges c ON c.id = cat.cartridges_id
-                                LEFT JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
-                                LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = ci.id and cfc.itemtype = 'CartridgeItem'
+                                LEFT JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
                                 GROUP BY cat.tickets_id
                               ) ct ON ct.tickets_id = t.id
                     WHERE t.is_deleted = 0
@@ -119,7 +136,7 @@ class PluginIserviceView_Operations extends PluginIserviceView
                         AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
                         AND t.name LIKE '[ticket_name]'
                         AND t.content LIKE '[ticket_content]'
-                        AND (t.data_luc IS NULL OR t.data_luc <= '[data_luc]')
+                        AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date_field]')
                         [printer_id]
                     GROUP BY t.id
                 ) t
@@ -135,9 +152,9 @@ class PluginIserviceView_Operations extends PluginIserviceView
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => "AND p.id = %d",
                 ],
-                'data_luc' => [
+                'effective_date_field' => [
                     'type' => self::FILTERTYPE_DATE,
-                    'header' => 'data_luc',
+                    'header' => 'effective_date_field',
                     'header_caption' => '< ',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date('Y-m-d'),
@@ -186,10 +203,10 @@ class PluginIserviceView_Operations extends PluginIserviceView
             'columns' => [
                 'status' => [
                     'title' => 'Stare tichet',
-                    'format' => 'function:PluginIserviceView_Operations::getTicketStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Operations::getTicketStatusDisplay($row);',
                     'align' => 'center',
                 ],
-                'data_luc' => [
+                'effective_date_field' => [
                     'title' => 'Data efectivă',
                     'style' => 'white-space: nowrap;',
                     'default_sort' => 'DESC',
@@ -201,7 +218,7 @@ class PluginIserviceView_Operations extends PluginIserviceView
                     'title' => 'Titlu',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/ticket.form.php?id=[ticket_id]',
-                        'title' => "Partener: [supplier_name]\nLocație: [ticket_location]\nStatus: [ticket_status]\n\nContact: [ticket_contact]\nNumăr contact: [ticket_contact_num]\n\nFără hârtii: [ticket_without_papers]\n\nObservatii: [ticket_comment]",
+                        'title' => "Partener: [supplier_name]\nLocație: [ticket_location]\nStatus: [ticket_printer_status]\n\nContact: [ticket_contact]\nNumăr contact: [ticket_contact_num]\n\nFără hârtii: [ticket_without_papers]\n\nObservatii: [ticket_comment]",
                         'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
                         'target' => '_blank',
                     ],
@@ -216,7 +233,7 @@ class PluginIserviceView_Operations extends PluginIserviceView
                     'title' => 'Cartușe livrate',
                     'class' => 'no-wrap',
                     'align' => 'center',
-                    'format' => 'function:default',  // this will call PluginIserviceView_Operations::getTicketConsumablesDisplay($row);
+                    'format' => 'function:default',  // This will call PluginIserviceView_Operations::getTicketConsumablesDisplay($row).
                 ],
                 'ticket_cartridges' => [
                     'title' => 'Cartușe instalate',
@@ -234,9 +251,9 @@ class PluginIserviceView_Operations extends PluginIserviceView
             ],
         ];
 
-        $params  = PluginIserviceCommon::getArrayInputVariable('operations0');
+        $params  = IserviceToolBox::getArrayInputVariable('operations0');
         $printer = new PluginIservicePrinter();
-        if ($printer->getFromDB($params['printer_id']) && $printer->isPlotter()) {
+        if (!empty($params) && $printer->getFromDB($params['printer_id']) && $printer->isPlotter()) {
             $settings['columns']['ticket_counter_black']['title'] = __('Consumed ink', 'iservice');
             $settings['columns']['ticket_counter_color']['title'] = __('Printed surface', 'iservice');
             unset($settings['columns']['ticket_counter_total']);
