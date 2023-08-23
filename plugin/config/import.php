@@ -122,6 +122,10 @@ return [
                 'itemtype' => 'Contract_Supplier',
                 'label' => _n('Contract Supplier', 'Contract Suppliers', Session::getPluralNumber()),
             ],
+            'contractItem' => [
+                'itemtype' => 'Contract_Item',
+                'label' => _n('Contract Item', 'Contract Items', Session::getPluralNumber()),
+            ],
         ]
     ],
     'tickets' => [
