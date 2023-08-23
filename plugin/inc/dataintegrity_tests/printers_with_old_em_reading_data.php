@@ -22,12 +22,12 @@ if (!function_exists('iservice_custom_command_check_em_csv')) {
         $csv_data             = PluginIserviceEmaintenance::getDataFromCsvs();
         $printer_customfields = new PluginFieldsPrinterprintercustomfield();
         foreach ($printers as $printer_fields) {
-            if (($csv_data[$printer_fields['serial']]['data_luc'] ?? '#empty#import#data#') === '#empty#import#data#') {
+            if (($csv_data[$printer_fields['serial']]['effective_date_field'] ?? '#empty#import#data#') === '#empty#import#data#') {
                 $last_read_date = '1970-01-01';
-            } elseif (!empty($csv_data[$printer_fields['serial']]['data_luc']['error'])) {
+            } elseif (!empty($csv_data[$printer_fields['serial']]['effective_date_field']['error'])) {
                 $last_read_date = '1980-01-01';
             } else {
-                $last_read_date = $csv_data[$printer_fields['serial']]['data_luc'] ?? '1970-01-01';
+                $last_read_date = $csv_data[$printer_fields['serial']]['effective_date_field'] ?? '1970-01-01';
             }
 
             if (is_array($last_read_date)) {

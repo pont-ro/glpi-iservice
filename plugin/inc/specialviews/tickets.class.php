@@ -305,7 +305,7 @@ class Tickets extends View
                             , s.id supplier_id
                             , s.name supplier_name
                             , t.date date_open
-                            , CASE t.effective_date_field WHEN '0000-00-00 00:00:00' THEN NULL WHEN '0000-00-00' THEN NULL ELSE t.effective_date_field END effective_date
+                            , CASE t.effective_date_field WHEN '0000-00-00 00:00:00' THEN NULL WHEN '0000-00-00' THEN NULL ELSE t.effective_date_field END effective_date_field
                             , u.id tech_park_id
                             , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
                             , a.id tech_assign_id
@@ -362,7 +362,7 @@ class Tickets extends View
                             AND ((s.name IS NULL AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
                             AND t.date <= '[date_open]'
-                            AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date]')
+                            AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date_field]')
                             [effective_date_start]
                             [unlinked]
                             [tech_id]
@@ -387,7 +387,7 @@ class Tickets extends View
                     'pre_widget' => $effective_date_start_pre_widget,
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
                 ],
-                'effective_date' => [
+                'effective_date_field' => [
                     'type' => self::FILTERTYPE_DATE,
                     'caption' => '< Data efectivă <',
                     'format' => 'Y-m-d 23:59:59',
@@ -541,7 +541,7 @@ class Tickets extends View
                     'default_sort' => 'DESC',
                     'align' => 'center',
                 ],
-                'effective_date' => [
+                'effective_date_field' => [
                     'title' => 'Data efectivă',
                     'sort_default_dir' => 'DESC',
                     'align' => 'center',
