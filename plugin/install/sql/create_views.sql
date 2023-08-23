@@ -71,7 +71,8 @@ select
     `cfp`.`no_invoice_field` as `no_invoice_field`,
     `plct`.`effective_date_field` as last_effective_date,
     `plct`.`total2_black_field` as last_total2_black,
-    `plct`.`total2_color_field` as last_total2_color
+    `plct`.`total2_color_field` as last_total2_color,
+    `plct`.`effective_date_field` as effective_date
 from (((`glpi_printers` `p`
     left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))

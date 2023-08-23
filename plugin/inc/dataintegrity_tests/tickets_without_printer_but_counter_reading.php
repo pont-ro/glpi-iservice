@@ -28,7 +28,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets without printers but counter reading > 0',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has black counter [total2_black] and color counter [total2_color], but printer <b>[name]</b> is missing from it",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has black counter [total2_black_field] and color counter [total2_color_field], but printer <b>[name]</b> is missing from it",
         ],
     ],
 ];

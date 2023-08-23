@@ -50,7 +50,7 @@ class GlobalReadCounter extends View
         }
 
         $display_data = [];
-        foreach (['effective_date_field', 'total2_black', 'total2_color', 'date_use', 'date_out'] as $field_name) {
+        foreach (['effective_date_field', 'total2_black_field', 'total2_color_field', 'date_use', 'date_out'] as $field_name) {
             // $import_data[$field_name] is an array in case of an error
             $display_data[$field_name] = is_array($import_data[$field_name]) ? '' : $import_data[$field_name];
         }
@@ -61,8 +61,8 @@ class GlobalReadCounter extends View
             "&nbsp;- Client: $import_data[partner_name] ($import_data[partner_id] - $import_data[partner_resolved_name])\n" .
             "&nbsp;- Aparat: $row_data[spaceless_serial]\n" .
             "&nbsp;&nbsp;&nbsp;- data citirii: $display_data[effective_date_field]\n" .
-            "&nbsp;&nbsp;&nbsp;- contor black: $display_data[total2_black]\n" .
-            "&nbsp;&nbsp;&nbsp;- contor color: $display_data[total2_color]\n" .
+            "&nbsp;&nbsp;&nbsp;- contor black: $display_data[total2_black_field]\n" .
+            "&nbsp;&nbsp;&nbsp;- contor color: $display_data[total2_color_field]\n" .
             "&nbsp;&nbsp;&nbsp;- data instalarii: $display_data[date_use]\n" .
             "&nbsp;&nbsp;&nbsp;- data predarii: $display_data[date_out]"
         );
@@ -85,13 +85,13 @@ class GlobalReadCounter extends View
         $data_difference = round((time() - strtotime($param_data['row_data']['last_data_luc'])) / (60 * 60 * 24));
         $estimate_value  = '';
         $icon_click      = "";
-        foreach (['total2_black', 'total2_color', 'effective_date_field'] as $fieldname) {
+        foreach (['total2_black_field', 'total2_color_field', 'effective_date_field'] as $fieldname) {
             switch ($fieldname) {
-            case 'total2_black':
+            case 'total2_black_field':
                 $estimate_value = $param_data['row_data']['last_total2_black'] + ($param_data['row_data']['daily_bk_average_field'] * $data_difference);
                 $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_black'], $param_data['row_data']['daily_bk_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 break;
-            case 'total2_color':
+            case 'total2_color_field':
                 if ($param_data['row_data']['daily_color_average_field'] == 0) {
                     $estimate_value = 0;
                 } else {
@@ -262,7 +262,7 @@ class GlobalReadCounter extends View
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_TEXT,
-                        'name' => 'total2_black',
+                        'name' => 'total2_black_field',
                         'empty_value' => '[last_total2_black]',
                         'min_value' => '[last_total2_black]',
                         'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
@@ -271,7 +271,7 @@ class GlobalReadCounter extends View
                         'style' => 'text-align:right; width: 5em;',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'total2_black',
+                            'index' => 'total2_black_field',
                             'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
                             'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
                             'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
@@ -285,7 +285,7 @@ class GlobalReadCounter extends View
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_TEXT,
-                        'name' => 'total2_color',
+                        'name' => 'total2_color_field',
                         'empty_value' => '[last_total2_color]',
                         'min_value' => '[last_total2_color]',
                         'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
@@ -294,7 +294,7 @@ class GlobalReadCounter extends View
                         'style' => 'text-align:right; width: 5em;',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'total2_color',
+                            'index' => 'total2_color_field',
                             'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
                             'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
                             'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
@@ -303,7 +303,7 @@ class GlobalReadCounter extends View
                         'post_widget' => '
                             <script>
                                 if (![' . PluginIservicePrinter::ID_COLOR_TYPE . ', ' . PluginIservicePrinter::ID_PLOTTER_TYPE . '].includes([printertypes_id])) {
-                                    $("[name=\'global_readcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color\\\\]\']").parent().children().hide();
+                                    $("[name=\'global_readcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color_field\\\\]\']").parent().children().hide();
                                 }
                             </script>',
                     ],

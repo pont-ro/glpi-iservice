@@ -419,9 +419,9 @@ class Printers extends View
                             , ue.name external_user
                             , g.completename supergroup
                             , plt.effective_date_field last_data_luc
-                            , plt.total2_black last_total2_black
+                            , plt.total2_black_field last_total2_black
                             , p.invoiced_total_black_field
-                            , plt.total2_color last_total2_color
+                            , plt.total2_color_field last_total2_color
                             , p.invoiced_total_color_field
                             , p.invoice_expiry_date_field
                             , CAST(p.invoice_date_field as DATE) invoice_date_field
