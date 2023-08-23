@@ -44,7 +44,7 @@
         "mandatory": "0"
     },
     {
-        "name": "no_travel",
+        "name": "no_travel_field",
         "old_name": "fara_deplasare",
         "label": ["No travel","Fără deplasare"],
         "type": "yesno",

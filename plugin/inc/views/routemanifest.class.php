@@ -46,7 +46,7 @@ class RouteManifest extends View
                             AND e.name LIKE '[partener]'
                             AND ((p.name is null AND '[aparat]' = '%%') OR p.name LIKE '[aparat]')
                             AND ((l.name is null AND '[locatie]' = '%%') OR l.name LIKE '[locatie]')
-                            AND (t.no_travel is null or not t.no_travel = 1)
+                            AND (t.no_travel_field is null or not t.no_travel_field = 1)
                             [atribuit]
 								",
             'default_limit' => 50,
