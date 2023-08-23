@@ -85,8 +85,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 echo __('You have no compatible cartridges', 'iservice');
             }
 
-            if (!empty($ticket->customfields->fields['cartridge_install'])) {
-                echo ' (', sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install']))), ')';
+            if (!empty($ticket->customfields->fields['cartridge_install_date_field'])) {
+                echo ' (', sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))), ')';
             }
 
             echo '!';
@@ -239,7 +239,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $used_condition = "";
         }
 
-        $date_condition = empty($ticket->customfields->fields['cartridge_install']) ? '' : "AND c.date_in <= '{$ticket->customfields->fields['cartridge_install']}'";
+        $date_condition = empty($ticket->customfields->fields['cartridge_install_date_field']) ? '' : "AND c.date_in <= '{$ticket->customfields->fields['cartridge_install_date_field']}'";
 
         if ($printer_id < 1 || !empty($options['ignore_location'])) {
             $location_condition = '';
@@ -405,8 +405,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                     , ci.name
                     , ci.ref
                     , c.date_use
-                    , MAX(c.pages_use_field) pages_use
-                    , MAX(c.pages_color_use_field) pages_color_use
+                    , MAX(c.pages_use_field) pages_use_field
+                    , MAX(c.pages_color_use_field) pages_color_use_field
                   FROM glpi_plugin_iservice_cartridges c
                   INNER JOIN glpi_cartridgeitems ci ON ci.id = c.cartridgeitems_id
                   INNER JOIN glpi_cartridgeitems_printermodels cipm ON cipm.cartridgeitems_id = ci.id
@@ -426,7 +426,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             return $index;
         }
 
-        $cartridgeitem = new CartridgeItem();
+        $cartridgeitem = new PluginIserviceCartridgeItem();
         if (!$cartridgeitem->getFromDB($needle) || count($haystack) < 1) {
             return false;
         }
@@ -449,7 +449,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
     {
         if (!($cartridge instanceof Cartridge)) {
             $cartridge_id = intval($cartridge);
-            $cartridge    = new Cartridge();
+            $cartridge    = new PluginIserviceCartridge();
             if (!$cartridge->getFromDB($cartridge_id)) {
                 return null;
             }

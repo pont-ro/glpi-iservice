@@ -5,6 +5,7 @@ namespace GlpiPlugin\Iservice\Specialviews;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
+use \PluginIserviceTicket;
 use \Session;
 use \PluginIserviceEmaintenance;
 use \PluginIserviceHtml;
@@ -154,7 +155,7 @@ class Emaintenance extends View
         } else {
             $name          = self::getSubjectForDisplay($row_data);
             $content       = urlencode(self::getContentForTicket($row_data));
-            $ticket_button = "<a href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
+            $ticket_button = "<a href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
         }
 
         return $ticket_button;

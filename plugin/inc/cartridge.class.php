@@ -25,9 +25,9 @@ class PluginIserviceCartridge extends Cartridge
                 $emptyables = PluginIserviceDB::getQueryResult(
                     "
                     select c.id, ci.name, c.date_use, ctd.name type_name
-                    from glpi_cartridges c
+                    from glpi_plugin_iservice_cartridges c
                     left join glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
-                    left join glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = ci.plugin_fields_cartridgeitemtypedropdowns_id
+                    left join glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
                     where c.id = $dropdown_options[value]
                     ", false
                 );
@@ -59,7 +59,7 @@ class PluginIserviceCartridge extends Cartridge
     public static function getEmptiablesByCartridge($cartridge, $limit = 0)
     {
         $mercury_code = ($cartridge instanceof Cartridge) ? $cartridge->fields['mercury_code_field'] : $cartridge['mercury_code_field'] ?? '';
-        $type_id      = ($cartridge instanceof Cartridge) ? $cartridge->fields['plugin_fields_typefielddropdowns_id'] : $cartridge['plugin_fields_typefielddropdowns_id'] ?? '';
+        $type_id      = ($cartridge instanceof Cartridge) ? $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'] : $cartridge['plugin_fields_cartridgeitemtypedropdowns_id'] ?? '';
         $printer_id   = ($cartridge instanceof Cartridge) ? $cartridge->fields['printers_id'] : $cartridge['printers_id'] ?? '';
         return self::getEmptyablesByParams($mercury_code, $type_id, $printer_id, $limit = 0);
     }
@@ -71,7 +71,7 @@ class PluginIserviceCartridge extends Cartridge
         $safe_mercury_code = trim($mercury_code);
         return PluginIservicePrinter::getInstalledCartridges(
             $printer_id,
-            "AND c.plugin_fields_typefielddropdowns_id = $safe_type_id AND LOCATE(\"'$safe_mercury_code'\", cfc.compatible_mercury_codes_field) > 0 $query_limit"
+            "AND c.plugin_fields_cartridgeitemtypedropdowns_id = $safe_type_id AND LOCATE(\"'$safe_mercury_code'\", cfc.compatible_mercury_codes_field) > 0 $query_limit"
         );
     }
 

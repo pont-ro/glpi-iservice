@@ -15,6 +15,7 @@ use Ticket;
 
 class Tickets extends View
 {
+    public static $rightname = 'plugin_iservice_view_tickets';
 
     public static function getTicketStatusDisplay($row_data): string
     {
@@ -197,7 +198,7 @@ class Tickets extends View
         }
     }
 
-    public static function getSerialDisplay($row_data): string
+    public static function getSerialDisplay($row_data): ?string
     {
         if (!Session::haveRight('plugin_iservice_printer', READ)) {
             return $row_data['printer_serial'];
@@ -304,7 +305,7 @@ class Tickets extends View
                             , s.id supplier_id
                             , s.name supplier_name
                             , t.date date_open
-                            , CASE t.effective_date_field WHEN '0000-00-00 00:00:00' THEN NULL WHEN '0000-00-00' THEN NULL ELSE t.effective_date_field END effective_date
+                            , CASE t.effective_date_field WHEN '0000-00-00 00:00:00' THEN NULL WHEN '0000-00-00' THEN NULL ELSE t.effective_date_field END effective_date_field
                             , u.id tech_park_id
                             , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
                             , a.id tech_assign_id
@@ -361,7 +362,7 @@ class Tickets extends View
                             AND ((s.name IS NULL AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
                             AND t.date <= '[date_open]'
-                            AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date]')
+                            AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date_field]')
                             [effective_date_start]
                             [unlinked]
                             [tech_id]
@@ -386,7 +387,7 @@ class Tickets extends View
                     'pre_widget' => $effective_date_start_pre_widget,
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
                 ],
-                'effective_date' => [
+                'effective_date_field' => [
                     'type' => self::FILTERTYPE_DATE,
                     'caption' => '< Data efectivă <',
                     'format' => 'Y-m-d 23:59:59',
@@ -481,13 +482,13 @@ class Tickets extends View
             'columns' => [
                 'status' => [
                     'title' => 'Stare tichet',
-                    'format' => 'function:PluginIserviceView_Tickets::getTicketStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketStatusDisplay($row);',
                     'align' => 'center',
                 ],
                 'ticket_id' => [
                     'title' => 'Număr',
                     'align' => 'center',
-                    'format' => 'function:PluginIserviceView_Tickets::getTicketIdDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketIdDisplay($row);',
                 ],
                 'ticket_name' => [
                     'title' => 'Titlu',
@@ -514,7 +515,7 @@ class Tickets extends View
                 ],
                 'supplier_name' => [
                     'title' => 'Partener',
-                    'format' => 'function:PluginIserviceView_Tickets::getSupplierDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getSupplierDisplay($row);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
@@ -533,21 +534,21 @@ class Tickets extends View
                 ],
                 'printer_serial' => [
                     'title' => 'Număr serie',
-                    'format' => 'function:PluginIserviceView_Tickets::getSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getSerialDisplay($row);',
                 ],
                 'date_open' => [
                     'title' => 'Data deschiderii',
                     'default_sort' => 'DESC',
                     'align' => 'center',
                 ],
-                'effective_date' => [
+                'effective_date_field' => [
                     'title' => 'Data efectivă',
                     'sort_default_dir' => 'DESC',
                     'align' => 'center',
                 ],
                 'tech_assign_name' => [
                     'title' => 'Tehnician alocat',
-                    'format' => 'function:PluginIserviceView_Tickets::getTicketAssignTechDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketAssignTechDisplay($row);',
                 ],
                 'ticket_category' => [
                     'title' => 'Categorie'

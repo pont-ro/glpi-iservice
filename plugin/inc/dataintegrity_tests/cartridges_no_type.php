@@ -8,14 +8,14 @@ return [
     'query' => "
         select
               c.id cid
-            , c.plugin_fields_typefielddropdowns_id c_type
+            , c.plugin_fields_cartridgeitemtypedropdowns_id c_type
             , ci.plugin_fields_cartridgeitemtypedropdowns_id ci_type
             , tfd.name ci_type_name
             , ci.supported_types_field 
-        from glpi_cartridges c
+        from glpi_plugin_iservice_cartridges c
         left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields ci on ci.items_id = c.cartridgeitems_id and ci.itemtype = 'CartridgeItem'
-        left join glpi_plugin_fields_typefielddropdowns tfd on tfd.id = ci.plugin_fields_cartridgeitemtypedropdowns_id 
-        where coalesce(c.plugin_fields_typefielddropdowns_id, 0) = 0 and c.date_use is not null
+        left join glpi_plugin_fields_cartridgeitemtypedropdowns tfd on tfd.id = ci.plugin_fields_cartridgeitemtypedropdowns_id 
+        where coalesce(c.plugin_fields_cartridgeitemtypedropdowns_id, 0) = 0 and c.date_use is not null
         ",
     'test' => [
         'alert' => true,

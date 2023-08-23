@@ -4,12 +4,12 @@ return [
     'query' => "
         select *
         from (
-              select count(*) `count`, group_concat('<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[id]=', c.id, '\"  target=\"_blank\">', c.id, '</a>' separator ', ') cartridge_ids, cfci.mercury_code_field mercurycode, cfci.plugin_fields_cartridgeitemtypedropdowns_id type_id, td.completename type_name, c.tickets_id_out_field ticket_id
+              select count(*) `count`, group_concat('<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[id]=', c.id, '\"  target=\"_blank\">', c.id, '</a>' separator ', ') cartridge_ids, cfci.mercury_code_field mercurycode, c.plugin_fields_cartridgeitemtypedropdowns_id type_id, td.completename type_name, c.tickets_id_out_field ticket_id
               from glpi_plugin_iservice_cartridges c
               join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
-              left join glpi_plugin_fields_typefielddropdowns td on td.id = cfci.plugin_fields_cartridgeitemtypedropdowns_id
+              left join glpi_plugin_fields_cartridgeitemtypedropdowns td on td.id = c.plugin_fields_cartridgeitemtypedropdowns_id
               where c.tickets_id_out_field is not null and c.tickets_id_use_field is not null
-              group by c.tickets_id_out_field, cfci.mercury_code_field, cfci.plugin_fields_cartridgeitemtypedropdowns_id 
+              group by c.tickets_id_out_field, cfci.mercury_code_field, c.plugin_fields_cartridgeitemtypedropdowns_id 
              ) t
         where `count` > 1
         ",

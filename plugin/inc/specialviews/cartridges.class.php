@@ -70,7 +70,7 @@ class Cartridges extends View
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => "Marchează golit",
                 'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
-                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use=$row_data[pages_use]&pages_color_use=$row_data[pages_color_use]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $row_data['id']) . "\");",
+                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use_field=$row_data[pages_use_field]&pages_color_use_field=$row_data[pages_color_use_field]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $row_data['id']) . "\");",
             ),
             /**/
         ];
@@ -176,14 +176,14 @@ class Cartridges extends View
     public static function getPrintedPagesDisplay($row_data): string
     {
         if (strtolower($row_data['printer_type']) == 'alb-negru') {
-            $value = $row_data['printed_pages'];
+            $value = $row_data['printed_pages_field'];
         } elseif ($row_data['ref'][0] === 'C') {
-            $value = in_array($row_data['type_id'], [2, 3, 4]) ? $row_data['printed_pages_color'] : $row_data['total_printed_pages'];
+            $value = in_array($row_data['type_id'], [2, 3, 4]) ? $row_data['printed_pages_color_field'] : $row_data['total_printed_pages'];
         } else {
             $value = $row_data['total_printed_pages'];
         }
 
-        return sprintf("<span title='Copii bk: %s\r\nCopii color: %s\r\nTotal  copii: %s'>%s</span>", $row_data['printed_pages'], $row_data['printed_pages_color'], $row_data['total_printed_pages'], $value);
+        return sprintf("<span title='Copii bk: %s\r\nCopii color: %s\r\nTotal  copii: %s'>%s</span>", $row_data['printed_pages_field'], $row_data['printed_pages_color_field'], $row_data['total_printed_pages'], $value);
     }
 
     public static function getDateOutDisplay($row_data): ?string
@@ -199,11 +199,11 @@ class Cartridges extends View
         $cartridges = IserviceToolBox::getQueryResult(
             "
             select c.id
-            from glpi_cartridges c
+            from glpi_plugin_iservice_cartridges c
             join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = c.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
             join glpi_plugin_iservice_cartridges_tickets ct on ct.cartridges_id = c.id
             where cfci.mercury_code_field in ($row_data[compatible_mercury_codes])
-              and c.plugin_fields_typefielddropdowns_id = $row_data[type_id]
+              and c.plugin_fields_cartridgeitemtypedropdowns_id = $row_data[type_id]
               and ct.tickets_id = $row_data[saved_out_ticket_id]
             "
         );
@@ -264,7 +264,7 @@ class Cartridges extends View
             'query' => "
                         SELECT
                             c.id 
-                          , ci.plugin_fields_cartridgeitemtypedropdowns_id type_id
+                          , c.plugin_fields_cartridgeitemtypedropdowns_id type_id
                           , c.date_in
                           , c.date_use
                           , c.tickets_id_use_field saved_installer_ticket_id
@@ -305,7 +305,7 @@ class Cartridges extends View
                         FROM glpi_plugin_iservice_cartridges c
                         INNER JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
                         $printer_model_join
-                        LEFT JOIN glpi_plugin_fields_typefielddropdowns ctd ON ctd.id = c.plugin_fields_typefielddropdowns_id
+                        LEFT JOIN glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
                         LEFT JOIN glpi_suppliers s ON s.id = c.suppliers_id_field
                         LEFT JOIN glpi_locations l ON l.id = c.locations_id_field
                         LEFT JOIN glpi_locations ll on ll.id = l.locations_id

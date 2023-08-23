@@ -1,5 +1,6 @@
 <?php
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceDB extends DB
 {
     private static array $tableIndexes = [];
@@ -21,7 +22,17 @@ class PluginIserviceDB extends DB
             $db = $DB;
         }
 
-        shell_exec("mysql -h $db->dbhost -u $db->dbuser -p$db->dbpassword $db->dbdefault < $scriptPath");
+        $output      = [];
+        $returnValue = null;
+
+        exec("mysql -h $db->dbhost -u $db->dbuser -p$db->dbpassword $db->dbdefault < $scriptPath", $output, $returnValue);
+
+        if ($returnValue !== 0) {
+            echo "An error occurred: " . implode("\n", $output);
+            trigger_error(json_encode($output), E_USER_WARNING);
+        } else {
+            echo IserviceToolBox::RESPONSE_OK;
+        }
     }
 
     public static function getQueryResult($query, $id_field = 'id', ?\DBmysql $db = null): bool|array
@@ -97,7 +108,7 @@ class PluginIserviceDB extends DB
         }
 
         if ($db->tableExists($tableName, false)) {
-            return self::alterTable($tableName, $tableConfig, $db);
+            return self::alterTable($tableName, $tableConfig, false, $db);
         }
 
         $query  = "create table $tableName (";
@@ -123,15 +134,17 @@ class PluginIserviceDB extends DB
         return $db->query("drop table if exists $tableName") === true;
     }
 
-    public static function alterTable(string $tableName, array $tableConfig, ?\DBmysql $db = null): bool
+    public static function alterTable(string $tableName, array $tableConfig, $createTableIfNotExists = false, ?\DBmysql $db = null): bool
     {
         if ($db === null) {
             global $DB;
             $db = $DB;
         }
 
-        if (!$db->tableExists($tableName, false)) {
+        if (!$db->tableExists($tableName, false) && $createTableIfNotExists) {
             return self::createTable($tableName, $tableConfig, $db);
+        } elseif (!$db->tableExists($tableName, false)) {
+            return false;
         }
 
         $query  = "alter table $tableName";

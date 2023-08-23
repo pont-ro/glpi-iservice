@@ -82,6 +82,11 @@ return [
                 'type' => 'index',
                 'columns' => "(`codmat`)",
             ],
+            [
+                'name' => 'nrfac',
+                'type' => 'index',
+                'columns' => "(`nrfac`)",
+            ],
         ],
     ],
     'hmarfa_facturi' => [
@@ -386,11 +391,11 @@ return [
             'create_cartridge' => 'tinyint(1) not null default \'0\'',
             'tickets_id' => 'int unsigned not null default \'0\'',
             'plugin_iservice_consumables_id' => 'varchar(15) not null default \'0\'',
-            'plugin_fields_typefielddropdowns_id' => 'int unsigned null default null',
+            'plugin_fields_cartridgeitemtypedropdowns_id' => 'int unsigned null default null',
             'amount' => 'decimal(11,2) not null default \'0.00\'',
             'price' => 'decimal(11,2) not null default \'0.00\'',
             'euro_price' => 'tinyint(1) not null default \'0\'',
-            'new_cartridge_ids' => 'varchar(200) null default null',
+            'new_cartridge_ids' => 'varchar(600) null default null',
         ],
         'indexes' => [
             [
@@ -429,9 +434,9 @@ return [
                 'columns' => "(`plugin_iservice_consumables_id`)",
             ],
             [
-                'name' => 'plugin_fields_typefielddropdowns_id',
+                'name' => 'plugin_fields_cartridgeitemtypedropdowns_id',
                 'type' => 'index',
-                'columns' => "(`plugin_fields_typefielddropdowns_id`)",
+                'columns' => "(`plugin_fields_cartridgeitemtypedropdowns_id`)",
             ],
         ],
     ],
@@ -441,7 +446,7 @@ return [
             'tickets_id' => 'int unsigned not null default \'0\'',
             'cartridges_id' => 'int unsigned not null default \'0\'',
             'locations_id' => 'int unsigned not null default \'0\'',
-            'plugin_fields_typefielddropdowns_id' => 'int unsigned not null default \'0\'',
+            'plugin_fields_cartridgeitemtypedropdowns_id' => 'int unsigned not null default \'0\'',
             'cartridges_id_emptied' => 'int unsigned null default null',
         ],
         'indexes' => [
@@ -471,9 +476,9 @@ return [
                 'columns' => "(`locations_id`)",
             ],
             [
-                'name' => 'plugin_fields_typefielddropdowns_id',
+                'name' => 'plugin_fields_cartridgeitemtypedropdowns_id',
                 'type' => 'index',
-                'columns' => "(`plugin_fields_typefielddropdowns_id`)",
+                'columns' => "(`plugin_fields_cartridgeitemtypedropdowns_id`)",
             ],
             [
                 'name' => 'cartridges_id_emptied',
@@ -598,6 +603,21 @@ return [
                 'type' => '',
                 'columns' => "(`id`)",
             ],
+            [
+                'name' => 'printers_id',
+                'type' => 'index',
+                'columns' => "(`printers_id`)",
+            ],
+            [
+                'name' => 'suppliers_id',
+                'type' => 'index',
+                'columns' => "(`suppliers_id`)",
+            ],
+            [
+                'name' => 'users_id_tech',
+                'type' => 'index',
+                'columns' => "(`users_id_tech`)",
+            ],
         ],
     ],
     'glpi_plugin_iservice_extorders' => [
@@ -708,7 +728,6 @@ return [
         'columns' => [
             'id' => 'int unsigned not null auto_increment',
             'itemtype' => 'varchar(255) not null',
-            'tickets_id' => 'int unsigned not null',
             'items_id' => 'int unsigned not null',
             'suppliers_id_old' => 'int unsigned not null',
             'suppliers_id' => 'int unsigned not null',
@@ -726,10 +745,10 @@ return [
             'contracts_id' => 'int unsigned null default null',
             'dba' => 'decimal(10,0) null default null',
             'dca' => 'decimal(10,0) null default null',
-            'total2_black_fact' => 'int null default null',
-            'total2_color_fact' => 'int null default null',
-            'data_fact' => 'date null default null',
-            'data_exp_fact' => 'date null default null',
+            'invoiced_total_black_field' => 'int null default null',
+            'invoiced_total_color_field' => 'int null default null',
+            'invoice_date' => 'date null default null',
+            'invoice_expiry_date_field' => 'date null default null',
             'disableem' => 'tinyint(1) not null default \'0\'',
             'snoozereadcheck' => 'date null default null',
             'moved' => 'int(1) not null default \'0\'',
@@ -740,11 +759,6 @@ return [
                 'name' => 'primary key',
                 'type' => '',
                 'columns' => "(`id`)",
-            ],
-            [
-                'name' => 'tickets_id',
-                'type' => 'index',
-                'columns' => "(`tickets_id`)",
             ],
             [
                 'name' => 'items_id',

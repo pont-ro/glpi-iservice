@@ -83,7 +83,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         $c_result = $DB->query(
             "SELECT 
                      ct.id IDD
-                   , ct.plugin_fields_typefielddropdowns_id
+                   , ct.plugin_fields_cartridgeitemtypedropdowns_id
                    , ct.locations_id
                    , ct.create_cartridge
                    , ct.amount
@@ -211,7 +211,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             if (!empty($consumable['new_cartridge_ids'])) {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
                 if (empty($ticket->consumable_data['delivery_date'])) {
-                    $cartridge = new Cartridge();
+                    $cartridge = new PluginIserviceCartridge();
                     foreach ($cartridge->find("id in ($cartridge_ids)") as $cartr) {
                         $ticket->consumable_data['delivery_date'] = $cartr['date_in'];
                     }
@@ -244,8 +244,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             echo "</td>";
             echo "<td class='center'>";
 
-            $in_cm = PluginIserviceDB::getQueryResult("SELECT cartridge_management FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = $suppliers_id");
-            if (!$in_cm[0]['cartridge_management']) {
+            $in_cm = PluginIserviceDB::getQueryResult("SELECT cm_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $suppliers_id");
+            if (!$in_cm[0]['cm_field']) {
                 $force_cartridge_creation = 0;
                 $cartridge_creation_title = "Aparatul nu este in Management cartușe";
             }
@@ -636,11 +636,11 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             $location_condition         = isset($input['locations_id']) ? "locations_id_field = $input[locations_id]" : "(locations_id_field < 1 OR locations_id_field is NULL)";
             $query                      = "
                 SELECT c.* 
-                FROM glpi_cartridges c
+                FROM glpi_plugin_iservice_cartridges c
                 JOIN glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
                 WHERE ci.ref = '{$input['plugin_iservice_consumables_id']}'
                   AND (COALESCE(c.printers_id, 0) = 0 OR c.printers_id = -1) AND c.date_out IS NULL
-                  AND FIND_IN_SET (c.suppliers_id_field, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))";
+                  AND FIND_IN_SET (c.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))";
             $query_with_location        = "$query AND $location_condition";
             $cartridges_to_delete       = PluginIserviceDB::getQueryResult("$query_with_location ORDER BY c.id LIMIT " . -$amount);
             $cartridges_to_delete_count = count($cartridges_to_delete);
@@ -707,12 +707,12 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             $location_condition   = empty($input['locations_id']) ? "(locations_id_field < 1 OR locations_id_field is NULL)" : "locations_id_field = $input[locations_id]";
             $query                = "
                 SELECT c.id 
-                FROM glpi_cartridges c
+                FROM glpi_plugin_iservice_cartridges c
                 JOIN glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id
                 WHERE ci.ref = '{$consumable_ticket->fields['plugin_iservice_consumables_id']}'
                   AND printers_id = 0
                   AND $location_condition
-                  AND FIND_IN_SET (suppliers_id_field, (SELECT groupfield FROM glpi_plugin_fields_suppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))
+                  AND FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = {$assigned_supplier->getID()}))
                   AND date_out is null
                 ORDER BY c.date_in
                 LIMIT " . -$amount;

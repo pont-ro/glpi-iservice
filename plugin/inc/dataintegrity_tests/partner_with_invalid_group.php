@@ -4,7 +4,7 @@ return [
     'query' => "
             select s.id, s.name, s.group_field
             from glpi_plugin_iservice_suppliers s
-            where s.is_deleted = 0 and coalesce(s.group_field, '') not like concat('%', s.items_id, '%');
+            where s.is_deleted = 0 and coalesce(s.group_field, '') not like concat('%', s.id, '%');
             ",
     'test' => [
         'alert' => true,

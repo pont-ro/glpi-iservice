@@ -13,7 +13,7 @@ Session::checkLoginUser();
 global $CFG_GLPI;
 
 $cartridge_id = filter_input(INPUT_GET, 'cartridge_id');
-$cartridge    = new Cartridge();
+$cartridge    = new PluginIserviceCartridge();
 if (!$cartridge->getFromDB($cartridge_id)) {
     echo "<span style='color:red'>IntError: Not found cartridge # $cartridge_id</span>";
     exit;

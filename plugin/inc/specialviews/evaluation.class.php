@@ -254,7 +254,7 @@ class Evaluation extends View
 													, s.id supplier_id
 													, s.name supplier_name
 													, t.date date_open
-													, CASE t.effective_date_field WHEN '0000-00-00' THEN NULL	ELSE t.effective_date_field END effective_date
+													, CASE t.effective_date_field WHEN '0000-00-00' THEN NULL	ELSE t.effective_date_field END effective_date_field
 													, u.id tech_park_id
 													, CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
 													, a.id tech_assign_id
@@ -282,7 +282,7 @@ class Evaluation extends View
                         'columns' => [
                             'status' => [
                                 'title' => 'Stare tichet',
-                                'format' => 'function:PluginIserviceView_Tickets::getTicketStatusDisplay($row);',
+                                'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketStatusDisplay($row);',
                                 'align' => 'center',
                             ],
                             'ticket_id' => [
@@ -324,7 +324,7 @@ class Evaluation extends View
                             ],
                             'tech_assign_name' => [
                                 'title' => 'Tehnician alocat',
-                                'format' => 'function:PluginIserviceView_Tickets::getTicketAssignTechDisplay($row);',
+                                'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketAssignTechDisplay($row);',
                             ],
                             'printer_serial' => [
                                 'title' => 'Număr serie',

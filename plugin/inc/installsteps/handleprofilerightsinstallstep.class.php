@@ -6,7 +6,7 @@ use PluginIserviceDB;
 
 class HandleProfileRightsInstallStep
 {
-    const CLEANUP_ON_UNINSTALL = true;
+    const CLEANUP_ON_UNINSTALL = false;
 
     public static function do(): bool
     {

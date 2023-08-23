@@ -21,7 +21,7 @@ class PluginIservicePartner extends Supplier
     /*
      *
      *
-     * @var PluginFieldsSuppliercustomfield
+     * @var PluginFieldsSuppliersuppliercustomfield
      */
     public $customfields = null;
 

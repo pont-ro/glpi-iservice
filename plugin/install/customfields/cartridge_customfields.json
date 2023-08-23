@@ -106,5 +106,17 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "1"
+    },
+    {
+        "name": "plugin_fields_cartridgeitemtypedropdowns_id",
+        "old_name": "plugin_fields_typefielddropdowns_id",
+        "old_table_name": "glpi_cartridges",
+        "label": ["Types","Tipuri disponibile (doar pentru referință)"],
+        "type": "number",
+        "ranking": "100",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
     }
 ]

@@ -22,5 +22,6 @@ return [
     'foreignKeys'      => [
         'items_id'                    => 'Supplier',
         'plugin_fields_containers_id' => 'PluginFieldsContainer',
+        // 'group_field'                 => 'Supplier', // This field is mapped with dedicated method: mapGroupField.
     ],
 ];
