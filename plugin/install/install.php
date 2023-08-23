@@ -39,6 +39,7 @@ use GlpiPlugin\iService\InstallSteps\SeedDatabaseInstallStep;
 use GlpiPlugin\iService\InstallSteps\OverwriteAssetsInstallStep;
 use GlpiPlugin\iService\InstallSteps\HandleProfileRightsInstallStep;
 use GlpiPlugin\iService\InstallSteps\CronTasksInstallStep;
+use GlpiPlugin\iService\InstallSteps\OptimizeTablesInstallStep;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access this file directly");
@@ -55,7 +56,7 @@ class PluginIserviceInstall
         $result = $result && AddCustomFieldsInstallStep::do();
         $result = $result && CreateViewsInstallStep::do();
         $result = $result && CreateStoredProceduresInstallStep::do();
-        // TODO: optimize tables install step (ex. add indexes where needed)
+        $result = $result && OptimizeTablesInstallStep::do();
         $result = $result && HandleProfileRightsInstallStep::do();
         return $result && CronTasksInstallStep::do();
     }

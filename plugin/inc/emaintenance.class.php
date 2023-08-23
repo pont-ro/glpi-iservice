@@ -87,7 +87,7 @@ class PluginIserviceEmaintenance extends MailCollector
                     'partner_id' => 1,
                     'date_out' => 4,
                     'date_use' => 5,
-                    'data_luc' => 6,
+                    'effective_date_field' => 6,
                     'c102' => 8, // Not sent anymore, but we need this to check that the line contains enough data.
                     'c106' => 7, // * 106
                     'c109' => 8, // * 109
@@ -111,7 +111,7 @@ class PluginIserviceEmaintenance extends MailCollector
                     'partner_name' => 0,
                     'date_out' => 5,
                     'date_use' => 6,
-                    'data_luc' => 7,
+                    'effective_date_field' => 7,
                     'c102' => 8,
                     'c106' => 9,
                     'c109' => 10,
@@ -144,16 +144,16 @@ class PluginIserviceEmaintenance extends MailCollector
 
                 $overwrite = false;
                 // If we have newer valid data or the new and old data are both invalid, we overwrite.
-                foreach (['date_out', 'date_use', 'total2_black', 'total2_color'] as $fieldName) {
+                foreach (['date_out', 'date_use', 'total2_black_field', 'total2_color_field'] as $fieldName) {
                     if (!empty($counter_data[$fieldName]) && (empty($counter_data[$fieldName]['error']) || !empty($data[$spaceless_serial][$fieldName]['error']))) {
                         $data[$spaceless_serial][$fieldName] = $counter_data[$fieldName];
                         $overwrite                           = true;
                     }
                 }
 
-                // If we overwrote something, we overwrite the data_luc also.
-                if ($overwrite && !empty($counter_data['data_luc']) && (empty($counter_data['data_luc']['error']) || !empty($data[$spaceless_serial]['data_luc']['error']))) {
-                    $data[$spaceless_serial]['data_luc'] = $counter_data['data_luc'];
+                // If we overwrote something, we overwrite the effective_date_field also.
+                if ($overwrite && !empty($counter_data['effective_date_field']) && (empty($counter_data['effective_date_field']['error']) || !empty($data[$spaceless_serial]['effective_date_field']['error']))) {
+                    $data[$spaceless_serial]['effective_date_field'] = $counter_data['effective_date_field'];
                 }
             }
         }
@@ -188,18 +188,18 @@ class PluginIserviceEmaintenance extends MailCollector
 
             if (!empty($result[$id])) {
                 $result[$id] = [
-                    'total2_black' => '#empty#import#data#',
-                    'total2_color' => '#empty#import#data#',
-                    'data_luc' => '#empty#import#data#',
+                    'total2_black_field' => '#empty#import#data#',
+                    'total2_color_field' => '#empty#import#data#',
+                    'effective_date_field' => '#empty#import#data#',
                     'error' => "Există mai multe rânduri pentru seria $id"
                 ];
                 continue;
             }
 
             $result[$id] = [
-                'total2_black' => '#empty#import#data#',
-                'total2_color' => '#empty#import#data#',
-                'data_luc' => '#empty#import#data#',
+                'total2_black_field' => '#empty#import#data#',
+                'total2_color_field' => '#empty#import#data#',
+                'effective_date_field' => '#empty#import#data#',
             ];
             $printer     = new PluginIservicePrinter();
             if (!$printer->getFromDBByEMSerial($id)) {
@@ -248,9 +248,9 @@ class PluginIserviceEmaintenance extends MailCollector
                     }
                 }
             } elseif ($type == 'AVITUM') {
-                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['data_luc']]))) {
+                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['effective_date_field']]))) {
                     $data_luc       = '';
-                    $data_luc_error = $data[$csv_config['columns']['data_luc']] . " nu este o dată validă";
+                    $data_luc_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
                 } else {
                     $data_luc = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
                 }
@@ -289,9 +289,9 @@ class PluginIserviceEmaintenance extends MailCollector
                     }
                 }
             } else {
-                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['data_luc']]))) {
+                if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['effective_date_field']]))) {
                     $data_luc       = '';
-                    $data_luc_error = $data[$csv_config['columns']['data_luc']] . " nu este o dată validă";
+                    $data_luc_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
                 } else {
                     $data_luc = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
                 }
@@ -312,7 +312,7 @@ class PluginIserviceEmaintenance extends MailCollector
             }
 
             $error = false;
-            foreach (['date_use', 'data_luc', 'total2_black', 'total2_color'] as $field_name) {
+            foreach (['date_use', 'effective_date_field', 'total2_black_field', 'total2_color_field'] as $field_name) {
                 $error_variable_name = $field_name . "_error";
                 if ($$field_name === null && empty($$error_variable_name)) {
                     continue;
@@ -322,8 +322,8 @@ class PluginIserviceEmaintenance extends MailCollector
                 $error                   |= !empty($$error_variable_name);
             }
 
-            if ($error && !isset($result[$id]['data_luc']['error'])) {
-                $result[$id]['data_luc'] = '#empty#import#data#';
+            if ($error && !isset($result[$id]['effective_date_field']['error'])) {
+                $result[$id]['effective_date_field'] = '#empty#import#data#';
             }
 
             $result[$id]['date_out']              = '??';
@@ -338,7 +338,7 @@ class PluginIserviceEmaintenance extends MailCollector
                 if ($date_out === null) {
                     continue;
                 } elseif ($date_out < $date_use) {
-                    $result[$id]['data_luc'] = '#empty#import#data#';
+                    $result[$id]['effective_date_field'] = '#empty#import#data#';
                     $result[$id]['error']    = "Aparatul a fost predat înainte să fie instalat!";
                     continue;
                 }
@@ -346,7 +346,7 @@ class PluginIserviceEmaintenance extends MailCollector
                 $supplier = new Supplier();
                 if (!$supplier->getFromDB($data[$csv_config['columns']['partner_id'] ?? -1] ?? $printer->fields['supplier_id'])) {
                     // Change this to get the supplier from infocom.
-                        $result[$id]['data_luc'] = '#empty#import#data#';
+                        $result[$id]['effective_date_field'] = '#empty#import#data#';
                         $result[$id]['error']    = "Partenerul nu poate fi identificat";
                         continue;
                 }
@@ -365,7 +365,7 @@ class PluginIserviceEmaintenance extends MailCollector
                 "
                 );
                 if (count($printer_movements) < 1) {
-                    $result[$id]['data_luc'] = '#empty#import#data#';
+                    $result[$id]['effective_date_field'] = '#empty#import#data#';
                     $result[$id]['error']    = "Nu există mutare cu tichet retragere creat mai recent de $date_use,\ncare retrage aparatul {$printer->fields['name']} de la {$supplier->fields['name']},\ndeși acesta a fost predat la data de $date_out!";
                     continue;
                 }
@@ -885,7 +885,7 @@ class PluginIserviceEmaintenance extends MailCollector
             '_idemmailfield' => $ememail_id,
             '_without_moving' => 1,
             '_without_papers' => 1,
-            'data_luc' => $data_luc->format('Y-m-d H:i:s'),
+            'effective_date_field' => $data_luc->format('Y-m-d H:i:s'),
         ];
         if (!empty($extended_data['suppliers_id'])) {
             // This field value will be needed to get the changeable cartridges.
@@ -894,12 +894,12 @@ class PluginIserviceEmaintenance extends MailCollector
 
         $csv_data = self::getDataFromCsvs();
         if (!empty($csv_data[$extended_data['printer_spaceless_serial']])) {
-            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_black']['error'])) {
-                $ticket->fields['total2_black'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_black'];
+            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_black_field']['error'])) {
+                $ticket->fields['total2_black_field'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_black_field'];
             }
 
-            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_color']['error'])) {
-                $ticket->fields['total2_color'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_color'];
+            if (empty($csv_data[$extended_data['printer_spaceless_serial']]['total2_color_field']['error'])) {
+                $ticket->fields['total2_color_field'] = $csv_data[$extended_data['printer_spaceless_serial']]['total2_color_field'];
             }
         }
 

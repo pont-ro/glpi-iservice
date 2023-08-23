@@ -118,7 +118,7 @@ class Operations extends View
                         , ct.cartridges ticket_cartridges
                     FROM glpi_plugin_iservice_tickets t
                     LEFT JOIN glpi_itilfollowups tf ON tf.items_id = t.id and tf.itemtype = 'Ticket'
-                    LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
+                    JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
                     LEFT JOIN glpi_printers p ON p.id = it.items_id
                     LEFT JOIN glpi_suppliers_tickets st ON st.tickets_id = t.id AND st.type = " . CommonITILObject::ASSIGNED . "
                     LEFT JOIN glpi_suppliers s ON s.id = st.suppliers_id
@@ -136,7 +136,7 @@ class Operations extends View
                         AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
                         AND t.name LIKE '[ticket_name]'
                         AND t.content LIKE '[ticket_content]'
-                        AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[data_luc]')
+                        AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date_field]')
                         [printer_id]
                     GROUP BY t.id
                 ) t
@@ -152,9 +152,9 @@ class Operations extends View
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => "AND p.id = %d",
                 ],
-                'data_luc' => [
+                'effective_date_field' => [
                     'type' => self::FILTERTYPE_DATE,
-                    'header' => 'data_luc',
+                    'header' => 'effective_date_field',
                     'header_caption' => '< ',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date('Y-m-d'),
@@ -203,7 +203,7 @@ class Operations extends View
             'columns' => [
                 'status' => [
                     'title' => 'Stare tichet',
-                    'format' => 'function:PluginIserviceView_Operations::getTicketStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Operations::getTicketStatusDisplay($row);',
                     'align' => 'center',
                 ],
                 'effective_date_field' => [

@@ -7,6 +7,20 @@ from `hmarfa_facturi` `f`
 where `f`.`tip` like 'tf%' and `f`.`valinc` - `f`.`valpla` > 0
 group by `f`.`codbenef`;
 
+create or replace view glpi_plugin_iservice_printers_last_closed_tickets as
+select
+    distinct it.items_id printers_id,
+             first_value(t.id) over w tickets_id,
+             first_value(t.`status`) over w `status`,
+             first_value(t.effective_date_field) over w effective_date_field,
+             first_value(t.total2_black_field) over w total2_black_field,
+             first_value(t.total2_color_field) over w total2_color_field
+from glpi_items_tickets it
+         join glpi_printers p on p.id = it.items_id
+         join glpi_plugin_iservice_tickets t on t.id = it.tickets_id and t.`status` = 6 and t.is_deleted = 0
+where it.itemtype = 'printer'
+window w as (partition by it.items_id order by t.effective_date_field desc, t.id desc);
+
 create or replace view glpi_plugin_iservice_printers as
 select
     `p`.`id` as `id`,
@@ -54,24 +68,29 @@ select
     `cfp`.`uc_yellow_field` as `uc_yellow_field`,
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
-    `cfp`.`no_invoice_field` as `no_invoice_field`
+    `cfp`.`no_invoice_field` as `no_invoice_field`,
+    `plct`.`effective_date_field` as last_effective_date,
+    `plct`.`total2_black_field` as last_total2_black,
+    `plct`.`total2_color_field` as last_total2_color,
+    `plct`.`effective_date_field` as effective_date
 from (((`glpi_printers` `p`
     left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
-    left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer';
+    left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
+    left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id;
 
 create or replace view glpi_plugin_iservice_printers_last_tickets as
 select
     distinct it.items_id printers_id,
-    first_value(t.id) over w tickets_id,
-    first_value(t.`status`) over w `status`,
-    first_value(t.effective_date_field) over w effective_date_field,
-    first_value(t.total2_black_field) over w total2_black_field,
-    first_value(t.total2_color_field) over w total2_color_field
+             first_value(t.id) over w tickets_id,
+             first_value(t.`status`) over w `status`,
+             first_value(t.effective_date_field) over w effective_date_field,
+             first_value(t.total2_black_field) over w total2_black_field,
+             first_value(t.total2_color_field) over w total2_color_field
 from glpi_items_tickets it
-    join glpi_printers p on p.id = it.items_id
-    join glpi_plugin_iservice_tickets t on t.id = it.tickets_id and t.is_deleted = 0
+         join glpi_printers p on p.id = it.items_id
+         join glpi_plugin_iservice_tickets t on t.id = it.tickets_id and t.is_deleted = 0
 where it.itemtype = 'printer'
 window w as (partition by it.items_id order by t.effective_date_field desc, t.id desc);
 
@@ -222,7 +241,6 @@ select
     cfs.plugin_fields_containers_id as plugin_fields_containers_id,
     cfs.uic_field as uic_field,
     cfs.crn_field as crn_field,
-    cfs.part_cont1 as part_cont1,
     cfs.intervention_sheet_model_field as intervention_sheet_model_field,
     cfs.hmarfa_code_field as hmarfa_code_field,
     cfs.address_field as address_field,
@@ -337,20 +355,6 @@ select ic.*, concat(c.id, ' - ', c.denumire, ' (', ic.amount, ' buc.)') name
 from glpi_plugin_iservice_intorders ic
 left join glpi_plugin_iservice_consumables c on c.id = ic.plugin_iservice_consumables_id;
 
-create or replace view glpi_plugin_iservice_printers_last_closed_tickets as
-select
-    distinct it.items_id printers_id,
-    first_value(t.id) over w tickets_id,
-    first_value(t.`status`) over w `status`,
-    first_value(t.effective_date_field) over w effective_date_field,
-    first_value(t.total2_black_field) over w total2_black_field,
-    first_value(t.total2_color_field) over w total2_color_field
-from glpi_items_tickets it
-    join glpi_printers p on p.id = it.items_id
-    join glpi_plugin_iservice_tickets t on t.id = it.tickets_id and t.`status` = 6 and t.is_deleted = 0
-where it.itemtype = 'printer'
-window w as (partition by it.items_id order by t.effective_date_field desc, t.id desc);
-
 create or replace view glpi_plugin_iservice_printer_unclosed_ticket_counts as
 select it.items_id printers_id, count(it.tickets_id) ticket_count
 from glpi_items_tickets it
@@ -372,7 +376,7 @@ from glpi_plugin_iservice_cartridges c1
 where c2.date_use is null and c2.date_out is null
     and find_in_set (c2.suppliers_id_field, cfs.group_field)
     and coalesce(c2.printers_id, 0) = 0
-    and (cfci1.plugin_fields_cartridgeitemtypedropdowns_id  = cfci2.plugin_fields_cartridgeitemtypedropdowns_id  or coalesce(cfci2.plugin_fields_cartridgeitemtypedropdowns_id , 0) = 0)
+    and (c1.plugin_fields_cartridgeitemtypedropdowns_id  = c2.plugin_fields_cartridgeitemtypedropdowns_id  or coalesce(cfci2.plugin_fields_cartridgeitemtypedropdowns_id , 0) = 0)
     and (c2.locations_id_field = c1.locations_id_field or coalesce(l1.locations_id, 0) = coalesce(l2.locations_id, 0))
 group by c1.id;
 

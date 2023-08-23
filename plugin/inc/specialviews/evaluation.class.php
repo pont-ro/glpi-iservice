@@ -254,7 +254,7 @@ class Evaluation extends View
 													, s.id supplier_id
 													, s.name supplier_name
 													, t.date date_open
-													, CASE t.effective_date_field WHEN '0000-00-00' THEN NULL	ELSE t.effective_date_field END effective_date
+													, CASE t.effective_date_field WHEN '0000-00-00' THEN NULL	ELSE t.effective_date_field END effective_date_field
 													, u.id tech_park_id
 													, CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
 													, a.id tech_assign_id

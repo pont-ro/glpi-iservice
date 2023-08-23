@@ -2,6 +2,7 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
+use PluginIserviceConfig;
 use \PluginIserviceHtml;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use \Session;
@@ -81,7 +82,7 @@ class View extends \CommonGLPI
         'style' => [],
         'show_filter_buttons' => true,
         'filter_buttons_align' => 'left',
-        'show_limit' => true, // TODO get from config
+        'show_limit' => true,
         'show_export' => false,
         'row_class' => '',
         'insert_empty_rows' => false,
@@ -138,6 +139,8 @@ class View extends \CommonGLPI
     {
         $this->table_prefix = $table_prefix;
         $this->table_suffix = $table_suffix;
+        $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false');
+
         if ($load_settings) {
             $this->loadSettings();
         }
@@ -427,8 +430,8 @@ class View extends \CommonGLPI
                     $filter_value    = '#empty#import#data#';
                 } else {
                     $filter_value = $import_data[$filter_data['import']['index']];
-                    if ($import_data['data_luc'] < date('Y-m-d', strtotime('-7days'))) {
-                        $estimate_text = "Datele din CSV sunt mai vechi de 7 zile (din " . date('Y-m-d', strtotime($import_data['data_luc'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
+                    if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-7days'))) {
+                        $estimate_text = "Datele din CSV sunt mai vechi de 7 zile (din " . date('Y-m-d', strtotime($import_data['effective_date_field'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
                         $filter_value  = '#empty#import#data#';
                     } elseif (!empty($filter_data['min_value']) && $filter_value !== '#empty#import#data#' && $filter_value < $filter_data['min_value']) {
                         $error_hint    = $this->evalIfFunction($filter_data['import']['minimum_error_hint'] ?? "Click pentru a seta", ['param_data' => $params]);

@@ -41,7 +41,7 @@ class GlobalReadCounter extends View
         return $row_data['otherserial'];
     }
 
-    public static function getSupplierDisplay($row_data, $import_data): string
+    public static function getSupplierDisplay($row_data, $import_data): ?string
     {
         if (empty($import_data[$row_data['spaceless_serial']])) {
             return $row_data['supplier_name'];
@@ -50,7 +50,7 @@ class GlobalReadCounter extends View
         }
 
         $display_data = [];
-        foreach (['data_luc', 'total2_black', 'total2_color', 'date_use', 'date_out'] as $field_name) {
+        foreach (['effective_date_field', 'total2_black_field', 'total2_color_field', 'date_use', 'date_out'] as $field_name) {
             // $import_data[$field_name] is an array in case of an error
             $display_data[$field_name] = is_array($import_data[$field_name]) ? '' : $import_data[$field_name];
         }
@@ -60,9 +60,9 @@ class GlobalReadCounter extends View
             "Date citite din fișier:\n" .
             "&nbsp;- Client: $import_data[partner_name] ($import_data[partner_id] - $import_data[partner_resolved_name])\n" .
             "&nbsp;- Aparat: $row_data[spaceless_serial]\n" .
-            "&nbsp;&nbsp;&nbsp;- data citirii: $display_data[data_luc]\n" .
-            "&nbsp;&nbsp;&nbsp;- contor black: $display_data[total2_black]\n" .
-            "&nbsp;&nbsp;&nbsp;- contor color: $display_data[total2_color]\n" .
+            "&nbsp;&nbsp;&nbsp;- data citirii: $display_data[effective_date_field]\n" .
+            "&nbsp;&nbsp;&nbsp;- contor black: $display_data[total2_black_field]\n" .
+            "&nbsp;&nbsp;&nbsp;- contor color: $display_data[total2_color_field]\n" .
             "&nbsp;&nbsp;&nbsp;- data instalarii: $display_data[date_use]\n" .
             "&nbsp;&nbsp;&nbsp;- data predarii: $display_data[date_out]"
         );
@@ -85,13 +85,13 @@ class GlobalReadCounter extends View
         $data_difference = round((time() - strtotime($param_data['row_data']['last_data_luc'])) / (60 * 60 * 24));
         $estimate_value  = '';
         $icon_click      = "";
-        foreach (['total2_black', 'total2_color', 'data_luc'] as $fieldname) {
+        foreach (['total2_black_field', 'total2_color_field', 'effective_date_field'] as $fieldname) {
             switch ($fieldname) {
-            case 'total2_black':
+            case 'total2_black_field':
                 $estimate_value = $param_data['row_data']['last_total2_black'] + ($param_data['row_data']['daily_bk_average_field'] * $data_difference);
                 $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_black'], $param_data['row_data']['daily_bk_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 break;
-            case 'total2_color':
+            case 'total2_color_field':
                 if ($param_data['row_data']['daily_color_average_field'] == 0) {
                     $estimate_value = 0;
                 } else {
@@ -99,7 +99,7 @@ class GlobalReadCounter extends View
                     $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_color'], $param_data['row_data']['daily_color_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 }
                 break;
-            case 'data_luc':
+            case 'effective_date_field':
                 $estimate_value = date("Y-m-d h:m:s");
                 break;
             }
@@ -212,11 +212,11 @@ class GlobalReadCounter extends View
             'columns' => [
                 'printer_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:PluginIserviceView_Global_Readcounter::getPrinterDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getPrinterDisplay($row, $this->import_data);',
                 ],
                 'supplier_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:PluginIserviceView_Global_Readcounter::getSupplierDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getSupplierDisplay($row, $this->import_data);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'target' => '_blank',
@@ -229,7 +229,7 @@ class GlobalReadCounter extends View
                 ],
                 'otherserial' => [
                     'title' => 'Număr inventar',
-                    'format' => 'function: PluginIserviceView_Global_ReadCounter::getOtherSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getOtherSerialDisplay($row);',
                 ],
                 'usage_address_field' => [
                     'title' => 'Adresa de exploatare',
@@ -262,20 +262,20 @@ class GlobalReadCounter extends View
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_TEXT,
-                        'name' => 'total2_black',
+                        'name' => 'total2_black_field',
                         'empty_value' => '[last_total2_black]',
                         'min_value' => '[last_total2_black]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][data_luc]"]',
+                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Black2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'total2_black',
-                            'error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function: PluginIserviceView_Global_ReadCounter::generateErrorBadgeText();',
-                            'estimate_text' => 'function: PluginIserviceView_Global_ReadCounter::generateEstimateBadgeText();',
-                            'estimate_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler("estimate");'
+                            'index' => 'total2_black_field',
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
+                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
+                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler("estimate");'
                         ]
                     ],
                 ],
@@ -285,25 +285,25 @@ class GlobalReadCounter extends View
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_TEXT,
-                        'name' => 'total2_color',
+                        'name' => 'total2_color_field',
                         'empty_value' => '[last_total2_color]',
                         'min_value' => '[last_total2_color]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][data_luc]"]',
+                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Color2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'total2_color',
-                            'error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function: PluginIserviceView_Global_ReadCounter::generateErrorBadgeText();',
-                            'estimate_text' => 'function: PluginIserviceView_Global_ReadCounter::generateEstimateBadgeText();',
-                            'estimate_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler("estimate");'
+                            'index' => 'total2_color_field',
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
+                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
+                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler("estimate");'
                         ],
                         'post_widget' => '
                             <script>
                                 if (![' . PluginIservicePrinter::ID_COLOR_TYPE . ', ' . PluginIservicePrinter::ID_PLOTTER_TYPE . '].includes([printertypes_id])) {
-                                    $("[name=\'global_readcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color\\\\]\']").parent().children().hide();
+                                    $("[name=\'global_readcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color_field\\\\]\']").parent().children().hide();
                                 }
                             </script>',
                     ],
@@ -314,17 +314,17 @@ class GlobalReadCounter extends View
                     'sortable' => false,
                     'edit_field' => [
                         'type' => self::FILTERTYPE_DATETIME,
-                        'name' => 'data_luc',
+                        'name' => 'effective_date_field',
                         'empty_value' => date('Y-m-d H:i:s'),
                         'min_value' => '[last_data_luc]',
                         'label' => 'Data citire pentru [serial]',
                         'import' => [
                             'id' => '[spaceless_serial]',
-                            'index' => 'data_luc',
-                            'error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function: PluginIserviceView_Global_ReadCounter::generateErrorBadgeText();',
-                            'minimum_error_handler' => 'function: PluginIserviceView_Global_ReadCounter::generateBadgeClickHandler();',
-                            'minimum_error_hint' => 'function: PluginIserviceView_Global_ReadCounter::generateEstimateBadgeText("Click pentru a estima toate valorile");'
+                            'index' => 'effective_date_field',
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
+                            'minimum_error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
+                            'minimum_error_hint' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText("Click pentru a estima toate valorile");'
                         ]
                     ],
                 ],

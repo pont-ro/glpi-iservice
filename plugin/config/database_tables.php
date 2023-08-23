@@ -82,6 +82,11 @@ return [
                 'type' => 'index',
                 'columns' => "(`codmat`)",
             ],
+            [
+                'name' => 'nrfac',
+                'type' => 'index',
+                'columns' => "(`nrfac`)",
+            ],
         ],
     ],
     'hmarfa_facturi' => [
@@ -598,6 +603,21 @@ return [
                 'type' => '',
                 'columns' => "(`id`)",
             ],
+            [
+                'name' => 'printers_id',
+                'type' => 'index',
+                'columns' => "(`printers_id`)",
+            ],
+            [
+                'name' => 'suppliers_id',
+                'type' => 'index',
+                'columns' => "(`suppliers_id`)",
+            ],
+            [
+                'name' => 'users_id_tech',
+                'type' => 'index',
+                'columns' => "(`users_id_tech`)",
+            ],
         ],
     ],
     'glpi_plugin_iservice_extorders' => [
@@ -725,10 +745,10 @@ return [
             'contracts_id' => 'int unsigned null default null',
             'dba' => 'decimal(10,0) null default null',
             'dca' => 'decimal(10,0) null default null',
-            'total2_black_fact' => 'int null default null',
-            'total2_color_fact' => 'int null default null',
-            'data_fact' => 'date null default null',
-            'data_exp_fact' => 'date null default null',
+            'invoiced_total_black_field' => 'int null default null',
+            'invoiced_total_color_field' => 'int null default null',
+            'invoice_date' => 'date null default null',
+            'invoice_expiry_date_field' => 'date null default null',
             'disableem' => 'tinyint(1) not null default \'0\'',
             'snoozereadcheck' => 'date null default null',
             'moved' => 'int(1) not null default \'0\'',

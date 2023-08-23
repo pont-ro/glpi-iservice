@@ -108,7 +108,7 @@ class PluginIserviceDB extends DB
         }
 
         if ($db->tableExists($tableName, false)) {
-            return self::alterTable($tableName, $tableConfig, $db);
+            return self::alterTable($tableName, $tableConfig, false, $db);
         }
 
         $query  = "create table $tableName (";
@@ -134,15 +134,17 @@ class PluginIserviceDB extends DB
         return $db->query("drop table if exists $tableName") === true;
     }
 
-    public static function alterTable(string $tableName, array $tableConfig, ?\DBmysql $db = null): bool
+    public static function alterTable(string $tableName, array $tableConfig, $createTableIfNotExists = false, ?\DBmysql $db = null): bool
     {
         if ($db === null) {
             global $DB;
             $db = $DB;
         }
 
-        if (!$db->tableExists($tableName, false)) {
+        if (!$db->tableExists($tableName, false) && $createTableIfNotExists) {
             return self::createTable($tableName, $tableConfig, $db);
+        } elseif (!$db->tableExists($tableName, false)) {
+            return false;
         }
 
         $query  = "alter table $tableName";

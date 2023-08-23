@@ -25,9 +25,9 @@ class PluginIserviceCartridge extends Cartridge
                 $emptyables = PluginIserviceDB::getQueryResult(
                     "
                     select c.id, ci.name, c.date_use, ctd.name type_name
-                    from glpi_cartridges c
+                    from glpi_plugin_iservice_cartridges c
                     left join glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
-                    left join glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = ci.plugin_fields_cartridgeitemtypedropdowns_id
+                    left join glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
                     where c.id = $dropdown_options[value]
                     ", false
                 );

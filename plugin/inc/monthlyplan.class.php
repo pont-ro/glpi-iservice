@@ -84,7 +84,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                 htf.numar_facturi,
                 htf.total_facturi,
                 putc.ticket_count as ticket_count_by_item,
-                lct.effective_date_field last_closed_ticket_close_date
+                t.effective_date_field last_closed_ticket_close_date
             FROM glpi_plugin_iservice_printers p
             JOIN glpi_infocoms i on i.items_id = p.id and i.itemtype = 'Printer'
             JOIN glpi_plugin_iservice_suppliers e on e.id = i.suppliers_id
@@ -93,8 +93,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
             LEFT JOIN glpi_states s on s.ID = p.states_id
             LEFT JOIN glpi_plugin_iservice_printer_unclosed_ticket_counts putc ON putc.printers_id = p.id
             LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plt ON plt.printers_id = p.id
-            LEFT JOIN glpi_plugin_iservice_tickets lct on lct.id = plt.tickets_id
-            LEFT JOIN glpi_plugin_fields_ticketticketcustomfields cft on lct.items_id = lct.id and lct.itemtype = 'Ticket'
+            LEFT JOIN glpi_plugin_iservice_tickets t on t.id = plt.tickets_id
             WHERE p.week_nr_field > 0 and p.is_deleted = 0 $tech_filter
             GROUP BY p.id
             ORDER BY e.name

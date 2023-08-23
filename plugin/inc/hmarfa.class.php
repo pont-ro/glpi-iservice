@@ -103,7 +103,7 @@ class PluginIserviceHmarfa
 
         $result   = $DB->query($query);
         $number   = $DB->numrows($result);
-        $contract = new Contract();
+        $contract = new PluginIserviceContract();
         if ($number > 0) {
             $contract->getFromDB($DB->result($result, 0, "contracts_id"));
         }
@@ -159,8 +159,8 @@ class PluginIserviceHmarfa
         // $divizorCopii: $printer->tableData['divizor_copii'];
         $oldCounterBlack        = ($_POST['old_counter_black'] ?? $printer->customfields->fields['invoiced_total_black_field']) ?: 0; // $printer->tableData['contor_bk_uf']
         $oldCounterColor        = ($_POST['old_counter_color'] ?? $printer->customfields->fields['invoiced_total_color_field']) ?: 0; // $printer->tableData['contor_col_uf']
-        $newCounterBlack        = $printer->lastTicket()->fields['total2_black'] ?? 0; // $printer->tableData['contor_bk_ui']
-        $newCounterColor        = $printer->lastTicket()->fields['total2_color'] ?? 0; // $printer->tableData['contor_col_ui']
+        $newCounterBlack        = $printer->lastTicket()->fields['total2_black_field'] ?? 0; // $printer->tableData['contor_bk_ui']
+        $newCounterColor        = $printer->lastTicket()->fields['total2_color_field'] ?? 0; // $printer->tableData['contor_col_ui']
         $includedCopiesBlack    = $contract_customfields->fields['included_copies_bk_field'] ?? 0; // $printer->tableData['included_copies_bk_field']
         $includedCopiesColor    = $contract_customfields->fields['included_copies_col_field'] ?? 0; // $printer->tableData['included_copies_col_field']
         $includedCopiesValue    = $contract_customfields->fields['included_copy_value_field'] ?? 0; // $printer->tableData['included_copy_value_field']
@@ -959,7 +959,7 @@ class PluginIserviceHmarfa
         $ticket->fields['_users_id_assign'] = $ticket->getFirstAssignedUser()->getID();
 
         $ticket_consumable_prices      = [];
-        $ticket_consumable_prices_data = explode('###', $ticket->customfields->fields['consumable_prices']);
+        $ticket_consumable_prices_data = explode('###', $ticket->customfields->fields['consumable_prices_field']);
         foreach ($ticket_consumable_prices_data as $ticket_consumable_price_data) {
             $part_data = explode(':', $ticket_consumable_price_data, 2);
             if (count($part_data) > 1) {
@@ -968,7 +968,7 @@ class PluginIserviceHmarfa
         }
 
         $ticket_consumable_descriptions      = [];
-        $ticket_consumable_descriptions_data = explode('###', $ticket->customfields->fields['consumable_descriptions']);
+        $ticket_consumable_descriptions_data = explode('###', $ticket->customfields->fields['consumable_descriptions_field']);
         foreach ($ticket_consumable_descriptions_data as $ticket_consumable_description_data) {
             $part_data = explode(':', $ticket_consumable_description_data, 2);
             if (count($part_data) > 1) {
@@ -1131,7 +1131,7 @@ class PluginIserviceHmarfa
         if ($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'] === 'aviz' && !empty($printer)) {
             $contract_item  = new Contract_Item();
             $contract_items = $contract_item->find("itemtype = 'Printer' and items_id = " . $printer->getId());
-            $contract       = new Contract();
+            $contract       = new PluginIserviceContract();
             if (count($contract_items) > 0) {
                 foreach ($contract_items as $item) {
                     if ($contract->getFromDB($item['contracts_id'])) {
@@ -1151,7 +1151,7 @@ class PluginIserviceHmarfa
         }
 
         // Consumables on ticket.
-        $cartridge           = new Cartridge();
+        $cartridge           = new PluginIserviceCartridge();
         $total_amount        = 0;
         $used_cartridges     = [];
         $consumables_columns = null;
@@ -1202,7 +1202,7 @@ class PluginIserviceHmarfa
 
             $cartridge_ids = str_replace('|', '', $ticket_consumable['new_cartridge_ids']);
             foreach ($cartridge->find("id in ($cartridge_ids) and not date_use is null") as $cartr) {
-                $used_cartridges[$cartr['id']] = ['id' => $cartr['id'], 'ticket_use' => $cartr['tickets_id_use']];
+                $used_cartridges[$cartr['id']] = ['id' => $cartr['id'], 'ticket_use' => $cartr['tickets_id_use_field']];
             }
 
             unset($ticket_consumable['id']);
@@ -1254,22 +1254,22 @@ class PluginIserviceHmarfa
         }
 
         if ($save) {
-            $ticket_customfields_input['consumable_prices'] = '';
+            $ticket_customfields_input['consumable_prices_field'] = '';
             foreach ($ticket_consumable_prices as $consumable_id => $consumable_price) {
-                if (!empty($ticket_customfields_input['consumable_prices'])) {
-                    $ticket_customfields_input['consumable_prices'] .= '###';
+                if (!empty($ticket_customfields_input['consumable_prices_field'])) {
+                    $ticket_customfields_input['consumable_prices_field'] .= '###';
                 }
 
-                $ticket_customfields_input['consumable_prices'] .= "$consumable_id:" . number_format($consumable_price, 2, '.', '');
+                $ticket_customfields_input['consumable_prices_field'] .= "$consumable_id:" . number_format($consumable_price, 2, '.', '');
             }
 
-            $ticket_customfields_input['consumable_descriptions'] = '';
+            $ticket_customfields_input['consumable_descriptions_field'] = '';
             foreach ($ticket_consumable_descriptions as $consumable_id => $consumable_description) {
-                if (!empty($ticket_customfields_input['consumable_descriptions'])) {
-                    $ticket_customfields_input['consumable_descriptions'] .= '###';
+                if (!empty($ticket_customfields_input['consumable_descriptions_field'])) {
+                    $ticket_customfields_input['consumable_descriptions_field'] .= '###';
                 }
 
-                $ticket_customfields_input['consumable_descriptions'] .= "$consumable_id:$consumable_description";
+                $ticket_customfields_input['consumable_descriptions_field'] .= "$consumable_id:$consumable_description";
             }
 
             if ($finished !== null) {
