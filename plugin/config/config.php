@@ -8,7 +8,7 @@ return [
     'enabled_crons.em_mailgate' => true,
     'enabled_crons.data_integrity_test' => true,
     'enable_header_tests' => true,
-    'hmarfa.import.script_file' => '/hMarfaImport.sql',
+    'hmarfa.import.script_file' => PLUGIN_ISERVICE_CACHE_DIR . '/hMarfaImport.sql',
     'hmarfa.import.errors' => PLUGIN_ISERVICE_CACHE_DIR . "/hMarfaImportErrors",
     'hmarfa.export.default_path' => '/var/sambadir/2x/CSV_HAMOR', // Without trailing slash!
     'emaintenance.import_default_path' => '/var/sambadir/2x/CSV_EM', // Without trailing slash!
