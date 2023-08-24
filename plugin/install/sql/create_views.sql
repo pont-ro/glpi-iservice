@@ -85,7 +85,7 @@ select
 from glpi_items_tickets it
          join glpi_printers p on p.id = it.items_id
          join glpi_plugin_iservice_tickets t on t.id = it.tickets_id and t.`status` = 6 and t.is_deleted = 0
-where it.itemtype = 'printer'
+where it.itemtype = 'Printer'
 window w as (partition by it.items_id order by t.effective_date_field desc, t.id desc);
 
 create or replace view glpi_plugin_iservice_printers as
@@ -195,7 +195,7 @@ select
     `plct`.`total2_color_field` as last_total2_color,
     `plct`.`effective_date_field` as effective_date
 from (((`glpi_printers` `p`
-    left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
+    left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'Printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
     left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
@@ -213,7 +213,7 @@ select
 from glpi_items_tickets it
          join glpi_printers p on p.id = it.items_id
          join glpi_plugin_iservice_tickets t on t.id = it.tickets_id and t.is_deleted = 0
-where it.itemtype = 'printer'
+where it.itemtype = 'Printer'
 window w as (partition by it.items_id order by t.effective_date_field desc, t.id desc);
 
 create or replace view glpi_plugin_iservice_cartridges as
@@ -271,7 +271,7 @@ select
     cfci.life_coefficient_field as life_coefficient_field,
     cfci.supported_types_field as supported_types_field
 from glpi_cartridgeitems ci
-    left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = ci.id and cfci.itemtype = 'Cartridgeitem';
+    left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = ci.id and cfci.itemtype = 'CartridgeItem';
 
 create or replace view glpi_plugin_iservice_contracts as
 select
@@ -334,7 +334,7 @@ select
     cfpm.plugin_fields_containers_id as plugin_fields_containers_id,
     cfpm.em_compatible_field as em_compatible_field
 from glpi_printermodels pm
-    left join glpi_plugin_fields_printermodelprintermodelcustomfields cfpm on cfpm.items_id = pm.id and cfpm.itemtype = 'Printermodel';
+    left join glpi_plugin_fields_printermodelprintermodelcustomfields cfpm on cfpm.items_id = pm.id and cfpm.itemtype = 'PrinterModel';
 
 create or replace view glpi_plugin_iservice_suppliers as
 select
@@ -414,7 +414,7 @@ create or replace view glpi_plugin_iservice_printer_unclosed_ticket_counts as
 select it.items_id printers_id, count(it.tickets_id) ticket_count
 from glpi_items_tickets it
     join glpi_tickets t on t.id = it.tickets_id and not t.status = 6 and t.is_deleted = 0
-where it.itemtype = 'printer'
+where it.itemtype = 'Printer'
 group by it.items_id;
 
 create or replace view glpi_plugin_iservice_consumable_changeable_counts as
@@ -423,8 +423,8 @@ from glpi_plugin_iservice_cartridges c1
     left join glpi_locations l1 on l1.id = c1.locations_id_field
     join glpi_infocoms ic on ic.items_id = c1.printers_id and ic.itemtype = 'Printer'
     join glpi_plugin_fields_suppliersuppliercustomfields cfs on cfs.items_id = ic.suppliers_id and cfs.itemtype = 'Supplier'
-    join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci1 on cfci1.items_id = c1.cartridgeitems_id and cfci1.itemtype = 'Cartridgeitem'
-    join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci2 on find_in_set(cfci2.mercury_code_field, replace(cfci1.compatible_mercury_codes_field, "'", "")) and cfci2.itemtype = 'cartridgeitem'
+    join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci1 on cfci1.items_id = c1.cartridgeitems_id and cfci1.itemtype = 'CartridgeItem'
+    join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci2 on find_in_set(cfci2.mercury_code_field, replace(cfci1.compatible_mercury_codes_field, "'", "")) and cfci2.itemtype = 'CartridgeItem'
     join glpi_plugin_iservice_cartridges c2 on c2.cartridgeitems_id = cfci2.items_id
     join glpi_cartridgeitems ci2 on ci2.id = cfci2.items_id
     left join glpi_locations l2 on l2.id = c2.locations_id_field
