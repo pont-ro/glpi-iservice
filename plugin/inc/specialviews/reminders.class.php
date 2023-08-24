@@ -37,7 +37,7 @@ class Reminders extends View
 
     public static function getTextDisplay($row_data): string
     {
-        return Toolbox::stripTags(implode(' ', Sanitizer::decodeHtmlSpecialCharsRecursive($row_data['text'])));
+        return Toolbox::stripTags(implode(' ', Sanitizer::decodeHtmlSpecialCharsRecursive([$row_data['text']])));
     }
 
     protected function getSettings(): array
