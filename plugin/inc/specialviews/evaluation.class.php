@@ -216,7 +216,7 @@ class Evaluation extends View
             'query' => join(' UNION ', $queries),
             'default_limit' => 100,
             'show_filter_buttons' => Session::haveRight('plugin_iservice_view_evaluation', UPDATE),
-            'show_limit' => 'ajax', //Session::haveRight('plugin_iservice_view_evaluation', UPDATE),
+            'show_limit' => 'ajax', // Session::haveRight('plugin_iservice_view_evaluation', UPDATE),
             'filters' => [
                 'start_date' => [
                     'type' => 'date',
