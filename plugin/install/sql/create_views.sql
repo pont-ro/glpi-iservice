@@ -72,7 +72,7 @@ select
     cft.total2_color_field as total2_color_field,
     cft.effective_date_field as effective_date_field
 from glpi_tickets t
-         left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket';
+     left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket';
 
 create or replace view glpi_plugin_iservice_printers_last_closed_tickets as
 select
@@ -135,19 +135,14 @@ select
     `cfp`.`uc_yellow_field` as `uc_yellow_field`,
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
-    `cfp`.`no_invoice_field` as `no_invoice_field`,
-    `plct`.`effective_date_field` as last_effective_date,
-    `plct`.`total2_black_field` as last_total2_black,
-    `plct`.`total2_color_field` as last_total2_color,
-    `plct`.`effective_date_field` as effective_date
+    `cfp`.`no_invoice_field` as `no_invoice_field`
 from (((`glpi_printers` `p`
     left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
     left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
-    left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id;
 
-create or replace view glpi_plugin_iservice_printers_basic as
+create or replace view glpi_plugin_iservice_printers_with_last_closed_ticket_data as
 select
     `p`.`id` as `id`,
     concat(coalesce(concat(`p`.`serial`,' '),''),'(',`p`.`name`,')', coalesce(concat(' - ',`l`.`completename`),'')) as `name`,
@@ -170,6 +165,8 @@ select
     `p`.`users_id` as `users_id`,
     `p`.`groups_id` as `groups_id`,
     `p`.`states_id` as `states_id`,
+    `s`.`id` as `supplier_id`,
+    `s`.`name` as `supplier_name`,
     `cfp`.`id` as `cfid`,
     `cfp`.`plugin_fields_containers_id` as `plugin_fields_containers_id`,
     `cfp`.`invoice_date_field` as `invoice_date_field`,
@@ -192,10 +189,17 @@ select
     `cfp`.`uc_yellow_field` as `uc_yellow_field`,
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
-    `cfp`.`no_invoice_field` as `no_invoice_field`
-from (`glpi_printers` `p`
+    `cfp`.`no_invoice_field` as `no_invoice_field`,
+    `plct`.`effective_date_field` as last_effective_date,
+    `plct`.`total2_black_field` as last_total2_black,
+    `plct`.`total2_color_field` as last_total2_color,
+    `plct`.`effective_date_field` as effective_date
+from (((`glpi_printers` `p`
+    left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
+    left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
-         left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer';
+    left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
+    left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id;
 
 
 create or replace view glpi_plugin_iservice_printers_last_tickets as
