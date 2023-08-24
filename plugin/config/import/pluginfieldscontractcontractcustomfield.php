@@ -11,7 +11,7 @@ $additionalFields = [
     ]
 ];
 
-$fieldMap = json_decode(file_get_contents(PLUGIN_ISERVICE_DIR . '/install/customfields/printer_customfields.json'), true);
+$fieldMap = json_decode(file_get_contents(PLUGIN_ISERVICE_DIR . '/install/customfields/contract_customfields.json'), true);
 
 
 return [
