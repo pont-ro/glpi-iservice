@@ -214,45 +214,45 @@ class PluginIserviceEmaintenance extends MailCollector
 
             $result[$id]['partner_name'] = $data[$csv_config['columns']['partner_name'] ?? -1] ?? $printer->fields['supplier_name'];
 
-            $data_luc           = null;
-            $date_use           = null;
-            $date_out           = null;
-            $total2_black       = null;
-            $total2_color       = null;
-            $data_luc_error     = null;
-            $total2_black_error = null;
-            $total2_color_error = null;
+            $effective_date_field       = null;
+            $date_use                   = null;
+            $date_out                   = null;
+            $total2_black_field         = null;
+            $total2_color_field         = null;
+            $effective_date_field_error = null;
+            $total2_black_field_error   = null;
+            $total2_color_field_error   = null;
 
             if ($type == 'IW') {
                 $file_name_date_time = substr($_FILES['iwm_import_file']['name'], 0, 12);
-                if ('2000-01-01' > ($data_luc = date('Y-m-d H:i:s', strtotime($file_name_date_time)))) {
-                    $data_luc       = '';
-                    $data_luc_error = $file_name_date_time . " nu este o dată validă";
+                if ('2000-01-01' > ($effective_date_field = date('Y-m-d H:i:s', strtotime($file_name_date_time)))) {
+                    $effective_date_field       = '';
+                    $effective_date_field_error = $file_name_date_time . " nu este o dată validă";
                 }
 
                 if (is_numeric($data[$csv_config['columns']['c109']]) && is_numeric($data[$csv_config['columns']['c109plus']])) {
-                    $total2_black = $data[$csv_config['columns']['c109']] * 2 + $data[$csv_config['columns']['c109plus']];
+                    $total2_black_field = $data[$csv_config['columns']['c109']] * 2 + $data[$csv_config['columns']['c109plus']];
                 } else {
-                    $total2_black       = false;
-                    $total2_black_error = "Valoarea \"{$data[$csv_config['columns']['c109']]}\" sau \"{$data[$csv_config['columns']['c109plus']]}\" pentru contorul 109 nu este număr";
+                    $total2_black_field       = false;
+                    $total2_black_field_error = "Valoarea \"{$data[$csv_config['columns']['c109']]}\" sau \"{$data[$csv_config['columns']['c109plus']]}\" pentru contorul 109 nu este număr";
                 }
 
                 if ($printer->isColor()) {
                     if (is_numeric($data[$csv_config['columns']['c106']]) && is_numeric($data[$csv_config['columns']['c106plus']])) {
-                        $total2_color = $data[$csv_config['columns']['c106']] * 2 + $data[$csv_config['columns']['c106plus']];
-                    } elseif (!is_numeric($data[$csv_config['columns']['c102']]) || ($total2_black === false)) {
-                        $total2_color       = false;
-                        $total2_color_error = "Contorul color nu poate fi calculat din diferența contoarelor 102 ({$data[$csv_config['columns']['c102']]}) și 109 ({$data[$csv_config['columns']['c109']]} * 2 + {$data[$csv_config['columns']['c109plus']]})";
+                        $total2_color_field = $data[$csv_config['columns']['c106']] * 2 + $data[$csv_config['columns']['c106plus']];
+                    } elseif (!is_numeric($data[$csv_config['columns']['c102']]) || ($total2_black_field === false)) {
+                        $total2_color_field       = false;
+                        $total2_color_field_error = "Contorul color nu poate fi calculat din diferența contoarelor 102 ({$data[$csv_config['columns']['c102']]}) și 109 ({$data[$csv_config['columns']['c109']]} * 2 + {$data[$csv_config['columns']['c109plus']]})";
                     } else {
-                        $total2_color = $data[$csv_config['columns']['c102']] - $total2_black;
+                        $total2_color_field = $data[$csv_config['columns']['c102']] - $total2_black_field;
                     }
                 }
             } elseif ($type == 'AVITUM') {
                 if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['effective_date_field']]))) {
-                    $data_luc       = '';
-                    $data_luc_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
+                    $effective_date_field       = '';
+                    $effective_date_field_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
                 } else {
-                    $data_luc = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
+                    $effective_date_field = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
                 }
 
                 if (false !== ($date_use_time = self::getDateTimeFromString($data[$csv_config['columns']['date_use']]))) {
@@ -266,34 +266,34 @@ class PluginIserviceEmaintenance extends MailCollector
                     $data[$csv_config['columns']['c109']] = str_replace(',', '', $data[$csv_config['columns']['c109']]);
 
                     if (is_numeric($data[$csv_config['columns']['c106']])) {
-                        $total2_color = $data[$csv_config['columns']['c106']];
+                        $total2_color_field = $data[$csv_config['columns']['c106']];
                     } else {
-                        $total2_color       = false;
-                        $total2_color_error = "Valoarea \"{$data[$csv_config['columns']['c106']]}\" pentru contorul 106 nu este număr";
+                        $total2_color_field       = false;
+                        $total2_color_field_error = "Valoarea \"{$data[$csv_config['columns']['c106']]}\" pentru contorul 106 nu este număr";
                     }
 
                     if (is_numeric($data[$csv_config['columns']['c109']])) {
-                        $total2_black = $data[$csv_config['columns']['c109']];
+                        $total2_black_field = $data[$csv_config['columns']['c109']];
                     } else {
-                        $total2_black       = false;
-                        $total2_black_error = "Valoarea \"{$data[$csv_config['columns']['c109']]}\" pentru contorul 109 nu este număr";
+                        $total2_black_field       = false;
+                        $total2_black_field_error = "Valoarea \"{$data[$csv_config['columns']['c109']]}\" pentru contorul 109 nu este număr";
                     }
                 } else {
                     $data[$csv_config['columns']['c102']] = str_replace(',', '', $data[$csv_config['columns']['c102']]);
 
                     if (is_numeric($data[$csv_config['columns']['c102']])) {
-                        $total2_black = $data[$csv_config['columns']['c102']];
+                        $total2_black_field = $data[$csv_config['columns']['c102']];
                     } else {
-                        $total2_black       = false;
-                        $total2_black_error = "Valoarea \"{$data[$csv_config['columns']['c102']]}\" pentru contorul 102 nu este număr";
+                        $total2_black_field       = false;
+                        $total2_black_field_error = "Valoarea \"{$data[$csv_config['columns']['c102']]}\" pentru contorul 102 nu este număr";
                     }
                 }
             } else {
                 if (false === ($data_luc_time = self::getDateTimeFromString($data[$csv_config['columns']['effective_date_field']]))) {
-                    $data_luc       = '';
-                    $data_luc_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
+                    $effective_date_field       = '';
+                    $effective_date_field_error = $data[$csv_config['columns']['effective_date_field']] . " nu este o dată validă";
                 } else {
-                    $data_luc = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
+                    $effective_date_field = date('Y-m-d H:i:s', $data_luc_time->getTimestamp());
                 }
 
                 if (false !== ($date_use_time = self::getDateTimeFromString($data[$csv_config['columns']['date_use']]))) {
@@ -303,11 +303,11 @@ class PluginIserviceEmaintenance extends MailCollector
                 }
 
                 // Black counter is counter 109.
-                $total2_black_error = ($total2_black = is_numeric($data[$csv_config['columns']['c109']]) ? $data[$csv_config['columns']['c109']] : false) === false ? "Valoarea \"{$data[$csv_config['columns']['c109']]}\" pentru contorul 109 nu este număr" : null;
+                $total2_black_field_error = ($total2_black_field = is_numeric($data[$csv_config['columns']['c109']]) ? $data[$csv_config['columns']['c109']] : false) === false ? "Valoarea \"{$data[$csv_config['columns']['c109']]}\" pentru contorul 109 nu este număr" : null;
 
                 if ($printer->isColor()) {
                     // Color counter is counter 106.
-                    $total2_color_error = ($total2_color = is_numeric($data[$csv_config['columns']['c106']]) ? $data[$csv_config['columns']['c106']] : false) === false ? "Valoarea \"{$data[$csv_config['columns']['c106']]}\" pentru contorul 106 nu este număr" : null;
+                    $total2_color_field_error = ($total2_color_field = is_numeric($data[$csv_config['columns']['c106']]) ? $data[$csv_config['columns']['c106']] : false) === false ? "Valoarea \"{$data[$csv_config['columns']['c106']]}\" pentru contorul 106 nu este număr" : null;
                 }
             }
 
@@ -874,7 +874,7 @@ class PluginIserviceEmaintenance extends MailCollector
         // Prepare ticket data.
         $ticket->prepareForShow(['mode' => PluginIserviceTicket::MODE_CREATENORMAL]);
         $ticket->explodeArrayFields();
-        $data_luc    = self::getDateTimeFromString($extended_data['body_lines']['occurred']['ending'] ?? '') ?: self::getDateTimeFromString($extended_data['date']);
+        $effective_date_field    = self::getDateTimeFromString($extended_data['body_lines']['occurred']['ending'] ?? '') ?: self::getDateTimeFromString($extended_data['date']);
         $ticket_data = [
             // This field value will be needed to get the changeable cartridges.
             'items_id' => ['Printer' => [$extended_data['printers_id']]],
@@ -885,7 +885,7 @@ class PluginIserviceEmaintenance extends MailCollector
             '_idemmailfield' => $ememail_id,
             '_without_moving' => 1,
             '_without_papers' => 1,
-            'effective_date_field' => $data_luc->format('Y-m-d H:i:s'),
+            'effective_date_field' => $effective_date_field->format('Y-m-d H:i:s'),
         ];
         if (!empty($extended_data['suppliers_id'])) {
             // This field value will be needed to get the changeable cartridges.
