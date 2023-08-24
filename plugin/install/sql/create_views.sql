@@ -76,17 +76,24 @@ from glpi_tickets t
 
 create or replace view glpi_plugin_iservice_printers_last_closed_tickets as
 select
-    distinct it.items_id printers_id,
-             first_value(t.id) over w tickets_id,
-             first_value(t.`status`) over w `status`,
-             first_value(t.effective_date_field) over w effective_date_field,
-             first_value(t.total2_black_field) over w total2_black_field,
-             first_value(t.total2_color_field) over w total2_color_field
-from glpi_items_tickets it
-         join glpi_printers p on p.id = it.items_id
-         join glpi_plugin_iservice_tickets t on t.id = it.tickets_id and t.`status` = 6 and t.is_deleted = 0
-where it.itemtype = 'Printer'
-window w as (partition by it.items_id order by t.effective_date_field desc, t.id desc);
+    lt.printers_id
+     , lt.tickets_id
+     , lt.status
+     , cft.effective_date_field
+     , cft.total2_black_field
+     , cft.total2_color_field
+from (
+         select
+             distinct it.items_id printers_id
+                    , first_value(t.id) over w tickets_id
+                    , first_value(t.status) over w status
+         from glpi_items_tickets it
+                  join glpi_tickets t on t.id = it.tickets_id and t.is_deleted = 0 and t.`status` = 6
+                  join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
+         where it.itemtype = 'Printer'
+         window w as (partition by it.items_id order by cft.effective_date_field desc, t.id desc)
+     ) lt
+         join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = lt.tickets_id and cft.itemtype = 'Ticket';
 
 create or replace view glpi_plugin_iservice_printers as
 select
