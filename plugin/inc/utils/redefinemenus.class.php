@@ -138,7 +138,7 @@ class RedefineMenus
         $menus['assets']['content']['cartridgeitem']['page'] = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Cartridges";
         $menus['assets']['content']['printer']['page']       = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Printers";
         $menus['management']['content']['contract']['page']  = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Contracts";
-        $menus['tools']['content']['reminder']['page']       = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Reminder";
+        $menus['tools']['content']['reminder']['page']       = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Reminders";
         $menus['helpdesk']['content']['ticket']['page']      = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Tickets";
     }
 

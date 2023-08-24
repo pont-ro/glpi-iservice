@@ -1,6 +1,8 @@
 <?php
 require '../inc/includes.php';
 
+ini_set('memory_limit', '1024M');
+
 // Send UTF8 Headers.
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();

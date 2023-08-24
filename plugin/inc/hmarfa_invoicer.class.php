@@ -543,7 +543,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $exportFileData = [
             'partner_name' => preg_replace('/[^A-z0-9-]/', '-', trim($items['first']['supplier']->fields["name"])),
             'name_suffix' => IserviceToolBox::getInputVariable('export_file_name_suffix', date('YmdHis')),
-            'path' => IserviceToolBox::getInputVariable("exportfilepath", $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path']),
+            'path' => IserviceToolBox::getInputVariable("exportfilepath", PluginIserviceConfig::getConfigValue('hmarfa.export.default_path')),
         ];
 
         $exportFileData['safe_suffix']       = IserviceToolBox::getHtmlSanitizedValue($exportFileData['name_suffix']);
