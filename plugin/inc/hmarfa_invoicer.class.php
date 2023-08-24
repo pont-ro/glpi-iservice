@@ -823,7 +823,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
     protected static function restoreBackupFile(&$exportFileData, $items)
     {
         $backupPattern =
-            "$exportFileData[backup_path]/$exportFileData[backup_year]-$exportFileData[backup_month].{$items[first][supplier]->getID()}.$exportFileData[backup_name].[DS]*.*";
+            "$exportFileData[backup_path]/$exportFileData[backup_year]-$exportFileData[backup_month].{$items['first']['supplier']->getID()}.$exportFileData[backup_name].[DS]*.*";
 
         foreach (glob($backupPattern) as $oldFilePath) {
             $fileNameParts = explode('.', pathinfo($oldFilePath, PATHINFO_BASENAME));
