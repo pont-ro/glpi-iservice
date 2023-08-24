@@ -140,7 +140,7 @@ from (((`glpi_printers` `p`
     left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
-    left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
+    left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer';
 
 create or replace view glpi_plugin_iservice_printers_with_last_closed_ticket_data as
 select
