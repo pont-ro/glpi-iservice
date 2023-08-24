@@ -436,7 +436,7 @@ class Printers extends View
                             , s.cm_field
                             , t2.codbenef
                             , t2.numar_facturi_neplatite
-                        FROM glpi_plugin_iservice_printers_basic p
+                        FROM glpi_plugin_iservice_printers p
                         LEFT JOIN glpi_plugin_iservice_printers_last_tickets plt ON plt.printers_id = p.id
                         LEFT JOIN glpi_printertypes pt ON pt.id = p.printertypes_id
                         LEFT JOIN glpi_infocoms i ON i.items_id = p.id and i.itemtype = 'Printer'
