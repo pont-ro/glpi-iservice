@@ -182,4 +182,58 @@ class ToolBox
         }
     }
 
+    public static function writeCsvFile($fileName, $data, $append = false): ?string
+    {
+        if (!is_array($data)) {
+            return 'Input data must be a 2 dimensional array';
+        }
+
+        if (false === ($file = fopen($fileName, $append ? 'a' : 'w'))) {
+            return print_r(error_get_last(), true);
+        }
+
+        foreach ($data as $fields) {
+            if (!is_array($fields)) {
+                continue;
+            }
+
+            fputcsv($file, $fields);
+        }
+
+        fclose($file);
+        return null;
+    }
+
+    public static function getCsvFile(string $filename, string $separator = ',', string $enclosure = '"', string $escape = '\\'): array
+    {
+        $file = fopen($filename, 'r');
+
+        $result = [];
+
+        while (!feof($file) && false !== ($line = fgetcsv($file, null, $separator, $enclosure, $escape))) {
+            $result[] = $line;
+        }
+
+        return $result;
+    }
+
+    public static function addMonthToDate($date_in_string, $number_of_months): ?string
+    {
+        if (empty($date_in_string)) {
+            return null;
+        }
+
+        $date = new DateTime($date_in_string);
+
+        $oldDay = $date->format("d");
+        $date->add(new \DateInterval("P" . $number_of_months . "M"));
+        $newDay = $date->format("d");
+
+        if ($oldDay != $newDay) {
+            $date->sub(new \DateInterval("P" . $newDay . "D"));
+        }
+
+        return $date->format("Y-m-d");
+    }
+
 }
