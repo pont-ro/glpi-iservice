@@ -6,8 +6,8 @@ return [
     'version' => '0.0.1',
     'enabled_crons.h_marfa_import' => true,
     'enabled_crons.em_mailgate' => true,
-    'enabled_crons.data_integrity_test' => true,
-    'enable_header_tests' => true,
+    'enabled_crons.data_integrity_test' => false,
+    'enable_header_tests' => false,
     'hmarfa.import.script_file' => PLUGIN_ISERVICE_CACHE_DIR . '/hMarfaImport.sql',
     'hmarfa.import.errors' => PLUGIN_ISERVICE_CACHE_DIR . "/hMarfaImportErrors",
     'hmarfa.export.default_path' => '/var/sambadir/2x/CSV_HAMOR', // Without trailing slash!
@@ -17,4 +17,5 @@ return [
     'dataintegritytests.cache_timeout' => 3600, // 60 minutes
     'folder_integrity.report_file' => PLUGIN_ISERVICE_CACHE_DIR . "/unknown_directory_entries",
     'open_ticket_limit' => 50,
+    'views.show_limit' => 'false',
 ];
