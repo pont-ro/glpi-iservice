@@ -1004,7 +1004,7 @@ class PluginIserviceHmarfa
                 , n.denum AS Denumire_Articol
                 , fr.cant AS Cantitate
                 , ROUND(fr.puliv,2) AS Pret_Livrare
-                , ROUND((fr.puliv/fr.puini),2) AS Procent
+                , ROUND((fr.puliv / NULLIF(fr.puini, 0)), 2) AS Procent
             FROM hmarfa_facrind fr
             LEFT JOIN hmarfa_facturi fa ON fa.nrfac = fr.nrfac
             LEFT JOIN hmarfa_firme fi ON fi.cod = fa.codbenef

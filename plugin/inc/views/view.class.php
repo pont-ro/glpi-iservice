@@ -889,7 +889,7 @@ class View extends \CommonGLPI
                     echo "<span class='filter-buttons-prefix'>" . $this->filters['filter_buttons_postfix'] . "</span>";
                 }
 
-                if ($this->show_limit) {
+                if ($this->show_limit === true) {
                     echo " " . __("Show", "iservice") . " <input type='text' name='{$this->getRequestArrayName()}[limit]' value='$this->limit' style='text-align:right;width:40px'/> din $this->query_count";
                 }
 
