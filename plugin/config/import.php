@@ -172,10 +172,6 @@ return [
                 'itemtype' => 'PluginFieldsTicketticketcustomfield',
                 'label' => _n('Ticket Custom Field', 'Ticket Custom Fields', Session::getPluralNumber()),
             ],
-            'consumableTicket' => [
-                'itemtype' => 'PluginIserviceConsumable_Ticket',
-                'label' => _n('Consumable Ticket', 'Consumable Tickets', Session::getPluralNumber()),
-            ],
             'itilFollowup' => [
                 'itemtype' => 'ITILFollowup',
                 'label' => _n('ITIL Followup', 'ITIL Followups', Session::getPluralNumber()),
@@ -209,6 +205,10 @@ return [
             'cartridgeItemPrinterModel' => [
                 'itemtype' => 'CartridgeItem_PrinterModel',
                 'label' => _n('Cartridge Item Printer Model', 'Cartridge Items Printer Models', Session::getPluralNumber()),
+            ],
+            'consumableTicket' => [
+                'itemtype' => 'PluginIserviceConsumable_Ticket',
+                'label' => _n('Consumable Ticket', 'Consumable Tickets', Session::getPluralNumber()),
             ],
         ]
     ],
