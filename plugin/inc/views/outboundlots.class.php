@@ -29,7 +29,7 @@ class OutboundLots extends View
                     , n.denum AS Denumire_Articol
                     , p.serial AS printer_serial
                     , fr.descr AS Descriere
-                    , ROUND((fr.puliv/fr.puini),2) AS Proc
+                    , ROUND((fr.puliv / NULLIF(fr.puini, 0)), 2) AS Proc
                     , fr.cant AS Cant
                     , IF(fr.tip='AIMFS' OR fr.tip='TAIM', 0, fr.puliv) AS Pret_Liv
                     , IF(fr.tip='AIMFS' OR fr.tip='TAIM', -(ROUND(fr.puini*fr.cant,2)), ROUND(fr.cant*(fr.puliv-fr.puini),2)) AS Adaos
