@@ -55,7 +55,7 @@ class PluginIserviceConsumable extends CommonDBTM
                   fa.datafac AS Data_Fact
                 , fr.cant AS Cant
                 , fr.puliv AS Pret_Liv
-                , COALESCE(ROUND((fr.puliv/fr.puini),2), 1) AS Proc
+                , COALESCE(ROUND((fr.puliv / NULLIF(fr.puini, 0)), 2), 1) AS Proc
             FROM hmarfa_facrind fr
             LEFT JOIN hmarfa_facturi fa ON fa.nrfac = fr.nrfac
             WHERE NOT fr.tip IN ('AIMFS', 'TAIM')

@@ -196,7 +196,7 @@ class Cartridges extends View
             return $row_data['date_out'];
         }
 
-        $cartridges = IserviceToolBox::getQueryResult(
+        $cartridges = \PluginIserviceDB::getQueryResult(
             "
             select c.id
             from glpi_plugin_iservice_cartridges c

@@ -986,7 +986,7 @@ class PluginIserviceTicket extends Ticket
             $join_and_condition = self::getConditionForPrinter($printer_id, $open, $order, $additional_condition, $additional_join);
         }
 
-        return IserviceToolBox::getQueryResult("select `$table`.tickets_id from `$table` $join_and_condition", "tickets_id");
+        return PluginIserviceDB::getQueryResult("select `$table`.tickets_id from `$table` $join_and_condition", "tickets_id");
     }
 
     protected static function getConditionForPrinter($printer_id = 0, $open = null, $order = 'asc', $additional_condition = '', $additional_join = ''): string
