@@ -373,7 +373,7 @@ class Tickets extends View
                         GROUP BY t.id
                         ",
             'default_limit' => self::inProfileArray('subtehnician', 'superclient', 'client') ? 20 : 30,
-            'show_limit' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
+            'show_limit' => 'ajax', //!self::inProfileArray('subtehnician', 'superclient', 'client'),
             'filters' => [
                 'printer_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,

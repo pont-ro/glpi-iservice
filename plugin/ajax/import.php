@@ -306,6 +306,8 @@ $item    = new $itemTypeClass();
 $itemMap = new PluginIserviceImportMapping();
 set_time_limit(calculateExecutionTime(count($oldItems)));
 
+$messagesFromSessionInitial = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
+
 do {
     unset($errors['retry']);
     $oldItemsCount = count($oldItems);
@@ -376,7 +378,9 @@ if ($oldItemsCount === count($errors['retry'] ?? [])) {
 }
 
 if (!empty($errors)) {
+    $errors['messagesFromSession'] = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
     trigger_error(json_encode($errors, JSON_PRETTY_PRINT), E_USER_WARNING);
+    $_SESSION['MESSAGE_AFTER_REDIRECT'] = $messagesFromSessionInitial;
 }
 
 echo empty($errors) ? IserviceToolBox::RESPONSE_OK : json_encode($errors);
