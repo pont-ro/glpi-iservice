@@ -904,7 +904,7 @@ class View extends \CommonGLPI
                 echo "</div>";
                 echo "<div class='view-mass-action'>";
                 if (!empty($this->mass_actions_column)) {
-                    echo "<img class='mass_action' src='$CFG_GLPI[root_doc]/pics/arrow-left-top.png'>";
+                    echo "<i class='fas fa-level-up-alt fa-rotate-180 mass_action'></i>";
                 }
 
                 foreach ($this->mass_actions as $mass_action_key => &$mass_action) {
@@ -955,7 +955,7 @@ class View extends \CommonGLPI
             $order_sign    = '';
             if ($this->order_by !== null && $this->order_by == $field_name) {
                 $new_order_dir = ($this->order_dir === 'ASC') ? 'DESC' : 'ASC';
-                $order_sign    = "<img src='$CFG_GLPI[root_doc]/pics/puce-" . ($new_order_dir === 'ASC' ? 'down' : 'up') . ".png' /> ";
+                $order_sign    = $new_order_dir === 'ASC' ? '<i class="fas fa-sort-down"></i>' : '<i class="fas fa-sort-up"></i>';
             }
 
             if (!$readonly && isset($column['filter']) && !empty($column['filter'])) {
