@@ -1,15 +1,16 @@
 <?php
 
 // Imported from iService2, needs refactoring.
-define('GLPI_ROOT', '../../..');
-require_once GLPI_ROOT . '/inc/includes.php';
+require "../inc/includes.php";
 
-$id       = PluginIserviceCommon::getInputVariable('id');
-$add      = PluginIserviceCommon::getInputVariable('add');
-$move     = PluginIserviceCommon::getInputVariable('move');
-$update   = PluginIserviceCommon::getInputVariable('update');
-$delete   = PluginIserviceCommon::getInputVariable('delete');
-$itemtype = PluginIserviceCommon::getInputVariable('itemtype', 'Printer');
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
+$id       = IserviceToolBox::getInputVariable('id');
+$add      = IserviceToolBox::getInputVariable('add');
+$move     = IserviceToolBox::getInputVariable('move');
+$update   = IserviceToolBox::getInputVariable('update');
+$delete   = IserviceToolBox::getInputVariable('delete');
+$itemtype = IserviceToolBox::getInputVariable('itemtype', 'Printer');
 
 if (empty($id) && (empty($itemtype) || !class_exists("PluginIservice$itemtype"))) {
     PluginIserviceHtml::header(__('Move', 'iservice') . " " . __($itemtype, 'iservice'));
@@ -181,8 +182,8 @@ if (!empty($add)) {
 
 Session::checkRight('plugin_iservice_movement', UPDATE);
 
-PluginIserviceHtml::header(__('Move', 'iservice') . " " . __($itemtype, 'iservice'));
+Html::header(__('Move', 'iservice') . " " . __($itemtype, 'iservice'));
 
-$movement->ShowForm();
+$movement->ShowForm(null,[]);
 
-PluginIserviceHtml::footer();
+Html::footer();

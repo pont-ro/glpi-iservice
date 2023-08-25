@@ -3,7 +3,7 @@
 // Imported from iService2, needs refactoring. Original file: "getPrinterCartidges.php".
 // Direct access to file
 if (strpos($_SERVER['PHP_SELF'], "getPrinterCartridgesPopup.php")) {
-    include '../../../inc/includes.php';
+    include '../inc/includes.php';
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
@@ -54,7 +54,7 @@ echo "</a> ";
 
 echo "</td><td style='vertical-align:top'>";
 
-echo "<a href='#' onclick='$(\"#cartriges_link_{$printer_id}_$uid\").remove();$(\"#popup_{$printer_id}_$uid\").html(\"\");return false;'><img src='$CFG_GLPI[root_doc]/pics/delete.png' style='width:inherit'></a>";
+echo "<a href='#' onclick='$(\"#cartriges_link_{$printer_id}_$uid\").remove();$(\"#popup_{$printer_id}_$uid\").html(\"\");return false;'><i class='ti ti-x' style='width:inherit'></i></a>";
 
 echo "</td></tr></table>";
 

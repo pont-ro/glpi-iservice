@@ -203,7 +203,7 @@ class View extends \CommonGLPI
 
     public function getRequestArrayName($add_detail_level = 0): string
     {
-        return $this->getMachineName() . ($this->detail_displaying + $add_detail_level);
+        return strtolower($this->getMachineName()) . ($this->detail_displaying + $add_detail_level);
     }
 
     public function getHeadingLevel()
