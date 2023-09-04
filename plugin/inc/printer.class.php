@@ -283,7 +283,7 @@ class PluginIservicePrinter extends Printer
 
             if (Session::haveRight('plugin_iservice_view_operations', READ)) {
                 $filter_description = urlencode("{$printer->fields['name']} ({$printer->fields['serial']}) - {$printer_customfields->fields['usage_address_field']} - {$supplier->fields['name']}");
-                $buttons[]          = "<a class='vsubmit' href='view.php?view=operations&operations0[printer_id]=$printer_id&operations0[filter_description]=$filter_description'>" . __('Operations list', 'iservice') . "</a>";
+                $buttons[]          = "<a class='vsubmit' href='views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0[printer_id]=$printer_id&operations0[filter_description]=$filter_description'>" . __('Operations list', 'iservice') . "</a>";
             }
 
             if (Session::haveRight('plugin_iservice_movement', CREATE)) {

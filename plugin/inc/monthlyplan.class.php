@@ -337,6 +337,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                     ?>
                                     <tr class="tab_bg_<?php echo $row_num++ % 2 + 1; ?>" style="<?php echo $style; ?>">
                                         <?php
+                                        global $CFG_GLPI;
                                         $body        = "Buna ziua!\r\n";
                                         $body       .= "Va rog sa completati starea contoarelor copiatoarelor aflate la dvs. pe interfata web: http://iservice2.expertline-magazin.ro\r\n";
                                         $body       .= "In cazul in care nu aveti cont de utilizator, sau vi se cere o parola suplimentara pentru a accesa serverul Expert Line, va rog trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366\r\n\r\n";
@@ -345,7 +346,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                         $mailto_link = "mailto:$enterprise[enterprise_email_facturi]?subject=Citire contor/contoare copiatoare - $enterprise[enterprise_name]&body=$mail_body";
                                         $icon        = $printer['all_in_em'] ? 'em.png' : 'mail.png';
                                         $title       = $printer['all_in_em'] ? (isset($printer['multiple']) ? 'Toate aparatele în [EM]' : 'Aparat în [EM]') : 'Trimite email';
-                                        echo "<td><a href='$mailto_link'><img src='" . GLPI_ROOT . "/plugins/iservice/pics/$icon' title='$title'/></a></td>";
+                                        echo "<td><a href='$mailto_link'><img src='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/pics/$icon' title='$title'/></a></td>";
                                         ?>
                                         <td style="text-align: left;">
                                             <?php
@@ -368,8 +369,8 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                             }
 
                                             $title .= "\r\n\r\nData fact " . (isset($printer['multiple']) ? "max: $printer[data_fact_max]" : ":$printer[invoice_date_field]");
-                                            echo "<a href='" . GLPI_ROOT . "/front/supplier.form.php?id=$enterprise_id' title='$title'>$enterprise[enterprise_name]</a>";
-                                            $printer_link = GLPI_ROOT . "/plugins/iservice/front/view.php?view=printers&printers0[supplier_id]=$enterprise_id&printers0[filter_description]=$enterprise[enterprise_name]";
+                                            echo "<a href='" . $CFG_GLPI['root_doc'] . "/front/supplier.form.php?id=$enterprise_id' title='$title'>$enterprise[enterprise_name]</a>";
+                                            $printer_link = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/view.php?view=printers&printers0[supplier_id]=$enterprise_id&printers0[filter_description]=$enterprise[enterprise_name]";
                                             if (isset($printer['multiple'])) {
                                                 echo empty($printer['plan_observations_field']) ? '' : " ($printer[plan_observations_field])";
                                                 $search_string = str_replace(' ', '+', urldecode($enterprise['enterprise_name']));
@@ -411,7 +412,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
     $color2 = isset($printer['multiple']) ? "darkgreen" : "green";
 }
 
-                                            $link    = GLPI_ROOT . "/plugins/iservice/front/view.php?view=tickets&tickets0[ticket_status]=1%2C2%2C3%2C4%2C5&tickets0[supplier_name]=$enterprise[enterprise_name]";
+                                            $link    = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/view.php?view=tickets&tickets0[ticket_status]=1%2C2%2C3%2C4%2C5&tickets0[supplier_name]=$enterprise[enterprise_name]";
                                             $title2  = "Data închidere ultimul tichet închis\r\n";
                                             $title2 .= !empty($printer['multiple']) ? ($printer['last_closed_ticket_title'] . "\r\n\r\nMax: $printer[last_closed_ticket_close_date_max]") : $printer['last_closed_ticket_close_date'];
                                             echo "<a href='$link' style='color:$color2' title='$title2'>** $enterprise[open_tickets_count] **</a>";
@@ -420,7 +421,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                         <td style="text-align: center;">
                                             <?php
                                             if ($enterprise['numar_facturi'] > 0) {
-                                                echo "<a href='" . GLPI_ROOT . "/plugins/iservice/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$enterprise[hmarfa_code_field]'>**&nbsp;$enterprise[numar_facturi]&nbsp;**</a>";
+                                                echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$enterprise[hmarfa_code_field]'>**&nbsp;$enterprise[numar_facturi]&nbsp;**</a>";
                                             } else {
                                                 echo $enterprise['numar_facturi'];
                                             }

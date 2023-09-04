@@ -86,12 +86,12 @@ class PluginIserviceMovement extends CommonDBTM
         $itemtype = $this->fields['itemtype'];
 
         $item              = new $itemtype;
-        $customfieldclass  = "PluginFields{$itemtype}customfield";
+        $customfieldclass  = "PluginFields$itemtype" . strtolower($itemtype) . "customfield";
         $item_customfields = new $customfieldclass();
         $partner_old       = new Supplier();
         if (isset($this->fields['items_id'])) {
             $item->getFromDB($this->fields['items_id']);
-            $item_customfields->getFromDBByItemsId($this->fields['items_id'], $itemtype);
+            PluginIserviceDB::populateByItemsId($item_customfields, $this->fields['items_id'], $itemtype);
             if (empty($id) && ($movement = PluginIserviceMovement::existsFor($itemtype, $this->fields['items_id'])) !== false) {
                 Html::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea $movement întâi!</a>");
             }
@@ -176,8 +176,8 @@ class PluginIserviceMovement extends CommonDBTM
 
             // In Ticket.
             $ticket_in              = new Ticket();
-            $ticket_in_customfields = new PluginFieldsTicketcustomfield();
-            if ($ticket_in_customfields->getFromDBByQuery("WHERE movement_id_field = $id LIMIT 1") && $ticket_in->getFromDB($ticket_in_customfields->fields['items_id'])) {
+            $ticket_in_customfields = new PluginFieldsTicketticketcustomfield();
+            if (PluginIserviceDB::populateByQuery($ticket_in_customfields, "WHERE movement_id_field = $id LIMIT 1") && $ticket_in->getFromDB($ticket_in_customfields->fields['items_id'])) {
                 $ticket_in_exists = true;
                 $ticket_in_closed = $ticket_in->fields['status'] == Ticket::CLOSED;
                 $ticket_actions   = "<a href='ticket.form.php?id={$ticket_in->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "&_close_on_success=1' class='vsubmit' target='_blank'>" . ($ticket_in_closed ? __("View", "iservice") : (__("Modify", "iservice") . " / " . __("Close", "iservice"))) . "</a>";
@@ -299,7 +299,7 @@ class PluginIserviceMovement extends CommonDBTM
 
                 // Contract.
                 $contract_item = new Contract_Item();
-                if (!$contract_item->getFromDBByQuery("WHERE items_id = {$this->fields['items_id']} AND itemtype = '$itemtype' LIMIT 1")) {
+                if (!PluginIserviceDB::populateByQuery($contract_item, "WHERE items_id = {$this->fields['items_id']} AND itemtype = '$itemtype' LIMIT 1")) {
                     $contract_item->getEmpty();
                 }
 
@@ -375,8 +375,8 @@ class PluginIserviceMovement extends CommonDBTM
 
         // Out Ticket.
         $ticket_out              = new Ticket();
-        $ticket_out_customfields = new PluginFieldsTicketcustomfield();
-        if ($ticket_out_customfields->getFromDBByQuery("WHERE movement2_id_field = $id LIMIT 1") && $ticket_out->getFromDB($ticket_out_customfields->fields['items_id'])) {
+        $ticket_out_customfields = new PluginFieldsTicketticketcustomfield();
+        if (PluginIserviceDB::populateByQuery($ticket_out_customfields, "WHERE movement2_id_field = $id LIMIT 1") && $ticket_out->getFromDB($ticket_out_customfields->fields['items_id'])) {
             $ticket_out_exists = true;
             $ticket_out_closed = $ticket_out->fields['status'] == Ticket::CLOSED;
             $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? __("View", "iservice") : __("Close", "iservice")) . "</a>";
