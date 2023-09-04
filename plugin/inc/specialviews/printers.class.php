@@ -46,7 +46,7 @@ class Printers extends View
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'counters' => [
-                'link' => '/not_imported', //"view.php?view=printercounters2&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']),
+                'link' => '#', //"view.php?view=printercounters2&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
                 'title' => __('Printer counters', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
@@ -312,7 +312,7 @@ class Printers extends View
     {
         global $CFG_GLPI;
 
-        $printer_counters_button = IserviceToolBox::inProfileArray('client') ? '' : '';
+        $printer_counters_button = IserviceToolBox::inProfileArray('client') ? '' : '#';
             //"<a class='vsubmit' href='view.php?view=printercounters2' target='_blank'>" . __('Printer counters', 'iservice') . " v2</a>";
 
         $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
