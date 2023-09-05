@@ -143,7 +143,57 @@ class AddCustomFieldsInstallStep
             $result                     = $container->update($containerData);
         }
 
-        return $result && self::addOrUpdateContainerFields($containerData);
+        $result = $result && self::addOrUpdateContainerFields($containerData);
+        return $result && self::optimizeContainerTableFieldTypes($containerData);
+    }
+
+    private static function optimizeContainerTableFieldTypes($containerData)
+    {
+        $result    = true;
+        $container = PluginFieldsContainer::getById($containerData['id']);
+
+        foreach (json_decode($container->fields['itemtypes']) as $itemtype) {
+            $classname   = $container::getClassname($itemtype, $container->fields['name']);
+            $table       = getTableForItemType($classname);
+            $tableConfig = self::getColumnsSql(self::getFieldsData($containerData['fields']));
+
+            $result = $result && \PluginIserviceDB::alterTable($table, $tableConfig);
+        }
+
+        return $result;
+
+    }
+
+    public static function getColumnsSql($fieldsData): array
+    {
+        $fields = [];
+        foreach ($fieldsData as $fieldData) {
+            $field_name = $fieldData['name'];
+            $field_type = $fieldData['type'];
+            $default    = $fieldData['default_value'] !== '' ? $fieldData['default_value'] : null;
+            $mandatory  = $fieldData['mandatory'] === '1' ? 'not null' : '';
+
+            switch (true) {
+            case $field_type === 'yesno':
+                $fields[$field_name] = "tinyint $mandatory" . ($default !== null ? " default $default" : '');
+                break;
+            case $field_type === 'date':
+                $fields[$field_name] = "date $mandatory" . ($default !== null ? " default '$default'" : '');
+                break;
+            case $field_type === 'datetime':
+                $fields[$field_name] = "timestamp $mandatory" . ($default !== null ? " default '$default'" : '');
+                break;
+            case $field_type === 'number':
+                $fields[$field_name] = "decimal $mandatory" . ($default !== null ? " default $default" : '');
+                break;
+            default:
+                break;
+            }
+        }
+
+        return [
+            'columns' => $fields,
+        ];
     }
 
     private static function removeContainer(array $containerData): void
@@ -278,7 +328,7 @@ class AddCustomFieldsInstallStep
         }
 
         if (is_file($fieldsData)) {
-            return json_decode(file_get_contents($fieldsData), true);
+            return json_decode(file_get_contents($fieldsData), true) ?? [];
         }
 
         return [];

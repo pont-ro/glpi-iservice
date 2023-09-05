@@ -63,7 +63,7 @@ return [
             , p.last_read_field 
             , if(
 				    p.last_read_field = '',
-				    'unknown',
+				    'empty',
 				    if(
 				        datediff(curdate(), p.last_read_field) > 15000,
 				        'infinite',
