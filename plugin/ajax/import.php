@@ -36,7 +36,7 @@ function processItemData(array $oldItemData, array $importConfig, array &$foreig
     $result = $oldItemData;
 
     $result = mapFields($result, $importConfig['fieldMap'] ?? []);
-    $result = changeEmptySringToNull($result, $importConfig['fieldMap'] ?? []);
+    $result = changeEmptyStringToNull($result, $importConfig['fieldMap'] ?? []);
     $result = forceValues($result, $importConfig['forceValues'] ?? []);
     $result = checkValues($result, $importConfig['checkValues'] ?? [], $errors);
     $result = mapForeignKeys($result, $importConfig['foreignKeys'] ?? [], $foreignKeyData, $errors, $importConfig['handleMissingForeignKeys'] ?? []);
@@ -77,7 +77,7 @@ function mapFields(array $input, array $fieldMap): array
     return $result;
 }
 
-function changeEmptySringToNull(array $input, array $fieldMap): array
+function changeEmptyStringToNull(array $input, array $fieldMap): array
 {
     if (empty($fieldMap)) {
         return $input;
