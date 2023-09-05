@@ -102,6 +102,7 @@ class PluginIserviceProfile extends Profile
 
             'plugin_iservice_view_printercounters' => right_array(ALLSTANDARDRIGHT, array_merge($level15_profiles, $elevated_profiles)),
             'plugin_iservice_movement' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_docgenerator' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
         ];
 
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);

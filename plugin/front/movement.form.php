@@ -90,7 +90,7 @@ if (!empty($add)) {
                 'data_fact' => $post['data_fact'],
                 'data_exp_fact' => $post['data_exp_fact'],
                 'week_nr' => $post['week_number'],
-                'usageaddressfield' => $post['usage_address'],
+                'usage_address_field' => $post['usage_address'],
                 'contact_num' => $post['contact_num'],
                 'contact' => $post['contact'],
                 'dailybkaveragefield' => $post['dba'],

@@ -237,7 +237,7 @@ class GlobalReadCounter extends View
                     'editable' => true,
                     'edit_settings' => [
                         'callback' => 'managePrinter',
-                        'operation' => 'set_usageaddressfield'
+                        'operation' => 'set_usage_address_field'
                     ],
                 ],
                 'last_data_luc' => [

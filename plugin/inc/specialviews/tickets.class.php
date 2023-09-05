@@ -69,22 +69,17 @@ class Tickets extends View
         $list_ticket_description = urlencode(empty($row_data['printer_id']) ? "Toate" : "$row_data[printer_name] ($row_data[printer_serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                 = [
             'printers' => [
-                'link' => "view.php?view=printers&printers0[supplier_id]=$row_data[supplier_id]&printers0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=\GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_id]=$row_data[supplier_id]&printers0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/printer.png',
                 'title' => "Lista aparate " . htmlentities($row_data['supplier_name'], ENT_QUOTES),
                 'visible' => Session::haveRight('plugin_iservice_view_printers', READ),
             ],
             'close' => [
-                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CLOSE . "&id=$row_data[ticket_id]",
+                'link' => '#',
+//                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CLOSE . "&id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => __('Close ticket', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
-            ],
-            'export' => [
-                'link' => $export_link,
-                'icon' => $CFG_GLPI['root_doc'] . "/plugins/iservice/pics/app_go$export_color.png",
-                'title' => __('hMarfa export', 'iservice') . (empty($export_comment) ? '' : "\n$export_comment"),
-                'visible' => Session::haveRight('plugin_iservice_hmarfa', READ),
             ],
             'ticketreport' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.report.php?id=$row_data[ticket_id]",
@@ -93,19 +88,20 @@ class Tickets extends View
                 'visible' => Session::haveRight('plugin_iservice_docgenerator', READ),
             ],
             'list_ticket' => [
-                'link' => $row_data['printer_id'] ? "view.php?view=operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$list_ticket_description" : 'javascript:void(0);',
+                'link' => $row_data['printer_id'] ? "views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$list_ticket_description" : 'javascript:void(0);',
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_detail' . ($row_data['printer_id'] ? '' : '_disabled') . '.png',
                 'title' => $row_data['printer_id'] ? __('Operations list', 'iservice') : 'Tichetul nu are aparat', // Lista lucrari.
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'counters' => [
-                'link' => "view.php?view=printercounters2" . ($row_data['supplier_id'] ? "&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
+                'link' => "#",
+//                'link' => "view.php?view=printercounters2" . ($row_data['supplier_id'] ? "&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
                 'title' => __('Printer counters', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
             ],
             'cartridges' => [
-                'link' => "view.php?view=cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
                 'title' => __('Installable cartridges', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
@@ -113,7 +109,7 @@ class Tickets extends View
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_$row_data[ticket_id]'></div>",
             ],
             'invoices' => [
-                'link' => "view.php?view=partners" . ($row_data['supplier_id'] ? "&partners0[partener]=" . urlencode($row_data['supplier_name']) : '') . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1" . ($row_data['supplier_id'] ? "&partners0[filter_description]=" . urlencode($row_data['supplier_name']) : ''),
+                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Partners" . ($row_data['supplier_id'] ? "&partners0[partener]=" . urlencode($row_data['supplier_name']) : '') . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1" . ($row_data['supplier_id'] ? "&partners0[filter_description]=" . urlencode($row_data['supplier_name']) : ''),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/price_alert.png',
                 'title' => __('Unpaid invoices', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_partners', READ),

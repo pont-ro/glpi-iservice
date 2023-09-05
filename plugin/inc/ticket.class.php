@@ -202,7 +202,7 @@ class PluginIserviceTicket extends Ticket
                         self::MODE_CREATEINQUIRY => true,
                     ],
                 ],
-                '_usageaddressfield' => [
+                '_usage_address_field' => [
                     'hidden' => false
                 ],
                 'locations_id' => [
@@ -816,7 +816,7 @@ class PluginIserviceTicket extends Ticket
     public function getFirstPrinter(): PluginIservicePrinter
     {
         $item_ticket = new Item_Ticket();
-        $data        = $item_ticket->find("`tickets_id` = {$this->getID()} and `itemtype` = 'Printer'");
+        $data        = $item_ticket->find(["`tickets_id` = {$this->getID()} and `itemtype` = 'Printer'"]);
         $printer     = new PluginIservicePrinter();
         foreach ($data as $val) {
             if ($printer->getFromDB($val["items_id"]) && !$printer->isDeleted()) {
@@ -1318,10 +1318,10 @@ class PluginIserviceTicket extends Ticket
         }
 
         // Usage address
-        if ($prepared_data['field_hidden']['_usageaddressfield']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_usageaddressfield', $printer->customfields->fields['usage_address_field']);
+        if ($prepared_data['field_hidden']['_usage_address_field']) {
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_usage_address_field', $printer->customfields->fields['usage_address_field']);
         } else {
-            $form->displayFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_usageaddressfield', $printer->customfields->fields['usage_address_field'] ?? ''));
+            $form->displayFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_usage_address_field', $printer->customfields->fields['usage_address_field'] ?? ''));
         }
 
         // Location - The location of the printer at the first save should be saved,
