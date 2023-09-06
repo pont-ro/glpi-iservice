@@ -39,13 +39,21 @@ PluginIserviceDB::populateByItemsId($assigned_suppliers_customfields, $assigned_
 $requester_ids = array_column($ticket->getUsers(Ticket_User::REQUESTER), 'users_id');
 $assigned_ids  = array_column($ticket->getUsers(Ticket_User::ASSIGN), 'users_id');
 
-if (!Session::haveRight('ticket', Ticket::READALL) && !in_array($requester_ids, $_SESSION["glpiID"]) && !in_array($_SESSION["glpiID"], $assigned_ids) && !(Session::haveRight("ticket", Ticket::READGROUP) && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::REQUESTER))) && !(Session::haveRight("ticket", Ticket::READASSIGN) && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::ASSIGN))) && !(Session::haveRight("plugin_iservice_ticket_assigned_printers", READ) && $printer->fields['users_id_tech'] == $_SESSION["glpiID"])
+if (!Session::haveRight('ticket', Ticket::READALL)
+    && !in_array($requester_ids, $_SESSION["glpiID"])
+    && !in_array($_SESSION["glpiID"], $assigned_ids)
+    && !(Session::haveRight("ticket", Ticket::READGROUP)
+    && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::REQUESTER)))
+    && !(Session::haveRight("ticket", Ticket::READASSIGN)
+    && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::ASSIGN)))
+    && !(Session::haveRight("plugin_iservice_ticket_assigned_printers", READ)
+    && $printer->fields['users_id_tech'] == $_SESSION["glpiID"])
 ) {
     echo "You have no right!";
     return false;
 }
 
-// find the data
+// Find the data.
 $model = $assigned_suppliers_customfields->fields['intervention_sheet_model_field'];
 $cod   = $assigned_suppliers_customfields->fields['hmarfa_code_field'];
 
@@ -123,7 +131,10 @@ $ticket_row    = $ticket_result->fetch_assoc();
 $cartridges = PluginIserviceCartridgeItem::getForPrinterAtSupplier($printer->getID(), $assigned_supplier->getID());
 
 $last_cartridge = new PluginIserviceCartridge();
-PluginIserviceDB::populateByQuery($last_cartridge, "WHERE suppliers_id_field = {$assigned_supplier->getID()} AND printers_id = {$printer->getID()} AND NOT date_use IS NULL ORDER BY date_use DESC LIMIT 1");
+PluginIserviceDB::populateByQuery(
+    $last_cartridge,
+    "WHERE suppliers_id_field = {$assigned_supplier->getID()} AND printers_id = {$printer->getID()} AND NOT date_use IS NULL ORDER BY date_use DESC LIMIT 1"
+);
 ?>
 <html>
     <head>
