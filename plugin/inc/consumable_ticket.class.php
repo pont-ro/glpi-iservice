@@ -303,7 +303,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             }
 
             echo "<td class='center'>";
-            echo "<a href='view.php?view=intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$instID'>";
+            echo "<a href='views.php?view=GlpiPlugin\Iservice\Specialviews\Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$instID'>";
             echo "<img title='$title' src='$CFG_GLPI[root_doc]/plugins/iservice/pics/app_go$color.png' /></a></td>";
         }
 

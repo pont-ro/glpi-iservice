@@ -33,7 +33,7 @@ class Emaintenance extends View
             ],
             'ticket' => self::getTicketButton($row_data),
             'list_ticket' => [
-                'link' => "view.php?view=operations&operations0[printer_id]=$row_data[printers_id]&operations0[filter_description]=$operations_filter_description",
+                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0[printer_id]=$row_data[printers_id]&operations0[filter_description]=$operations_filter_description",
                 'icon' => "$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_detail.png",
                 'title' => __('Operations list', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
