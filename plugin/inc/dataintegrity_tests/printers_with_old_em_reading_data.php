@@ -61,7 +61,19 @@ return [
             , p.name 
             , s.name supplier_name
             , p.last_read_field 
-            , if(DATEDIFF(CURDATE(), p.last_read_field) > 15000, 'infinite', if(DATEDIFF(CURDATE(), p.last_read_field) > 14000, 'unknown', LPAD(DATEDIFF(CURDATE(), p.last_read_field), 5, '0'))) days_since_last_read
+            , if(
+				    p.last_read_field = '',
+				    'empty',
+				    if(
+				        datediff(curdate(), p.last_read_field) > 15000,
+				        'infinite',
+				        if(
+				            datediff(curdate(), p.last_read_field) > 14000,
+				            'unknown',
+				            lpad(datediff(curdate(), p.last_read_field), 5, '0')
+				        )
+				    )
+            ) as days_since_last_read
             , u.name tech_park_name
         from glpi_plugin_iservice_printers p
         join glpi_users u on u.id = p.users_id_tech

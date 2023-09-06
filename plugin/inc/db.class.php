@@ -113,10 +113,10 @@ class PluginIserviceDB extends DB
 
         $query  = "create table $tableName (";
         $query .= implode(
-            ', ', [
+            ', ', array_filter([
                 self::getColumnsCreateModifySql($tableName, $tableConfig, $db),
                 self::getIndexesCreateModifySql($tableName, $tableConfig, $db),
-            ]
+            ])
         );
         $query  = rtrim($query, ', ');
         $query .= ')';
@@ -149,10 +149,10 @@ class PluginIserviceDB extends DB
 
         $query  = "alter table $tableName";
         $query .= implode(
-            ', ', [
+            ', ', array_filter([
                 self::getColumnsCreateModifySql($tableName, $tableConfig, $db),
                 self::getIndexesCreateModifySql($tableName, $tableConfig, $db),
-            ]
+            ])
         );
         $query  = rtrim($query, ', ');
 
