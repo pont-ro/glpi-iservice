@@ -171,7 +171,7 @@ class Partners extends View
                     'title' => 'Partener',
                     'sort_default_dir' => 'DESC',
                     'link' => [
-                        'href' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\FacturiClient&FacturiClient0[partner_id]=[id]',
+                        'href' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\ClientInvoices&clientinvoices0[partner_id]=[id]',
                         'target' => '_blank',
                     ],
                 ],

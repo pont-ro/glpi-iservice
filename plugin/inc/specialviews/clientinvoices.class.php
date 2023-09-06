@@ -17,7 +17,7 @@ use PluginIserviceTicket;
 use \Session;
 use Supplier;
 
-class FacturiClient extends View
+class ClientInvoices extends View
 {
 
     public static $rightname = 'plugin_iservice_view_facturi_client';
@@ -177,9 +177,9 @@ class FacturiClient extends View
 
         return [
             'id' => 'facturi_client',
-            'name' => FacturiClient::getName($this->partner, $this->client_access),
-            'description' => $this->client_access ? '' : FacturiClient::getDescription($this->partner),
-            'postfix' => FacturiClient::getSuffix($this->partner, $this->client_access),
+            'name' => ClientInvoices::getName($this->partner, $this->client_access),
+            'description' => $this->client_access ? '' : ClientInvoices::getDescription($this->partner),
+            'postfix' => ClientInvoices::getSuffix($this->partner, $this->client_access),
             'params' => [
                 'id' => $this->client_access ? $this->partner->customfields->fields['magic_link_field'] : '',
                 'cui' => isset($this->partner->customfields->fields['uic_field']) ? $this->partner->customfields->fields['uic_field'] : "",
@@ -220,7 +220,7 @@ class FacturiClient extends View
                         ",
             'default_limit' => 10,
             'show_limit' => 'ajax', //Session::haveRight('plugin_iservice_view_facturi_client', UPDATE),
-            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getRowBackgroundClass($row_data);',
+            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\ClientInvoices::getRowBackgroundClass($row_data);',
             'filters' => [
                 'nrfac' => [
                     'type' => 'text',
@@ -338,7 +338,7 @@ class FacturiClient extends View
                 'data_plata' => [
                     'title' => 'Achitat',
                     'tooltip' => 'Accesări ale linkului magic',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getDataPlataDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\ClientInvoices::getDataPlataDisplay($row);',
                     'align' => 'center',
                     'style' => 'white-space: nowrap;',
                     'link' => [
@@ -376,7 +376,7 @@ class FacturiClient extends View
                 'download' => [
                     'title' => 'Descarcă',
                     'align' => 'center',
-                    'format' => "function:\GlpiPlugin\Iservice\Specialviews\FacturiClient::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link_field']}');",
+                    'format' => "function:\GlpiPlugin\Iservice\Specialviews\ClientInvoices::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link_field']}');",
                 ],
             ],
         ];
