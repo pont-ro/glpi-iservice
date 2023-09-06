@@ -747,7 +747,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             }
 
             foreach ($items['routers'] ?? [] as $router) {
-                $usageaddressfield = $invoiceData['general_include_usageaddress'] ? "{$router->tableData['usage_address_field']} - " : "";
+                $usage_address_field = $invoiceData['general_include_usageaddress'] ? "{$router->tableData['usage_address_field']} - " : "";
                 $cost_center       = $invoiceData['general_include_cost_center'] ? "*{$router->tableData['cost_center_field']}* - " : "";
 
                 $csvExportData[] = [
@@ -758,7 +758,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     'CODMAT' => $invoiceData['codmat_router'],
                     'CANT' => self::numberFormat($router->tableData['cantitate']),
                     'DOC_VAL' => self::numberFormat($router->tableData['pret_unitar']),
-                    'DESCR' => $cost_center . $usageaddressfield . $router->tableData['description'],
+                    'DESCR' => $cost_center . $usage_address_field . $router->tableData['description'],
                 ];
 
                 $datExportData[] = [

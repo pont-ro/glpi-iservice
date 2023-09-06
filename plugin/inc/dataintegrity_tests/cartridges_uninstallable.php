@@ -6,7 +6,7 @@ return [
             sid
           , s.name
           , count(cid) cartridge_count
-          , group_concat('<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[id]=', cid, '\"  target=\"_blank\">', cid, '</a>' separator ', ') cartridge_ids
+          , group_concat('<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[id]=', cid, '\"  target=\"_blank\">', cid, '</a>' separator ', ') cartridge_ids
         from (
           select c.id cid, c.suppliers_id_field sid, count(t1.pid) printer_count
           from glpi_plugin_iservice_cartridges c
@@ -37,7 +37,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} partners who have cartridges that can not be installed on any printer',
-            'iteration_text' => "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=printers&printers0[supplier_name]=[name]' target='_blank' title=\"click to see partner's printers\">[name]</a> has <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[partner_name]=[name]' target='_blank' title=\"click to see partner's cartridges\">[cartridge_count]</a> cartridges that can not be installed: [cartridge_ids]",
+            'iteration_text' => "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_name]=[name]' target='_blank' title=\"click to see partner's printers\">[name]</a> has <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[partner_name]=[name]' target='_blank' title=\"click to see partner's cartridges\">[cartridge_count]</a> cartridges that can not be installed: [cartridge_ids]",
         ],
     ],
 ];

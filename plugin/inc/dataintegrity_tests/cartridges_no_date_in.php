@@ -14,7 +14,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges without in date',
-            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a> has no in date",
+            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a> has no in date",
         ],
     ],
 ];

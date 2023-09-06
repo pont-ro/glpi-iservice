@@ -90,7 +90,7 @@ if (!empty($add)) {
                 'data_fact' => $post['data_fact'],
                 'data_exp_fact' => $post['data_exp_fact'],
                 'week_nr' => $post['week_number'],
-                'usageaddressfield' => $post['usage_address'],
+                'usage_address_field' => $post['usage_address'],
                 'contact_num' => $post['contact_num'],
                 'contact' => $post['contact'],
                 'dailybkaveragefield' => $post['dba'],
@@ -173,7 +173,7 @@ if (!empty($add)) {
     $movement->check($delete, DELETE);
     if ($movement->delete(['delete' => 'delete', 'id' => $delete, '_no_message' => true])) {
         Session::addMessageAfterRedirect('Mutare revocată', true);
-        Html::redirect('view.php?view=movements');
+        Html::redirect('views.php?view=GlpiPlugin\Iservice\Specialviews\Movements');
     } else {
         Session::addMessageAfterRedirect('Could not delete movement', true, ERROR);
         Html::back();

@@ -46,7 +46,7 @@ class PluginIserviceTicket extends Ticket
     {
         switch ($mode) {
         case self::MODE_READCOUNTER:
-            return "ticket.form.php?mode=$mode&_redirect_on_success=" . urlencode('view.php?view=tickets');
+            return "ticket.form.php?mode=$mode&_redirect_on_success=" . urlencode('views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets');
         default:
             return "ticket.form.php?mode=$mode";
         }
@@ -56,7 +56,7 @@ class PluginIserviceTicket extends Ticket
     {
         switch ($mode) {
         case self::MODE_READCOUNTER:
-            return urlencode('view.php?view=tickets');
+            return urlencode('views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets');
         default:
             return '';
         }
@@ -202,7 +202,7 @@ class PluginIserviceTicket extends Ticket
                         self::MODE_CREATEINQUIRY => true,
                     ],
                 ],
-                '_usageaddressfield' => [
+                '_usage_address_field' => [
                     'hidden' => false
                 ],
                 'locations_id' => [
@@ -816,7 +816,7 @@ class PluginIserviceTicket extends Ticket
     public function getFirstPrinter(): PluginIservicePrinter
     {
         $item_ticket = new Item_Ticket();
-        $data        = $item_ticket->find("`tickets_id` = {$this->getID()} and `itemtype` = 'Printer'");
+        $data        = $item_ticket->find(["`tickets_id` = {$this->getID()} and `itemtype` = 'Printer'"]);
         $printer     = new PluginIservicePrinter();
         foreach ($data as $val) {
             if ($printer->getFromDB($val["items_id"]) && !$printer->isDeleted()) {
@@ -1318,10 +1318,10 @@ class PluginIserviceTicket extends Ticket
         }
 
         // Usage address
-        if ($prepared_data['field_hidden']['_usageaddressfield']) {
-            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_usageaddressfield', $printer->customfields->fields['usage_address_field']);
+        if ($prepared_data['field_hidden']['_usage_address_field']) {
+            $form->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, '_usage_address_field', $printer->customfields->fields['usage_address_field']);
         } else {
-            $form->displayFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_usageaddressfield', $printer->customfields->fields['usage_address_field'] ?? ''));
+            $form->displayFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, '_usage_address_field', $printer->customfields->fields['usage_address_field'] ?? ''));
         }
 
         // Location - The location of the printer at the first save should be saved,
@@ -1656,7 +1656,7 @@ class PluginIserviceTicket extends Ticket
         }
 
         if (!$prepared_data['field_hidden']['_change_cartridge']) {
-            $cartridge_link             = "view.php?view=cartridges&pmi={$printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$printer->fields['name']}";
+            $cartridge_link             = "views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&pmi={$printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$printer->fields['name']}";
             $last_ticket_with_cartridge = self::getLastForPrinterOrSupplier($supplier_id, $printer_id, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
             echo "<tr><td><a target='_blank' href='$cartridge_link'>", __('Change cartridge', 'iservice'), "</a>";
             if ($id > 0 && ($last_ticket_with_cartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
@@ -2175,7 +2175,7 @@ class PluginIserviceTicket extends Ticket
         $filter_description = urlencode(($printer->fields['name'] ?? '') . " (" . ($printer->fields['serial'] ?? '') . ") - " . ($printer->customfields->fields['usage_address_field'] ?? ''));
         $form->displayButtonsTableRow(
             $buttons, [
-                'label' => $show_warning ? "<span style='color: red'>ATENȚIE! Există tickete deschise mai vechi, vezi <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=operations&operations0[printer_id]={$printer->fields['id']}&operations0[filter_description]=$filter_description' target='_blank'>lista lucrari</a></span>" : '',
+                'label' => $show_warning ? "<span style='color: red'>ATENȚIE! Există tickete deschise mai vechi, vezi <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0[printer_id]={$printer->fields['id']}&operations0[filter_description]=$filter_description' target='_blank'>lista lucrari</a></span>" : '',
             ]
         );
 
@@ -2623,7 +2623,7 @@ class PluginIserviceTicket extends Ticket
             if ($supplier->isNewItem()) {
                 $suffix = "";
             } else {
-                $printers_href = "$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=printers&printers0[supplier_name]=" . $supplier->fields['name'];
+                $printers_href = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_name]=" . $supplier->fields['name'];
                 $suffix        = sprintf("%s <a href='$printers_href'>%s</a>", ucfirst(__('see', 'iservice')), lcfirst(_n('Printer', 'Printers', 2, 'iservice')));
             }
             break;

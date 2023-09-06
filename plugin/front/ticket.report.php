@@ -1,8 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring.
-define('GLPI_ROOT', '../../..');
-require GLPI_ROOT . '/inc/includes.php';
+require "../inc/includes.php";
 
 global $DB, $CFG_GLPI;
 $images_source = "$CFG_GLPI[root_doc]/plugins/iservice/images";
@@ -10,12 +9,12 @@ $images_source = "$CFG_GLPI[root_doc]/plugins/iservice/images";
 $ticket_id = filter_input(INPUT_GET, 'id');
 
 if (!Session::haveRight('plugin_iservice_docgenerator', READ)) {
-    PluginIserviceHtml::header(__('Intervention report', 'iservice'), $_SERVER['PHP_SELF']);
+    Html::header(__('Intervention report', 'iservice'), $_SERVER['PHP_SELF']);
     Html::displayRightError();
 }
 
 if (empty($ticket_id)) {
-    PluginIserviceHtml::header(__('Intervention report', 'iservice'), $_SERVER['PHP_SELF']);
+    Html::header(__('Intervention report', 'iservice'), $_SERVER['PHP_SELF']);
     Html::displayErrorAndDie(__('Ticket Id is missing!', 'iservice'));
 }
 
@@ -34,21 +33,29 @@ if ($printer->isNewItem()) {
 $assigned_supplier = new Supplier();
 $assigned_supplier->getFromDB($ticket->getSuppliers(Supplier_Ticket::ASSIGN)[0]['suppliers_id']);
 
-$assigned_suppliers_customfields = new PluginFieldsSuppliercustomfield();
-$assigned_suppliers_customfields->getFromDBByItemsId($assigned_supplier->getID());
+$assigned_suppliers_customfields = new PluginFieldsSuppliersuppliercustomfield();
+PluginIserviceDB::populateByItemsId($assigned_suppliers_customfields, $assigned_supplier->getID());
 
 $requester_ids = array_column($ticket->getUsers(Ticket_User::REQUESTER), 'users_id');
 $assigned_ids  = array_column($ticket->getUsers(Ticket_User::ASSIGN), 'users_id');
 
-if (!Session::haveRight('ticket', Ticket::READALL) && !in_array($requester_ids, $_SESSION["glpiID"]) && !in_array($_SESSION["glpiID"], $assigned_ids) && !(Session::haveRight("ticket", Ticket::READGROUP) && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::REQUESTER))) && !(Session::haveRight("ticket", Ticket::READASSIGN) && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::ASSIGN))) && !(Session::haveRight("plugin_iservice_ticket_assigned_printers", READ) && $printer->fields['users_id_tech'] == $_SESSION["glpiID"])
+if (!Session::haveRight('ticket', Ticket::READALL)
+    && !in_array($requester_ids, $_SESSION["glpiID"])
+    && !in_array($_SESSION["glpiID"], $assigned_ids)
+    && !(Session::haveRight("ticket", Ticket::READGROUP)
+    && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::REQUESTER)))
+    && !(Session::haveRight("ticket", Ticket::READASSIGN)
+    && in_array($_SESSION["glpigroups"], $ticket->getGroups(Group_Ticket::ASSIGN)))
+    && !(Session::haveRight("plugin_iservice_ticket_assigned_printers", READ)
+    && $printer->fields['users_id_tech'] == $_SESSION["glpiID"])
 ) {
     echo "You have no right!";
     return false;
 }
 
-// find the data
-$model = $assigned_suppliers_customfields->fields['model'];
-$cod   = $assigned_suppliers_customfields->fields['cod_hmarfa'];
+// Find the data.
+$model = $assigned_suppliers_customfields->fields['intervention_sheet_model_field'];
+$cod   = $assigned_suppliers_customfields->fields['hmarfa_code_field'];
 
 $printer_manufacturer = new Manufacturer();
 $printer_manufacturer->getFromDB($printer->fields['manufacturers_id']);
@@ -62,15 +69,35 @@ if (!empty($assigned_ids[0])) {
 }
 
 $contract = new Contract();
-$contract->getFromDBByQuery(sprintf("where ID=(select max(contracts_id) from glpi_contracts_items where items_id = %s) limit 1", $printer->getID()));
+if (!PluginIserviceDB::populateByQuery(
+    $contract,
+    sprintf("where ID=(select max(contracts_id) from glpi_contracts_items where items_id = %s) limit 1", $printer->getID())
+)
+) {
+    echo "No contract found for printer";
+    return false;
+}
 
-$contract_customfields = new PluginFieldsContractcustomfield();
-$contract_customfields->getFromDBByItemsId($contract->getID());
-$curs_factura = ($contract_customfields->fields['curs'] > 0) ? "EUR" : "RON";
+$contract_customfields = new PluginFieldsContractcontractcustomfield();
+if (!PluginIserviceDB::populateByItemsId($contract_customfields, $contract->getID())) {
+    echo "No contract customfields found for printer";
+    return false;
+}
 
-$facturi_neachitate_result = $DB->query("select DATEDIFF(CURDATE(),dscad) AS zile from hmarfa_facturi where codbenef='$cod' AND tip LIKE 'TFA%' AND (valinc-valpla)>0 order by dscad ASC ");
-$num_facturi_neachitate    = $facturi_neachitate_result->num_rows;
-$zile_intarziere_facturi   = $facturi_neachitate_result->fetch_assoc()['zile'];
+$curs_factura = ($contract_customfields->fields['currency_field'] > 0) ? "EUR" : "RON";
+
+$facturi_neachitate_result = $DB->query(
+    "select DATEDIFF(CURDATE(),dscad) AS zile from hmarfa_facturi where codbenef='$cod' AND tip LIKE 'TFA%' AND (valinc-valpla)>0 order by dscad ASC"
+);
+
+if (empty($facturi_neachitate_result)) {
+    echo "No invoices found for printer";
+    return false;
+}
+
+$numberOfUnpaidInvoices = $facturi_neachitate_result->num_rows;
+$unpaidInvoicesArray    = $facturi_neachitate_result->fetch_assoc();
+$invoicesDelayDays      = $unpaidInvoicesArray['zile'] ?? '';
 
 $facturi_neachitate_result2 = $DB->query("select ROUND(SUM(valinc-valpla),2) AS suma from hmarfa_facturi where codbenef='$cod' AND tip LIKE 'TFA%' AND (valinc-valpla)>0;");
 $suma_facturi_neachitate    = $facturi_neachitate_result2->fetch_assoc()['suma'];
@@ -80,13 +107,13 @@ $query_tickets = sprintf(
                     select t.id
                       , t.name
                       , t.date
-                      , t.data_luc
-                      , t.total2_black
-                      , t.total2_color
+                      , t.effective_date_field
+                      , t.total2_black_field
+                      , t.total2_color_field
                       , concat(au.firstname, ' ', au.realname) assigned
                       , concat(ou.firstname, ' ', ou.realname) observer
                       , group_concat(concat(tf.content, '&nbsp;')) obs
-                    from glpi_tickets t
+                    from glpi_plugin_iservice_tickets t
                     join glpi_items_tickets it on it.tickets_id = t.id and it.itemtype = 'Printer' and it.items_id = %s
                     left join glpi_tickets_users ta on ta.tickets_id = t.id and ta.type = " . Ticket_User::ASSIGN . "
                     left join glpi_users au on au.id = ta.users_id
@@ -94,8 +121,8 @@ $query_tickets = sprintf(
                     left join glpi_users ou on ou.id = `to`.users_id
                     left join glpi_itilfollowups tf on tf.items_id = t.id AND tf.itemtype='Ticket' AND tf.is_private = 0
                     where t.is_deleted = 0 and t.id <= $ticket_id and t.itilcategories_id != " . PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE . "
-                    group by t.id, t.data_luc
-                    order by t.data_luc desc, t.id desc limit 3", $printer->getID()
+                    group by t.id, t.effective_date_field
+                    order by t.effective_date_field desc, t.id desc limit 3", $printer->getID()
 );
 $ticket_result = $DB->query($query_tickets);
 $ticket_row    = $ticket_result->fetch_assoc();
@@ -103,8 +130,11 @@ $ticket_row    = $ticket_result->fetch_assoc();
 
 $cartridges = PluginIserviceCartridgeItem::getForPrinterAtSupplier($printer->getID(), $assigned_supplier->getID());
 
-$last_cartridge = new Cartridge();
-$last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->getID()} AND printers_id = {$printer->getID()} AND NOT date_use IS NULL ORDER BY date_use DESC LIMIT 1");
+$last_cartridge = new PluginIserviceCartridge();
+PluginIserviceDB::populateByQuery(
+    $last_cartridge,
+    "WHERE suppliers_id_field = {$assigned_supplier->getID()} AND printers_id = {$printer->getID()} AND NOT date_use IS NULL ORDER BY date_use DESC LIMIT 1"
+);
 ?>
 <html>
     <head>
@@ -209,7 +239,7 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                             </tr>
                             <tr>
                                 <td>Nr.reg.com:</td>
-                                <td><?php echo $assigned_suppliers_customfields->fields['part_regcom']; ?></td>
+                                <td><?php echo $assigned_suppliers_customfields->fields['crn_field']; ?></td>
                                 <td>Numar evidenta:</td>
                                 <td><?php echo $printer->fields['otherserial']; ?></td>
                                 <td>Numar contract:</td>
@@ -217,11 +247,11 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                             </tr>
                             <tr>
                                 <td>Cod Fiscal:</td>
-                                <td><?php echo $assigned_suppliers_customfields->fields['part_cui']; ?></td>
+                                <td><?php echo $assigned_suppliers_customfields->fields['uic_field']; ?></td>
                                 <td>Serie aparat:</td>
                                 <td><?php echo $printer->fields['serial']; ?></td>
                                 <td>Tarif lunar:</td>
-                                <td><?php echo $contract_customfields->fields['tarif_lunar1'] . " $curs_factura"; ?></td>
+                                <td><?php echo $contract_customfields->fields['monthly_fee_field'] . " $curs_factura"; ?></td>
                             </tr>
                             <tr>
                                 <td rowspan=2>Adresa:</td>
@@ -229,37 +259,37 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                                 <td>Producator:</td>
                                 <td><?php echo $printer_manufacturer->fields['name']; ?></td>
                                 <td>Tarif copii bk.:</td>
-                                <td><?php echo $contract_customfields->fields['tarif_cop_bl'] . " $curs_factura"; ?></td>
+                                <td><?php echo $contract_customfields->fields['copy_price_bk_field'] . " $curs_factura"; ?></td>
                             </tr>
                             <tr>
                                 <td>Model:</td>
                                 <td><?php echo Dropdown::getDropdownName('glpi_printermodels', $printer->fields['printermodels_id']); ?></td>
                                 <td>Tarif copii color:</td>
-                                <td><?php echo $contract_customfields->fields['tarif_cop_col1'] . " $curs_factura"; ?></td>
+                                <td><?php echo $contract_customfields->fields['copy_price_col_field'] . " $curs_factura"; ?></td>
                             </tr>
                             <tr>
                                 <td>Orasul:</td>
                                 <td><?php echo $assigned_supplier->fields['town']; ?></td>
                                 <td>Adresa exploatare:</td>
-                                <td><?php echo $printer->customfields->fields['usageaddressfield'] ?></td>
+                                <td><?php echo $printer->customfields->fields['usage_address_field'] ?></td>
                                 <td>Copii bk. incluse:</td>
-                                <td><?php echo $contract_customfields->fields['cop_bl_inclus']; ?></td>
+                                <td><?php echo $contract_customfields->fields['included_copies_bk_field']; ?></td>
                             </tr>
                             <tr>
                                 <td>Contul:</td>
                                 <td></td>
                                 <td>Contact:</td>
-                                <td><?php echo $ticket->customfields->fields['contact']; ?></td>
+                                <td><?php echo $ticket->customfields->fields['contact_name_field']; ?></td>
                                 <td>Copii col. incluse:</td>
-                                <td><?php echo $contract_customfields->fields['cop_col_inclus']; ?></td>
+                                <td><?php echo $contract_customfields->fields['included_copies_col_field']; ?></td>
                             </tr>
                             <tr>
                                 <td>Banca:</td>
                                 <td></td>
                                 <td>Numar contact:</td>
-                                <td><?php echo $ticket->customfields->fields['numar_contact']; ?></td>
+                                <td><?php echo $ticket->customfields->fields['contact_phone_field']; ?></td>
                                 <td>Val. copii incluse:</td>
-                                <td><?php echo $contract_customfields->fields['val_cop_inclus']; ?></td>
+                                <td><?php echo $contract_customfields->fields['included_copy_value_field']; ?></td>
                             </tr>
                             <tr>
                                 <td>Telefon:</td>
@@ -267,13 +297,13 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                                 <td>Responsabil:</td>
                                 <td><?php echo $printer_user_tech->fields['realname'] . " " . $printer_user_tech->fields['firstname']; ?></td>
                                 <td>Perioada facturata:</td>
-                                <td><?php echo date('Y-m-d', strtotime($printer->customfields->fields['data_exp_fact'])); ?></td>
+                                <td><?php echo date('Y-m-d', strtotime($printer->customfields->fields['invoice_expiry_date_field'])); ?></td>
                             </tr>
                             <tr>
                                 <td></td>
                                 <td></td>
                                 <td>E-maintenance:</td>
-                                <td><?php echo $printer->customfields->fields['emaintenancefield'] ? 'Da' : 'Nu' ?></td>
+                                <td><?php echo $printer->customfields->fields['em_field'] ? 'Da' : 'Nu' ?></td>
                                 <td></td>
                                 <td></td>
                             </tr>
@@ -288,11 +318,11 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                             <!-- invoice info -->
                             <tr>
                                 <td class="inner left">Nr. facturi neachitate:</td>
-                                <td class="inner left"><?php echo $num_facturi_neachitate; ?></td>
+                                <td class="inner left"><?php echo $numberOfUnpaidInvoices; ?></td>
                                 <td class="inner left">Suma totala:</td>
                                 <td class="inner left"><?php echo empty($suma_facturi_neachitate) ? "" : "$suma_facturi_neachitate RON"; ?></td>
                                 <td class="inner left">Intarziere:</td>
-                                <td class="inner"><?php echo empty($zile_intarziere_facturi) ? "" : "$zile_intarziere_facturi zile"; ?></td>
+                                <td class="inner"><?php echo empty($invoicesDelayDays) ? "" : "$invoicesDelayDays zile"; ?></td>
                             </tr>
 
                             <tr class="row-placeholder"></tr>
@@ -319,7 +349,7 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                                                     $cartridge_data[$index]['custodie'] = $cartridge['cpt'];
                                                 } else {
                                                     $cartridge_data[$index]['instalat'] = $cartridge['cpt'];
-                                                    $counters                           = $cartridge['pages_use'];
+                                                    $counters                           = $cartridge['pages_use_field'];
                                                     if ($printer->isColor()) {
                                                         $counters .= " (n)<br>$cartridge[pages_color_use] (c)";
                                                     }
@@ -390,10 +420,10 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                             <!-- last invoice info -->
                             <tr>
                                 <td class="group">Data ultima factura:</td>
-                                <td colspan="2"><?php echo $printer->customfields->fields['data_fact']; ?></td>
-                                <td>Copii bk. facturate: <?php echo $printer->customfields->fields['total2_black_fact']; ?></td>
+                                <td colspan="2"><?php echo $printer->customfields->fields['invoice_date_field']; ?></td>
+                                <td>Copii bk. facturate: <?php echo $printer->customfields->fields['invoiced_total_black_field']; ?></td>
                                 <td style="text-align: right">Copii col. facturate:</td>
-                                <td><?php echo $printer->customfields->fields['total2_color_fact']; ?></td>
+                                <td><?php echo $printer->customfields->fields['invoiced_total_color_field']; ?></td>
                             </tr>
 
                             <tr class="row-placeholder"></tr>
@@ -440,9 +470,9 @@ $last_cartridge->getFromDBByQuery("WHERE FK_enterprise = {$assigned_supplier->ge
                                                 echo"
                                                     <tr>
                                                         <td class='inner'>$ticket_row[id]</td>
-                                                        <td class='inner'>" . date('Y-m-d', strtotime($ticket_row['data_luc'])) . "</td>
-                                                        <td class='inner'>" . ($row === 1 ? '' : $ticket_row['total2_black']) . "</td>
-                                                        <td class='inner'>" . ($row === 1 ? '' : $ticket_row['total2_color']) . "</td>
+                                                        <td class='inner'>" . date('Y-m-d', strtotime($ticket_row['effective_date_field'])) . "</td>
+                                                        <td class='inner'>" . ($row === 1 ? '' : $ticket_row['total2_black_field']) . "</td>
+                                                        <td class='inner'>" . ($row === 1 ? '' : $ticket_row['total2_color_field']) . "</td>
                                                         <td class='inner'>$assigned_observer</td>
                                                         <td class='inner'>$ticket_row[name]</td>
                                                         <td class='inner'>$ticket_row[obs]</td>

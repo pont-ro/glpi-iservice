@@ -77,7 +77,7 @@ class Intorders extends View
         }
 
         if (Session::haveRight('plugin_iservice_view_extorders', READ)) {
-            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}view.php?view=extorders'>" . _n('External order', 'External orders', Session::getPluralNumber(), 'iservice') . "</a>";
+            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}views.php?view=GlpiPlugin\Iservice\Specialviews\Extorders'>" . _n('External order', 'External orders', Session::getPluralNumber(), 'iservice') . "</a>";
         }
 
         $order_status_options                            = PluginIserviceOrderStatus::getAllForDropdown();
