@@ -87,6 +87,21 @@ class PluginIserviceProfile extends Profile
 
             'plugin_iservice_hmarfa' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_ticket_hmarfa_export_close' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
+
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_NONE => array(),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_READCOUNTER => right_array(ALLSTANDARDRIGHT, $all_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEINQUIRY => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_MODIFY => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEREQUEST => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_PARTNERCONTACT => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CARTRIDGEMANAGEMENT => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_HMARFAEXPORT => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE => right_array(ALLSTANDARDRIGHT, array_merge(array('subtehnician'), $elevated_profiles)),
+
+            'plugin_iservice_view_printercounters' => right_array(ALLSTANDARDRIGHT, array_merge($level15_profiles, $elevated_profiles)),
+            'plugin_iservice_movement' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
         ];
 
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);
