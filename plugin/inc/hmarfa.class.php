@@ -62,7 +62,7 @@ class PluginIserviceHmarfa
         $printerState    = new State();
         $printerModel    = new PrinterModel();
         $printerLocation = new Location();
-        $infoCom         = new InfoCom();
+        $infoCom         = new Infocom();
         $enterprise      = new PluginIservicePartner();
 
         $printer->getFromDB($id);
