@@ -100,7 +100,7 @@ class ToolBox
     {
         if (self::$exchangeRateService === null) {
             if (!class_exists('TValuta')) {
-                include_once __DIR__ . '/TValuta.php';
+                include_once __DIR__ . '/../TValuta.php';
             }
 
             self::$exchangeRateService = new TValuta();
