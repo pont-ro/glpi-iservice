@@ -10,7 +10,7 @@ return [
                or coalesce(ci.compatible_mercury_codes_field, '') = ''
                or coalesce(ci.atc_field, 0) = 0 
                or coalesce(ci.life_coefficient_field, 0) = 0 
-               or coalesce(ci.supported_types_field, 0) = 0)
+               or coalesce(ci.supported_types_field, '') = '')
         ",
     'test' => [
         'alert' => true,

@@ -36,6 +36,7 @@ function processItemData(array $oldItemData, array $importConfig, array &$foreig
     $result = $oldItemData;
 
     $result = mapFields($result, $importConfig['fieldMap'] ?? []);
+    $result = changeEmptyStringToNull($result, $importConfig['fieldMap'] ?? []);
     $result = forceValues($result, $importConfig['forceValues'] ?? []);
     $result = checkValues($result, $importConfig['checkValues'] ?? [], $errors);
     $result = mapForeignKeys($result, $importConfig['foreignKeys'] ?? [], $foreignKeyData, $errors, $importConfig['handleMissingForeignKeys'] ?? []);
@@ -70,6 +71,31 @@ function mapFields(array $input, array $fieldMap): array
             $result[$fieldMapData['name']] = $fieldMapData['valueMap'][$input[$fieldMapData['old_name'] ?? $fieldMapData['name']]] ?? $fieldMapData['default'] ?? null;
         } else {
             $result[$fieldMapData['name']] = $input[$fieldMapData['old_name'] ?? $fieldMapData['name']] ?? null;
+        }
+    }
+
+    return $result;
+}
+
+function changeEmptyStringToNull(array $input, array $fieldMap): array
+{
+    if (empty($fieldMap)) {
+        return $input;
+    }
+
+    $result = [];
+    foreach ($fieldMap as $fieldMapData) {
+        if (empty($fieldMapData['name'])) {
+            continue;
+        }
+
+        if (!empty($fieldMapData['type'])
+            && in_array($fieldMapData['type'], ['number', 'date', 'datetime', 'yesno'])
+            && $input[$fieldMapData['name']] === ''
+        ) {
+            $result[$fieldMapData['name']] = null;
+        } else {
+            $result[$fieldMapData['name']] = $input[$fieldMapData['name']];
         }
     }
 
