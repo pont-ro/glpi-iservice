@@ -147,7 +147,7 @@ class PluginIserviceDB extends DB
             return false;
         }
 
-        $query  = "alter table $tableName";
+        $query  = "alter table $tableName ";
         $query .= implode(
             ', ', array_filter([
                 self::getColumnsCreateModifySql($tableName, $tableConfig, $db),
