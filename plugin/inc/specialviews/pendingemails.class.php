@@ -124,11 +124,11 @@ class PendingEmails extends View
             'mass_actions' => [
                 'send_email' => [
                     'caption' => 'Trimite email(uri)',
-                    'action' => 'view.php?view=pending_emails',
+                    'action' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\PendingEmails',
                 ],
                 'delete' => [
                     'caption' => 'Șterge definitiv',
-                    'action' => 'view.php?view=pending_emails',
+                    'action' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\PendingEmails',
                 ],
             ],
 

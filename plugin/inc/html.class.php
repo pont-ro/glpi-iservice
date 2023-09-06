@@ -602,7 +602,7 @@ class PluginIserviceHtml {
                 if ($pending_emails) {
                     $pending_emails = str_pad($pending_emails, 2, '0', STR_PAD_LEFT);
                 }
-                echo "<li><a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=pending_emails' data-badge='$pending_emails' class='fa far fa-envelope fa-2x" . ($pending_emails ? ' badge' : '') . "'></a></li>";
+                echo "<li><a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\PendingEmails' data-badge='$pending_emails' class='fa far fa-envelope fa-2x" . ($pending_emails ? ' badge' : '') . "'></a></li>";
             }
 
             $tester_task = new PluginIserviceTask_DataIntegrityTest();

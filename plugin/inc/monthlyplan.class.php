@@ -189,7 +189,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
     <tr>
         <?php for ($column = 1; $column < 5; $column++) { ?>
             <td style="padding:0; vertical-align:top; width:25%;">
-                <?php $form->openForm(['method' => 'post', 'action' => 'view.php?view=global_readcounter']); ?>
+                <?php $form->openForm(['method' => 'post', 'action' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\GlobalReadcounter']); ?>
                 <table>
                     <thead>
                     <tr>
@@ -370,7 +370,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
 
                                             $title .= "\r\n\r\nData fact " . (isset($printer['multiple']) ? "max: $printer[data_fact_max]" : ":$printer[invoice_date_field]");
                                             echo "<a href='" . $CFG_GLPI['root_doc'] . "/front/supplier.form.php?id=$enterprise_id' title='$title'>$enterprise[enterprise_name]</a>";
-                                            $printer_link = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/view.php?view=printers&printers0[supplier_id]=$enterprise_id&printers0[filter_description]=$enterprise[enterprise_name]";
+                                            $printer_link = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_id]=$enterprise_id&printers0[filter_description]=$enterprise[enterprise_name]";
                                             if (isset($printer['multiple'])) {
                                                 echo empty($printer['plan_observations_field']) ? '' : " ($printer[plan_observations_field])";
                                                 $search_string = str_replace(' ', '+', urldecode($enterprise['enterprise_name']));
@@ -412,7 +412,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
     $color2 = isset($printer['multiple']) ? "darkgreen" : "green";
 }
 
-                                            $link    = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/view.php?view=tickets&tickets0[ticket_status]=1%2C2%2C3%2C4%2C5&tickets0[supplier_name]=$enterprise[enterprise_name]";
+                                            $link    = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets&tickets0[ticket_status]=1%2C2%2C3%2C4%2C5&tickets0[supplier_name]=$enterprise[enterprise_name]";
                                             $title2  = "Data închidere ultimul tichet închis\r\n";
                                             $title2 .= !empty($printer['multiple']) ? ($printer['last_closed_ticket_title'] . "\r\n\r\nMax: $printer[last_closed_ticket_close_date_max]") : $printer['last_closed_ticket_close_date'];
                                             echo "<a href='$link' style='color:$color2' title='$title2'>** $enterprise[open_tickets_count] **</a>";

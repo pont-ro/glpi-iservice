@@ -25,7 +25,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges without type',
-            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> has no type. <a id='fix-type-[cid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=[cid]&type_id=[ci_type]&operation=force_type\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-type-[cid]\").remove();}});'>»»» FIX to [ci_type_name]«««</a>",
+            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> has no type. <a id='fix-type-[cid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=[cid]&type_id=[ci_type]&operation=force_type\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-type-[cid]\").remove();}});'>»»» FIX to [ci_type_name]«««</a>",
         ],
     ],
 ];

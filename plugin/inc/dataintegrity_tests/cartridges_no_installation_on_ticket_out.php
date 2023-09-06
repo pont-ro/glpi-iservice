@@ -15,7 +15,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges with with invalid uninstaller ticket',
-            'iteration_text' => "Tikcet <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tickets_id_out_field]&mode=9999' target='_blank'>[tickets_id_out_field]</a> installs no cartridges but uninstalls cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a>",
+            'iteration_text' => "Tikcet <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tickets_id_out_field]&mode=9999' target='_blank'>[tickets_id_out_field]</a> installs no cartridges but uninstalls cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a>",
         ],
     ],
 ];

@@ -157,7 +157,7 @@ class Tickets extends View
         case 'aviz':
         case 'comanda':
             if ($row_data['ordered_consumables']) {
-                return "<a title='Vezi comenzi interne' href='view.php?view=intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$row_data[ticket_id]'>$row_data[ticket_id]</a>";
+                return "<a title='Vezi comenzi interne' href='views.php?view=GlpiPlugin\Iservice\Specialviews\Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$row_data[ticket_id]'>$row_data[ticket_id]</a>";
             }
 
             // Here is an intentioned fallthrough to default!
@@ -264,7 +264,7 @@ class Tickets extends View
         if (Session::haveRight('plugin_iservice_view_emaintenance', READ)) {
             $em_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_ememails where `read` = 0');
             $em_count      = empty($em_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$em_count_data[0]['count']}</span>";
-            $prefix       .= "<a href='view.php?view=emaintenance' target='_blank'>Număr emailuri E-maintenance necitite: $em_count</a>";
+            $prefix       .= "<a href='views.php?view=GlpiPlugin\Iservice\Specialviews\Emaintenance' target='_blank'>Număr emailuri E-maintenance necitite: $em_count</a>";
         }
 
         if (Session::haveRight('plugin_iservice_interface_original', READ)) {
@@ -276,7 +276,7 @@ class Tickets extends View
         if (Session::haveRight('plugin_iservice_view_movements', READ)) {
             $mo_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_movements m where m.moved = 0');
             $mo_count      = empty($mo_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$mo_count_data[0]['count']}</span>";
-            $prefix       .= "&nbsp;|&nbsp;<a href='view.php?view=movements&movements0[finalized]=0' target='_blank'>Număr mutări nefinalizate: $mo_count</a>";
+            $prefix       .= "&nbsp;|&nbsp;<a href='views.php?view=GlpiPlugin\Iservice\Specialviews\Movements&movements0[finalized]=0' target='_blank'>Număr mutări nefinalizate: $mo_count</a>";
         }
 
         return [
