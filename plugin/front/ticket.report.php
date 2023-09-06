@@ -87,9 +87,9 @@ if (empty($facturi_neachitate_result)) {
     return false;
 }
 
-$numberOfUnpaidInvoices  = $facturi_neachitate_result->num_rows;
-$unpaidInvoicesArray     = $facturi_neachitate_result->fetch_all();
-$invoicesDelayDays = $unpaidInvoicesArray['zile'] ?? '';
+$numberOfUnpaidInvoices = $facturi_neachitate_result->num_rows;
+$unpaidInvoicesArray    = $facturi_neachitate_result->fetch_assoc();
+$invoicesDelayDays      = $unpaidInvoicesArray['zile'] ?? '';
 
 $facturi_neachitate_result2 = $DB->query("select ROUND(SUM(valinc-valpla),2) AS suma from hmarfa_facturi where codbenef='$cod' AND tip LIKE 'TFA%' AND (valinc-valpla)>0;");
 $suma_facturi_neachitate    = $facturi_neachitate_result2->fetch_assoc()['suma'];
