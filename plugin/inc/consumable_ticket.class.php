@@ -608,6 +608,10 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
     public function add(array $input, $options = [], $history = true): bool|int
     {
+        if ($_SESSION['plugin']['iservice']['importInProgress'] ?? false) {
+            return parent::add($input, $options, $history);
+        }
+
         if (!empty($options['printer']) && $options['printer'] instanceof PluginIservicePrinter) {
             $printer = $options['printer'];
         } else {
@@ -693,6 +697,10 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
     public function update(array $input, $history = 1, $options = []): bool
     {
+        if ($_SESSION['plugin']['iservice']['importInProgress'] ?? false) {
+            return parent::update($input, $history, $options);
+        }
+
         $consumable_ticket = new PluginIserviceConsumable_Ticket();
         $consumable_ticket->getFromDB($input['id']);
 

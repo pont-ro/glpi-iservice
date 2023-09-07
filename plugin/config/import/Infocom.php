@@ -8,4 +8,5 @@ return [
         ],
         'suppliers_id' => 'Supplier',
     ],
+    'identifierField' => ['itemtype', 'items_id'],
 ];

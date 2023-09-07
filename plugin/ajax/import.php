@@ -39,7 +39,13 @@ function processItemData(array $oldItemData, array $importConfig, array &$foreig
     $result = changeEmptyStringToNull($result, $importConfig['fieldMap'] ?? []);
     $result = forceValues($result, $importConfig['forceValues'] ?? []);
     $result = checkValues($result, $importConfig['checkValues'] ?? [], $errors);
-    $result = mapForeignKeys($result, $importConfig['foreignKeys'] ?? [], $foreignKeyData, $errors, $importConfig['handleMissingForeignKeys'] ?? []);
+    $result = mapForeignKeys(
+        $result,
+        $importConfig['foreignKeys'] ?? [],
+        $foreignKeyData,
+        $errors, $importConfig['handleMissingForeignKeys'] ?? [],
+        $importConfig['itemTypeClass']
+    );
 
     unset($result['id']);
     $result = mapSelfReferences($result, $importConfig['selfReferences'] ?? [], $oldItemData, $foreignKeyData, $errors);
@@ -130,7 +136,7 @@ function checkValues(array $result, array $checkValues, array &$errors): array
     return $result;
 }
 
-function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyData, array &$errors, array $handleMissingForeignKeys): array
+function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyData, array &$errors, array $handleMissingForeignKeys, string $importModelItemTypeClass): array
 {
     if (empty($foreignKeys)) {
         return $result;
@@ -164,8 +170,8 @@ function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyDat
             } elseif (isset($handleMissingForeignKeys[$fieldName]['force'])) {
                 $foreignKeyData[$itemType][$result[$fieldName]] = $handleMissingForeignKeys[$fieldName]['force'];
             } else {
-                $errors[]                          = "Cannot find new id for $itemType object with id {$result[$fieldName]}. Was it imported?";
-                $errors['missingIds'][$itemType][] = $result[$fieldName];
+                $errors[] = "Cannot find new id for $itemType object with id {$result[$fieldName]}. Was it imported?";
+                $errors[$importModelItemTypeClass]['missingIds'][$itemType][] = $result[$fieldName];
                 continue;
             }
         }
@@ -332,7 +338,8 @@ $item    = new $itemTypeClass();
 $itemMap = new PluginIserviceImportMapping();
 set_time_limit(calculateExecutionTime(count($oldItems)));
 
-$messagesFromSessionInitial = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
+$messagesFromSessionInitial                         = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
+$_SESSION['plugin']['iservice']['importInProgress'] = true;
 
 do {
     unset($errors['retry']);
@@ -402,6 +409,8 @@ if ($oldItemsCount === count($errors['retry'] ?? [])) {
     $errors[] = implode(', ', array_keys($errors['retry']));
     unset($errors['retry']);
 }
+
+$_SESSION['plugin']['iservice']['importInProgress'] = false;
 
 if (!empty($errors)) {
     $errors['messagesFromSession'] = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
