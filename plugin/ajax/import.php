@@ -170,7 +170,7 @@ function mapForeignKeys(array $result, array $foreignKeys, array &$foreignKeyDat
             } elseif (isset($handleMissingForeignKeys[$fieldName]['force'])) {
                 $foreignKeyData[$itemType][$result[$fieldName]] = $handleMissingForeignKeys[$fieldName]['force'];
             } else {
-                $errors[]                          = "Cannot find new id for $itemType object with id {$result[$fieldName]}. Was it imported?";
+                $errors[] = "Cannot find new id for $itemType object with id {$result[$fieldName]}. Was it imported?";
                 $errors[$importModelItemTypeClass]['missingIds'][$itemType][] = $result[$fieldName];
                 continue;
             }
