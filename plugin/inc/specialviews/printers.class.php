@@ -534,7 +534,6 @@ class Printers extends View
                     'type' => self::FILTERTYPE_TEXT,
                     'format' => '%%%s%%',
                     'header' => 'week_nr_field',
-                    'style' => 'width: 1em;'
                 ],
                 'printer_location' => [
                     'type' => self::FILTERTYPE_TEXT,
@@ -550,6 +549,7 @@ class Printers extends View
                     'export_format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketStatusDisplayForExport($row);',
                     'align' => 'center',
                     'class' => 'noprint no-wrap',
+                    'style' => 'width: 4em;',
                 ],
                 'printer_name' => [
                     'title' => 'Nume',

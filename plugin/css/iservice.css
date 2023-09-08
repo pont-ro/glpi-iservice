@@ -434,6 +434,11 @@ li.collapsible label {
 
 .iservice-form input {
     margin: 0;
+    padding: 5px !important;
+}
+
+.iservice-form .tab_cadrehov {
+    width: 100% !important;
 }
 
 .iservice-form  .label-input {

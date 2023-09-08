@@ -1262,6 +1262,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             echo "                <b>" . implode(' | ', array_filter($printerInfo)) . "</b>";
             echo "                <span style='float: right; cursor: pointer;' onclick='$(\".toggle_{$printer->tableData['id']}\").toggle();'>Subtotal aparat: <b style='color:$subtotalColor'>{$printer->tableData['subtotal']}</b> RON</span>";
             echo "                </td></tr><tr class='toggle_{$printer->tableData['id']}'><td style='padding: 10px;'>";
+            echo "                    <table class='no-border wide'>";
+            echo "                     <tr>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX,
                 "item[printer][{$printer->tableData['id']}][include_location]",
@@ -1269,13 +1272,17 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 false,
                 ['label' => 'Locatie', 'class' => 'include_location']
             );
+            echo "                        </td>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_TEXT,
                 "item[printer][{$printer->tableData['id']}][location]",
                 $items['input'][$printer->tableData['id']]['location'] ?? $printer->tableData['location'],
                 false,
-                ['style' => 'width: 50px; margin-right: 10px']
+                ['style' => 'width: 100%; margin-right: 10px']
             );
+            echo "                        </td>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX,
                 "item[printer][{$printer->tableData['id']}][include_cost_center]",
@@ -1283,13 +1290,19 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 false,
                 ['label' => 'Centru cost', 'class' => 'include_cost_center']
             );
+            echo "                        </td>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_TEXT,
                 "item[printer][{$printer->tableData['id']}][cost_center]",
                 $items['input'][$printer->tableData['id']]['cost_center'] ?? $printer->tableData['cost_center_field'],
                 false,
-                ['style' => 'width: 50px; margin-right: 10px']
+                ['style' => 'width: 100%; margin-right: 10px']
             );
+            echo "                        </td>";
+            echo "                     </tr>";
+            echo "                     <tr>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX,
                 "item[printer][{$printer->tableData['id']}][include_usageaddress]",
@@ -1297,13 +1310,17 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 false,
                 ['label' => 'Adresa expl.', 'class' => 'include_usageaddress']
             );
+            echo "                        </td>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_TEXT,
                 "item[printer][{$printer->tableData['id']}][usageaddress]",
                 $items['input'][$printer->tableData['id']]['usageaddress'] ?? $printer->tableData['usage_address_field'],
                 false,
-                ['style' => 'width: 50px; margin-right: 10px']
+                ['style' => 'width: 100%; margin-right: 10px']
             );
+            echo "                        </td>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX,
                 "item[printer][{$printer->tableData['id']}][include_status]",
@@ -1311,6 +1328,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 false,
                 ['label' => 'Status', 'class' => 'include_status']
             );
+            echo "                        </td>";
+            echo "                        <td>";
             $form->displayField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX,
                 "item[printer][{$printer->tableData['id']}][include_period]",
@@ -1318,6 +1337,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 false,
                 ['label' => 'Perioada', 'class' => 'include_period']
             );
+            echo "                        </td>";
+            echo "                     </tr>";
+            echo "                    </table>";
             echo "                </td></tr><tr class='toggle_{$printer->tableData['id']}'><td>";
 
             $form->openTable(['class' => 'no-border wide']);
@@ -1371,15 +1393,19 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $form->displayTableRow(
                 [
                     'Perioadă de la (exp. fact.)',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][invoice_expiry_date_field]", $printer->tableData['invoice_expiry_date_field']),
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][invoice_expiry_date_field]", $printer->tableData['invoice_expiry_date_field'],
+            false,
+                    ['style' => "width: 180px;"]),
                     'Tip contract',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contract_type'], true)
-                ]
+                ],
             );
             $form->displayTableRow(
                 [
                     'Data expirare factură',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][data_fact_until]", $printer->tableData['rows']['until']),
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][data_fact_until]", $printer->tableData['rows']['until'],
+                    false,
+                    ['style' => "width: 180px;"]),
                     'Divizor copii',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['divizor_copii'], true)
                 ]
