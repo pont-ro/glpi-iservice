@@ -549,7 +549,7 @@ class Printers extends View
                     'export_format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketStatusDisplayForExport($row);',
                     'align' => 'center',
                     'class' => 'noprint no-wrap',
-                    'style' => 'width: 4em;',
+                    'style' => 'min-width: 4em;',
                 ],
                 'printer_name' => [
                     'title' => 'Nume',
