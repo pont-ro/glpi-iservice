@@ -96,11 +96,6 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
                     }
 
                     if (resultText.lastId !== "undefined") {
-                        console.log(firstOrLast);
-                        console.log(buildAjaxCallback);
-                        console.log(callerButton);
-                        console.log(url_base);
-                        console.log(resultText.lastId);
                         processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, resultText.lastId);
                         return;
                     }
