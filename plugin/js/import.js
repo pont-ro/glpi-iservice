@@ -43,16 +43,17 @@ function importFromOldIservice(url_base)
     processNextItem('first', buildImportCallback, importButton, url_base);
 }
 
-function buildImportCallback(itemType)
+function buildImportCallback(itemType, startFromId = 0)
 {
     return 'import.php?itemType=' + itemType
     + '&oldDBHost=' + $('#old-host').val()
     + '&oldDBName=' + $('#old-db').val()
     + '&oldDBUser=' + $('#old-user').val()
     + '&oldDBPassword=' + $('#old-pass').val()
+    + '&startFromId=' + startFromId;
 }
 
-function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base)
+function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, startFromId = 0)
 {
     let elementToProcess;
     if (firstOrLast === 'first') {
@@ -68,7 +69,7 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base)
 
     let resultElement = elementToProcess.closest('.list-group-item-action').find('.process-result');
     let itemType      = elementToProcess.data('itemtype');
-    let ajaxUrl       = url_base + '/ajax/' + buildAjaxCallback(itemType);
+    let ajaxUrl       = url_base + '/ajax/' + buildAjaxCallback(itemType, startFromId);
     resultElement.addClass('fa-spinner fa-pulse');
     resultElement.attr('title', '...');
 
@@ -76,12 +77,13 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base)
         ajaxUrl,
         function (data) {
             resultElement.removeClass('fa-spinner fa-pulse');
-            resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
 
             if (data === 'OK') {
+                resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
+                resultElement.removeClass('fa-circle-xmark fa-regular text-danger ' + itemType);
                 resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
                 resultElement.attr('title', '');
-                processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base);
+                processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, startFromId);
             } else {
                 resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
 
@@ -91,6 +93,16 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base)
 
                     if (resultText === false) {
                         resultText = [data];
+                    }
+
+                    if (resultText.lastId !== "undefined") {
+                        console.log(firstOrLast);
+                        console.log(buildAjaxCallback);
+                        console.log(callerButton);
+                        console.log(url_base);
+                        console.log(resultText.lastId);
+                        processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, resultText.lastId);
+                        return;
                     }
 
                     resultText = resultText.join("\n");

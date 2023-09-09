@@ -180,9 +180,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 $item->tableData['serial']                    = $item->fields['serial'];
                 $item->tableData['otherserial']               = $item->fields['otherserial'];
                 $item->tableData['contor_bk_uf']              = $item->customfields->fields['invoiced_total_black_field'] ?? 0;
-                $item->tableData['contor_bk_ui']              = $item->lastTicket()->fields['total2_black_field'] ?? 0;
+                $item->tableData['contor_bk_ui']              = $item->lastTicket()->customfields->fields['total2_black_field'] ?? 0;
                 $item->tableData['contor_col_uf']             = $item->customfields->fields['invoiced_total_color_field'] ?? 0;
-                $item->tableData['contor_col_ui']             = $item->lastTicket()->fields['total2_color_field'] ?? 0;
+                $item->tableData['contor_col_ui']             = $item->lastTicket()->customfields->fields['total2_color_field'] ?? 0;
                 $item->tableData['data_ui']                   = empty($item->lastTicket()->customfields->fields['effective_date_field']) ? '' : date('Y-m-d', strtotime($item->lastTicket()->customfields->fields['effective_date_field']));
                 $item->tableData['divizor_copii']             = ($contractData['copy_price_divider_field'] ?? 1) ?: 1;
                 $item->tableData['cop_bk_inclus']             = $contractData['included_copies_bk_field'] ?? 0;
@@ -1363,8 +1363,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
                 $form->displayTableRow(
                     [
-                        $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][codmat]", $printerRow['codmat'], false, ['style' => 'width:3em']),
-                        $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][val]", $printerRow['val'], false, ['style' => 'width:4em;text-align:right']),
+                        $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][codmat]", $printerRow['codmat'], false, ['style' => 'width:4em']),
+                        $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][val]", $printerRow['val'], false, ['style' => 'width:5em;text-align:right']),
                         $printerRow['um'],
                         $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][cant]", $printerRow['cant'], false, ['style' => 'width:4em;text-align:right']),
                         $printer->tableData['no_invoice'] ? '' : $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, "item[printer][{$printer->tableData['id']}][row_$rowIndex][fixed]", $printerRow['fixed']),

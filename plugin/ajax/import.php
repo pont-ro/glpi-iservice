@@ -308,6 +308,7 @@ $input = IserviceToolBox::getInputVariables(
         'oldDBUser',
         'oldDBPassword',
         'itemType',
+        'startFromId',
     ]
 );
 
@@ -323,9 +324,10 @@ if (empty($importConfig)) {
 
 $foreignKeyData = getForeignKeyData($importConfig);
 $select         = $importConfig['select'] ?? '*';
+$limit          = $importConfig['limit'] ?? 10000;
 
 $oldItems = PluginIserviceDB::getQueryResult(
-    "SELECT $select FROM $importConfig[oldTable] ORDER BY id ASC",
+    "SELECT a.* FROM (SELECT $select FROM $importConfig[oldTable] ORDER BY id ASC) a WHERE id > $input[startFromId] LIMIT $limit",
     'id',
     new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
 );
@@ -418,4 +420,8 @@ if (!empty($errors)) {
     $_SESSION['MESSAGE_AFTER_REDIRECT'] = $messagesFromSessionInitial;
 }
 
-echo empty($errors) ? IserviceToolBox::RESPONSE_OK : json_encode($errors);
+if ($limit > count($oldItems)) {
+    echo IserviceToolBox::RESPONSE_OK;
+} else {
+    echo json_encode(['lastId' => end($oldItems)['id']]);
+}
