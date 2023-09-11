@@ -395,7 +395,7 @@ do {
             $itemData['id'] = $foundId;
             if (!$item->update($itemData)) {
                 // NOTE: Not all items can be updated, for example glpi_items_tickets that belong to a closed ticket.
-                $errors['itemsNotUpdated'][$itemTypeClass]              = "Item old id: $oldItem[id]. Error: Could not update $itemTypeClass object with data: " . json_encode($itemData);
+                $errors['itemsNotUpdated'][$itemTypeClass][]            = "Item old id: $oldItem[id]. Error: Could not update $itemTypeClass object with data: " . json_encode($itemData);
                 $errors['itemsNotUpdated'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
             };
         }
@@ -418,9 +418,29 @@ if (!empty($errors)) {
     $errors['messagesFromSession'] = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
     trigger_error(json_encode($errors, JSON_PRETTY_PRINT), E_USER_WARNING);
     $_SESSION['MESSAGE_AFTER_REDIRECT'] = $messagesFromSessionInitial;
-    echo json_encode(['errors' => $errors]);
+    echo json_encode(
+        [
+            'result' => IserviceToolBox::RESPONSE_ERROR,
+            'resultData' => [
+                'errors' => $errors
+            ],
+        ]
+    );
 } elseif ($limit > count($oldItems)) {
-    echo json_encode(['result' => IserviceToolBox::RESPONSE_OK]);
+    echo json_encode(
+        [
+            'result' => IserviceToolBox::RESPONSE_OK,
+            'resultData' => [
+            ],
+        ]
+    );
 } else {
-    echo json_encode(['lastId' => end($oldItems)['id']]);
+    echo json_encode(
+        [
+            'result'  => IserviceToolBox::RESPONSE_OK,
+            'resultData' => [
+                'lastId' => end($oldItems)['id']
+            ],
+        ]
+    );
 }

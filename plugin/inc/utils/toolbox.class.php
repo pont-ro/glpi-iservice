@@ -13,6 +13,7 @@ if (!defined('INPUT_REQUEST')) {
 class ToolBox
 {
     const RESPONSE_OK = 'OK';
+    const RESPONSE_ERROR = 'ERROR';
 
     protected static $exchangeRateService = null;
 

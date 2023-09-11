@@ -71,16 +71,24 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
     let itemType      = elementToProcess.data('itemtype');
     let ajaxUrl       = url_base + '/ajax/' + buildAjaxCallback(itemType, startFromId);
     resultElement.addClass('fa-spinner fa-pulse');
-    resultElement.attr('title', '...');
+    resultElement.attr('title', startFromId);
 
     $.get(
         ajaxUrl,
         function (data) {
-            try {
-                resultData = JSON.parse(data);
+            resultElement.removeClass('fa-spinner fa-pulse');
 
-                if (resultData.result !== "undefined" && resultData.result === 'OK') {
-                    resultElement.removeClass('fa-spinner fa-pulse');
+            try {
+                let result = JSON.parse(data);
+                let validResult = result.result !== undefined;
+
+                if (validResult && result.result === 'OK') {
+
+                    if (result.resultData.lastId !== undefined) {
+                        processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, result.resultData.lastId);
+                        return;
+                    }
+
                     resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
                     resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
                     resultElement.attr('title', '');
@@ -88,21 +96,18 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
                     return;
                 }
 
-                if (resultData.lastId !== "undefined") {
-                    processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, resultData.lastId);
-                    return;
-                }
-
-                if (resultData.errors !== "undefined") {
-                    resultElement.removeClass('fa-spinner fa-pulse');
+                if (validResult && result.result === 'ERROR') {
                     resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
                 }
 
-                if (resultData === false) {
+                if (result === false) {
                     resultData = [data];
+                } else {
+                    resultData = result.resultData.errors;
                 }
 
                 resultData = resultData.join("\n");
+                resultElement.attr('title', resultData);
             } catch (e) {
                 console.log(e);
             }
