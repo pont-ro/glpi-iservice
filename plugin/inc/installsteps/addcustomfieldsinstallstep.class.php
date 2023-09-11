@@ -175,29 +175,30 @@ class AddCustomFieldsInstallStep
 
             switch ($field_type) {
             case 'yesno':
-                $fields[$field_name] = "tinyint";
+                $fields[$field_name] = "tinyint" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
                 break;
             case 'date':
-                $fields[$field_name] = "date";
-                $default             = $default ? "'$default'" : null;
+                $fields[$field_name] = "date" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
                 break;
             case 'datetime':
-                $fields[$field_name] = "timestamp";
-                $default             = $default ? "'$default'" : null;
+                $fields[$field_name] = "timestamp" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
                 break;
             case 'number':
-                $fields[$field_name] = "decimal(15,2)";
+                $fields[$field_name] = "decimal(15,2)" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
                 break;
             default:
                 break;
             }
-
-            $fields[$field_name] .= " $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
         }
 
         return [
             'columns' => $fields,
         ];
+    }
+
+    private static function attachMandatoryAndDefaultSettings(string $mandatory, mixed $default): string
+    {
+        return " $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
     }
 
     private static function removeContainer(array $containerData): void
