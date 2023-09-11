@@ -8,6 +8,7 @@
         "default_value": "0",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     }
 ]

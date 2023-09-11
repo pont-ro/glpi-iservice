@@ -25,7 +25,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,4"
     },
     {
         "name": "copy_price_col_field",
@@ -39,7 +40,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,4"
     },
     {
         "name": "included_copies_bk_field",
@@ -53,7 +55,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
     },
     {
         "name": "included_copies_col_field",
@@ -67,7 +70,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
     },
     {
         "name": "included_copy_value_field",
@@ -81,7 +85,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,2"
     },
     {
         "name": "calculation_mode_header_field",
@@ -109,7 +114,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,2"
     },
     {
         "name": "currency_field",
@@ -123,7 +129,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,4"
     },
     {
         "name": "copy_price_divider_field",
@@ -137,6 +144,7 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
     }
 ]

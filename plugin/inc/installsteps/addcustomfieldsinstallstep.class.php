@@ -184,7 +184,7 @@ class AddCustomFieldsInstallStep
                 $fields[$field_name] = "timestamp" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
                 break;
             case 'number':
-                $fields[$field_name] = "decimal(15,2)" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                $fields[$field_name] = "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
                 break;
             default:
                 break;

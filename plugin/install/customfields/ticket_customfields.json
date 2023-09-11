@@ -41,7 +41,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "no_travel_field",
@@ -63,7 +64,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "without_paper_field",
@@ -108,7 +110,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,2"
     },
     {
         "name": "delivered_field",
@@ -175,7 +178,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "total2_color_field",
@@ -187,7 +191,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "effective_date_field",
