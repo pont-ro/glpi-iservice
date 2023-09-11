@@ -30,7 +30,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "cartridgeitemtype",
@@ -90,7 +91,8 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "5,2"
     },
     {
         "name": "supported_types_field",

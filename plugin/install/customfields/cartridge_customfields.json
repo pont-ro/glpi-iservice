@@ -9,7 +9,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "tickets_id_out_field",
@@ -21,7 +22,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "pages_color_field",
@@ -33,7 +35,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "pages_use_field",
@@ -45,7 +48,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "pages_color_use_field",
@@ -57,7 +61,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "printed_pages_field",
@@ -69,7 +74,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "printed_pages_color_field",
@@ -81,7 +87,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "suppliers_id_field",
@@ -93,7 +100,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1"
+        "mandatory": "1",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "locations_id_field",
@@ -105,7 +113,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1"
+        "mandatory": "1",
+        "decimalPrecision": "11,0"
     },
     {
         "name": "plugin_fields_cartridgeitemtypedropdowns_id",
@@ -117,6 +126,7 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
     }
 ]

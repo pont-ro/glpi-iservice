@@ -53,7 +53,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
     },
     {
         "name": "invoiced_total_color_field",
@@ -67,7 +68,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
     },
     {
         "name": "invoiced_value_field",
@@ -81,7 +83,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,2"
     },
     {
         "name": "plan_settings_header_field",
@@ -109,7 +112,8 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
     },
     {
         "name": "plan_observations_field",
@@ -249,7 +253,8 @@
         "default_value": "100",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "10,0"
     },
     {
         "name": "daily_color_average_field",
@@ -260,7 +265,8 @@
         "default_value": "100",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "0"
+        "mandatory": "0",
+        "decimalPrecision": "10,0"
     },
     {
         "name": "uc_bk_field",
@@ -274,7 +280,8 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1"
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
     },
     {
         "name": "uc_cyan_field",
@@ -288,7 +295,8 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1"
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
     },
     {
         "name": "uc_magenta_field",
@@ -302,7 +310,8 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1"
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
     },
     {
         "name": "uc_yellow_field",
@@ -316,7 +325,8 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1"
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
     },
     {
         "name": "cost_center_field",
