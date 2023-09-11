@@ -373,15 +373,15 @@ do {
 
         if ($foundId === false) {
             if (!$item->add($itemData)) {
-                $errors[]                                            = "Could not add $itemTypeClass object with data: " . json_encode($itemData);
-                $errors['itemsNotAdded'][$itemTypeClass]['old_id'][] = $oldItem['id'];
+                $errors['itemsNotAdded'][$itemTypeClass][]            = "Item old id: $oldItem[id]. Error: Could not add $itemTypeClass object with data: " . json_encode($itemData);
+                $errors['itemsNotAdded'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
                 continue;
             };
 
             if (!empty($importConfig['updateAfterCreate']) && !$item->update(array_merge($itemData, ['id' => $item->getID()]))) {
-                $errors[] = "Could not update newly created $itemTypeClass object with data: " . json_encode($itemData);
+                $errors['newItemsNotUpdated'][$itemTypeClass][] = "Item old id: $oldItem[id]. Error: Could not update newly created $itemTypeClass object with data: " . json_encode($itemData);
 
-                $errors['newItemsNotUpdated'][$itemTypeClass]['old_id'][] = $oldItem['id'];
+                $errors['newItemsNotUpdated'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
             }
 
             $itemMap->add(
@@ -395,8 +395,8 @@ do {
             $itemData['id'] = $foundId;
             if (!$item->update($itemData)) {
                 // NOTE: Not all items can be updated, for example glpi_items_tickets that belong to a closed ticket.
-                $errors[]                                              = "Could not update $itemTypeClass object with data: " . json_encode($itemData);
-                $errors['itemsNotUpdated'][$itemTypeClass]['old_id'][] = $oldItem['id'];
+                $errors['itemsNotUpdated'][$itemTypeClass]              = "Item old id: $oldItem[id]. Error: Could not update $itemTypeClass object with data: " . json_encode($itemData);
+                $errors['itemsNotUpdated'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
             };
         }
 
@@ -418,10 +418,9 @@ if (!empty($errors)) {
     $errors['messagesFromSession'] = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
     trigger_error(json_encode($errors, JSON_PRETTY_PRINT), E_USER_WARNING);
     $_SESSION['MESSAGE_AFTER_REDIRECT'] = $messagesFromSessionInitial;
-}
-
-if ($limit > count($oldItems)) {
-    echo IserviceToolBox::RESPONSE_OK;
+    echo json_encode(['errors' => $errors]);
+} elseif ($limit > count($oldItems)) {
+    echo json_encode(['result' => IserviceToolBox::RESPONSE_OK]);
 } else {
     echo json_encode(['lastId' => end($oldItems)['id']]);
 }

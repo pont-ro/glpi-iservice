@@ -175,20 +175,24 @@ class AddCustomFieldsInstallStep
 
             switch ($field_type) {
             case 'yesno':
-                $fields[$field_name] = "tinyint $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
+                $fields[$field_name] = "tinyint";
                 break;
             case 'date':
-                $fields[$field_name] = "date $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default '$default'" : ''));
+                $fields[$field_name] = "date";
+                $default             = $default ? "'$default'" : null;
                 break;
             case 'datetime':
-                $fields[$field_name] = "timestamp $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default '$default'" : ''));
+                $fields[$field_name] = "timestamp";
+                $default             = $default ? "'$default'" : null;
                 break;
             case 'number':
-                $fields[$field_name] = "decimal(15,2) $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
+                $fields[$field_name] = "decimal(15,2)";
                 break;
             default:
                 break;
             }
+
+            $fields[$field_name] .= " $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
         }
 
         return [

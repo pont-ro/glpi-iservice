@@ -76,38 +76,35 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
     $.get(
         ajaxUrl,
         function (data) {
-            resultElement.removeClass('fa-spinner fa-pulse');
+            try {
+                resultData = JSON.parse(data);
 
-            if (data === 'OK') {
-                resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
-                resultElement.removeClass('fa-circle-xmark fa-regular text-danger ' + itemType);
-                resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
-                resultElement.attr('title', '');
-                processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, startFromId);
-            } else {
-                resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
-
-                let resultData = data;
-                try {
-                    resultData = JSON.parse(data);
-
-                    if (resultData.lastId !== "undefined") {
-                        processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, resultData.lastId);
-                        return;
-                    }
-
-                    if (resultData === false) {
-                        resultData = [data];
-
-                    }
-
-                    resultData = resultData.join("\n");
-                } catch (e) {
-                    console.log(e);
+                if (resultData.result !== "undefined" && resultData.result === 'OK') {
+                    resultElement.removeClass('fa-spinner fa-pulse');
+                    resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
+                    resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
+                    resultElement.attr('title', '');
+                    processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, 0);
+                    return;
                 }
 
-                resultElement.attr('title', resultData);
-                callerButton.removeClass('disabled');
+                if (resultData.lastId !== "undefined") {
+                    processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, resultData.lastId);
+                    return;
+                }
+
+                if (resultData.errors !== "undefined") {
+                    resultElement.removeClass('fa-spinner fa-pulse');
+                    resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
+                }
+
+                if (resultData === false) {
+                    resultData = [data];
+                }
+
+                resultData = resultData.join("\n");
+            } catch (e) {
+                console.log(e);
             }
         }
     );
