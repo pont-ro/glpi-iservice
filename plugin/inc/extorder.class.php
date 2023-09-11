@@ -56,6 +56,10 @@ class PluginIserviceExtOrder extends CommonDBTM
 
     function post_updateItem($history = 1)
     {
+        if ($_SESSION['plugin']['iservice']['importInProgress'] ?? false) {
+            return;
+        }
+
         if (isset($this->input['_status_change'])) {
             $status_change                              = new PluginIserviceOrderStatusChange();
             $this->input['_status_change']['orders_id'] = $this->getID();

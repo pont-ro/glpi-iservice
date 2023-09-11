@@ -159,8 +159,8 @@ class PluginIserviceHmarfa
         // $divizorCopii: $printer->tableData['divizor_copii'];
         $oldCounterBlack        = ($_POST['old_counter_black'] ?? $printer->customfields->fields['invoiced_total_black_field']) ?: 0; // $printer->tableData['contor_bk_uf']
         $oldCounterColor        = ($_POST['old_counter_color'] ?? $printer->customfields->fields['invoiced_total_color_field']) ?: 0; // $printer->tableData['contor_col_uf']
-        $newCounterBlack        = $printer->lastTicket()->fields['total2_black_field'] ?? 0; // $printer->tableData['contor_bk_ui']
-        $newCounterColor        = $printer->lastTicket()->fields['total2_color_field'] ?? 0; // $printer->tableData['contor_col_ui']
+        $newCounterBlack        = $printer->lastTicket()->customfields->fields['total2_black_field'] ?? 0; // $printer->tableData['contor_bk_ui']
+        $newCounterColor        = $printer->lastTicket()->customfields->fields['total2_color_field'] ?? 0; // $printer->tableData['contor_col_ui']
         $includedCopiesBlack    = $contract_customfields->fields['included_copies_bk_field'] ?? 0; // $printer->tableData['included_copies_bk_field']
         $includedCopiesColor    = $contract_customfields->fields['included_copies_col_field'] ?? 0; // $printer->tableData['included_copies_col_field']
         $includedCopiesValue    = $contract_customfields->fields['included_copy_value_field'] ?? 0; // $printer->tableData['included_copy_value_field']

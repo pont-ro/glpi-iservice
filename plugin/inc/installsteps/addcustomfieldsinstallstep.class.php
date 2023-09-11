@@ -173,18 +173,18 @@ class AddCustomFieldsInstallStep
             $default    = $fieldData['default_value'] !== '' ? $fieldData['default_value'] : null;
             $mandatory  = $fieldData['mandatory'] === '1' ? 'not null' : '';
 
-            switch (true) {
-            case $field_type === 'yesno':
-                $fields[$field_name] = "tinyint $mandatory" . ($default !== null ? " default $default" : '');
+            switch ($field_type) {
+            case 'yesno':
+                $fields[$field_name] = "tinyint" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
                 break;
-            case $field_type === 'date':
-                $fields[$field_name] = "date $mandatory" . ($default !== null ? " default '$default'" : '');
+            case 'date':
+                $fields[$field_name] = "date" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
                 break;
-            case $field_type === 'datetime':
-                $fields[$field_name] = "timestamp $mandatory" . ($default !== null ? " default '$default'" : '');
+            case 'datetime':
+                $fields[$field_name] = "timestamp" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
                 break;
-            case $field_type === 'number':
-                $fields[$field_name] = "decimal $mandatory" . ($default !== null ? " default $default" : '');
+            case 'number':
+                $fields[$field_name] = "decimal(15,2)" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
                 break;
             default:
                 break;
@@ -194,6 +194,11 @@ class AddCustomFieldsInstallStep
         return [
             'columns' => $fields,
         ];
+    }
+
+    private static function attachMandatoryAndDefaultSettings(string $mandatory, mixed $default): string
+    {
+        return " $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
     }
 
     private static function removeContainer(array $containerData): void

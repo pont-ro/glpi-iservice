@@ -1419,9 +1419,9 @@ class PluginIserviceTicket extends Ticket
                         new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_date_field'] ?? '', 'nowrap'),
                         new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_expiry_date_field'] ?? '', 'nowrap'),
                         $printer->customfields->fields['invoiced_total_color_field'] ?? '',
-                        $printer->lastClosedTicket()->fields['total2_color_field'] ?? '',
+                        $printer->lastClosedTicket()->customfields->fields['total2_color_field'] ?? '',
                         $printer->customfields->fields['invoiced_total_black_field'] ?? '',
-                        $printer->lastClosedTicket()->fields['total2_black_field'] ?? '',
+                        $printer->lastClosedTicket()->customfields->fields['total2_black_field'] ?? '',
                     ]
                 ), 'display: inline-block;text-align: center;'
             );
@@ -1435,8 +1435,8 @@ class PluginIserviceTicket extends Ticket
         // Counter required minumums.
         // We check if there are newer tickets.
         // We check only for closed tickets, as the counters are calculated on ticket close.
-        $total2_black_required_minimum = $last_closed_ticket->fields['total2_black_field'] ?? 0;
-        $total2_color_required_minimum = $last_closed_ticket->fields['total2_color_field'] ?? 0;
+        $total2_black_required_minimum = $last_closed_ticket->customfields->fields['total2_black_field'] ?? 0;
+        $total2_color_required_minimum = $last_closed_ticket->customfields->fields['total2_color_field'] ?? 0;
 
         // If there are newer closed tickets, we do not allow counter change, as counters on the cartridges will be messed up.
         if ($id > 0 && ($last_closed_ticket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
@@ -1446,8 +1446,8 @@ class PluginIserviceTicket extends Ticket
 
         // If the ticket is closed or there are newer tickets, the required minimum is the already saved counter or the last intervention counter.
         if ($id > 0 && (($last_ticket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'] || $closed)) {
-            $total2_black_required_minimum = min($total2_black_required_minimum, $this->fields['total2_black_field']);
-            $total2_color_required_minimum = min($total2_color_required_minimum, $this->fields['total2_color_field']);
+            $total2_black_required_minimum = min($total2_black_required_minimum, $this->customfields->fields['total2_black_field']);
+            $total2_color_required_minimum = min($total2_color_required_minimum, $this->customfields->fields['total2_color_field']);
         }
 
         // effective_date_field required minimum.
@@ -1504,8 +1504,8 @@ class PluginIserviceTicket extends Ticket
         if (!$closed && $printer_id > 0 && !$printer->isRouter() && (empty($id) || ($last_ticket->customfields->fields['effective_date_field'] ?? '') <= $this->customfields->fields['effective_date_field']) && $last_closed_ticket->getID() > 0 && !$printer->customfields->fields['no_invoice_field']) {
             $last_effective_date     = new DateTime($last_closed_ticket->customfields->fields['effective_date_field'] ?? '');
             $days_since_last_counter = $last_effective_date->diff(new DateTime(empty($this->customfields->fields['effective_date_field']) ? null : $this->customfields->fields['effective_date_field']))->format("%a");
-            $estimated_black         = $last_closed_ticket->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $days_since_last_counter;
-            $estimated_color         = $last_closed_ticket->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $days_since_last_counter;
+            $estimated_black         = $last_closed_ticket->customfields->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $days_since_last_counter;
+            $estimated_color         = $last_closed_ticket->customfields->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $days_since_last_counter;
             $title                   = "";
             $onclick                 = '';
             if ($estimated_black > 0) {
@@ -1514,7 +1514,7 @@ class PluginIserviceTicket extends Ticket
             }
 
             if (($color_printer || $plotter_printer) && $estimated_color > 0) {
-                $title   .= ", " . ($plotter_printer ? "suprafață hârtie" : "color") . ": $estimated_color ({$last_closed_ticket->fields['total2_color_field']} + {$printer->customfields->fields['daily_color_average_field']}*$days_since_last_counter)";
+                $title   .= ", " . ($plotter_printer ? "suprafață hârtie" : "color") . ": $estimated_color ({$last_closed_ticket->customfields->fields['total2_color_field']} + {$printer->customfields->fields['daily_color_average_field']}*$days_since_last_counter)";
                 $onclick .= "$(\"[name=total2_color_field]\").val($estimated_color);";
             }
 
@@ -1527,8 +1527,8 @@ class PluginIserviceTicket extends Ticket
         }
 
         // Counter calculation.
-        $total2_black = empty($id) ? $total2_black_required_minimum : ($this->fields['total2_black_field'] > $total2_black_required_minimum || $closed ? $this->fields['total2_black_field'] : $total2_black_required_minimum);
-        $total2_color = empty($id) ? ($total2_color_required_minimum) : ($this->fields['total2_color_field'] > $total2_color_required_minimum || $closed ? $this->fields['total2_color_field'] : $total2_color_required_minimum);
+        $total2_black = empty($id) ? $total2_black_required_minimum : ($this->customfields->fields['total2_black_field'] > $total2_black_required_minimum || $closed ? $this->fields['total2_black_field'] : $total2_black_required_minimum);
+        $total2_color = empty($id) ? ($total2_color_required_minimum) : ($this->customfields->fields['total2_color_field'] > $total2_color_required_minimum || $closed ? $this->fields['total2_color_field'] : $total2_color_required_minimum);
 
         // Black counter data.
         if ($prepared_data['field_hidden']['total2_black_field']) {
@@ -2929,8 +2929,8 @@ class PluginIserviceTicket extends Ticket
                     "Partener: {$supplier->fields['name']}\n" .
                     "Nume aparat: {$printer->fields['name']}\n" .
                     "Serie aparat: {$printer->fields['serial']}\n" .
-                    (empty($ticket->fields['total2_black_field']) ? "" : "Contor alb-negru: {$ticket->fields['total2_black_field']}\n") .
-                    (empty($ticket->fields['total2_color_field']) ? "" : "Contor color: {$ticket->fields['total2_color_field']}\n") .
+                    (empty($ticket->customfields->fields['total2_black_field']) ? "" : "Contor alb-negru: {$ticket->fields['total2_black_field']}\n") .
+                    (empty($ticket->customfields->fields['total2_color_field']) ? "" : "Contor color: {$ticket->fields['total2_color_field']}\n") .
                     "Descriere tichet:\n" . strip_tags(IserviceToolBox::br2nl($ticket->fields['content'])) . "\n\n" .
                     "Adnotări:\n" . $followup->getShortForMail($ticket->getID()) . "\n"
             ],

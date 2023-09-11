@@ -60,4 +60,9 @@ if (!PluginIserviceDB::getQueryResult("delete from $importMappingsTable where it
     die("Could not clear records from mapping table for $itemTypeClass object");
 }
 
-echo IserviceToolBox::RESPONSE_OK;
+echo json_encode(
+    [
+        'result' => IserviceToolBox::RESPONSE_OK,
+        'resultData' => [],
+    ],
+);

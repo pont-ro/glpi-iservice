@@ -43,16 +43,17 @@ function importFromOldIservice(url_base)
     processNextItem('first', buildImportCallback, importButton, url_base);
 }
 
-function buildImportCallback(itemType)
+function buildImportCallback(itemType, startFromId = 0)
 {
     return 'import.php?itemType=' + itemType
     + '&oldDBHost=' + $('#old-host').val()
     + '&oldDBName=' + $('#old-db').val()
     + '&oldDBUser=' + $('#old-user').val()
     + '&oldDBPassword=' + $('#old-pass').val()
+    + '&startFromId=' + startFromId;
 }
 
-function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base)
+function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, startFromId = 0)
 {
     let elementToProcess;
     if (firstOrLast === 'first') {
@@ -68,38 +69,47 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base)
 
     let resultElement = elementToProcess.closest('.list-group-item-action').find('.process-result');
     let itemType      = elementToProcess.data('itemtype');
-    let ajaxUrl       = url_base + '/ajax/' + buildAjaxCallback(itemType);
+    let ajaxUrl       = url_base + '/ajax/' + buildAjaxCallback(itemType, startFromId);
     resultElement.addClass('fa-spinner fa-pulse');
-    resultElement.attr('title', '...');
+    resultElement.attr('title', startFromId);
 
     $.get(
         ajaxUrl,
         function (data) {
             resultElement.removeClass('fa-spinner fa-pulse');
-            resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
 
-            if (data === 'OK') {
-                resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
-                resultElement.attr('title', '');
-                processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base);
-            } else {
-                resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
+            try {
+                let result = JSON.parse(data);
+                let validResult = result.result !== undefined;
 
-                let resultText = data;
-                try {
-                    resultText = JSON.parse(data);
+                if (validResult && result.result === 'OK') {
 
-                    if (resultText === false) {
-                        resultText = [data];
+                    if (result.resultData.lastId !== undefined) {
+                        processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, result.resultData.lastId);
+                        return;
                     }
 
-                    resultText = resultText.join("\n");
-                } catch (e) {
-                    console.log(e);
+                    resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
+                    resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
+                    resultElement.attr('title', '');
+                    processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, 0);
+                    return;
                 }
 
-                resultElement.attr('title', resultText);
-                callerButton.removeClass('disabled');
+                if (!validResult || result.result === 'ERROR') {
+                    resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
+                }
+
+                if (result === false) {
+                    resultData = [data];
+                } else {
+                    resultData = result.resultData.errors;
+                }
+
+                resultData = resultData.join("\n");
+                resultElement.attr('title', resultData);
+            } catch (e) {
+                console.log(e);
             }
         }
     );
