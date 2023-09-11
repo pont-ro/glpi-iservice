@@ -96,7 +96,7 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
                     return;
                 }
 
-                if (validResult && result.result === 'ERROR') {
+                if (!validResult || result.result === 'ERROR') {
                     resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
                 }
 
