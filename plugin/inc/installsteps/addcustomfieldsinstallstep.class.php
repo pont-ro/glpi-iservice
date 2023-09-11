@@ -173,18 +173,18 @@ class AddCustomFieldsInstallStep
             $default    = $fieldData['default_value'] !== '' ? $fieldData['default_value'] : null;
             $mandatory  = $fieldData['mandatory'] === '1' ? 'not null' : '';
 
-            switch (true) {
-            case $field_type === 'yesno':
-                $fields[$field_name] = "tinyint $mandatory" . ($default === null && $mandatory == '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
+            switch ($field_type) {
+            case 'yesno':
+                $fields[$field_name] = "tinyint $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
                 break;
-            case $field_type === 'date':
-                $fields[$field_name] = "date $mandatory" . ($default === null && $mandatory == '' ? 'NULL DEFAULT NULL' : ($default ? " default '$default'" : ''));
+            case 'date':
+                $fields[$field_name] = "date $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default '$default'" : ''));
                 break;
-            case $field_type === 'datetime':
-                $fields[$field_name] = "timestamp $mandatory" . ($default === null && $mandatory == '' ? 'NULL DEFAULT NULL' : ($default ? " default '$default'" : ''));
+            case 'datetime':
+                $fields[$field_name] = "timestamp $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default '$default'" : ''));
                 break;
-            case $field_type === 'number':
-                $fields[$field_name] = "decimal(15,2) $mandatory" . ($default === null && $mandatory == '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
+            case 'number':
+                $fields[$field_name] = "decimal(15,2) $mandatory" . ($default === null && $mandatory === '' ? 'NULL DEFAULT NULL' : ($default ? " default $default" : ''));
                 break;
             default:
                 break;

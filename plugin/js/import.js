@@ -87,25 +87,26 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
             } else {
                 resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
 
-                let resultText = data;
+                let resultData = data;
                 try {
-                    resultText = JSON.parse(data);
+                    resultData = JSON.parse(data);
 
-                    if (resultText === false) {
-                        resultText = [data];
-                    }
-
-                    if (resultText.lastId !== "undefined") {
-                        processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, resultText.lastId);
+                    if (resultData.lastId !== "undefined") {
+                        processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, resultData.lastId);
                         return;
                     }
 
-                    resultText = resultText.join("\n");
+                    if (resultData === false) {
+                        resultData = [data];
+
+                    }
+
+                    resultData = resultData.join("\n");
                 } catch (e) {
                     console.log(e);
                 }
 
-                resultElement.attr('title', resultText);
+                resultElement.attr('title', resultData);
                 callerButton.removeClass('disabled');
             }
         }
