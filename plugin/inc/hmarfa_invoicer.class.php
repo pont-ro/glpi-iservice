@@ -1662,7 +1662,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "                <td style='text-align: right; width: 33%'>\n";
         $generate_ssx_ajaxcall_success_function = "function(message) {if (message!=\"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"Fișierul S%2\$s generat cu succes\");}}";
         $url_encoded_exportFilePath             = urlencode($exportFileData['path']);
-        $generate_ajaxcall                      = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/generate_ssx.php?path=%1\$s/&file_name=%2\$s\", \"\", $generate_ssx_ajaxcall_success_function);";
+        $generate_ajaxcall                      = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/generateSsx.php?path=%1\$s/&file_name=%2\$s\", \"\", $generate_ssx_ajaxcall_success_function);";
         $generate_ss_ajaxcall                   = sprintf($generate_ajaxcall, $url_encoded_exportFilePath, $exportFileData['csv_name']);
         echo "                    <a class='vsubmit' href='javascript:none;' onclick='$generate_ss_ajaxcall'>Generează fișier SS</a>\n";
         echo "                    &nbsp;&nbsp;Arată DAT&nbsp;&nbsp;</nbs><input name='show_dat' type='checkbox' onclick='$(\".base-dat\").toggle(this.checked); $(\".base-csv\").attr(\"colspan\", this.checked ? 1 : 2);' " . ($frontendData['invoiceData']['show_dat'] ? 'checked=\"checked\"' : '') . "/>\n";
