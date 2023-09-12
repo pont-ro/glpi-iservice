@@ -91,7 +91,7 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
 
                     resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
                     resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
-                    resultElement.attr('title', '');
+                    resultElement.attr('title', 'Import successful');
                     processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, 0);
                     return;
                 }
@@ -100,14 +100,7 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
                     resultElement.addClass('fa-circle-xmark fa-regular text-danger ' + itemType);
                 }
 
-                if (result === false) {
-                    resultData = [data];
-                } else {
-                    resultData = result.resultData.errors;
-                }
-
-                resultData = resultData.join("\n");
-                resultElement.attr('title', resultData);
+                resultElement.attr('title', 'See the errors in the log file.');
             } catch (e) {
                 console.log(e);
             }

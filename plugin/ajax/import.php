@@ -298,6 +298,17 @@ function mapGroupField(string $groupField, array &$errors): string
     return implode(',', $supplierIdsToMap);
 }
 
+function getImportLogFilePath()
+{
+    return PLUGIN_ISERVICE_LOG_DIR . "/import_log.txt";
+}
+
+function logErrors(string $errors): void
+{
+    file_put_contents(getImportLogFilePath(), date('Y.m.d H:i:s') . ": \n", FILE_APPEND);
+    file_put_contents(getImportLogFilePath(), $errors . "\n", FILE_APPEND);
+}
+
 // -------------------
 /* End of functions */
 
@@ -367,18 +378,20 @@ do {
                     'itemtype' => $itemTypeClass,
                     'items_id' => $item->getID(),
                     'old_id'   => $oldItem['id'],
-                ]
+                ],
+                [],
+                false
             );
         }
 
         if ($foundId === false) {
-            if (!$item->add($itemData)) {
+            if (!$item->add($itemData, [],false)) {
                 $errors['itemsNotAdded'][$itemTypeClass][]            = "Item old id: $oldItem[id]. Error: Could not add $itemTypeClass object with data: " . json_encode($itemData);
                 $errors['itemsNotAdded'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
                 continue;
             };
 
-            if (!empty($importConfig['updateAfterCreate']) && !$item->update(array_merge($itemData, ['id' => $item->getID()]))) {
+            if (!empty($importConfig['updateAfterCreate']) && !$item->update(array_merge($itemData, ['id' => $item->getID()]), false)) {
                 $errors['newItemsNotUpdated'][$itemTypeClass][] = "Item old id: $oldItem[id]. Error: Could not update newly created $itemTypeClass object with data: " . json_encode($itemData);
 
                 $errors['newItemsNotUpdated'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
@@ -389,11 +402,13 @@ do {
                     'itemtype' => $itemTypeClass,
                     'items_id' => $item->getID(),
                     'old_id'   => $oldItem['id'],
-                ]
+                ],
+                [],
+                false
             );
         } else {
             $itemData['id'] = $foundId;
-            if (!$item->update($itemData)) {
+            if (!$item->update($itemData, false)) {
                 // NOTE: Not all items can be updated, for example glpi_items_tickets that belong to a closed ticket.
                 $errors['itemsNotUpdated'][$itemTypeClass][]            = "Item old id: $oldItem[id]. Error: Could not update $itemTypeClass object with data: " . json_encode($itemData);
                 $errors['itemsNotUpdated'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
@@ -416,7 +431,7 @@ $_SESSION['plugin']['iservice']['importInProgress'] = false;
 
 if (!empty($errors)) {
     $errors['messagesFromSession'] = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
-    trigger_error(json_encode($errors, JSON_PRETTY_PRINT), E_USER_WARNING);
+    logErrors(json_encode($errors, JSON_PRETTY_PRINT));
     $_SESSION['MESSAGE_AFTER_REDIRECT'] = $messagesFromSessionInitial;
     echo json_encode(
         [
