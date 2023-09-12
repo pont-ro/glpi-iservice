@@ -8,11 +8,11 @@ use GlpiPlugin\Iservice\Views\View;
 use PluginFieldsPrinterprintercustomfield;
 use PluginIserviceCartridgeItem;
 use PluginIserviceDB;
-use \Session;
-use \PluginIserviceEmaintenance;
-use \PluginIservicePrinter;
-use \PluginIserviceMovement;
-use \PluginIserviceTicket;
+use PluginIserviceEmaintenance;
+use PluginIserviceMovement;
+use PluginIservicePrinter;
+use PluginIserviceTicket;
+use Session;
 use Ticket;
 
 class Printers extends View
@@ -46,7 +46,7 @@ class Printers extends View
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'counters' => [
-                'link' => '#', //"view.php?view=printercounters2&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']),
+                'link' => '#', // "view.php?view=printercounters2&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
                 'title' => __('Printer counters', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
@@ -312,8 +312,8 @@ class Printers extends View
     {
         global $CFG_GLPI;
 
-        $printer_counters_button = IserviceToolBox::inProfileArray('client') ? '' : '#';
-            //"<a class='vsubmit' href='view.php?view=printercounters2' target='_blank'>" . __('Printer counters', 'iservice') . " v2</a>";
+        $printer_counters_button = IserviceToolBox::inProfileArray('client') ? '' :
+            "<a class='vsubmit' href='#' target='_blank'>" . __('Printer counters', 'iservice') . " v2</a>";
 
         $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
         if ($this->enable_emaintenance_data_import) {
@@ -620,7 +620,7 @@ class Printers extends View
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'week_nr_field' => [
-                    'title' => 'Nr.<br>săpt.',
+                    'title' => 'Nr. săpt.',
                     'class' => 'noprint',
                     'align' => 'center',
                     'visible' => !self::inProfileArray('client'),
