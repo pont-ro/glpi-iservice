@@ -67,13 +67,13 @@ if (!empty($add)) {
         $item->check($post['items_id'], UPDATE);
         $item->update($input) or die("Error updating $post[itemtype]");
         switch ($post['itemtype']) {
-        case 'Printer': $item_customfields = new PluginFieldsPrintercustomfield();
+        case 'Printer': $item_customfields = new PluginFieldsPrinterprintercustomfield();
 
             break;
-        case 'Supplier': $item_customfields = new PluginFieldsSuppliercustomfield();
+        case 'Supplier': $item_customfields = new PluginFieldsSuppliersuppliercustomfield();
 
             break;
-        case 'Ticket': $item_customfields = new PluginFieldsTicketcustomfield();
+        case 'Ticket': $item_customfields = new PluginFieldsTicketticketcustomfield();
 
             break;
         default: echo "Invalid itemtype";
