@@ -12,7 +12,7 @@ if (!defined('INPUT_REQUEST')) {
 
 class ToolBox
 {
-    const RESPONSE_OK = 'OK';
+    const RESPONSE_OK    = 'OK';
     const RESPONSE_ERROR = 'ERROR';
 
     protected static $exchangeRateService = null;
@@ -171,7 +171,7 @@ class ToolBox
             }
         }
 
-        return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$supplier_code'>$sum</a>";
+        return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Views\UnpaidInvoices&unpaid_invoices0[cod]=$supplier_code'>$sum</a>";
     }
 
     public static function clearAfterRedirectMessages($type = null)

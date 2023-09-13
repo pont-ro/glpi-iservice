@@ -31,6 +31,13 @@ if (!file_exists(PLUGIN_ISERVICE_CACHE_DIR)) {
     mkdir(PLUGIN_ISERVICE_CACHE_DIR);
 }
 
+if (!defined("PLUGIN_ISERVICE_LOG_DIR")) {
+    define("PLUGIN_ISERVICE_LOG_DIR", PLUGIN_ISERVICE_DOC_DIR . "/logs");
+}
+
+if (!file_exists(PLUGIN_ISERVICE_LOG_DIR)) {
+    mkdir(PLUGIN_ISERVICE_LOG_DIR);
+}
 /**
  * Init the hooks of the plugins - Needed
  *
