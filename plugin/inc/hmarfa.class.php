@@ -910,7 +910,7 @@ class PluginIserviceHmarfa
 
         $acknowledge_disabled_reason = $import_disabled_reason = $add_disabled_reason = $wait_disabled_reason = $export_disabled_reason = null;
 
-        $export_file_path = IserviceToolBox::getInputVariable('export_file_path', $CFG_PLUGIN_ISERVICE['hmarfa']['export']['default_path'] . '/');
+        $export_file_path = IserviceToolBox::getInputVariable('export_file_path', PluginIserviceConfig::getConfigValue('hmarfa.export.default_path') . '/');
         $back_file_path   = $export_file_path . "BAK";
         if (!file_exists($back_file_path)) {
             mkdir($back_file_path, 0775, true);

@@ -44,7 +44,7 @@ class PluginIservicePendingEmailUpdater extends CommonDBTM
     {
         global $DB, $CFG_PLUGIN_ISERVICE;
 
-        if (empty($CFG_PLUGIN_ISERVICE['enabled_crons']['updatePendingEmails'])) {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.updatePendingEmails'))) {
             $task->log("Pending email updater is disabled by configuration.\n");
             return -2;
         }
