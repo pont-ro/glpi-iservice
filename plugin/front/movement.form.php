@@ -81,7 +81,7 @@ if (!empty($add)) {
             die;
         }
 
-        $item_customfields->getFromDBByItemsId($post['items_id']);
+        PluginIserviceDB::populateByItemsId($item_customfields, $post['items_id']);
         $item_customfields->update(
             [
                 $item_customfields->getIndexName() => $item_customfields->getID(),

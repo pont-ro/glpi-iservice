@@ -783,7 +783,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             $printerCustomfields = new PluginFieldsPrinterprintercustomfield();
             foreach (IserviceToolBox::getCsvFile($exportFileData['dat_full_path']) as $data) {
-                if (count($data) > 1 && $printerCustomfields->getFromDBByItemsId($data[0])) {
+                if (count($data) > 1 && PluginIserviceDB::populateByItemsId($printerCustomfields, $data[0])) {
                     $updateData = [
                         $printerCustomfields->getIndexName() => $printerCustomfields->getID(),
                         "invoice_date_field" => $data[1],
@@ -800,9 +800,10 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
                     $printerCustomfields->update($updateData);
 
-                    // Display the updated fields
+                    // Display the updated fields.
                     foreach (['printers', 'routers'] as $itemType) {
                         if (isset($items[$itemType][$data[0]])) {
+                            $items[$itemType][$data[0]]->tableData['data_ult_fact'] = $data[1];
                             $items[$itemType][$data[0]]->tableData['invoice_expiry_date_field'] = $data[2];
                             if ($data[3] !== '' && isset($items[$itemType][$data[0]]->tableData['invoiced_total_black_field'])) {
                                 $items[$itemType][$data[0]]->tableData['invoiced_total_black_field'] = $data[3];
@@ -1255,7 +1256,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             if (!is_numeric($printer->tableData['val_ult_fact'])) {
                 $subtotalColor = 'black';
             } else {
-                $subtotalDifferencePercent = abs(($printer->tableData['subtotal'] - $printer->tableData['val_ult_fact']) / $printer->tableData['val_ult_fact'] * 100);
+                $subtotalDifferencePercent = $printer->tableData['val_ult_fact'] > 0 ? abs(($printer->tableData['subtotal'] - $printer->tableData['val_ult_fact']) / $printer->tableData['val_ult_fact'] * 100) : 0;
                 $subtotalColor             = $subtotalDifferencePercent > 20 ? 'red' : ($subtotalDifferencePercent > 10 ? 'orange' : 'black');
             }
 

@@ -61,7 +61,7 @@ class PluginIservicePrinter extends Printer
         if ($this->has_cartridge_management === null) {
             $infocom              = new Infocom();
             $supplier_customfield = new PluginFieldsSuppliersuppliercustomfield();
-            if ($this->isNewItem() || !$infocom->getFromDBforDevice('Printer', $this->getID()) || !$supplier_customfield->getFromDBByItemsId($infocom->fields['suppliers_id'])) {
+            if ($this->isNewItem() || !$infocom->getFromDBforDevice('Printer', $this->getID()) || !PluginIserviceDB::populateByItemsId($supplier_customfield, $infocom->fields['suppliers_id'])) {
                 return false;
             }
 
