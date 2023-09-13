@@ -48,7 +48,7 @@ switch ($operations[$operation]) {
 case 'set_dba':
 case 'set_dca':
     $printer->check($id, UPDATE);
-    $update_field = ($operations[$operation] == 'set_dca') ? 'dailycoloraveragefield' : 'dailybkaveragefield';
+    $update_field = ($operations[$operation] == 'set_dca') ? 'daily_color_average_field' : 'daily_bk_average_field';
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
@@ -65,10 +65,10 @@ case 'set_ucm':
 case 'set_ucy':
     $printer->check($id, UPDATE);
     $update_fields = [
-        'set_ucbk' => 'ucbkfield',
-        'set_ucc' => 'uccfield',
-        'set_ucm' => 'ucmfield',
-        'set_ucy' => 'ucyfield',
+        'set_ucbk' => 'uc_bk_field',
+        'set_ucc' => 'uc_cyan_field',
+        'set_ucm' => 'uc_magenta_field',
+        'set_ucy' => 'uc_yellow_field',
     ];
     if ($printer_customfields->update(
         [
@@ -85,9 +85,9 @@ case 'clear_color_coefficients':
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
-            'dailycoloraveragefield' => 0,
-            'uccfield' => 0,
-            'ucmfield' => 0,
+            'daily_color_average_field' => 0,
+            'uc_cyan_field' => 0,
+            'uc_magenta_field' => 0,
             'ucyfield' => 0,
         ]
     )
@@ -100,10 +100,10 @@ case 'set_color_coefficients':
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
-            'dailycoloraveragefield' => $printer_customfields->fields['dailybkaveragefield'] ?: 100,
-            'uccfield' => 1,
-            'ucmfield' => 1,
-            'ucyfield' => 1,
+            'daily_color_average_field' => $printer_customfields->fields['daily_bk_average_field'] ?: 100,
+            'uc_cyan_field' => 1,
+            'uc_magenta_field' => 1,
+            'uc_yellow_field' => 1,
         ]
     )
     ) {
@@ -114,7 +114,7 @@ case 'set_usageaddressfield':
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
-            'usageaddressfield' => $value,
+            'usage_address_field' => $value,
         ]
     )
     ) {
@@ -126,10 +126,10 @@ case 'set_no_invoice':
 case 'exclude_from_em':
 case 'snooze_read_check':
     $update_field = [
-        'enable_em' => 'emaintenancefield',
-        'set_no_invoice' => 'noinvoicefield',
-        'exclude_from_em' => 'disableemfield',
-        'snooze_read_check' => 'snoozereadcheckfield',
+        'enable_em' => 'em_field',
+        'set_no_invoice' => 'no_invoice_field',
+        'exclude_from_em' => 'disable_em_field',
+        'snooze_read_check' => 'snooze_read_check_field',
     ][$operations[$operation]];
     $update_value = [
         'enable_em' => 1,
