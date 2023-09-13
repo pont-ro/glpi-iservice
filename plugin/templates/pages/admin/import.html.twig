@@ -35,7 +35,7 @@
                 <div class="card">
                     <h3 class="mb-0">
                     <label class="card-header">
-                        <input {#checked="checked"#} class="form-check-input card-mass-checkbox" id="{{ import_group_id }}" onclick="cardMassCheckboxClick($(this));" type="checkbox"/>
+                        <input checked="checked" class="form-check-input card-mass-checkbox" id="{{ import_group_id }}" onclick="cardMassCheckboxClick($(this));" type="checkbox"/>
                         <i class="mx-1 fa-fw {{ import_group['icon'] }}"></i>
                         {{ import_group['title'] }}
                     </label>
@@ -43,7 +43,7 @@
                     <div class="list-group list-group-flush">
                         {% for item_id, item in import_group['items'] %}
                             <label class="list-group-item list-group-item-action">
-                                <input {#checked="checked"#} class="form-check-input to-process" data-itemtype="{{ item['itemtype'] }}" onclick="adjustCardMassCheckbox($(this).closest('.card'));" id="{{ import_group_id }}_{{ item_id }}" type="checkbox"/>
+                                <input checked="checked" class="form-check-input to-process" data-itemtype="{{ item['itemtype'] }}" onclick="adjustCardMassCheckbox($(this).closest('.card'));" id="{{ import_group_id }}_{{ item_id }}" type="checkbox"/>
                                 <span class="float-end"><i class="process-result fas"></i></span>
                                 {{ item['label'] }}
                             </label>
