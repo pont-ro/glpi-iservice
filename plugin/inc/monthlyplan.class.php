@@ -421,7 +421,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                         <td style="text-align: center;">
                                             <?php
                                             if ($enterprise['numar_facturi'] > 0) {
-                                                echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=$enterprise[hmarfa_code_field]'>**&nbsp;$enterprise[numar_facturi]&nbsp;**</a>";
+                                                echo "<a href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/views.php?view=GlpiPlugin\Iservice\Views\UnpaidInvoices&unpaid_invoices0[cod]=$enterprise[hmarfa_code_field]'>**&nbsp;$enterprise[numar_facturi]&nbsp;**</a>";
                                             } else {
                                                 echo $enterprise['numar_facturi'];
                                             }

@@ -69,7 +69,7 @@ class Tickets extends View
         $list_ticket_description = urlencode(empty($row_data['printer_id']) ? "Toate" : "$row_data[printer_name] ($row_data[printer_serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                 = [
             'printers' => [
-                'link' => "views.php?view=\GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_id]=$row_data[supplier_id]&printers0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_id]=$row_data[supplier_id]&printers0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/printer.png',
                 'title' => "Lista aparate " . htmlentities($row_data['supplier_name'], ENT_QUOTES),
                 'visible' => Session::haveRight('plugin_iservice_view_printers', READ),
