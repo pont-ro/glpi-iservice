@@ -300,7 +300,7 @@ function mapGroupField(string $groupField, array &$errors): string
 
 function getImportLogFilePath()
 {
-    return PLUGIN_ISERVICE_LOG_DIR . "/import_log.txt";
+    return PLUGIN_ISERVICE_LOG_DIR . "/import.log";
 }
 
 function logErrors(string $errors): void
