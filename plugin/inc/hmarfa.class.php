@@ -759,7 +759,7 @@ class PluginIserviceHmarfa
         echo "      <tr>\n";
         $generate_ssx_ajaxcall_success_function = "function(message) {if (message!=\"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"Fișierul S%2\$s generat cu succes\");}}";
         $url_encoded_exportFilePath             = urlencode($exportFilePath);
-        $generate_ajaxcall                      = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/generate_ssx.php?path=%1\$s&file_name=%2\$s\", \"\", $generate_ssx_ajaxcall_success_function);";
+        $generate_ajaxcall                      = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/generateSsx.php?path=%1\$s&file_name=%2\$s\", \"\", $generate_ssx_ajaxcall_success_function);";
         $generate_ss_ajaxcall                   = sprintf($generate_ajaxcall, $url_encoded_exportFilePath, "S.$exportFileNameBase.csv");
         $generate_ssx_ajaxcall                  = sprintf($generate_ajaxcall, $url_encoded_exportFilePath, "SX.$exportFileNameBase.csv");
         echo "        <th class='base-csv'><a class='vsubmit' href='javascript:none;' onclick='$generate_ss_ajaxcall'>Generează fișier SS</a>   S.$exportFileNameBase.csv</th>\n";
