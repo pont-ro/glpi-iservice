@@ -139,7 +139,7 @@ class PendingEmails extends View
                 'partner_name' => [
                     'title' => 'Partener',
                     'link' => [
-                        'href' => $CFG_PLUGIN_ISERVICE['root_doc'] . '/front/views.php?view=unpaid_invoices&unpaid_invoices0[cod]=[hmarfa_code_field]',
+                        'href' => $CFG_PLUGIN_ISERVICE['root_doc'] . '/front/views.php?view=GlpiPlugin\Iservice\Views\UnpaidInvoices&unpaid_invoices0[cod]=[hmarfa_code_field]',
                         'target' => '_blank',
                     ],
                 ],

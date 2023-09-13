@@ -85,9 +85,6 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_ticket_assigned_printers' => right_array(ALLSTANDARDRIGHT, array_merge(['subtehnician'], $elevated_profiles)),
             'plugin_iservice_ticket_all_printers' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
 
-            'plugin_iservice_hmarfa' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-            'plugin_iservice_ticket_hmarfa_export_close' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
-
             'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_NONE => [],
             'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_READCOUNTER => right_array(ALLSTANDARDRIGHT, $all_profiles),
@@ -103,6 +100,11 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_view_printercounters' => right_array(ALLSTANDARDRIGHT, array_merge($level15_profiles, $elevated_profiles)),
             'plugin_iservice_movement' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_docgenerator' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+
+            'plugin_iservice_interface_original' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+
+            'plugin_iservice_printer' => right_array(ALLSTANDARDRIGHT, array_merge(['subtehnician'], $elevated_profiles)),
+            'plugin_iservice_printer_full' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
         ];
 
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);
