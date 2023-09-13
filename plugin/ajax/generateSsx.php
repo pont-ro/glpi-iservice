@@ -1,9 +1,11 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "generate_ssx.php".
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 // Direct access to file
-if (strpos($_SERVER['PHP_SELF'], "generate_ssx.php")) {
-    include '../../../inc/includes.php';
+if (strpos($_SERVER['PHP_SELF'], "generateSsx.php")) {
+    include '../inc/includes.php';
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
@@ -29,8 +31,8 @@ function getSubtotalRowData($last_data, $last_cost_centre, $subtotal, $header_co
     return $result;
 }
 
-$path            = PluginIserviceCommon::getInputVariable('path');
-$file_name_parts = explode('.', PluginIserviceCommon::getInputVariable('file_name'), 2);
+$path            = IserviceToolBox::getInputVariable('path');
+$file_name_parts = explode('.', IserviceToolBox::getInputVariable('file_name'), 2);
 
 $result = '';
 foreach (['S.' . $file_name_parts[1], 'SX.' . $file_name_parts[1]] as $file_name) {
@@ -100,7 +102,7 @@ foreach (['S.' . $file_name_parts[1], 'SX.' . $file_name_parts[1]] as $file_name
 }
 
 if (empty($result)) {
-    echo PluginIserviceCommon::RESPONSE_OK;
+    echo IserviceToolBox::RESPONSE_OK;
 } else {
     echo $result;
 }

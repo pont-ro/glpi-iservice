@@ -1,8 +1,11 @@
 <?php
 
+// Imported from iService2, needs refactoring.
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 // Direct access to file.
 if (strpos($_SERVER['PHP_SELF'], "managePrinter.php")) {
-    include '../../../inc/includes.php';
+    include '../inc/includes.php';
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }
@@ -26,17 +29,17 @@ $operations = [
     'set_no_invoice' => 'set_no_invoice',
 ];
 
-$id      = PluginIserviceCommon::getInputVariable('id');
-$value   = PluginIserviceCommon::getInputVariable('value');
-$average = PluginIserviceCommon::getInputVariable('average');
+$id      = IserviceToolBox::getInputVariable('id');
+$value   = IserviceToolBox::getInputVariable('value');
+$average = IserviceToolBox::getInputVariable('average');
 
 $printer              = new Printer();
-$printer_customfields = new PluginFieldsPrintercustomfield();
-if (!$printer_customfields->getFromDBByItemsId($id)) {
+$printer_customfields = new PluginFieldsPrinterprintercustomfield();
+if (!PluginIserviceDB::populateByItemsId($printer_customfields, $id)) {
     die(sprintf(__("Invalid printer id: %d", "iservice"), $id));
 }
 
-$operation = PluginIserviceCommon::getInputVariable('operation');
+$operation = IserviceToolBox::getInputVariable('operation');
 if (!array_key_exists($operation, $operations)) {
     die(sprintf(__("Invalid operation: %s", "iservice"), $operation));
 }
@@ -45,7 +48,7 @@ switch ($operations[$operation]) {
 case 'set_dba':
 case 'set_dca':
     $printer->check($id, UPDATE);
-    $update_field = ($operations[$operation] == 'set_dca') ? 'dailycoloraveragefield' : 'dailybkaveragefield';
+    $update_field = ($operations[$operation] == 'set_dca') ? 'daily_color_average_field' : 'daily_bk_average_field';
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
@@ -62,10 +65,10 @@ case 'set_ucm':
 case 'set_ucy':
     $printer->check($id, UPDATE);
     $update_fields = [
-        'set_ucbk' => 'ucbkfield',
-        'set_ucc' => 'uccfield',
-        'set_ucm' => 'ucmfield',
-        'set_ucy' => 'ucyfield',
+        'set_ucbk' => 'uc_bk_field',
+        'set_ucc' => 'uc_cyan_field',
+        'set_ucm' => 'uc_magenta_field',
+        'set_ucy' => 'uc_yellow_field',
     ];
     if ($printer_customfields->update(
         [
@@ -82,14 +85,14 @@ case 'clear_color_coefficients':
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
-            'dailycoloraveragefield' => 0,
-            'uccfield' => 0,
-            'ucmfield' => 0,
+            'daily_color_average_field' => 0,
+            'uc_cyan_field' => 0,
+            'uc_magenta_field' => 0,
             'ucyfield' => 0,
         ]
     )
     ) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'set_color_coefficients':
@@ -97,25 +100,25 @@ case 'set_color_coefficients':
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
-            'dailycoloraveragefield' => $printer_customfields->fields['dailybkaveragefield'] ?: 100,
-            'uccfield' => 1,
-            'ucmfield' => 1,
-            'ucyfield' => 1,
+            'daily_color_average_field' => $printer_customfields->fields['daily_bk_average_field'] ?: 100,
+            'uc_cyan_field' => 1,
+            'uc_magenta_field' => 1,
+            'uc_yellow_field' => 1,
         ]
     )
     ) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'set_usageaddressfield':
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
-            'usageaddressfield' => $value,
+            'usage_address_field' => $value,
         ]
     )
     ) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'enable_em':
@@ -123,16 +126,16 @@ case 'set_no_invoice':
 case 'exclude_from_em':
 case 'snooze_read_check':
     $update_field = [
-        'enable_em' => 'emaintenancefield',
-        'set_no_invoice' => 'noinvoicefield',
-        'exclude_from_em' => 'disableemfield',
-        'snooze_read_check' => 'snoozereadcheckfield',
+        'enable_em' => 'em_field',
+        'set_no_invoice' => 'no_invoice_field',
+        'exclude_from_em' => 'disable_em_field',
+        'snooze_read_check' => 'snooze_read_check_field',
     ][$operations[$operation]];
     $update_value = [
         'enable_em' => 1,
         'set_no_invoice' => $value,
         'exclude_from_em' => 1,
-        'snooze_read_check' => date('Y-m-d', strtotime('+' . intval(PluginIserviceCommon::getInputVariable('snooze', 1)) . 'days')),
+        'snooze_read_check' => date('Y-m-d', strtotime('+' . intval(IserviceToolBox::getInputVariable('snooze', 1)) . 'days')),
     ][$operations[$operation]];
     if ($printer_customfields->update(
         [
@@ -141,11 +144,11 @@ case 'snooze_read_check':
         ]
     )
     ) {
-        die(PluginIserviceCommon::RESPONSE_OK);
+        die(IserviceToolBox::RESPONSE_OK);
     }
     break;
 case 'get_last_invoices_dropdown':
-    $last_invoices_data = PluginIserviceCommon::getQueryResult(
+    $last_invoices_data = PluginIserviceDB::getQueryResult(
         "
             select distinct fr.nrfac, fa.datafac 
             from glpi_printers p 
@@ -153,11 +156,11 @@ case 'get_last_invoices_dropdown':
             join hmarfa_facturi fa on fa.nrfac = fr.nrfac
             where p.id = $id
             order by fr.nrfac desc
-            limit " . PluginIserviceCommon::getInputVariable('limit', 5)
+            limit " . IserviceToolBox::getInputVariable('limit', 5)
     );
     $result             = "<select id='last-invoices-$id'>";
     $search_dir         = PluginIservicePendingEmailUpdater::getInvoiceSearchFolder();
-    $selected           = PluginIserviceCommon::getInputVariable('selected');
+    $selected           = IserviceToolBox::getInputVariable('selected');
     foreach ($last_invoices_data as $last_invoice_data) {
         foreach (glob($search_dir . DIRECTORY_SEPARATOR . "I$last_invoice_data[nrfac]*.*") as $invoice) {
             $attachment = basename($invoice);
