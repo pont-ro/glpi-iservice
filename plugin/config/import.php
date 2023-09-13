@@ -246,10 +246,10 @@ return [
                 'itemtype' => 'PluginIserviceDownload',
                 'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
             ],
-            'log' => [
-                'itemtype' => 'Log',
-                'label' => _n('Log', 'Logs', Session::getPluralNumber()),
-            ],
+//            'log' => [
+//                'itemtype' => 'Log',
+//                'label' => _n('Log', 'Logs', Session::getPluralNumber()),
+//            ],
         ],
     ],
 ];
