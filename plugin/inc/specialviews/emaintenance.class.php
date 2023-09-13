@@ -5,10 +5,10 @@ namespace GlpiPlugin\Iservice\Specialviews;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
-use \PluginIserviceTicket;
-use \Session;
-use \PluginIserviceEmaintenance;
-use \PluginIserviceHtml;
+use PluginIserviceEmaintenance;
+use PluginIserviceHtml;
+use PluginIserviceTicket;
+use Session;
 
 class Emaintenance extends View
 {
@@ -43,7 +43,7 @@ class Emaintenance extends View
                 'onclick' => 'ajaxCall',
                 'confirm' => "",
                 'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {$("#actions_' . $row_data['id'] . '").closest("tr").css("background", "red");}}',
-                'html' => "<i class='fa fa-file fa-2x clickable' style='color:red; vertical-align: middle;' title='Invalidează'></i>",
+                'html' => "<i class='fa fa-file fa-2x pointer' style='color:red; vertical-align: middle;' title='Invalidează'></i>",
             ],
             'body' => self::getBodyDisplay($row_data),
             'cartridge' => [
@@ -137,7 +137,7 @@ class Emaintenance extends View
         if (!empty($row_data['process_result'])) {
             $process_restults       = explode('###', $row_data['process_result']);
             $process_result         = $process_restults[0];
-            $process_result_details = count($process_restults) > 1 ? "<i class='fa fa-caret-down clickable' onclick='$(this).next().toggle();'></i><div onclick='$(this).hide();' style='display:none'>$process_restults[1]</div>" : '';
+            $process_result_details = count($process_restults) > 1 ? "<i class='fa fa-caret-down pointer' onclick='$(this).next().toggle();'></i><div onclick='$(this).hide();' style='display:none'>$process_restults[1]</div>" : '';
             $display               .= "<div class='emaintenance-suggestion-error'><i class='fa fa-exclamation-circle' style='color:red'></i> $process_result $process_result_details</div>";
         }
 

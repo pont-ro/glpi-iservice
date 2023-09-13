@@ -709,7 +709,7 @@ class PluginIserviceHmarfa
         }
 
         echo "            </select>";
-        echo "            <i class='clickable fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
+        echo "            <i class='pointer fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
         echo "            <input class='submit" . (empty($import_disabled_reason) ? '' : ' disabled') . "' name='import' style='color:red;' title='" . ($import_disabled_reason ?: 'ATENȚIE! Apăsând butonul ștergeți fișierele csv!') . "' type='submit' value='Importat în hMarfa' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
         echo "          </td>\n";
         echo "        </tr><tr>\n";
@@ -1357,8 +1357,8 @@ class PluginIserviceHmarfa
         }
 
         $action_buttons .= "</select>";
-        $action_buttons .= " <i class='clickable fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
-        // $action_buttons .= " <i class='clickable fa fa-check' onclick='$(\"[name=import]\").click();' style='color:green'>";
+        $action_buttons .= " <i class='pointer fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
+        // $action_buttons .= " <i class='pointer fa fa-check' onclick='$(\"[name=import]\").click();' style='color:green'>";
         $import_button_options = ['style' => 'color:red;', 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }'];
         if ($import_disabled_reason) {
             $import_button_options['class'] = 'submit disabled';

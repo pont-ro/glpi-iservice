@@ -2,11 +2,11 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
-use PluginIserviceConfig;
-use \PluginIserviceHtml;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-use \Session;
-use \Html;
+use Html;
+use PluginIserviceConfig;
+use PluginIserviceHtml;
+use Session;
 
 // Imported from iService2, needs refactoring.
 if (!defined('GLPI_ROOT')) {
@@ -485,7 +485,7 @@ class View extends \CommonGLPI
 
             if ($filter_in_header) {
                 if (isset($filter_data['header_caption'])) {
-                    $filter_widget .= "<label>$filter_data[header_caption]</label>";
+                    $filter_widget .= "$filter_data[header_caption] ";
                 }
             } else {
                 if (isset($filter_data['caption'])) {
@@ -902,9 +902,9 @@ class View extends \CommonGLPI
                 }
 
                 echo "</div>";
-                echo "<div class='view-mass-action'>";
+                echo "<div class='mass-action'>";
                 if (!empty($this->mass_actions_column)) {
-                    echo "<i class='fas fa-level-up-alt fa-rotate-180 mass_action'></i>";
+                    echo "<i class='fas fa-level-up-alt fa-rotate-180 mass-action mass-action-arrow'></i>";
                 }
 
                 foreach ($this->mass_actions as $mass_action_key => &$mass_action) {
@@ -921,7 +921,7 @@ class View extends \CommonGLPI
                     $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
                     $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
                     // $mass_action_on_click .= '$(this).closest("form").delay(1000).attr("action",old_action);$(this).closest("form").delay(1000).attr("target","");';
-                    echo "<div class='mass_action'>";
+                    echo "<div class='mass-action'>";
                     echo $mass_action['prefix'];
                     echo " <input type='submit' class='$mass_action[class]' id='mass_action_$mass_action[name]' name='mass_action_$mass_action[name]' onclick='$mass_action_on_click' style='$mass_action[style]' value='$mass_action[caption]'> ";
                     echo $mass_action['suffix'];
