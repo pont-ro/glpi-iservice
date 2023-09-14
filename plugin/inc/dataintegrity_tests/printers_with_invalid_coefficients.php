@@ -1,6 +1,6 @@
 <?php
 
-global $CFG_GLPI;
+global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
@@ -55,7 +55,7 @@ return [
         'positive_result' => [
             'summary_text' => 'There are {count} printers with invalid coefficients',
             // 'iteration_text' => "Printer <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[pid]</a> with serial [serial] is of type [printer_type] but has 'Daily color average' [daily_color_average_field] and the following usage coefficients: [uc_cyan_field], [uc_magenta_field], [uc_yellow_field].",
-            'iteration_text' => "Printer <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[pid]</a> with serial [serial] is of type [printer_type] but has 'Daily color average' [daily_color_average_field] and the following usage coefficients: [uc_cyan_field], [uc_magenta_field], [uc_yellow_field]. <a id='fix-printer-[pid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/managePrinter.php?id=[pid]&operation=[operation]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-printer-[pid]\").remove();}});'>»»» FIX «««</a>",
+            'iteration_text' => "Printer <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[pid]</a> with serial [serial] is of type [printer_type] but has 'Daily color average' [daily_color_average_field] and the following usage coefficients: [uc_cyan_field], [uc_magenta_field], [uc_yellow_field]. <a id='fix-printer-[pid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/managePrinter.php?id=[pid]&operation=[operation]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-printer-[pid]\").remove();}});'>»»» FIX «««</a>",
         ],
     ],
 ];

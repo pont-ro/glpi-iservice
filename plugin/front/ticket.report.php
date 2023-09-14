@@ -3,8 +3,8 @@
 // Imported from iService2, needs refactoring.
 require "../inc/includes.php";
 
-global $DB, $CFG_GLPI;
-$images_source = "$CFG_GLPI[root_doc]/plugins/iservice/images";
+global $DB, $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
+$images_source = "$CFG_PLUGIN_ISERVICE[root_doc]/images";
 
 $ticket_id = filter_input(INPUT_GET, 'id');
 

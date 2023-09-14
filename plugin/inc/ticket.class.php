@@ -526,7 +526,7 @@ class PluginIserviceTicket extends Ticket
                 '_save_progress' => [
                     'hidden' => true,
                 /*
-                  array(
+                  [
                   self::MODE_CREATENORMAL => true,
                   self::MODE_READCOUNTER => true,
                   self::MODE_CREATEINQUIRY => true,
@@ -537,7 +537,7 @@ class PluginIserviceTicket extends Ticket
                   self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
                   self::MODE_HMARFAEXPORT => true,
                   self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                  ),
+                  ],
                   /*
                 */
                 ],

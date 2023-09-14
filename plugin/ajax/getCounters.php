@@ -12,7 +12,7 @@ if (strpos($_SERVER['PHP_SELF'], "getCounters.php")) {
 
 Session::checkLoginUser();
 
-global $CFG_GLPI;
+global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
 $cartridge_id    = filter_input(INPUT_GET, 'cartridge_id');
 $pages_use       = filter_input(INPUT_GET, 'pages_use_field');
@@ -25,11 +25,11 @@ echo "<br>Contor color: <input type='text' id='counter_color_$cartridge_id' name
 echo "</td><td>";
 $success_function = 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {alert(message);$("form").submit();}}';
 $gather_data      = "counter_black=$(\"#counter_black_$cartridge_id\").val();counter_color=$(\"#counter_color_$cartridge_id\").val();install_date=$(\"#hiddendate$date_field_id\").val()";
-$ajax_call        = "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageCartridge.php?id=$cartridge_id&operation=use";
+$ajax_call        = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=$cartridge_id&operation=use";
 $ajax_call       .= "&counter_black=\" + counter_black + \"";
 $ajax_call       .= "&counter_color=\" + counter_color + \"";
 $ajax_call       .= "&install_date=\" + install_date";
 $ajax_call       .= ", \"\", $success_function)";
-echo " <a href='#'><img src='$CFG_GLPI[root_doc]/plugins/iservice/pics/app_go_green.png' title='" . __('Uninstall from printer', 'iservice') . "' onclick='$gather_data;$ajax_call;return false;'/></a><br>";
+echo " <a href='#'><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_go_green.png' title='" . __('Uninstall from printer', 'iservice') . "' onclick='$gather_data;$ajax_call;return false;'/></a><br>";
 echo " <a href='#' onclick='$(\"#ajax_selector_$cartridge_id\").html(\"\");' title='Renunță'><img src='$CFG_GLPI[root_doc]/pics/delete.png' style='width:inherit'></a>&nbsp;";
 echo "</td></tr></table>";

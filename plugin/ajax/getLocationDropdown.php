@@ -12,7 +12,7 @@ if (strpos($_SERVER['PHP_SELF'], "getLocationDropdown.php")) {
 
 Session::checkLoginUser();
 
-global $CFG_GLPI;
+global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
 $supplier_id  = filter_input(INPUT_GET, 'supplier_id');
 $cartridge_id = filter_input(INPUT_GET, 'cartridge_id');
@@ -31,7 +31,7 @@ $supplier_input_id = Dropdown::show('Supplier', [
     'width' => '100%',
     'comments' => false,
     'value' => $supplier_id,
-    'on_change' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getLocationDropdown.php?cartridge_id=$cartridge_id&location_id=0&supplier_id=\" + $(this).val(), \"\", function(message) {\$(\"#popup_{$cartridge_id}_\").html(message);});",
+    'on_change' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getLocationDropdown.php?cartridge_id=$cartridge_id&location_id=0&supplier_id=\" + $(this).val(), \"\", function(message) {\$(\"#popup_{$cartridge_id}_\").html(message);});",
 ]);
 /**/
 echo "</span>";
@@ -51,7 +51,7 @@ $location_input_id         = Dropdown::show(
 );
 
 echo "</span></td><td style='border:0;padding:0;'>";
-$link            = "$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageCartridge.php?id=$cartridge_id&operation=change_location&location_id=";
+$link            = "$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=$cartridge_id&operation=change_location&location_id=";
 $ajax_call_param = "\"$link\" + \$(\"#dropdown_locations_id$location_input_id\").val() + \"&supplier_id=$supplier_id\"";
 $onclick         = "ajaxCall($ajax_call_param, \"\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"form\").submit();}})";
 echo "<img src='$CFG_GLPI[root_doc]/plugins/iservice/pics/app_go_green.png' style='cursor: pointer;' title='" . __('Save') . "' onclick='$onclick'/>";

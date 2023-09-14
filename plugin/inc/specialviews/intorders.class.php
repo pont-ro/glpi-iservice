@@ -409,10 +409,10 @@ class Intorders extends View
                     ],
                 ],
                 /*
-                'modify_date' => array(
+                'modify_date' => [
                 'title' => 'Dată modificare stare',
                 'align' => 'center',
-                ),
+                ],
                 /**/
             ],
         ];
