@@ -1,5 +1,7 @@
 <?php
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 // Imported from iService2, needs refactoring.
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -133,7 +135,7 @@ class PluginIserviceIntOrder extends CommonDBTM
         // Form header
         $this->showFormHeader($options);
 
-        $consumable_id = PluginIserviceCommon::getInputVariable('plugin_iservice_consumables_id', $this->fields['plugin_iservice_consumables_id']);
+        $consumable_id = IserviceToolBox::getInputVariable('plugin_iservice_consumables_id', $this->fields['plugin_iservice_consumables_id']);
         if (!empty($consumable_id)) {
             $this->fields['plugin_iservice_consumables_id'] = $consumable_id;
         }
@@ -144,7 +146,7 @@ class PluginIserviceIntOrder extends CommonDBTM
             $consumable = new PluginIserviceConsumable();
             $consumable->getFromDB($consumable_id);
             $intorders              = new PluginIserviceIntOrder();
-            $other_orders           = PluginIserviceCommon::getQueryResult(
+            $other_orders           = PluginIserviceDB::getQueryResult(
                 "
                 select sum(amount) `sum`
                 from glpi_plugin_iservice_intorders io

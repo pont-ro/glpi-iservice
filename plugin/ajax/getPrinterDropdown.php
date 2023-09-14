@@ -22,7 +22,7 @@ if (!$cartridge->getFromDB($cartridge_id)) {
 $input_id = PluginIserviceCartridgeItem::dropdownPrintersForCartridge($cartridge);
 
 // $link = "$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=$cartridge_id&operation=install_on_printer&printer_id=";
-// $onclick = "ajaxCall(\"$link\" + \$(\"#dropdown_printers_id$input_id\").val(), \"\", function(message) {if(message !== \"" . PluginIserviceCommon::RESPONSE_OK . "\") {alert(message);} else {\$(\"form\").submit();}})";
+// $onclick = "ajaxCall(\"$link\" + \$(\"#dropdown_printers_id$input_id\").val(), \"\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"form\").submit();}})";
 // echo " <img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_go_green.png' style='cursor: pointer;' title='" . __('Save') . "' onclick='$onclick'/>";
 $cartridgeitem_id = $cartridge->fields['cartridgeitems_id'];
 if (!empty($cartridge->fields['locations_id_field'])) {
