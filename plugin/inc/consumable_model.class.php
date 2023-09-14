@@ -59,7 +59,7 @@ class PluginIserviceConsumable_Model extends CommonDBRelation {
         $result .= "<div class='consumable-models'>";
 
         foreach ($printermodels as $printermodel_id => $printermodel_name) {
-            $result .= "$printermodel_name <span class='fa fa-times-circle clickable' style='color:red' title='Șterge' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageConsumable.php?id=$url_encoded_consumable_id&operation=remove_printer_model&value=$printermodel_id\", \"Sigur vreți să ștergeți modelul?\", function(message) { $(\".consumable-models-$sanitized_consumable_id\").each(function() { $(this).parent().html(message); }); });'></span><br>";
+            $result .= "$printermodel_name <span class='fa fa-times-circle pointer' style='color:red' title='Șterge' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageConsumable.php?id=$url_encoded_consumable_id&operation=remove_printer_model&value=$printermodel_id\", \"Sigur vreți să ștergeți modelul?\", function(message) { $(\".consumable-models-$sanitized_consumable_id\").each(function() { $(this).parent().html(message); }); });'></span><br>";
         }
 
         $result .= "</div>";

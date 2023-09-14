@@ -2,9 +2,9 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
-use \PluginIserviceOrderStatus;
-use \PluginIserviceConsumable_Model;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use PluginIserviceConsumable_Model;
+use PluginIserviceOrderStatus;
 
 // Imported from iService2, needs refactoring. Original file: "Stoc.php".
 class Stock extends View
@@ -42,7 +42,7 @@ class Stock extends View
         global $CFG_PLUGIN_ISERVICE;
         $sanitized_consumable_id = IserviceToolBox::getHtmlSanitizedValue($row_data['Cod_Articol']);
 
-        $result  = "<a id='min-stock-link-$row_data[__row_id__]' class='clickable min-stock-link-$sanitized_consumable_id' onclick='$(\"#min-stock-span-$row_data[__row_id__]\").show();$(this).hide();'>{$row_data['minimum_stock']}</a>";
+        $result  = "<a id='min-stock-link-$row_data[__row_id__]' class='pointer min-stock-link-$sanitized_consumable_id' onclick='$(\"#min-stock-span-$row_data[__row_id__]\").show();$(this).hide();'>{$row_data['minimum_stock']}</a>";
         $result .= "<span id='min-stock-span-$row_data[__row_id__]' style='display:none; white-space: nowrap;'>";
         $result .= "<input id='min-stock-edit-$row_data[__row_id__]' class='min-stock-edit-$sanitized_consumable_id' style='width:2em;' type='text' value='$row_data[minimum_stock]' />&nbsp;";
         $result .= "<i class='fa fa-check-circle' onclick='manageItemViaAjax(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageConsumable.php?operation=set_min_stock\", \"$row_data[Cod_Articol]\", \"$sanitized_consumable_id\", \"min-stock\", \"$row_data[__row_id__]\", \"\");' style='color:green'></i>&nbsp;";

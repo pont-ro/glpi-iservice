@@ -3,7 +3,7 @@
 namespace GlpiPlugin\Iservice\Specialviews;
 
 use GlpiPlugin\Iservice\Views\View;
-use \Session;
+use Session;
 
 // Imported from iService2, needs refactoring. Original file: "Contracts.php".
 class Contracts extends View
@@ -22,7 +22,7 @@ class Contracts extends View
             $title    .= "<a href=\"$CFG_GLPI[root_doc]/front/document.send.php?docid=$file_info[0]\" alt=\"$file_info[1]\" title=\"$file_info[1]\" target=\"_blank\">$file_info[2]</a><br>";
         }
 
-        return "<span class='has-bootstrap-tooltip clickable' title='$title' data-new-title='Click pentru a vede Documentele' data-placement='right'>$row_data[document_count]</a>";
+        return "<span class='has-bootstrap-tooltip pointer' title='$title' data-new-title='Click pentru a vede Documentele' data-placement='right'>$row_data[document_count]</a>";
     }
 
     protected function getSettings(): array
