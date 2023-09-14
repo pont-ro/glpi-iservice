@@ -35,7 +35,7 @@ class PluginIserviceHmarfa
     {
         global $DB, $CFG_PLUGIN_ISERVICE;
 
-        include_once __DIR__ . DIRECTORY_SEPARATOR . 'TValuta.php';
+        include_once __DIR__ . '/TValuta.php';
 
         try {
             $currency_error    = null;
@@ -946,7 +946,7 @@ class PluginIserviceHmarfa
 
         $printer = $ticket->getFirstPrinter();
 
-        include_once __DIR__ . DIRECTORY_SEPARATOR . 'TValuta.php';
+        include_once __DIR__ . '/TValuta.php';
         try {
             $currency_error    = null;
             $official_currency = new TValuta();
