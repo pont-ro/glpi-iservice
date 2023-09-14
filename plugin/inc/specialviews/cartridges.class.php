@@ -24,7 +24,7 @@ class Cartridges extends View
 
     public static function getIdDisplay($row_data): string
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         $ajax_link = $CFG_GLPI['root_doc'] . "/plugins/iservice/ajax/manageCartridge.php?id=$row_data[id]";
         $actions   = [
             /**
@@ -42,19 +42,19 @@ class Cartridges extends View
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_down.png',
                 'title' => __('Change location', 'iservice'),
                 'visible' => self::inProfileArray('client', 'superclient', 'tehnician', 'admin', 'super-admin'),
-                'onclick' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getLocationDropdown.php?supplier_id=$row_data[partner_id]&cartridge_id=$row_data[id]&location_id=$row_data[location_id]\", \"\", function(message) {\$(\"#popup_$row_data[id]_\").html(message);});",
+                'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getLocationDropdown.php?supplier_id=$row_data[partner_id]&cartridge_id=$row_data[id]&location_id=$row_data[location_id]\", \"\", function(message) {\$(\"#popup_$row_data[id]_\").html(message);});",
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[id]_'></div>",
             ],
             'add_to_printer' => [
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_add.png',
                 'title' => __('Add to printer', 'iservice'),
-                'onclick' => ($row_data['printer_name']) ? "alert(\"Cartuș instalat deja\");" : "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getPrinterDropdown.php?supplier_id=$row_data[partner_id]&cartridge_id=$row_data[id]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});",
+                'onclick' => ($row_data['printer_name']) ? "alert(\"Cartuș instalat deja\");" : "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getPrinterDropdown.php?supplier_id=$row_data[partner_id]&cartridge_id=$row_data[id]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});",
             ],
             'delete_cartridge' => [
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/bin_closed.png',
                 'title' => __('Delete cartridge', 'iservice'),
                 'visible' => $_SESSION['glpiID'] == 8 && $row_data['ticket_id'] == null,
-                'onclick' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/manageCartridge.php?id=$row_data[id]&operation=delete_cartridge\", \"Sigur vreți să ștergeți cartușul $row_data[id]?\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"" . __("Cartridge deleted from database", "iservice") . "\");\$(\"#row_actions_$row_data[id]\").closest(\"tr\").remove();}});",
+                'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=$row_data[id]&operation=delete_cartridge\", \"Sigur vreți să ștergeți cartușul $row_data[id]?\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"" . __("Cartridge deleted from database", "iservice") . "\");\$(\"#row_actions_$row_data[id]\").closest(\"tr\").remove();}});",
             ],
             /**
             'remove_from_printer' => array(
@@ -70,7 +70,7 @@ class Cartridges extends View
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => "Marchează golit",
                 'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
-                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use_field=$row_data[pages_use_field]&pages_color_use_field=$row_data[pages_color_use_field]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $row_data['id']) . "\");",
+                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use_field=$row_data[pages_use_field]&pages_color_use_field=$row_data[pages_color_use_field]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $row_data['id']) . "\");",
             ),
             /**/
         ];

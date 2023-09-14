@@ -10,7 +10,7 @@ if (strpos($_SERVER['PHP_SELF'], "getPrinterCartridgesPopup.php")) {
 
 Session::checkLoginUser();
 
-global $CFG_GLPI;
+global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
 $uid = filter_input(INPUT_GET, 'uid');
 if (empty($uid)) {
@@ -49,7 +49,7 @@ echo '</ul>';
 echo "</td><td style='vertical-align:top'>";
 
 echo "<a href='#' onclick='$(\"form#cartriges_link_{$printer_id}_$uid\").submit();return false;'>";
-echo "<img src='$CFG_GLPI[root_doc]/plugins/iservice/pics/toolbox.png' alt='Cartușe' title='Vizualizează carușele partenerului'>";
+echo "<img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/toolbox.png' alt='Cartușe' title='Vizualizează carușele partenerului'>";
 echo "</a> ";
 
 echo "</td><td style='vertical-align:top'>";

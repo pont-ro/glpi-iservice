@@ -76,7 +76,7 @@ class ClientInvoices extends View
 
     public static function getDescription($partner)
     {
-        global $CFG_GLPI;
+        global $CFG_PLUGIN_ISERVICE;
         $mail_recipient = $partner->customfields->fields['email_for_invoices_field'];
         if (empty($partner->customfields->fields['magic_link_field'])) {
             $magic_link = null;
@@ -102,7 +102,7 @@ class ClientInvoices extends View
         $mail_subject                               = "Factura ExpertLine - {$partner->fields['name']} - " . $months[date("n")] . ", " . date("Y");
         $mail_body                                  = $partner->getMailBody('scadente');
         $generate_magic_link_button_options['type'] = 'submit';
-        $contact_partner_link                       = "$CFG_GLPI[root_doc]/plugins/iservice/front/ticket.form.php?_suppliers_id_assign={$partner->getID()}&mode=" . PluginIserviceTicket::MODE_PARTNERCONTACT;
+        $contact_partner_link                       = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?_suppliers_id_assign={$partner->getID()}&mode=" . PluginIserviceTicket::MODE_PARTNERCONTACT;
         ob_start();
         $form = new PluginIserviceHtml();
         $form->openForm(

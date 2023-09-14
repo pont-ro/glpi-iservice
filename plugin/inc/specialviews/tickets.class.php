@@ -19,7 +19,7 @@ class Tickets extends View
 
     public static function getTicketStatusDisplay($row_data): string
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         switch ($row_data['ticket_export_type']) {
         case 'factura':
         case 'aviz':
@@ -105,7 +105,7 @@ class Tickets extends View
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
                 'title' => __('Installable cartridges', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
-                'onclick' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[supplier_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printer_id]&ticket_id=$row_data[ticket_id]\", \"\", function(message) {\$(\"#popup_$row_data[printer_id]_$row_data[ticket_id]\").html(message);});",
+                'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[supplier_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printer_id]&ticket_id=$row_data[ticket_id]\", \"\", function(message) {\$(\"#popup_$row_data[printer_id]_$row_data[ticket_id]\").html(message);});",
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_$row_data[ticket_id]'></div>",
             ],
             'invoices' => [

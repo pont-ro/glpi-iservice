@@ -55,7 +55,7 @@ class PluginIservicePendingEmailUpdater extends CommonDBTM
             $task->log("Invalid path for dbf files: $dbf_path_base\n");
         }
 
-        $pending_emails = PluginIserviceCommon::getQueryResult(
+        $pending_emails = PluginIserviceDB::getQueryResult(
             "
             select pe.id, p.id pid, p.serial, max(fr.nrfac) nrfac
             from glpi_plugin_iservice_pendingemails pe
@@ -68,7 +68,7 @@ class PluginIservicePendingEmailUpdater extends CommonDBTM
         );
 
         foreach ($pending_emails as $pending_email_data) {
-            foreach (glob($dbf_path_base . DIRECTORY_SEPARATOR . "I$pending_email_data[nrfac]*.*") as $invoice) {
+            foreach (glob($dbf_path_base . '/' . "I$pending_email_data[nrfac]*.*") as $invoice) {
                 $attachment = basename($invoice);
                 if ($DB->query("update glpi_plugin_iservice_pendingemails set invoice = '$pending_email_data[nrfac]', attachment='$attachment' where id = $pending_email_data[id]")) {
                     $task->log("Last invoice for printer $pending_email_data[pid] is $attachment");

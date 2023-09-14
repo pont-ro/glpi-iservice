@@ -45,12 +45,11 @@ if (!file_exists(PLUGIN_ISERVICE_LOG_DIR)) {
  */
 function plugin_init_iservice(): void
 {
-    global $CFG_GLPI;
     global $PLUGIN_HOOKS;
     global $CFG_PLUGIN_ISERVICE;
 
     $CFG_PLUGIN_ISERVICE = [
-        'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice"
+        'root_doc' => "$CFG_PLUGIN_ISERVICE[root_doc]"
     ];
 
     // Required!

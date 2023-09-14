@@ -867,7 +867,7 @@ class PluginIserviceHmarfa
 
         $order = IserviceToolBox::getInputVariable('order');
         if (!empty($order)) {
-            echo "<form id='redirect-form' action='$CFG_GLPI[root_doc]/plugins/iservice/front/ticket.form.php' method='post'>";
+            echo "<form id='redirect-form' action='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php' method='post'>";
             echo "<input type='hidden' name='id' value='$id'/>";
             echo "<input type='hidden' name='order' value='Order'/>";
             echo "<input type='hidden' name='_add_fail_message' value='Eroare la crearea comenzii interne'/>";
@@ -879,7 +879,7 @@ class PluginIserviceHmarfa
         }
 
         if (IserviceToolBox::getInputVariable('to_ticket', null)) {
-            Html::redirect("$CFG_GLPI[root_doc]/plugins/iservice/front/ticket.form.php?id=$id&mode=" . PluginIserviceTicket::MODE_CLOSE);
+            Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$id&mode=" . PluginIserviceTicket::MODE_CLOSE);
         }
 
         $add                    = IserviceToolBox::getInputVariable('add');
@@ -1333,7 +1333,7 @@ class PluginIserviceHmarfa
         $consumables_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', $consumables_header, $consumables_rows, 'text-align:center;');
 
         // Action buttons.
-        $action_buttons = " <a class='vsubmit' href='$CFG_GLPI[root_doc]/plugins/iservice/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets' target='_blank'>" . __('Ticket list', 'iservice') . "</a>";
+        $action_buttons = " <a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets' target='_blank'>" . __('Ticket list', 'iservice') . "</a>";
         if ($ticket->getOrderStatus() === 0) {
             $action_buttons .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             $action_buttons .= "&nbsp;" . $form->generateSubmit('order', __('Order', 'iservice'));
