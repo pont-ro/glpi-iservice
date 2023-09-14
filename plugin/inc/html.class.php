@@ -30,10 +30,10 @@ class PluginIserviceHtml {
             die('Parameter $options should be an array!');
         }
         if (!empty($options['class']) && !is_array($options['class'])) {
-            $options['class'] = array($options['class']);
+            $options['class'] = [$options['class']];
         }
         if (!empty($options['style']) && !is_array($options['style'])) {
-            $options['style'] = array($options['style']);
+            $options['style'] = [$options['style']];
         }
         $class = $this->adjustAttribute('class', $options['class'] ?? null);
         $style = $this->adjustAttribute('style', $options['style'] ?? null, ';');
@@ -52,7 +52,7 @@ class PluginIserviceHtml {
 
                 $checked = !empty($value) ? " checked='1'" : "";
                 $label = $options['label'] ?? "";
-                $valid_positions = array(self::CHECKBOXPOSITION_LEFT, self::CHECKBOXPOSITION_RIGHT);
+                $valid_positions = [self::CHECKBOXPOSITION_LEFT, self::CHECKBOXPOSITION_RIGHT];
                 $position = (isset($options['position']) && in_array($options['position'], $valid_positions)) ? $options['position'] : self::DEFAULT_CHECKBOXPOSITION;
                 if ($position === self::CHECKBOXPOSITION_RIGHT) {
                     $output .= "$label ";
@@ -149,24 +149,24 @@ class PluginIserviceHtml {
                             $options['options']['display'] = false;
                         }
                         if ($options['type'] === 'Dropdown' && $options['method'] === 'showNumber') {
-                            $arguments = array($name, $options['options']);
+                            $arguments = [$name, $options['options']];
                         } elseif ($options['type'] === 'Dropdown' && $options['method'] === 'showYesNo') {
-                            $arguments = array($name, $value, -1, $options['options']);
+                            $arguments = [$name, $value, -1, $options['options']];
                             $options['options']['force_return'] = true;
                         } elseif ($options['type'] === 'Dropdown' && $options['method'] === 'showFromArray') {
-                            $arguments = array($name, $options['values'], $options['options']);
+                            $arguments = [$name, $options['values'], $options['options']];
                         } elseif (isset($options['arguments'])) {
                             $arguments = $options['arguments'];
                         } else {
-                            $arguments = array($options['options']);
+                            $arguments = [$options['options']);
                         }
                         if (isset($options['options']['force_return']) && $options['options']['force_return']) {
                             ob_start();
-                            forward_static_call_array(array($options['type'], $options['method']), $arguments);
+                            forward_static_call_array([$options['type'], $options['method']], $arguments);
                             $temp_output = ob_get_contents();
                             ob_end_clean();
                         } else {
-                            $temp_output = forward_static_call_array(array($options['type'], $options['method']), $arguments);
+                            $temp_output = forward_static_call_array([$options['type'], $options['method']], $arguments);
                         }
                         $options['class'][] = 'dropdown_wrapper';
                         $class = $this->adjustAttribute('class', $options['class']);
@@ -535,7 +535,7 @@ class PluginIserviceHtml {
         echo "<div id='header'>";
         echo "<div id='c_logo'>";
         $interface = $_SESSION["glpiactiveprofile"]["iservice_interface"];
-        echo Html::link('', $CFG_GLPI["root_doc"] . "/plugins/iservice/front/$interface.php", array('accesskey' => '1',
+        echo Html::link('', $CFG_GLPI["root_doc"] . "/plugins/iservice/front/$interface.php", ['accesskey' => '1'],
             'title' => __('Home')));
         echo "</div>";
         echo "<div id='header_top'>";
