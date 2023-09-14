@@ -157,12 +157,12 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
 
         $form = new PluginIserviceHtml();
 
-        $form->openForm(['method' => 'post']);
-        echo __('Technician') . ': <div class="dropdown_wrapper small">';
+        $form->openForm(['method' => 'post', 'class' => 'iservice-form']);
+        echo __('Technician') . ': <div class="dropdown_wrapper fixed-15">';
         User::dropdown(['name' => 'tech_id', 'value' => $tech_id, 'right' => 'interface']);
         echo '</div>&nbsp;&nbsp;&nbsp;&nbsp';
-        echo __('Year', 'iservice') . ": <input type='text' id='year' name='year' value='$year' style='width: 3em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
-        echo __('Month', 'iservice') . ": <input type='text' id='month' name='month' value='$month' style='width: 1.5em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
+        echo __('Year', 'iservice') . ": <input type='text' id='year' name='year' value='$year' style='width: 4em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
+        echo __('Month', 'iservice') . ": <input type='text' id='month' name='month' value='$month' style='width: 2em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
         echo "<input type='submit' class='submit' value='" . __('Search') . "'>&nbsp;&nbsp;&nbsp;&nbsp;";
         echo "<input type='submit' class='submit' value='" . __('This month', 'iservice') . "' onclick='return setPreviousMonth(0);'>&nbsp;&nbsp;&nbsp;&nbsp;";
         echo "<input type='submit' class='submit' value='" . __('Last month', 'iservice') . "' onclick='return setPreviousMonth(1);'>&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -189,7 +189,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
     <tr>
         <?php for ($column = 1; $column < 5; $column++) { ?>
             <td style="padding:0; vertical-align:top; width:25%;">
-                <?php $form->openForm(['method' => 'post', 'action' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\GlobalReadcounter']); ?>
+                <?php $form->openForm(['method' => 'post', 'action' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\GlobalReadcounter', 'class' => 'iservice-form']); ?>
                 <table>
                     <thead>
                     <tr>

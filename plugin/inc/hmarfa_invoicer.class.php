@@ -980,7 +980,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
     protected static function renderInvoiceHead(PluginIserviceHtml $form, array $items, array $frontendData)
     {
-        $form->openTable(['class' => 'tab_cadre wide']);
+        $form->openTable(['class' => 'tab_cadre full-width']);
 
         $form->displayTableRow(
             [
@@ -1221,11 +1221,11 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             return;
         }
 
-        echo "        <table class='tab_cadre wide' style='margin-top: 10px;'>\n";
+        echo "        <table class='tab_cadre full-width' style='margin-top: 10px;'>\n";
         echo "            <tr><th style='width: 55%'>Copiatoare</th><th></th></tr>\n";
         foreach ($items['printers'] as $printer) {
             echo "        <tr><td>";
-            echo "            <table class='no-border wide'>";
+            echo "            <table class='no-border full-width'>";
             echo "                <tr><td style='padding: 10px 10px 0 10px;'>";
             echo $form->generateNewTabLink(
                 "{$printer->tableData['name']} | {$printer->tableData['serial']} | {$printer->tableData['otherserial']}",
@@ -1263,7 +1263,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             echo "                <b>" . implode(' | ', array_filter($printerInfo)) . "</b>";
             echo "                <span style='float: right; cursor: pointer;' onclick='$(\".toggle_{$printer->tableData['id']}\").toggle();'>Subtotal aparat: <b style='color:$subtotalColor'>{$printer->tableData['subtotal']}</b> RON</span>";
             echo "                </td></tr><tr class='toggle_{$printer->tableData['id']}'><td style='padding: 10px;'>";
-            echo "                    <table class='no-border wide'>";
+            echo "                    <table class='no-border full-width'>";
             echo "                     <tr>";
             echo "                        <td>";
             $form->displayField(
@@ -1343,7 +1343,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             echo "                    </table>";
             echo "                </td></tr><tr class='toggle_{$printer->tableData['id']}'><td>";
 
-            $form->openTable(['class' => 'no-border wide']);
+            $form->openTable(['class' => 'no-border full-width']);
 
             $form->openTableRow(['style' => 'text-align:center']);
             $form->displayTableColumn('Cod', ['style' => 'width:3em'], 'th');
@@ -1382,7 +1382,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             echo "                </td></tr>";
             echo "            </table>";
             echo "        </td><td  class='toggle_{$printer->tableData['id']}' style='padding-left: 20px'>";
-            $form->openTable(['class' => "tab_cadre_fixe tab_cadrehov no-border no-shadow wide"]);
+            $form->openTable(['class' => "tab_cadre_fixe tab_cadrehov no-border no-shadow full-width"]);
             $form->displayTableRow(
                 [
                     'Data ultima factură emisă',
@@ -1496,7 +1496,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             return;
         }
 
-        echo "        <table class='tab_cadre wide' style='margin-top: 10px;'>\n";
+        echo "        <table class='tab_cadre full-width' style='margin-top: 10px;'>\n";
         echo "            <tr>\n";
         echo "                <th colspan='2' style='font-weight: bold;'>\n";
         echo "                    Routere - Cod serviciu " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'codmat_router', $invoiceData['codmat_router']);
@@ -1504,7 +1504,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "            </tr>\n";
         echo "            <tr>\n";
         echo "                <td>\n";
-        echo "                    <table class='tab_cadre_fixe no-border wide' id='routers' table-layout='fixed'>\n";
+        echo "                    <table class='tab_cadre_fixe no-border full-width' id='routers' table-layout='fixed'>\n";
         echo "                        <thead>\n";
         echo "                            <tr class='short' style='text-align: center;'>\n";
         echo "                                <th style='width: 35px'>Id</th>\n";
@@ -1630,7 +1630,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             observer.observe(document.querySelector('.my-element'));
          */
 
-        echo "        <table class='wide'>";
+        echo "        <table class='full-width'>";
         echo "            <tr>";
         echo "                <th colspan='2' style='font-weight: bold;'>Document</th>\n";
         echo "            </tr>";
@@ -1644,7 +1644,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
 
         echo "                    </select>";
-        echo "                    <i class='clickable fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
+        echo "                    <i class='pointer fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
         echo "                    <input class='submit" . (empty($frontendData['import_disabled_reason']) ? '' : ' disabled') . "' name='import' style='color:red;' title='" . ($frontendData['import_disabled_reason'] ?: 'ATENȚIE! Apăsând butonul ștergeți fișierele csv!') . "' type='submit' value='Importat în hMarfa' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
         echo "                    <input class='submit" . (empty($frontendData['import_disabled_reason']) ? '' : ' disabled') . "' name='update' style='color:red;' title='" . ($frontendData['import_disabled_reason'] ?: '') . "' type='submit' value='Update facturare' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
         echo "                    <a id='send_mail_2' class='vsubmit' href='mailto:{$frontendData['invoiceData']['email_for_invoices_field']}?subject={$frontendData['mailData']['subject']}&body={$frontendData['mailData']['body']}' title='Trimite email către: {$frontendData['invoiceData']['email_for_invoices_field']}'>Trimite email</a>";

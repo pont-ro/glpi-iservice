@@ -2,6 +2,7 @@
 
 // Imported from iService2, needs refactoring.
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceTask_DataIntegrityTest
 {
 
@@ -154,7 +155,9 @@ class PluginIserviceTask_DataIntegrityTest
             echo "</table>";
             break;
         default:
-            $this->execute(true);
+            if (!empty(PluginIserviceConfig::getConfigValue('enabled_crons.data_integrity_test'))) {
+                $this->execute(true);
+            }
             break;
         }
 
