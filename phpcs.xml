@@ -148,4 +148,5 @@
         </properties>
     </rule>
 
+    <rule ref="Iservice.ImportedFiles.ChangeClassNames"/>
 </ruleset>
