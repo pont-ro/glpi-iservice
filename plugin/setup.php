@@ -158,3 +158,17 @@ function plugin_iservice_options(): array
         Plugin::OPTION_AUTOINSTALL_DISABLED => true,
     ];
 }
+
+function plugin_iservice_check_status(): void
+{
+    global $CFG_GLPI;
+    if (!Plugin::isPluginLoaded('iservice')) {
+        if (Session::haveRight('config', UPDATE)) {
+            Session::addMessageAfterRedirect('Please activate or upgrade iService plugin!', true, WARNING);
+            Html::redirect($CFG_GLPI['root_doc'] . '/front/plugin.php');
+        } else {
+            Session::addMessageAfterRedirect('iService plugin must be activated or upgraded, please contact the administrator!', true, ERROR);
+            Html::redirect($CFG_GLPI['root_doc'] . '/front/central.php');
+        }
+    }
+}

@@ -20,6 +20,7 @@ function getSearchStrings()
         'include (\'../../../inc/includes.php\')' => 'require \'../inc/includes.php\';',
         '$CFG_GLPI[root_doc]/plugins/iservice' => '$CFG_PLUGIN_ISERVICE[root_doc]',
         'DIRECTORY_SEPARATOR' => "'/'",
+        'PluginIserviceHtml' => 'Html',
     ];
 
     $customFieldDefinitionFiles = glob(PLUGIN_ISERVICE_DIR . '/install/customfields/*.json');

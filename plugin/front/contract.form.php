@@ -2,16 +2,16 @@
 
 // Imported from iService2, needs refactoring.
 use Glpi\Event;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
-define('GLPI_ROOT', '../../..');
-require GLPI_ROOT . '/inc/includes.php';
+require "../inc/includes.php";
 
 Session::checkRight("plugin_iservice_contract", READ);
 
-$contract_id     = PluginIserviceCommon::getInputVariable('contract_id');
-$add_contract    = PluginIserviceCommon::getInputVariable('add_contract');
-$modify_contract = PluginIserviceCommon::getInputVariable('modify_contract');
-$update_contract = PluginIserviceCommon::getInputVariable('update_contract');
+$contract_id     = IserviceToolBox::getInputVariable('contract_id');
+$add_contract    = IserviceToolBox::getInputVariable('add_contract');
+$modify_contract = IserviceToolBox::getInputVariable('modify_contract');
+$update_contract = IserviceToolBox::getInputVariable('update_contract');
 
 global $DB;
 
@@ -46,7 +46,7 @@ if (!empty($add_contract)) {
             'num' => 'numărul',
         ];
         foreach ($fields_to_check as $field_name_to_check => $field_to_check_label) {
-            if (!empty($post_data['contract'][$field_name_to_check]) && $contract->getFromDBByQuery("WHERE $field_name_to_check = '{$post_data['contract'][$field_name_to_check]}' LIMIT 1")) {
+            if (!empty($post_data['contract'][$field_name_to_check]) && PluginIserviceDB::populateByQuery($contract, "WHERE $field_name_to_check = '{$post_data['contract'][$field_name_to_check]}' LIMIT 1")) {
                 Session::addMessageAfterRedirect("Contractul cu $field_to_check_label {$post_data['contract'][$field_name_to_check]} există deja!", true, ERROR);
                 $error = true;
             }
@@ -59,8 +59,8 @@ if (!empty($add_contract)) {
             }
 
             if (($contract_id = $contract->add($post_data['contract'])) != false) {
-                $contract_customfields = new PluginFieldsContractcustomfield();
-                if (!$contract_customfields->getFromDBByItemsId($contract_id)) {
+                $contract_customfields = new PluginFieldsContractcontractcustomfield();
+                if (!PluginIserviceDB::populateByItemsId($contract_customfields, $contract_id)) {
                     $post['_customfields']['contract']['add']      = 'add';
                     $post['_customfields']['contract']['items_id'] = $contract_id;
                     if ($contract_customfields->add($post['_customfields']['contract'])) {
@@ -86,13 +86,13 @@ if (!empty($add_contract)) {
 } elseif (!empty($update_contract) && $post_data['contract'] !== null) {
     $contract->check($post_data['contract']['id'], UPDATE);
     $contract->update($post_data['contract']);
-    $contract_customfields = new PluginFieldsContractcustomfield();
-    $contract_customfields->getFromDBByItemsId($post_data['contract']['id']);
+    $contract_customfields = new PluginFieldsContractcontractcustomfield();
+    PluginIserviceDB::populateByItemsId($contract_customfields, $post_data['contract']['id']);
     $post['_customfields']['contract'][$contract_customfields->getIndexName()] = $contract_customfields->getID();
     $contract_customfields->update($post['_customfields']['contract']);
     Event::log($contract_id, "contracts", 4, "inventory", sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
 }
 
-PluginIserviceHtml::header(PluginIservicePrinter::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], null, null);
+Html::header(PluginIservicePrinter::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], null, null);
 $contract->showForm($contract_id);
-PluginIserviceHtml::footer();
+Html::footer();
