@@ -158,7 +158,7 @@ class PluginIserviceHtml {
                         } elseif (isset($options['arguments'])) {
                             $arguments = $options['arguments'];
                         } else {
-                            $arguments = [$options['options']);
+                            $arguments = [$options['options']];
                         }
                         if (isset($options['options']['force_return']) && $options['options']['force_return']) {
                             ob_start();
@@ -535,8 +535,8 @@ class PluginIserviceHtml {
         echo "<div id='header'>";
         echo "<div id='c_logo'>";
         $interface = $_SESSION["glpiactiveprofile"]["iservice_interface"];
-        echo Html::link('', $CFG_GLPI["root_doc"] . "/plugins/iservice/front/$interface.php", ['accesskey' => '1'],
-            'title' => __('Home')));
+        echo Html::link('', $CFG_GLPI["root_doc"] . "/plugins/iservice/front/$interface.php", ['accesskey' => '1',
+            'title' => __('Home')]);
         echo "</div>";
         echo "<div id='header_top'>";
 
