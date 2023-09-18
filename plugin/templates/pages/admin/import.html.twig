@@ -2,19 +2,19 @@
     <div class="row g-3 justify-content-evenly">
         <div class="mt-0 col-12 col-lg-6 col-xxl-3">
             <label for="old-host"></label>
-            <input class="full-width" disabled="disabled" id="old-host" name="old_host" type="text" value="localhost">
+            <input class="full-width" disabled="disabled" id="old-host" name="old_host" type="text" value="{{ old_db['host'] }}">
         </div>
         <div class="mt-0 col-12 col-lg-6 col-xxl-3">
             <label for="old-db"></label>
-            <input class="full-width" disabled="disabled" id="old-db" name="old_db" type="text" value="iservice2">
+            <input class="full-width" disabled="disabled" id="old-db" name="old_db" type="text" value="{{ old_db['name'] }}">
         </div>
         <div class="mt-0 col-12 col-lg-6 col-xxl-3">
             <label for="old-user"></label>
-            <input class="full-width" disabled="disabled" id="old-user" name="old_user" type="text" value="c1iservice">
+            <input class="full-width" disabled="disabled" id="old-user" name="old_user" type="text" value="{{ old_db['user'] }}">
         </div>
         <div class="mt-0 col-12 col-lg-6 col-xxl-3">
             <label for="old-pass"></label>
-            <input class="full-width" disabled="disabled" id="old-pass" name="old_pass" type="password" value="c1iservice.Password">
+            <input class="full-width" disabled="disabled" id="old-pass" name="old_pass" type="password" value="{{ old_db['pass'] }}">
         </div>
     </div>
 
@@ -23,7 +23,7 @@
             <i class="ti ti-upload"></i>
             <span onclick="importFromOldIservice('{{ url_base }}');">{{ _x('button', 'Import') }}</span>
         </a>
-        <a class="btn btn-primary me-2" href="#" id="import-button">
+        <a class="btn btn-primary me-2" href="#" id="clear-button">
             <i class="ti ti-database-off"></i>
             <span onclick="clearDatabase('{{ url_base }}');">{{ _x('button', 'Clear data') }}</span>
         </a>

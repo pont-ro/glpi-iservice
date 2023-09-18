@@ -2,6 +2,7 @@
 
 namespace GlpiPlugin\Iservice\InstallSteps;
 
+use PluginIserviceConfig;
 use PluginIserviceDB;
 
 class HandleProfileRightsInstallStep
@@ -43,7 +44,7 @@ class HandleProfileRightsInstallStep
 
     public static function undo(): void
     {
-        if (!self::CLEANUP_ON_UNINSTALL) {
+        if (!PluginIserviceConfig::getConfigValue('plugin.cleanup_on_uninstall', self::CLEANUP_ON_UNINSTALL)) {
             return;
         }
 

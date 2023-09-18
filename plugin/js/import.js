@@ -79,6 +79,7 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
             resultElement.removeClass('fa-spinner fa-pulse');
 
             try {
+                console.log("Response data for " + itemType + ": " + data);
                 let result = JSON.parse(data);
                 let validResult = result.result !== undefined;
 
@@ -91,7 +92,7 @@ function processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base,
 
                     resultElement.closest('.list-group-item-action').find('.form-check-input').removeClass('to-process');
                     resultElement.addClass('fa-circle-check fa-regular text-success ' + itemType);
-                    resultElement.attr('title', 'Import successful');
+                    resultElement.attr('title', 'Operation successful');
                     processNextItem(firstOrLast, buildAjaxCallback, callerButton, url_base, 0);
                     return;
                 }

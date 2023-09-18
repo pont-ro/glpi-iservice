@@ -338,7 +338,7 @@ $select         = $importConfig['select'] ?? '*';
 $limit          = $importConfig['limit'] ?? 50000;
 
 $oldItems = PluginIserviceDB::getQueryResult(
-    "SELECT a.* FROM (SELECT $select FROM $importConfig[oldTable] ORDER BY id ASC) a WHERE id > $input[startFromId] LIMIT $limit",
+    "SELECT a.* FROM (SELECT $select FROM $importConfig[oldTable] ORDER BY id) a WHERE id > $input[startFromId] LIMIT $limit",
     'id',
     new PluginIserviceDB($input['oldDBHost'], $input['oldDBName'], $input['oldDBUser'], $input['oldDBPassword'])
 );
@@ -385,7 +385,7 @@ do {
         }
 
         if ($foundId === false) {
-            if (!$item->add($itemData, [],false)) {
+            if (!$item->add($itemData, [], false)) {
                 $errors['itemsNotAdded'][$itemTypeClass][]            = "Item old id: $oldItem[id]. Error: Could not add $itemTypeClass object with data: " . json_encode($itemData);
                 $errors['itemsNotAdded'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
                 continue;
@@ -421,7 +421,7 @@ do {
     }
 } while (!empty($errors['retry']) && $oldItemsCount > count($errors['retry']) && $oldItems = $errors['retry']);
 
-if ($oldItemsCount === count($errors['retry'] ?? [])) {
+if ($oldItemsCount > 0 && $oldItemsCount === count($errors['retry'] ?? [])) {
     $errors[] = "Cannot find new values for self referenced $importConfig[itemTypeClass] objects with the following ids:";
     $errors[] = implode(', ', array_keys($errors['retry']));
     unset($errors['retry']);

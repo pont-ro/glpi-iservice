@@ -18,4 +18,11 @@ return [
     'folder_integrity.report_file' => PLUGIN_ISERVICE_CACHE_DIR . "/unknown_directory_entries",
     'open_ticket_limit' => 50,
     'views.show_limit' => 'false',
+    'plugin.cleanup_on_uninstall' => false,
+    'old_db' => [
+        'host' => 'localhost',
+        'name' => 'iservice2',
+        'user' => 'c1iservice',
+        'pass' => 'c1iservice.Password'
+    ],
 ];

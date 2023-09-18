@@ -6,6 +6,7 @@ use Glpi\Toolbox\Sanitizer;
 use PluginFieldsContainer;
 use PluginFieldsField;
 use PluginFieldsLabelTranslation;
+use PluginIserviceConfig;
 use Session;
 
 class AddCustomFieldsInstallStep
@@ -104,7 +105,7 @@ class AddCustomFieldsInstallStep
 
     public static function undo(): void
     {
-        if (!self::CLEANUP_ON_UNINSTALL) {
+        if (!PluginIserviceConfig::getConfigValue('plugin.cleanup_on_uninstall', self::CLEANUP_ON_UNINSTALL)) {
             return;
         }
 
