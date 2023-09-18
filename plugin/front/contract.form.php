@@ -11,7 +11,7 @@ Session::checkRight("plugin_iservice_contract", READ);
 $contract_id     = IserviceToolBox::getInputVariable('contract_id');
 $add_contract    = IserviceToolBox::getInputVariable('add_contract');
 $modify_contract = IserviceToolBox::getInputVariable('modify_contract');
-$update_contract = IserviceToolBox::getInputVariable('update_contract');
+$update_contract = IserviceToolBox::getInputVariable('update');
 
 global $DB;
 
@@ -91,6 +91,7 @@ if (!empty($add_contract)) {
     $post['_customfields']['contract'][$contract_customfields->getIndexName()] = $contract_customfields->getID();
     $contract_customfields->update($post['_customfields']['contract']);
     Event::log($contract_id, "contracts", 4, "inventory", sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
+    Html::back();
 }
 
 Html::header(PluginIservicePrinter::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], null, null);
