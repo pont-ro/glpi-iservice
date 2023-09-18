@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Iservice" xsi:noNamespaceSchemaLocation="../../../phpcs.xsd">
-    <description>jfhjfghjfghjfgh.</description>
+    <description>iService3 custom sniffs.</description>
 
 </ruleset>

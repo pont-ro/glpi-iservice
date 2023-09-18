@@ -28,7 +28,7 @@ function getSearchStrings()
     foreach ($customFieldDefinitionFiles as $customFieldDefinitionFile) {
         $fieldMap = json_decode(file_get_contents($customFieldDefinitionFile), true);
         foreach ($fieldMap as $field) {
-            if (!isset($field['type']) || $field['type'] == 'dropdown' || $field['type'] == 'header') {
+            if (!isset($field['type']) || $field['type'] == 'header') {
                 continue;
             }
 
@@ -46,9 +46,7 @@ $results         = [];
 $selectedResults = [];
 
 // Check if the form has been submitted.
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the file name from the form.
-    $filename = $_POST['filename'];
+if (null !== ($filename = filter_input(INPUT_POST, 'filename'))) {
 
     // Open the file for reading.
     $file           = fopen($filename, 'r');
