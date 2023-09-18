@@ -54,6 +54,7 @@ class PluginIserviceConfig extends CommonDBTM
             [
                 'url_base' => $CFG_PLUGIN_ISERVICE['root_doc'],
                 'import_groups' => include PLUGIN_ISERVICE_DIR . '/config/import.php',
+                'old_db' => self::getConfigValue('old_db'),
             ]
         );
 
@@ -76,7 +77,7 @@ class PluginIserviceConfig extends CommonDBTM
         return true;
     }
 
-    public static function getConfigValue(string $name): ?string
+    public static function getConfigValue(string $name, string $default = null): null|string|array
     {
         $value = self::getValueFromSession($name);
 
@@ -105,20 +106,20 @@ class PluginIserviceConfig extends CommonDBTM
             return $value;
         }
 
-        return null;
+        return $default;
     }
 
-    public static function getValueFromSession(string $name): ?string
+    public static function getValueFromSession(string $name): null|string|array
     {
         return $_SESSION['plugin']['iservice']['config'][$name] ?? null;
     }
 
-    public static function setValueInSession(string $name, $value): void
+    public static function setValueInSession(string $name, null|string|array $value): void
     {
         $_SESSION['plugin']['iservice']['config'][$name] = $value;
     }
 
-    public static function getValueFromDatabase(string $name): ?string
+    public static function getValueFromDatabase(string $name): null|string|array
     {
         $config = new self();
         $config->getFromDBByCrit(
@@ -130,7 +131,7 @@ class PluginIserviceConfig extends CommonDBTM
         return $config?->getField('value');
     }
 
-    public static function getValueFromArray(string $name, array $fileConfig): ?string
+    public static function getValueFromArray(string $name, array $fileConfig): null|string|array
     {
         return $fileConfig[$name] ?? null;
     }
