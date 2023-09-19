@@ -105,6 +105,8 @@ class PluginIserviceProfile extends Profile
 
             'plugin_iservice_printer' => right_array(ALLSTANDARDRIGHT, array_merge(['subtehnician'], $elevated_profiles)),
             'plugin_iservice_printer_full' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+
+            'plugin_iservice_contract' => array_merge(right_array(READ, $level20_profiles), right_array(ALLSTANDARDRIGHT, $level30_profiles)),
         ];
 
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);
