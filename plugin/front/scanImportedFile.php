@@ -14,12 +14,12 @@ function getSearchStrings()
         'PluginFieldsContractcustomfield' => 'PluginFieldsContractcontractcustomfield',
         'PluginFieldsCartridgeitemcustomfield' => 'PluginFieldsCartridgeitemcartridgeitemcustomfield',
         'PluginFieldsCartridgecustomfield' => 'PluginFieldsCartridgecartridgecustomfield',
-        'clickable' => 'pointer',
+        'clickable' => 'pointer???',
         'getFromDBByItemsId' => 'populateByItemsId???',
         'getFromDBByQuery' => 'populateByQuery???',
         'include (\'../../../inc/includes.php\')' => 'require \'../inc/includes.php\';',
         '$CFG_GLPI[root_doc]/plugins/iservice' => '$CFG_PLUGIN_ISERVICE[root_doc]',
-        'DIRECTORY_SEPARATOR' => "'/'",
+        'DIRECTORY_SEPARATOR' => "'/'???",
         'PluginIserviceHtml' => 'Html',
     ];
 
