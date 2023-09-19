@@ -19,7 +19,7 @@ function getSearchStrings()
         'getFromDBByQuery' => 'populateByQuery???',
         'include (\'../../../inc/includes.php\')' => 'require \'../inc/includes.php\';',
         '$CFG_GLPI[root_doc]/plugins/iservice' => '$CFG_PLUGIN_ISERVICE[root_doc]',
-        'DIRECTORY_SEPARATOR' => "'/'",
+        'DIRECTORY_SEPARATOR' => "'/'???",
     ];
 
     $customFieldDefinitionFiles = glob(PLUGIN_ISERVICE_DIR . '/install/customfields/*.json');
