@@ -45,8 +45,7 @@ if (!file_exists(PLUGIN_ISERVICE_LOG_DIR)) {
  */
 function plugin_init_iservice(): void
 {
-    global $CFG_GLPI;
-    global $PLUGIN_HOOKS;
+    global $CFG_GLPI, $PLUGIN_HOOKS;
     global $CFG_PLUGIN_ISERVICE;
 
     $CFG_PLUGIN_ISERVICE = [

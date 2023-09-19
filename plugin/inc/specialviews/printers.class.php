@@ -22,7 +22,7 @@ class Printers extends View
 
     public static function getTicketStatusDisplay($row_data): string
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         $export_color                  = $row_data['invoice_expiry_date_field'] < date("Y-m-d", strtotime("-14days")) ? '_red' : '_green';
         $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                       = [
@@ -56,7 +56,7 @@ class Printers extends View
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
                 'title' => __('Installable cartridges', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
-                'onclick' => "ajaxCall(\"$CFG_GLPI[root_doc]/plugins/iservice/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[supplier_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printer_id]\", \"\", function(message) {\$(\"#popup_$row_data[printer_id]_\").html(message);});",
+                'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[supplier_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printer_id]\", \"\", function(message) {\$(\"#popup_$row_data[printer_id]_\").html(message);});",
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_'></div>",
             ],
             'invoices' => [

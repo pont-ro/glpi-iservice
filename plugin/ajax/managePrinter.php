@@ -162,7 +162,7 @@ case 'get_last_invoices_dropdown':
     $search_dir         = PluginIservicePendingEmailUpdater::getInvoiceSearchFolder();
     $selected           = IserviceToolBox::getInputVariable('selected');
     foreach ($last_invoices_data as $last_invoice_data) {
-        foreach (glob($search_dir . DIRECTORY_SEPARATOR . "I$last_invoice_data[nrfac]*.*") as $invoice) {
+        foreach (glob($search_dir . "/I$last_invoice_data[nrfac]*.*") as $invoice) {
             $attachment = basename($invoice);
             $isSelected = ($selected === "$last_invoice_data[nrfac]-$attachment") ? 'selected' : '';
             $result    .= "<option value='$last_invoice_data[nrfac]-$attachment' $isSelected>$last_invoice_data[datafac] - $attachment</option>";

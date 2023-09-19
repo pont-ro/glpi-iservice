@@ -59,7 +59,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
     public static function showForTicket(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false)
     {
-        global $DB, $CFG_GLPI;
+        global $DB, $CFG_PLUGIN_ISERVICE;
 
         $html         = new PluginIserviceHtml();
         $instID       = $ticket->getID();
@@ -304,7 +304,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
             echo "<td class='center'>";
             echo "<a href='views.php?view=GlpiPlugin\Iservice\Specialviews\Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$instID'>";
-            echo "<img title='$title' src='$CFG_GLPI[root_doc]/plugins/iservice/pics/app_go$color.png' /></a></td>";
+            echo "<img title='$title' src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_go$color.png' /></a></td>";
         }
 
         echo $header;
