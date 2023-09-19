@@ -14,7 +14,7 @@ function getSearchStrings()
         'PluginFieldsContractcustomfield' => 'PluginFieldsContractcontractcustomfield',
         'PluginFieldsCartridgeitemcustomfield' => 'PluginFieldsCartridgeitemcartridgeitemcustomfield',
         'PluginFieldsCartridgecustomfield' => 'PluginFieldsCartridgecartridgecustomfield',
-        'clickable' => 'pointer',
+        'clickable' => 'pointer???',
         'getFromDBByItemsId' => 'populateByItemsId???',
         'getFromDBByQuery' => 'populateByQuery???',
         'include (\'../../../inc/includes.php\')' => 'require \'../inc/includes.php\';',
