@@ -15,7 +15,6 @@
    {% set item_type = item.getType() %}
    {% set field_options = {
       'locked_fields': item.getLockedFields(),
-      'full_width': true,
    } %}
 
    <div class="card-body d-flex flex-wrap">
@@ -26,26 +25,23 @@
                   {% block form_fields %}
                      {% set type_itemtype = 'Contract' %}
                      {% set type_fk = 'id' %}
-                     {% if item.isField(type_fk) %}
-                        {{ fields.dropdownField(
-                           type_itemtype,
-                           'contract_id',
-                           item.fields[type_fk],
-                           type_itemtype|itemtype_name,
-                           field_options|merge({
-                              'on_change': 'window.location.href=\"//\" + window.location.host + window.location.pathname + \"?contract_id=\" + $(this).val();',
-                           })
-                        ) }}
-                     {% endif %}
 
-                     {% if item.isField('name') %}
-                        {{ fields.textField(
-                           'contract[name]',
-                           item.fields['name'],
-                           __('Name'),
-                        field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.dropdownField(
+                        'Contract',
+                        'contract_id',
+                        item.fields['id'],
+                        'Contract'|itemtype_name,
+                        field_options|merge({
+                           'on_change': 'window.location.href=\"//\" + window.location.host + window.location.pathname + \"?contract_id=\" + $(this).val();',
+                        })
+                     ) }}
+
+                     {{ fields.textField(
+                        'contract[name]',
+                        item.fields['name'],
+                        __('Name'),
+                     field_options
+                     ) }}
 
                      {{ fields.textField(
                         'contract[num]',
@@ -54,14 +50,12 @@
                         field_options
                      ) }}
 
-                     {% if item.isField('begin_date') %}
-                        {{ fields.dateField(
-                           'contract[begin_date]',
-                           item.fields['begin_date'],
-                           __('Start date'),
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.dateField(
+                        'contract[begin_date]',
+                        item.fields['begin_date'],
+                        __('Start date'),
+                        field_options
+                     ) }}
 
                      {{ fields.dropdownNumberField('contract[duration]', item.fields['duration'], __('Initial contract period'), field_options|merge({
                         'rand': rand,
@@ -90,109 +84,76 @@
 
                      {% set type_itemtype = item.getTypeClass() %}
                      {% set type_fk = item.getTypeForeignKeyField() %}
-                     {% if item.isField(type_fk) %}
-                        {{ fields.dropdownField(
-                           type_itemtype,
-                           'contract[' ~ type_fk ~ ']',
-                           item.fields[type_fk],
-                           type_itemtype|itemtype_name,
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.dropdownField(
+                        type_itemtype,
+                        'contract[' ~ type_fk ~ ']',
+                        item.fields[type_fk],
+                        type_itemtype|itemtype_name,
+                        field_options
+                     ) }}
 
-                     {% if item.fields['begin_date'] is not empty and item.fields['duration'] is not empty %}
-                        {% set warranty_expiration %}
-                           <i class="fas fa-arrow-right"></i>
-                           {{ call('Infocom::getWarrantyExpir', [
-                              item.fields['begin_date'],
-                              item.fields['duration'],
-                              0,
-                              true,
-                              item.fields['renewal'] == constant('Contract::RENEWAL_TACIT')
-                           ])|raw }}
-                        {% endset %}
-                     {% endif %}
+                     {{ fields.textareaField(
+                        'contract[comment]',
+                        item.fields['comment'],
+                        _n('Comment', 'Comments', get_plural_number()),
+                        field_options
+                     ) }}
 
-                     {% if item.isField('comment') %}
-                        {{ fields.textareaField(
-                           'contract[comment]',
-                           item.fields['comment'],
-                           _n('Comment', 'Comments', get_plural_number()),
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][included_copies_bk_field]',
+                        item.fields['included_copies_bk_field'],
+                        'Copii black incluse',
+                        field_options
+                     ) }}
 
-                     {% if item.isField('included_copies_bk_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][included_copies_bk_field]',
-                           item.fields['included_copies_bk_field'],
-                           'Copii black incluse',
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][included_copies_col_field]',
+                        item.fields['included_copies_col_field'],
+                        'Copii color incluse',
+                        field_options
+                     ) }}
 
-                     {% if item.isField('included_copies_col_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][included_copies_col_field]',
-                           item.fields['included_copies_col_field'],
-                           'Copii color incluse',
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][copy_price_bk_field]',
+                        item.fields['copy_price_bk_field'],
+                        'Tarif copie black',
+                        field_options
+                     ) }}
 
-                     {% if item.isField('copy_price_bk_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][copy_price_bk_field]',
-                           item.fields['copy_price_bk_field'],
-                           'Tarif copie black',
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][copy_price_col_field]',
+                        item.fields['copy_price_col_field'],
+                        'Tarif copie color',
+                        field_options
+                     ) }}
 
-                     {% if item.isField('copy_price_col_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][copy_price_col_field]',
-                           item.fields['copy_price_col_field'],
-                           'Tarif copie color',
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][included_copy_value_field]',
+                        item.fields['included_copy_value_field'],
+                        'Valoare copii incluse',
+                        field_options
+                     ) }}
 
-                     {% if item.isField('included_copy_value_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][included_copy_value_field]',
-                           item.fields['included_copy_value_field'],
-                           'Valoare copii incluse',
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][monthly_fee_field]',
+                        item.fields['monthly_fee_field'],
+                        'Tarif lunar',
+                        field_options
+                     ) }}
 
-                     {% if item.isField('monthly_fee_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][monthly_fee_field]',
-                           item.fields['monthly_fee_field'],
-                           'Tarif lunar',
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][currency_field]',
+                        item.fields['currency_field'],
+                        'Curs de calcul',
+                        field_options
+                     ) }}
 
-                     {% if item.isField('currency_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][currency_field]',
-                           item.fields['currency_field'],
-                           'Curs de calcul',
-                           field_options
-                        ) }}
-                     {% endif %}
-
-                     {% if item.isField('copy_price_divider_field') %}
-                        {{ fields.textField(
-                           '_customfields[contract][copy_price_divider_field]',
-                           item.fields['copy_price_divider_field'],
-                           'Divizor PU copie',
-                           field_options
-                        ) }}
-                     {% endif %}
+                     {{ fields.textField(
+                        '_customfields[contract][copy_price_divider_field]',
+                        item.fields['copy_price_divider_field'],
+                        'Divizor PU copie',
+                        field_options
+                     ) }}
 
                   {% endblock %}
                </div>
