@@ -18,7 +18,7 @@ class PluginIserviceContract extends Contract
 
     public function getFromDB($ID)
     {
-        $this->customfields = new PluginFieldsContractcontractcustomfield();
+        $this->customfields = new ($this->getCustomFieldsModelName());
         if (parent::getFromDB($ID)) {
             if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
                 return false;
@@ -52,6 +52,11 @@ class PluginIserviceContract extends Contract
     public function getTypeForeignKeyField(): ?string
     {
         return 'contracttypes_id';
+    }
+
+    public function getCustomFieldsModelName(): string
+    {
+        return 'PluginFieldsContractcontractcustomfield';
     }
 
 }

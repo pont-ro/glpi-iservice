@@ -70,7 +70,27 @@ trait PluginIserviceItem
         return $this->get($db->fetchAssoc($result)['id']);
     }
 
-    public function update(array $input, $history = 1, $options = [])
+    public function add(array $input, $options = [], $history = true)
+    {
+        $model  = new parent;
+        $result = $model->add($input, $options, $history);
+
+        if ($result && $this->getCustomFieldsModelName() !== '') {
+            $model->customfields = new ($this->getCustomFieldsModelName());
+            $input['add']        = 'add';
+            $input['items_id']   = $model->getID();
+            $input['itemtype']   = $model->getType();
+            $customFieldsResult  = $model->customfields->add($input, $options, $history);
+
+            if (!$customFieldsResult) {
+                Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
+            }
+        }
+
+        return $result;
+    }
+
+    public function update(array $input, $history = 1, $options = []): bool
     {
         $model = new parent;
         $model->getFromDB($this->getID());
@@ -78,6 +98,11 @@ trait PluginIserviceItem
 
         return $result && $this->customfields->update(array_merge($input, ['id' => $this->customfields->getID()]), $history, $options);
 
+    }
+
+    public function getCustomFieldsModelName(): string
+    {
+        return '';
     }
 
 }

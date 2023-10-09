@@ -9,7 +9,7 @@ require "../inc/includes.php";
 Session::checkRight("plugin_iservice_contract", READ);
 
 $contract_id     = IserviceToolBox::getInputVariable('contract_id');
-$add_contract    = IserviceToolBox::getInputVariable('add_contract');
+$add_contract    = IserviceToolBox::getInputVariable('add_contract') || (empty($contract_id) && $_SERVER['REQUEST_METHOD'] === 'POST');
 $modify_contract = IserviceToolBox::getInputVariable('modify_contract');
 $update_contract = IserviceToolBox::getInputVariable('update');
 
@@ -34,7 +34,7 @@ foreach ($special_keys as $special_key) {
     }
 }
 
-$contract = new  PluginIserviceContract();
+$contract = new PluginIserviceContract();
 
 if (!empty($add_contract)) {
     if (empty($post_data['contract']['name'])) {
