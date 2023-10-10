@@ -2433,7 +2433,7 @@ class PluginIserviceTicket extends Ticket
 
     public function getFromDB($ID): bool
     {
-        $this->customfields = new PluginFieldsTicketticketcustomfield();
+        $this->customfields = new ($this->getCustomFieldsModelName());
         if (parent::getFromDB($ID)) {
             if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
                 return false;
@@ -2447,6 +2447,11 @@ class PluginIserviceTicket extends Ticket
         }
 
         return false;
+    }
+
+    public function getCustomFieldsModelName(): string
+    {
+        return 'PluginFieldsTicketticketcustomfield';
     }
 
     /*

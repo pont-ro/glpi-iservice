@@ -16,22 +16,6 @@ class PluginIserviceContract extends Contract
      */
     public $customfields = null;
 
-    public function getFromDB($ID)
-    {
-        $this->customfields = new ($this->getCustomFieldsModelName());
-        if (parent::getFromDB($ID)) {
-            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
-                return false;
-            }
-
-            // Further code possibility.
-            self::$item_cache[$ID] = $this;
-            return true;
-        }
-
-        return false;
-    }
-
     public function showForm($ID, array $options = [])
     {
         $this->initForm($ID, $options);
