@@ -108,6 +108,8 @@ trait PluginIserviceItem
                 return false;
             }
 
+            $this->additionalGetFromDbSteps($ID);
+
             // Further code possibility.
             self::$item_cache[$ID] = $this;
             return true;
@@ -119,6 +121,10 @@ trait PluginIserviceItem
     public function getCustomFieldsModelName(): string
     {
         return '';
+    }
+
+    public function additionalGetFromDbSteps($ID = null): void
+    {
     }
 
 }
