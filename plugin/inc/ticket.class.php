@@ -2431,22 +2431,14 @@ class PluginIserviceTicket extends Ticket
         return $result;
     }
 
-    public function getFromDB($ID): bool
+    public function additionalGetFromDbSteps($ID = null): void
     {
-        $this->customfields = new PluginFieldsTicketticketcustomfield();
-        if (parent::getFromDB($ID)) {
-            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
-                return false;
-            }
+        $this->fields['items_id']['Printer'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
+    }
 
-            $this->fields['items_id']['Printer'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
-
-            // Further code poosibility.
-            self::$item_cache[$ID] = $this;
-            return true;
-        }
-
-        return false;
+    public function getCustomFieldsModelName(): string
+    {
+        return 'PluginFieldsTicketticketcustomfield';
     }
 
     /*

@@ -47,22 +47,14 @@ class PluginIservicePartner extends Supplier
         return parent::getFormURL($full);
     }
 
-    public function getFromDB($ID): bool
+    public function additionalGetFromDbSteps($ID = null): void
     {
-        $this->customfields  = new PluginFieldsSuppliersuppliercustomfield();
-        $this->hMarfa_fields = [];
-        if (parent::getFromDB($ID)) {
-            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
-                return false;
-            }
+        $this->hMarfa_fields = self::gethMarfaFields($this->customfields->fields['hmarfa_code_field']);
+    }
 
-            $this->hMarfa_fields = self::gethMarfaFields($this->customfields->fields['hmarfa_code_field']);
-
-            self::$item_cache[$ID] = $this;
-            return true;
-        }
-
-        return false;
+    public function getCustomFieldsModelName(): string
+    {
+        return 'PluginFieldsSuppliersuppliercustomfield';
     }
 
     public function hasCartridgeManagement(): bool

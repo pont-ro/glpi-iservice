@@ -686,29 +686,20 @@ class PluginIservicePrinter extends Printer
 
         if ($printer !== null && $printer->isNewItem()) {
             if (Session::haveRight('contract', CREATE)) {
-                return $form->generateSubmit('add_contract', __('Add') . ' ' . __('Contract'), ['class' => 'submit']);
+                return $form->generateSubmit('add', __('Add') . ' ' . __('Contract'), ['class' => 'submit']);
             } else {
                 return "&nbsp;";
             }
         } elseif (!$contract->isNewItem()) {
             return $form->generateSubmit('update_contract', __('Save') . ' ' . __('Contract'), ['class' => 'submit']);
         }
+
+        return '';
     }
 
-    public function getFromDB($ID): bool
+    public function getCustomFieldsModelName(): string
     {
-        $this->customfields = new PluginFieldsPrinterprintercustomfield();
-        if (parent::getFromDB($ID)) {
-            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
-                return false;
-            }
-
-            // Further code possibility.
-            self::$item_cache[$ID] = $this;
-            return true;
-        }
-
-        return false;
+        return 'PluginFieldsPrinterprintercustomfield';
     }
 
     public function getFromDBByEMSerial($serial, $use_cm_condition = false): bool

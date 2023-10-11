@@ -75,20 +75,9 @@ class PluginIserviceCartridge extends Cartridge
         );
     }
 
-    public function getFromDB($ID)
+    public function getCustomFieldsModelName(): string
     {
-        $this->customfields = new PluginFieldsCartridgecartridgecustomfield();
-        if (parent::getFromDB($ID)) {
-            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
-                return false;
-            }
-
-            // Further code possibility
-            self::$item_cache[$ID] = $this;
-            return true;
-        }
-
-        return false;
+        return 'PluginFieldsCartridgecartridgecustomfield';
     }
 
 }
