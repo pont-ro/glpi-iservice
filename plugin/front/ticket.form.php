@@ -12,8 +12,9 @@ $add                  = IserviceToolBox::getInputVariable('add');
 $update               = IserviceToolBox::getInputVariable('update');
 $post                 = filter_input_array(INPUT_POST);
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id');
+$options['printerId'] = IserviceToolBox::getInputVariable('printer_id');
 
-if ($id > 0 || !empty($global_readcounter)) {
+if ($id > 0) {
     $header_title = Ticket::getTypeName();
 } else {
     $header_title = __('New ticket');
@@ -26,10 +27,11 @@ if (!empty($add)) {
     $ticketId = $ticket->add($post);
 
     if (empty($ticketId)) {
-        Session::addMessageAfterRedirect(__('Could not create ticket!'), true, ERROR);
+        Session::addMessageAfterRedirect(__('Could not create ticket!', 'iservice'), true, ERROR);
+        Html::back();
     }
 
-    $ticket->post_updateItem();
+    $ticket->updateItem($ticketId);
 
     Html::redirect($ticket->getFormURL() . '?id=' . $ticketId);
 } elseif (!empty($update)) {
@@ -37,7 +39,7 @@ if (!empty($add)) {
 
     $ticket->update($post);
 
-    $ticket->post_updateItem();
+    $ticket->updateItem($id);
 
     Html::redirect($ticket->getFormURL() . '?id=' . $id);
 }

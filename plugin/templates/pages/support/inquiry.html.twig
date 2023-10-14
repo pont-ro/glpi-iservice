@@ -1,4 +1,5 @@
 {% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
 
 {% set params  = params ?? [] %}
 {% set no_header = no_header|default(not item.isNewItem() and not _get._in_modal|default(false)) %}
@@ -10,7 +11,6 @@
 <div class="asset {{ bg }}">
     {{ include('components/form/header.html.twig', {'in_twig': true}) }}
 
-    {% set rand = random() %}
     {% set params  = params ?? [] %}
     {% set withtemplate = params['withtemplate'] ?? '' %}
     {% set item_type = item.getType() %}
@@ -29,15 +29,10 @@
                                 'Supplier',
                                 'suppliers_id',
                                 partnerId,
-                                'Supplier'|itemtype_name,
+                                __('Partener'),
                                 field_options|merge({
-                                    'toupdatexxx': {
-                                        'url': printerOptionsUrl,
-                                        'to_update': 'dropdown_printer_id' ~ rand,
-                                    },
-                                    'on_changeeeee': "console.log('on_change'); $('#dropdown_printer_id" ~rand~ "').load('/plugins/iservice/ajax/iServiceGetDropdownValue.php');",
-                                    'on_changeeeee': "submit form with supplier_id and send the supplier id back from show form...",
                                     'on_change': "$(this).closest('form').submit();",
+                                    'disabled': partnersFieldDisabled
                                 })
                             ) }}
 
@@ -47,8 +42,6 @@
                                 printerId,
                                 'Printer'|itemtype_name,
                                 field_options|merge({
-                                    'rand': rand,
-                                    'urlxxxx': printerOptionsUrl,
                                     'condition': {
                                         'LEFT JOIN': {
                                             'glpi_infocoms as i': {
@@ -61,25 +54,69 @@
                                         'WHERE': {
                                             'i.suppliers_id': partnerId,
                                         }
-                                    }
+                                    },
+                                    'on_change': "$(this).closest('form').submit();",
+                                    'disabled': printersFieldDisabled
                                 })
                             ) }}
+
+                            {% if usageAddressField %}
+                                {{ fields.textField(
+                                    'printer[usage_address_field]',
+                                    usageAddressField,
+                                    __('Usage Address', 'iservice'),
+                                    field_options|merge({
+                                        'disabled': true,
+                                    })
+                                ) }}
+                            {% endif %}
+
+                            {% if locationName %}
+                                {{ fields.textField(
+                                    'printer[locationName]',
+                                    locationName,
+                                    __('Location'),
+                                    field_options|merge({
+                                        'disabled': true,
+                                    })
+                                ) }}
+                            {% endif %}
+
+                            {% if locationId %}
+                                {{ fields.textField(
+                                    'locations_id',
+                                    locationId,
+                                    '',
+                                    field_options|merge({
+                                        'type': 'hidden',
+                                    })
+                                ) }}
+                            {% endif %}
+
+                            {% if sumOfUnpaidInvoicesLink %}
+                                {{ fieldsIservice.formLink(
+                                    __('Sum of unpaid invoices', 'iservice'),
+                                    sumOfUnpaidInvoicesLink
+                                ) }}
+                            {% endif %}
 
                             {{ fields.textField(
                                 'name',
                                 item.fields['name'],
                                 __('Title'),
-                                field_options
+                                field_options|merge({
+                                    'required': true,
+                                })
                             ) }}
 
-{#                            {{ fields.textareaField(#}
-{#                                'content',#}
-{#                                item.fields['content'],#}
-{#                                __('Content'),#}
-{#                                field_options|merge({#}
-{#                                    'enable_richtext': 1,#}
-{#                                })#}
-{#                            ) }}#}
+                            {{ fields.textareaField(
+                                'content',
+                                item.fields['content'],
+                                __('Content'),
+                                field_options|merge({
+                                    'enable_richtext': 0,
+                                })
+                            ) }}
 
                         {% endblock %}
                     </div>
@@ -89,14 +126,5 @@
     </div>
 
     {{ include('components/form/buttons.html.twig') }}
-    {% if no_inventory_footer is not defined or no_inventory_footer == false %}
-        {{ include('components/form/inventory_info.html.twig') }}
-    {% endif %}
-
-    {% if params['formfooter'] is null or params['formfooter'] == true %}
-        <div class="card-footer mx-n2 mb-n2 mt-4">
-            {{ include('components/form/dates.html.twig') }}
-        </div>
-    {% endif %}
 </div>
 

@@ -110,710 +110,15 @@ class PluginIserviceTicket extends Ticket
         }
     }
 
-    public static function getFieldSettings($id): array
-    {
-        if (self::$field_settings === null || self::$field_settings_id !== $id) {
-            self::$field_settings_id = $id;
-            self::$field_settings    = [
-                '_auto_import' => [
-                    'default' => 1,
-                    'hidden' => true,
-                ],
-                'users_id_recipient' => [
-                    'default' => $_SESSION["glpiID"],
-                    'hidden' => true,
-                ],
-                '_users_id_requester' => [
-                    'default' => $_SESSION["glpiID"],
-                    'hidden' => true,
-                ],
-                '_contact_partner' => [
-                    'default' => [
-                        self::MODE_PARTNERCONTACT => true,
-                    ],
-                    'hidden' => true,
-                ],
-                '_close_on_success' => [
-                    'default' => [
-                        self::MODE_PARTNERCONTACT => false,
-                    ],
-                    'hidden' => true,
-                ],
-                '_movement_id' => [
-                    'hidden' => true,
-                ],
-                '_movement2_id' => [
-                    'hidden' => true,
-                ],
-                '_idemmailfield' => [
-                    'hidden' => true,
-                ],
-                '_users_id_observer' => [
-                    'hidden' => [
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                ],
-                '_users_id_assign' => [
-                    'default' => [
-                        self::MODE_READCOUNTER => in_array($_SESSION["glpiactiveprofile"]["name"], ['client', 'superclient', 'subtehnician', 'tehnician']) ? $_SESSION["glpiID"] : self::USER_ID_READER,
-                        self::MODE_CREATEINQUIRY => in_array($_SESSION["glpiactiveprofile"]["name"], ['client', 'superclient', 'subtehnician', 'tehnician']) ? $_SESSION["glpiID"] : self::USER_ID_READER,
-                        self::MODE_PARTNERCONTACT => $_SESSION["glpiID"],
-                    ],
-                    'hidden' => [
-                        self::MODE_READCOUNTER => !in_array($_SESSION["glpiactiveprofile"]["name"], ['tehnician', 'admin', 'super-admin']),
-                        self::MODE_CREATEINQUIRY => in_array($_SESSION["glpiactiveprofile"]["name"], ['client', 'superclient', 'subtehnician', 'tehnician']),
-                        self::MODE_CREATEREQUEST => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                    'required' => [
-                        self::MODE_MODIFY => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => true,
-                    ],
-                ],
-                'type' => [
-                    'default' => parent::INCIDENT_TYPE,
-                    'hidden' => true,
-                ],
-                '_suppliers_id_assign' => [
-                    'hidden' => in_array($_SESSION["glpiactiveprofile"]["name"], ['client', 'superclient']),
-                    'readonly' => [
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                ],
-                'items_id[Printer][0]' => [
-                    'hidden' => [
-                        self::MODE_PARTNERCONTACT => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                    'required' => [
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                    ],
-                ],
-                '_usage_address_field' => [
-                    'hidden' => false
-                ],
-                'locations_id' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => true,
-                    ]
-                ],
-                '_email' => [
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => true,
-                    ]
-                ],
-                '_send_email' => [
-                    'default' => [
-                        self::MODE_READCOUNTER => in_array($_SESSION["glpiactiveprofile"]["name"], ['client', 'superclient']),
-                        self::MODE_CREATEINQUIRY => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician']),
-                    ],
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => true,
-                    ]
-                ],
-                '_sum_of_unpaid_invoices' => [
-                    'hidden' => [
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                ],
-                '_last_invoice_and_counters' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                    ],
-                ],
-                'total2_black_field' => [
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                ],
-                'total2_color_field' => [
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                ],
-                'itilcategories_id' => [
-                    'default' => [
-                        self::MODE_CREATENORMAL => self::getItilCategoryId('interventie regulata'),
-                        self::MODE_READCOUNTER => self::getItilCategoryId('citire contor'),
-                        self::MODE_CREATEINQUIRY => in_array($_SESSION["glpiactiveprofile"]["name"], ['client', 'superclient']) ? self::getItilCategoryId('citire contor') : self::getItilCategoryId('sesizare externa'),
-                        self::MODE_CREATEREQUEST => self::getItilCategoryId('sesizare externa'),
-                        self::MODE_PARTNERCONTACT => self::getItilCategoryId('plati'),
-                    ],
-                    'hidden' => [
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                    'required' => true,
-                ],
-                'name' => [
-                    'default' => [
-                        self::MODE_READCOUNTER => 'citire contor',
-                        self::MODE_CREATEQUICK => 'tichet rapid',
-                    ],
-                    'hidden' => [
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                    'required' => true,
-                ],
-                'content' => [
-                    'default' => [
-                        self::MODE_READCOUNTER => 'periodic',
-                        self::MODE_CREATEQUICK => 'tichet rapid',
-                    ],
-                    'hidden' => [
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => true,
-                    ]
-                ],
-                '_followup[content]' => [
-                    'default' => [
-                        self::MODE_READCOUNTER => 'citire contor',
-                        self::MODE_CREATEQUICK => 'tichet rapid',
-                    ],
-                    'forced' => [
-                        self::MODE_READCOUNTER => $id > 0 ? '' : 'citire contor',
-                        self::MODE_CREATEQUICK => $id > 0 ? '' : 'tichet rapid',
-                        self::MODE_MODIFY => '',
-                        self::MODE_CLOSE => '',
-                    ],
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                    'required' => [
-                        self::MODE_READCOUNTER => !($id > 0),
-                    ],
-                ],
-                '_followup[is_private]' => [
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        // self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                ],
-                '_all_followup' => [
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => !($id > 0),
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                    ],
-                    'readonly' => [
-                        self::MODE_MODIFY => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => true,
-                    ],
-                ],
-                '_available_cartridges' => [
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => true,
-                    ],
-                ],
-                '_change_cartridge' => [
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => false,
-                    ],
-                ],
-                '_cartridge_installation' => [
-                    'default' => [
-                        self::MODE_READCOUNTER => date('Y-m-d'),
-                    ],
-                    'hidden' => [
-                        self::MODE_NONE => true,
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => false,
-                    ],
-                ],
-                'status' => [
-                    'default' => [
-                        self::MODE_CREATENORMAL => parent::INCOMING,
-                        self::MODE_CREATEINQUIRY => IserviceToolBox::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::INCOMING : parent::SOLVED,
-                        self::MODE_CREATEQUICK => parent::CLOSED,
-                        self::MODE_CREATEREQUEST => parent::INCOMING,
-                        self::MODE_PARTNERCONTACT => parent::CLOSED,
-                    ],
-                    'forced' => [
-                        self::MODE_READCOUNTER => IserviceToolBox::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::CLOSED : parent::SOLVED,
-                        self::MODE_CREATEQUICK => parent::CLOSED,
-                        self::MODE_MODIFY => parent::PLANNED,
-                    ],
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => false,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_CLOSE => false,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => true,
-                    ],
-                ],
-                '_operator_reading' => [
-                    'default' => [
-                        self::MODE_NONE => false,
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => false,
-                        self::MODE_CREATEQUICK => false,
-                        self::MODE_MODIFY => false,
-                        self::MODE_CREATEREQUEST => false,
-                        self::MODE_PARTNERCONTACT => false,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_CLOSE => false,
-                    ],
-                    'hidden' => [
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                ],
-                '_without_papers' => [
-                    'default' => [
-                        self::MODE_NONE => false,
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => false,
-                        self::MODE_MODIFY => false,
-                        self::MODE_CREATEREQUEST => false,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_CLOSE => false,
-                    ],
-                    'hidden' => [
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                ],
-                '_without_moving' => [
-                    'default' => [
-                        self::MODE_PARTNERCONTACT => true,
-                    ],
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                ],
-                '_save_progress' => [
-                    'hidden' => true,
-                /*
-                  [
-                  self::MODE_CREATENORMAL => true,
-                  self::MODE_READCOUNTER => true,
-                  self::MODE_CREATEINQUIRY => true,
-                  self::MODE_CREATEQUICK => true,
-                  self::MODE_MODIFY => true,
-                  self::MODE_CREATEREQUEST => true,
-                  self::MODE_PARTNERCONTACT => true,
-                  self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                  self::MODE_HMARFAEXPORT => true,
-                  self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                  ],
-                  /*
-                */
-                ],
-                '_cartridges' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => true,
-                    ],
-                ],
-                '_consumables' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => false,
-                        self::MODE_MODIFY => false,
-                        self::MODE_CREATEREQUEST => false,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                ],
-                '_export_type' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => false,
-                        self::MODE_MODIFY => false,
-                        self::MODE_CREATEREQUEST => false,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                ],
-                '_delivered' => [
-                    'default' => false,
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                    'readonly' => true,
-                ],
-                '_exported' => [
-                    'default' => [
-                        self::MODE_NONE => false,
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => false,
-                        self::MODE_CREATEINQUIRY => false,
-                        self::MODE_CREATEQUICK => false,
-                        self::MODE_MODIFY => false,
-                        self::MODE_CREATEREQUEST => false,
-                        self::MODE_PARTNERCONTACT => false,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_CLOSE => false,
-                    ],
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                        self::MODE_CLOSE => $_SESSION["glpiactiveprofile"]["name"] == 'subtehnician',
-                    ],
-                    'readonly' => true,
-                ],
-                '_services_invoiced' => [
-                    'default' => false,
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => false,
-                    ],
-                ],
-                'effective_date_field' => [
-                    'default' => [
-                        self::MODE_CREATENORMAL => date('Y-m-d H:i:s'),
-                        self::MODE_READCOUNTER => date('Y-m-d H:i:s'),
-                        self::MODE_CREATEQUICK => date('Y-m-d H:i:s'),
-                        self::MODE_PARTNERCONTACT => date('Y-m-d H:i:s'),
-                    ],
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => false,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_HMARFAEXPORT => false,
-                        self::MODE_CLOSE => false,
-                    ],
-                    'readonly' => [
-                        self::MODE_HMARFAEXPORT => true,
-                    ],
-                    'required' => [
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => true,
-                    ],
-                ],
-                '_notificationmailfield' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => false,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_CLOSE => false,
-                    ],
-                    'readonly' => false,
-                ],
-                '_printer_min_percentage' => [
-                    'hidden' => false,
-                ],
-                '_last_tickets' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => false,
-                        self::MODE_READCOUNTER => false,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => false,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => false,
-                        self::MODE_PARTNERCONTACT => true,
-                        self::MODE_CLOSE => false,
-                    ],
-                ],
-                '_last_tickets_plati' => [
-                    'hidden' => [
-                        self::MODE_CREATENORMAL => true,
-                        self::MODE_READCOUNTER => true,
-                        self::MODE_CREATEINQUIRY => true,
-                        self::MODE_CREATEQUICK => true,
-                        self::MODE_MODIFY => true,
-                        self::MODE_CREATEREQUEST => true,
-                        self::MODE_HMARFAEXPORT => true,
-                        self::MODE_CARTRIDGEMANAGEMENT => true,
-                        self::MODE_PARTNERCONTACT => false,
-                        self::MODE_CLOSE => true,
-                    ],
-                ],
-            ];
-        }
-
-        return self::$field_settings;
-    }
-
     public static function getTable($classname = null): string
     {
         return Ticket::getTable($classname);
     }
 
-    public static function getDefaultValues($mode = 0, $id = 0): array
-    {
-        $default_values = parent::getDefaultValues(0);
-        foreach (self::getFieldSettings($id) as $field_name => $field_setting) {
-            if (isset($field_setting['default'])) {
-                if (!is_array($field_setting['default'])) {
-                    $default_values[$field_name] = $field_setting['default'];
-                } else if (isset($field_setting['default'][$mode])) {
-                    $default_values[$field_name] = $field_setting['default'][$mode];
-                }
-            }
-        }
-
-        return $default_values;
-    }
-
-    public static function getForcedValues($mode = 0, $id = 0): array
-    {
-        $forced_values = [];
-        foreach (self::getFieldSettings($id) as $field_name => $field_setting) {
-            if (isset($field_setting['forced'])) {
-                if (!is_array($field_setting['forced'])) {
-                    $forced_values[$field_name] = $field_setting['forced'];
-                } else if (isset($field_setting['forced'][$mode])) {
-                    $forced_values[$field_name] = $field_setting['forced'][$mode];
-                }
-            }
-        }
-
-        return $forced_values;
-    }
-
-    public static function getHiddenFields($mode = 0, $id = 0): array
-    {
-        $hidden_fields = [];
-        foreach (self::getFieldSettings($id) as $field_name => $field_setting) {
-            if (!isset($field_setting['hidden'])) {
-                $hidden_fields[$field_name] = false;
-            } else if (!is_array($field_setting['hidden'])) {
-                $hidden_fields[$field_name] = $field_setting['hidden'];
-            } else if (isset($field_setting['hidden'][$mode])) {
-                $hidden_fields[$field_name] = $field_setting['hidden'][$mode];
-            } else {
-                $hidden_fields[$field_name] = false;
-            }
-        }
-
-        return $hidden_fields;
-    }
-
-    public static function getReadOnlyFields($mode = 0, $id = 0): array
-    {
-        $readonly_fields = [];
-        foreach (self::getFieldSettings($id) as $field_name => $field_setting) {
-            if (!isset($field_setting['readonly'])) {
-                $readonly_fields[$field_name] = false;
-            } else if (!is_array($field_setting['readonly'])) {
-                $readonly_fields[$field_name] = $field_setting['readonly'];
-            } else if (isset($field_setting['readonly'][$mode])) {
-                $readonly_fields[$field_name] = $field_setting['readonly'][$mode];
-            } else {
-                $readonly_fields[$field_name] = false;
-            }
-        }
-
-        return $readonly_fields;
-    }
-
-    public static function getRequiredFields($mode = 0, $id = 0): array
-    {
-        $required_fields = [];
-        foreach (self::getFieldSettings($id) as $field_name => $field_setting) {
-            if (!isset($field_setting['required'])) {
-                $required_fields[$field_name] = false;
-            } else if (!is_array($field_setting['required'])) {
-                $required_fields[$field_name] = $field_setting['required'];
-            } else if (isset($field_setting['required'][$mode])) {
-                $required_fields[$field_name] = $field_setting['required'][$mode];
-            } else {
-                $required_fields[$field_name] = false;
-            }
-        }
-
-        return $required_fields;
-    }
-
     /*
      * @return PluginIservicePrinter
      */
-    public function getFirstPrinter(): PluginIservicePrinter
+    public function getFirstPrinter($printerId = null): PluginIservicePrinter
     {
         $item_ticket = new Item_Ticket();
         $data        = $item_ticket->find(["`tickets_id` = {$this->getID()} and `itemtype` = 'Printer'"]);
@@ -827,12 +132,69 @@ class PluginIserviceTicket extends Ticket
         return new PluginIservicePrinter();
     }
 
+    public function getPrinterUsageAddress($printerId): string
+    {
+        $printer = $this->getPrinter($printerId);
+
+        if (!empty($printer->customfields->fields['usage_address_field'])) {
+            return $printer->customfields->fields['usage_address_field'];
+        }
+
+        return '';
+    }
+
+    public function getLocation($printerId = null): bool|Location
+    {
+        $location = new Location();
+        $printer  = $this->getPrinter($printerId);
+
+        if (!empty($this->fields['locations_id'])) {
+            $location->getFromDB($this->fields['locations_id']);
+        } else if (empty($id) && $printer->getID() > 0) {
+            $location->getFromDB($printer->fields['locations_id']);
+        } else {
+            return false;
+        }
+
+        return $location;
+    }
+
+    public function getPrinter($printerId = null)
+    {
+        $printer = new PluginIservicePrinter();
+
+        if (!empty($printerId)) {
+            $printer->getFromDB($printerId);
+        } else {
+            $printer = $this->getFirstPrinter();
+        }
+
+        if (!$printer->isDeleted()) {
+            return $printer;
+        }
+    }
+
+    public function getPartnerHMarfaCode($partnerId = null): ?string
+    {
+        if (!empty($partnerId)) {
+            $partner = new PluginIservicePartner();
+            $partner->getFromDB($partnerId);
+        } else {
+            $partner = $this->getFirstAssignedPartner();
+        }
+
+        return $partner->customfields->fields['hmarfa_code_field'] ?? null;
+    }
+
     /*
      * @return PluginIservicePartner
      */
     public function getFirstAssignedPartner(): PluginIservicePartner
     {
-        $this->reloadActors();
+        if ($this->getID() > 0) {
+            $this->reloadActors();
+        }
+
         $partner = new PluginIservicePartner();
         foreach ($this->getSuppliers(CommonITILActor::ASSIGN) as $partner_data) {
             if ($partner->getFromDB($partner_data['suppliers_id']) && !$partner->isDeleted()) {
@@ -850,6 +212,7 @@ class PluginIserviceTicket extends Ticket
     {
         $this->reloadActors();
         $user = new PluginIserviceUser();
+
         foreach ($this->getUsers(CommonITILActor::ASSIGN) as $user_data) {
             if ($user->getFromDB($user_data['users_id']) && !$user->isDeleted()) {
                 return $user;
@@ -1041,233 +404,26 @@ class PluginIserviceTicket extends Ticket
     public function showForm($ID, $options = []): bool
     {
         $this->initForm($ID, $options);
+        $location = $this->getLocation($options['printerId'] ?? null);
+
         TemplateRenderer::getInstance()->display(
-            "@iservice/pages/support/iserviceticket.html.twig", [
-                'item'              => $this,
-                'params'            => $options,
-                'partnerId'         => $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : ''),
-                'printerId'         => $options['printerId'] ?? ($ID > 0 ? $this->getFirstPrinter()->getID() : ''),
+            "@iservice/pages/support/inquiry.html.twig", [
+                'item'                    => $this,
+                'params'                  => $options,
+                'partnerId'               => $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : ''),
+                'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
+                'printerId'               => $options['printerId'] ?? ($ID > 0 ? $this->getFirstPrinter()->getID() : ''),
+                'printersFieldDisabled'   => $this->getFirstPrinter()->getID() > 0,
+                'usageAddressField'       => $this->getPrinterUsageAddress($options['printerId'] ?? null),
+                'locationName'            => $location->fields['completename'] ?? null,
+                'locationId'              => empty($this->fields['locations_id']) ? ($location ? $location->getID() : null) : null,
+                'sumOfUnpaidInvoicesLink' => IserviceToolBox::getSumOfUnpaidInvoicesLink(
+                    $options['partnerId'] ?? $this->getFirstAssignedPartner()->getID(),
+                    $this->getPartnerHMarfaCode($options['partnerId'] ?? null)
+                ),
             ]
         );
         return true;
-    }
-
-    public function prepareForShow($options): array
-    {
-        if (!isset($options['id'])) {
-            $options['id'] = '';
-        }
-
-        $prepared_data['template']       = self::getModeTemplate($options['mode']);
-        $prepared_data['default_values'] = self::getDefaultValues($options['mode'], $options['id']);
-        $prepared_data['forced_values']  = self::getForcedValues($options['mode'], $options['id']);
-        $prepared_data['field_hidden']   = self::getHiddenFields($options['mode'], $options['id']);
-        $prepared_data['field_readonly'] = self::getReadOnlyFields($options['mode'], $options['id']);
-        $prepared_data['field_required'] = self::getRequiredFields($options['mode'], $options['id']);
-
-        $this->originalFields = $this->fields;
-
-        $values = Html::cleanPostForTextArea(empty($options['get']) ? filter_input_array(INPUT_GET) : $options['get']);
-        if (empty($values)) {
-            $values = [];
-        }
-
-        // Restore saved value or override with page parameter.
-        $saved = $this->restoreInput();
-
-        foreach ($prepared_data['default_values'] as $name => $value) {
-            if (!isset($values[$name])) {
-                $values[$name] = isset($saved[$name]) ? $saved[$name] : $value;
-            }
-        }
-
-        if (empty($options['id'])) {
-            // Override defaut values from projecttask if needed.
-            if (isset($options['projecttasks_id'])) {
-                $pt = new ProjectTask();
-                if ($pt->getFromDB($options['projecttasks_id'])) {
-                    $values['name']    = $pt->getField('name');
-                    $values['content'] = $pt->getField('name');
-                }
-            }
-        }
-
-        // Check category / type validity.
-        if (!empty($values['itilcategories_id'])) {
-            $cat = new ITILCategory();
-            if ($cat->getFromDB($values['itilcategories_id'])) {
-                switch ($values['type']) {
-                case self::INCIDENT_TYPE :
-                    if (!$cat->getField('is_incident')) {
-                        $values['itilcategories_id'] = 0;
-                    }
-                    break;
-
-                case self::DEMAND_TYPE :
-                    if (!$cat->getField('is_request')) {
-                        $values['itilcategories_id'] = 0;
-                    }
-                    break;
-
-                default :
-                    break;
-                }
-            }
-        }
-
-        $prepared_data['values_for_right_check'] = $values;
-
-        $ticket_user                         = new Ticket_User();
-        $ticket_users                        = $ticket_user->getActors($options['id']);
-        $this->fields['_users_id_assign']    = $ticket_users[CommonITILActor::ASSIGN][0]['users_id'] ?? '';
-        $this->fields['_users_id_observer']  = $ticket_users[CommonITILActor::OBSERVER][0]['users_id'] ?? '';
-        $this->fields['_users_id_requester'] = $ticket_users[CommonITILActor::REQUESTER][0]['users_id'] ?? '';
-
-        $supplier_ticket                      = new Supplier_Ticket();
-        $ticket_suppliers                     = $supplier_ticket->getActors($options['id']);
-        $this->fields['_suppliers_id_assign'] = $ticket_suppliers[CommonITILActor::ASSIGN][0]['suppliers_id'] ?? '';
-
-        if (empty($options['id'])) {
-            $this->userentities = [];
-            if (!empty($values["_users_id_requester"])) {
-                // Get all the user's entities.
-                $all_entities = Profile_User::getUserEntities($values["_users_id_requester"], true, true);
-                // For each user's entity, check if the technician which creates the ticket have access to it.
-                foreach ($all_entities as $ID_entity) {
-                    if (Session::haveAccessToEntity($ID_entity)) {
-                        $this->userentities[] = $ID_entity;
-                    }
-                }
-            }
-
-            $this->countentitiesforuser = count($this->userentities);
-
-            if (($this->countentitiesforuser > 0) && (!isset($this->fields["entities_id"]) || !in_array($this->fields["entities_id"], $this->userentities))) {
-                // If entity is not in the list of user's entities,
-                // then use as default value the first value of the user's entites list.
-                $this->fields["entities_id"] = $this->userentities[0];
-                // Pass to values.
-                $values['entities_id'] = $this->userentities[0];
-            }
-        }
-
-        if ($values['type'] < 1) {
-            $values['type'] = Entity::getUsedConfig('tickettype', $values['entities_id'], '', Ticket::INCIDENT_TYPE);
-        }
-
-        if (!isset($options['template'])) {
-            $options['template'] = 0;
-        }
-
-        // save original data.
-        $prepared_data['initial_values'] = $this->fields;
-
-        // Load ticket template if available.
-        if (!empty($options['id'])) {
-            $tt = $this->getITILTemplateToUse($options['template'], $this->fields['type'], $this->fields['itilcategories_id'], $this->fields['entities_id']);
-        } else {
-            $tt = $this->getITILTemplateToUse($options['template'], $values['type'], $values['itilcategories_id'], $values['entities_id']);
-        }
-
-        // Predefined fields from template : reset them.
-        if (isset($values['_predefined_fields'])) {
-            $values['_predefined_fields'] = Toolbox::decodeArrayFromInput($values['_predefined_fields']);
-        } else {
-            $values['_predefined_fields'] = [];
-        }
-
-        // Store predefined fields to be able not to take into account on change template.
-        // Only manage predefined values on ticket creation.
-        $predefined_fields = [];
-        if (empty($options['id'])) {
-            if (isset($tt->predefined) && count($tt->predefined)) {
-                foreach ($tt->predefined as $predeffield => $predefvalue) {
-                    if (isset($prepared_data['default_values'][$predeffield])) {
-                        // Is always default value : not set.
-                        // Set if already predefined field.
-                        // Set if ticket template change.
-                        if (((count($values['_predefined_fields']) == 0) && ($values[$predeffield] == $prepared_data['default_values'][$predeffield])) || (isset($values['_predefined_fields'][$predeffield]) && ($values[$predeffield] == $values['_predefined_fields'][$predeffield])) || (isset($values['_tickettemplates_id']) && ($values['_tickettemplates_id'] != $tt->getID()))) {
-                            // Load template data.
-                            $values[$predeffield]            = $predefvalue;
-                            $this->fields[$predeffield]      = $predefvalue;
-                            $predefined_fields[$predeffield] = $predefvalue;
-                        }
-                    }
-                }
-
-                // All predefined override : add option to say predifined exists.
-                if (count($predefined_fields) == 0) {
-                    $predefined_fields['_all_predefined_override'] = 1;
-                }
-            } else { // No template load : reset predefined values.
-                if (count($values['_predefined_fields'])) {
-                    foreach ($values['_predefined_fields'] as $predeffield => $predefvalue) {
-                        if ($values[$predeffield] == $predefvalue) {
-                            $values[$predeffield] = $prepared_data['default_values'][$predeffield];
-                        }
-                    }
-                }
-            }
-        }
-
-        // Put ticket template on $values for actors.
-        $values['_tickettemplate'] = $prepared_data['template_object'] = $tt;
-
-        $prepared_data['closed'] = isset($this->fields['status']) && in_array($this->fields['status'], $this->getClosedStatusArray());
-
-        if ($options['id'] && $prepared_data['closed']) {
-            $values['_noupdate'] = true;
-        }
-
-        foreach ($values as $key => $val) {
-            if (!isset($this->fields[$key])) {
-                $this->fields[$key] = $val;
-            }
-        }
-
-        foreach ($prepared_data['forced_values'] as $key => $val) {
-            $this->fields[$key] = $val;
-        }
-
-        $prepared_data['fields'] = $this->fields;
-
-        return $prepared_data;
-    }
-
-    public function processFieldsByInput(): array
-    {
-        $result = [];
-
-        $result['variables']['movement_id_field']  = IserviceToolBox::getInputVariable('movement_id_field', isset($this->customfields) ? $this->customfields->fields['movement_id_field'] : '');
-        $result['variables']['movement2_id_field'] = IserviceToolBox::getInputVariable('movement2_id_field', isset($this->customfields) ? $this->customfields->fields['movement2_id_field'] : '');
-        $result['variables']['em_mail_id_field']   = IserviceToolBox::getInputVariable('em_mail_id_field', isset($this->customfields) ? $this->customfields->fields['em_mail_id_field'] : '');
-
-        $this->fields['items_id'] = IserviceToolBox::getArrayInputVariable('items_id', (is_array($this->fields['items_id']) ? $this->fields['items_id'] : ['Printer' => [$this->fields['items_id']]]) ?? ['Printer' => [0]]);
-        $printer_id               = $this->fields['items_id']['Printer'][0] ?? 0;
-        $printer                  = new PluginIservicePrinter();
-        if (empty($printer_id) && $this->getID() > 0) {
-            $printer = $this->getFirstPrinter();
-            if (!$printer->isNewItem()) {
-                $this->fields['items_id']['Printer'][0] = $printer_id = $printer->getID();
-            }
-        } else {
-            $printer->getFromDB($printer_id);
-        }
-
-        $result['variables']['printer']    = $printer;
-        $result['variables']['printer_id'] = $printer_id;
-
-        $this->fields['_suppliers_id_assign'] = $supplier_id = IserviceToolBox::getInputVariable('_suppliers_id_assign', $this->fields['_suppliers_id_assign'] ?? '');
-        if (empty($supplier_id) && !empty($printer_id)) {
-            $infocom = new Infocom();
-            if ($infocom->getFromDBforDevice('Printer', $printer_id)) {
-                $this->fields['_suppliers_id_assign'] = $supplier_id = $infocom->fields['suppliers_id'];
-            }
-        }
-
-        $result['variables']['supplier_id'] = $supplier_id;
-
-        return $result;
     }
 
     public function additionalGetFromDbSteps($ID = null): void
@@ -1597,20 +753,19 @@ class PluginIserviceTicket extends Ticket
         return self::wasTicketClosing($ticket) xor self::wasTicketClosed($ticket);
     }
 
-    public function post_updateItem($history = 1): void
+    public function updateItem($ticketId): void
     {
-        parent::post_updateItem($history);
 
         $post = filter_input_array(INPUT_POST);
 
-        $this->updatePartner($post);
+        $this->addPartner($ticketId, $post);
 
-        $this->updatePrinter($post);
+        $this->addPrinter($ticketId, $post);
     }
 
-    public function addPartner($post): bool
+    public function addPartner($ticketId, $post): bool
     {
-        if (!empty($post['suppliers_id'])) {
+        if (!empty($post['suppliers_id']) && ($this->getFirstAssignedPartner())->getID() < 1) {
             if (is_array($post['suppliers_id'])) {
                 $tab_assign = $post['suppliers_id'];
             } else {
@@ -1628,9 +783,9 @@ class PluginIserviceTicket extends Ticket
 
                 if ($supplier_ticket->add(
                     [
-                        'tickets_id' => $this->getID(),
-                        'suppliers_id' => $assign,
-                        'type'         => CommonITILActor::ASSIGN,
+                        'tickets_id'       => $ticketId,
+                        'suppliers_id'     => $assign,
+                        'type'             => CommonITILActor::ASSIGN,
                         'use_notification' => 0,
                     ]
                 )
@@ -1645,66 +800,18 @@ class PluginIserviceTicket extends Ticket
         return false;
     }
 
-    public function updatePartner($post): bool
+    public function addPrinter($ticketId, $post): bool
     {
-        $firstAssignedPartnerId = $this->getFirstAssignedPartner()->getID() ?? false;
-        $ticketId               = $this->getID();
-
-        if ($firstAssignedPartnerId < 1 && !empty($post['suppliers_id'])) {
-            return $this->addPartner($ticketId, $post);
-        }
-
-        $supplier_ticket = new Supplier_Ticket();
-        $supplier_ticket->getFromDBByCrit(['tickets_id' => $ticketId, 'suppliers_id' => $firstAssignedPartnerId]);
-
-        return $supplier_ticket->update(
-            [
-                'id'               => $supplier_ticket->getID(),
-                'tickets_id'       => $ticketId,
-                'suppliers_id'     => $post['suppliers_id'],
-                'type'             => CommonITILActor::ASSIGN,
-                'use_notification' => 0,
-            ]
-        );
-    }
-
-    public function addPrinter($post): bool
-    {
-        if (!empty($post['printer_id'])) {
+        if (!empty($post['printer_id']) && ($this->getFirstPrinter())->getID() < 1) {
             return (new Item_Ticket())->add(
                 [
                     'items_id'      => $post['printer_id'],
                     'itemtype'      => 'Printer',
-                    'tickets_id'    => $this->getID(),
+                    'tickets_id'    => $ticketId,
                     '_disablenotif' => true
                 ]
             );
         }
-
-        return false;
-    }
-
-    public function updatePrinter($post): bool
-    {
-        $firstPrinterId = $this->getFirstPrinter()->getID() ?? false;
-        $ticketId       = $this->getID();
-
-        if ($firstPrinterId < 1 && !empty($post['printer_id'])) {
-            return $this->addPrinter($post);
-        }
-
-        $printerTicket = new Item_Ticket();
-        $printerTicket->getFromDBByCrit(['tickets_id' => $ticketId, 'items_id' => $firstPrinterId]);
-
-        return $printerTicket->update(
-            [
-                'id'            => $printerTicket->getID(),
-                'tickets_id'    => $ticketId,
-                'items_id'      => $post['printer_id'],
-                'itemtype'      => 'Printer',
-                '_disablenotif' => true
-            ]
-        );
 
         return false;
     }
@@ -1843,9 +950,9 @@ class PluginIserviceTicket extends Ticket
         $mmail->Body = $config['body'] . "\n\n--\n$CFG_GLPI[mailing_signature]";
 
         if (!$mmail->Send()) {
-            Session::addMessageAfterRedirect(__('Could not send ticketreport to', 'iservice') . " {$config[to_addresses]}: $mmail->ErrorInfo", false, ERROR);
+            Session::addMessageAfterRedirect(__('Could not send ticketreport to', 'iservice') . " {$config['to_addresses']}: $mmail->ErrorInfo", false, ERROR);
         } else {
-            Session::addMessageAfterRedirect(__('Confirmation mail sent to', 'iservice') . " {$config[to_addresses]}");
+            Session::addMessageAfterRedirect(__('Confirmation mail sent to', 'iservice') . " {$config['to_addresses']}");
         }
 
         return true;
