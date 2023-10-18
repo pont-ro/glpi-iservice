@@ -221,7 +221,6 @@ class PluginIserviceTicket extends Ticket
     {
         $this->reloadActors();
         $user = new PluginIserviceUser();
-
         foreach ($this->getUsers(CommonITILActor::ASSIGN) as $user_data) {
             if ($user->getFromDB($user_data['users_id']) && !$user->isDeleted()) {
                 return $user;
