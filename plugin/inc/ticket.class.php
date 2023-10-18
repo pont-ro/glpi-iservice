@@ -143,6 +143,13 @@ class PluginIserviceTicket extends Ticket
         return '';
     }
 
+    public function getPrinterFieldLabel($printerId): string
+    {
+        $printer = $this->getPrinter($printerId);
+
+        return __('Printer', 'iservice') . ($printer->isNewItem() ? '' : ($printer->isColor() ? ' color' : __(' black and white', 'iservice')));
+    }
+
     public function getLocation($printerId = null): bool|Location
     {
         $location = new Location();
@@ -172,6 +179,8 @@ class PluginIserviceTicket extends Ticket
         if (!$printer->isDeleted()) {
             return $printer;
         }
+
+        return null;
     }
 
     public function getPartnerHMarfaCode($partnerId = null): ?string
@@ -406,23 +415,43 @@ class PluginIserviceTicket extends Ticket
         $this->initForm($ID, $options);
         $location = $this->getLocation($options['printerId'] ?? null);
 
-        TemplateRenderer::getInstance()->display(
-            "@iservice/pages/support/inquiry.html.twig", [
-                'item'                    => $this,
-                'params'                  => $options,
-                'partnerId'               => $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : ''),
-                'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
-                'printerId'               => $options['printerId'] ?? ($ID > 0 ? $this->getFirstPrinter()->getID() : ''),
-                'printersFieldDisabled'   => $this->getFirstPrinter()->getID() > 0,
-                'usageAddressField'       => $this->getPrinterUsageAddress($options['printerId'] ?? null),
-                'locationName'            => $location->fields['completename'] ?? null,
-                'locationId'              => empty($this->fields['locations_id']) ? ($location ? $location->getID() : null) : null,
-                'sumOfUnpaidInvoicesLink' => IserviceToolBox::getSumOfUnpaidInvoicesLink(
-                    $options['partnerId'] ?? $this->getFirstAssignedPartner()->getID(),
-                    $this->getPartnerHMarfaCode($options['partnerId'] ?? null)
-                ),
-            ]
-        );
+        $templateParams = [
+            'item'                    => $this,
+            'params'                  => $options,
+            'partnerId'               => $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : ''),
+            'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
+            'printerId'               => $options['printerId'] ?? ($ID > 0 ? $this->getFirstPrinter()->getID() : ''),
+            'printerFieldLabel'       => $this->getPrinterFieldLabel($options['printerId'] ?? null),
+            'printersFieldDisabled'   => $this->getFirstPrinter()->getID() > 0,
+            'usageAddressField'       => $this->getPrinterUsageAddress($options['printerId'] ?? null),
+            'locationName'            => $location->fields['completename'] ?? null,
+            'locationId'              => empty($this->fields['locations_id']) ? ($location ? ($location->getID() > 0 ? $location->getID() : 0) : null) : null,
+            'sumOfUnpaidInvoicesLink' => IserviceToolBox::getSumOfUnpaidInvoicesLink(
+                $options['partnerId'] ?? $this->getFirstAssignedPartner()->getID(),
+                $this->getPartnerHMarfaCode($options['partnerId'] ?? null)
+            ),
+        ];
+
+        if ($options['mode'] == self::MODE_CLOSE) {
+            $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $options['printerId'] ?? $this->getFirstPrinter()->getID(), false);
+
+            $templateParams['printer']                    = $this->getPrinter($options['printerId'] ?? null);
+            $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
+            $templateParams['total2ColorRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_color_field'] ?? 0;
+
+            // If there are newer closed tickets, we do not allow counter change, as counters on the cartridges will be messed up.
+            if ($ID > 0 && ($lastClosedTicket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
+                $templateParams['total2BlackDisabled'] = true;
+                $templateParams['total2ColorDisabled'] = true;
+            }
+        }
+
+        if ($ID > 0 && $options['mode'] == self::MODE_CLOSE) {
+            TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
+        } else {
+            TemplateRenderer::getInstance()->display("@iservice/pages/support/inquiry.html.twig", $templateParams);
+        }
+
         return true;
     }
 

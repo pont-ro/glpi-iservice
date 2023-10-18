@@ -13,6 +13,7 @@ $update               = IserviceToolBox::getInputVariable('update');
 $post                 = filter_input_array(INPUT_POST);
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id');
 $options['printerId'] = IserviceToolBox::getInputVariable('printer_id');
+$options['mode']      = IserviceToolBox::getInputVariable('mode');
 
 if ($id > 0) {
     $header_title = Ticket::getTypeName();
@@ -33,7 +34,7 @@ if (!empty($add)) {
 
     $ticket->updateItem($ticketId);
 
-    Html::redirect($ticket->getFormURL() . '?id=' . $ticketId);
+    Html::redirect($ticket->getFormURL() . '?mode=9999&id=' . $ticketId);
 } elseif (!empty($update)) {
     $ticket->check($id, UPDATE, $post);
 
@@ -41,7 +42,7 @@ if (!empty($add)) {
 
     $ticket->updateItem($id);
 
-    Html::redirect($ticket->getFormURL() . '?id=' . $id);
+    Html::redirect($ticket->getFormURL() . '?mode=9999&id=' . $id);
 }
 
 Html::header($header_title);
