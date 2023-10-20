@@ -1,0 +1,19 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{{ fields.textField(
+    'name',
+    item.fields['name'],
+    __('Title'),
+    field_options|merge({
+        'required': true,
+    })
+) }}
+
+{{ fields.textareaField(
+    'content',
+    item.fields['content'],
+    __('Content'),
+    field_options|merge({
+        'enable_richtext': 0,
+    })
+) }}

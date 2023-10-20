@@ -1,0 +1,77 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{{ fields.dropdownField(
+    'Supplier',
+    'suppliers_id',
+    partnerId,
+    __('Partener'),
+    field_options|merge({
+        'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
+        'disabled': partnersFieldDisabled
+    })
+) }}
+
+{{ fields.dropdownField(
+    'Printer',
+    'printer_id',
+    printerId,
+    printerFieldLabel,
+    field_options|merge({
+        'condition': {
+            'LEFT JOIN': {
+                'glpi_infocoms as i': {
+                    'ON': {
+                        'i': 'items_id',
+                        'glpi_printers': 'id'
+                    }
+                }
+            },
+            'WHERE': {
+                'i.suppliers_id': partnerId,
+            }
+        },
+        'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
+        'disabled': printersFieldDisabled
+    })
+) }}
+
+{% if usageAddressField %}
+    {{ fields.textField(
+        'printer[usage_address_field]',
+        usageAddressField,
+        __('Usage Address', 'iservice'),
+        field_options|merge({
+            'disabled': true,
+        })
+    ) }}
+{% endif %}
+
+{% if locationName %}
+    {{ fields.textField(
+        'printer[locationName]',
+        locationName,
+        __('Location'),
+        field_options|merge({
+            'disabled': true,
+        })
+    ) }}
+{% endif %}
+
+{% if locationId %}
+    {{ fields.textField(
+        'locations_id',
+        locationId,
+        '',
+        field_options|merge({
+            'type': 'hidden',
+        })
+    ) }}
+{% endif %}
+
+{% if sumOfUnpaidInvoicesLink %}
+    {{ fieldsIservice.formLink(
+        __('Sum of unpaid invoices', 'iservice'),
+        sumOfUnpaidInvoicesLink
+    ) }}
+{% endif %}

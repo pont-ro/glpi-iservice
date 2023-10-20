@@ -12,9 +12,9 @@ class PluginIservicePrinter extends Printer
 
     use PluginIserviceItem;
 
-    const ID_COLOR_TYPE   = 4;
-    const ID_ROUTER_TYPE  = 35;
-    const ID_PLOTTER_TYPE = 33;
+    const ID_COLOR_TYPE   = 2;
+    const ID_ROUTER_TYPE  = 22;
+    const ID_PLOTTER_TYPE = 20;
 
     /*
      * @var PluginFieldsPrinterprintercustomfield
