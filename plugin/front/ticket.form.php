@@ -34,7 +34,7 @@ if (!empty($add)) {
 
     $ticket->updateItem($ticketId);
 
-    Html::redirect($ticket->getFormURL() . '?mode=9999&id=' . $ticketId);
+    Html::redirect($ticket->getFormURL() . '?mode=' . PluginIserviceTicket::MODE_CLOSE . '&id=' . $ticketId);
 } elseif (!empty($update)) {
     $ticket->check($id, UPDATE, $post);
 
