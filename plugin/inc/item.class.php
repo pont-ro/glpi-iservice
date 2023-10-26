@@ -76,11 +76,12 @@ trait PluginIserviceItem
         $result = $model->add($input, $options, $history);
 
         if ($result && $this->getCustomFieldsModelName() !== '') {
-            $model->customfields = new ($this->getCustomFieldsModelName());
-            $input['add']        = 'add';
-            $input['items_id']   = $model->getID();
-            $input['itemtype']   = $model->getType();
-            $customFieldsResult  = $model->customfields->add($input, $options, $history);
+            $model->customfields  = new ($this->getCustomFieldsModelName());
+            $input['add']         = 'add';
+            $input['items_id']    = $model->getID();
+            $input['itemtype']    = $model->getType();
+            $input['_no_message'] = true;
+            $customFieldsResult   = $model->customfields->add($input, $options, $history);
 
             if (!$customFieldsResult) {
                 Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);

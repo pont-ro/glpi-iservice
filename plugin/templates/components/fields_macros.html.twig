@@ -23,13 +23,13 @@
    {{ fieldsOriginal.field(name, field, label, options) }}
 {% endmacro %}
 
-{% macro formLink(label, url) %}
-   <div class="form-field row col-12  mb-2">
-      <label class="col-form-label col-xxl-4 text-xxl-end">
+{% macro customFormRow(label, value, options = {}) %}
+   <div class="form-field row col-12 mb-2">
+      <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
          {{ label }}
       </label>
-      <div class="col-xxl-8 field-container mt-2">
-         {{ url|raw }}
+      <div class="col-xxl-8 field-container {{ options.valueClass }}">
+         {{ value|raw }}
       </div>
    </div>
 {% endmacro %}

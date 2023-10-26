@@ -32,15 +32,17 @@ if (!empty($add)) {
         Html::back();
     }
 
-    $ticket->updateItem($ticketId);
+    $ticket->updateItem($ticketId, $post);
 
     Html::redirect($ticket->getFormURL() . '?mode=' . PluginIserviceTicket::MODE_CLOSE . '&id=' . $ticketId);
 } elseif (!empty($update)) {
     $ticket->check($id, UPDATE, $post);
 
+    $post = PluginIserviceTicket::preProcessPostData($post);
+
     $ticket->update($post);
 
-    $ticket->updateItem($id);
+    $ticket->updateItem($id, $post);
 
     Html::redirect($ticket->getFormURL() . '?mode=9999&id=' . $id);
 }

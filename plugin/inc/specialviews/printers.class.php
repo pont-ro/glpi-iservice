@@ -27,7 +27,7 @@ class Printers extends View
         $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                       = [
             'add' => [
-                'link' => '/front/ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATENORMAL . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&_users_id_assign=$row_data[tech_id]",
+                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATENORMAL . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&_users_id_assign=$row_data[tech_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_add.png',
                 'title' => __('New ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, CREATE),

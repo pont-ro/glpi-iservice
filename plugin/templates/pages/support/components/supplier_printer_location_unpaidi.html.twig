@@ -69,9 +69,43 @@
     ) }}
 {% endif %}
 
+{% if observerVisible %}
+    {{ fields.dropdownField(
+        'User',
+        '_users_id_observer',
+        item.fields['_users_id_observer'],
+        __('Watcher'),
+        field_options|merge({
+            'right': 'own_ticket'
+        })
+    ) }}
+{% endif %}
+
+{% if assignedVisible %}
+    {{ fields.dropdownField(
+        'User',
+        '_users_id_assign',
+        item.fields['_users_id_assign'],
+        __('Assigned to'),
+        field_options|merge({
+            'right': 'own_ticket'
+        })
+    ) }}
+{% endif %}
+
 {% if sumOfUnpaidInvoicesLink %}
-    {{ fieldsIservice.formLink(
+    {{ fieldsIservice.customFormRow(
         __('Sum of unpaid invoices', 'iservice'),
-        sumOfUnpaidInvoicesLink
+        sumOfUnpaidInvoicesLink,
+        {
+            'valueClass': 'mt-2'
+        }
+    ) }}
+{% endif %}
+
+{% if lastInvoiceAndCountersTable %}
+    {{ fieldsIservice.customFormRow(
+        __('Last invoice and counter information', 'iservice'),
+        lastInvoiceAndCountersTable
     ) }}
 {% endif %}
