@@ -157,7 +157,13 @@ class ToolBox
 					GROUP BY s.id
 					";
 
-        foreach (PluginIserviceDB::getQueryResult($query) as $row) {
+        $queryResult = PluginIserviceDB::getQueryResult($query);
+
+        if (!is_iterable($queryResult)) {
+            return $sum;
+        }
+
+        foreach ($queryResult as $row) {
             $sum = self::numberFormat($row['total_facturi']) . ' RON';
             if ($row['total_facturi'] > 0) {
                 $date_now  = new DateTime();

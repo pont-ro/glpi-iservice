@@ -394,7 +394,7 @@ class PluginIserviceTicket extends Ticket
                 ORDER BY t.effective_date_field $order, t.id $order";
     }
 
-    public function displayResult($result_type, $result): string
+    public function displayResult($result_type, $result): void
     {
         $result_texts = [
             'global_readcounter' => [
@@ -417,7 +417,8 @@ class PluginIserviceTicket extends Ticket
     {
         $this->initForm($ID, $options);
         $this->setPrinter($options['printerId'] ?? null);
-        $location = $this->getLocation();
+        $partnerId = $this->printer->fields['supplier_id'] ?? $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : null);
+        $location  = $this->getLocation();
         $this->setTicketUsersFields($ID);
         $this->setEffectiveDateField();
         $canupdate = !$ID
@@ -427,7 +428,7 @@ class PluginIserviceTicket extends Ticket
         $templateParams = [
             'item'                    => $this,
             'params'                  => $options,
-            'partnerId'               => $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : ''),
+            'partnerId'               => $partnerId,
             'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
             'printerId'               => $options['printerId'] ?? ($ID > 0 ? $this->getFirstPrinter()->getID() : ''),
             'printerFieldLabel'       => $this->getPrinterFieldLabel(),
@@ -435,10 +436,10 @@ class PluginIserviceTicket extends Ticket
             'usageAddressField'       => $this->getPrinterUsageAddress(),
             'locationName'            => $location->fields['completename'] ?? null,
             'locationId'              => empty($this->fields['locations_id']) ? ($location ? ($location->getID() > 0 ? $location->getID() : 0) : null) : null,
-            'sumOfUnpaidInvoicesLink' => IserviceToolBox::getSumOfUnpaidInvoicesLink(
-                $options['partnerId'] ?? $this->getFirstAssignedPartner()->getID(),
-                $this->getPartnerHMarfaCode($options['partnerId'] ?? null)
-            ),
+            'sumOfUnpaidInvoicesLink' => $partnerId ? IserviceToolBox::getSumOfUnpaidInvoicesLink(
+                $partnerId,
+                $this->getPartnerHMarfaCode($partnerId)
+            ) : null,
             'lastInvoiceAndCountersTable' => $this->getLastInvoiceAndCountersTable($this->printer),
             'followups'                   => $this->getFollowups($ID),
             'canupdate'                   => $canupdate,
@@ -1005,7 +1006,7 @@ class PluginIserviceTicket extends Ticket
 
     public function getLastInvoiceAndCountersTable($printer)
     {
-        if ($printer->getID() < 1) {
+        if (empty($printer) || $printer->getID() < 1) {
             return null;
         }
 
