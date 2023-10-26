@@ -38,7 +38,7 @@ if (!empty($add)) {
 } elseif (!empty($update)) {
     $ticket->check($id, UPDATE, $post);
 
-    $post = $ticket->preProcessPostData($post);
+    $post = PluginIserviceTicket::preProcessPostData($post);
 
     $ticket->update($post);
 

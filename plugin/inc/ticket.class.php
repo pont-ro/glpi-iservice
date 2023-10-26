@@ -145,7 +145,13 @@ class PluginIserviceTicket extends Ticket
 
     public function getPrinterFieldLabel(): string
     {
-        return __('Printer', 'iservice') . ($this->printer->isNewItem() ? '' : ($this->printer->isColor() ? ' color' : __(' black and white', 'iservice')));
+        $label = __('Printer', 'iservice');
+
+        if (!empty($this->printer)) {
+            $label .= $this->printer->isNewItem() ? '' : ($this->printer->isColor() ? ' color' : __(' black and white', 'iservice'));
+        }
+
+        return $label;
     }
 
     public function getLocation(): bool|Location
@@ -154,7 +160,7 @@ class PluginIserviceTicket extends Ticket
 
         if (!empty($this->fields['locations_id'])) {
             $location->getFromDB($this->fields['locations_id']);
-        } else if (empty($id) && $this->printer->getID() > 0) {
+        } else if (empty($id) && !empty($this->printer) && $this->printer->getID() > 0) {
             $location->getFromDB($this->printer->fields['locations_id']);
         } else {
             return false;
@@ -173,9 +179,12 @@ class PluginIserviceTicket extends Ticket
             $printer = $this->getFirstPrinter();
         }
 
-        if (!$printer->isDeleted()) {
+        if (!$printer->isDeleted() && $printer->getID() > 0) {
             $this->printer = $printer;
+            return;
         }
+
+        $this->printer = null;
     }
 
     public function getPartnerHMarfaCode($partnerId = null): ?string
@@ -1054,7 +1063,7 @@ class PluginIserviceTicket extends Ticket
         }
     }
 
-    public function preProcessPostData($post): array
+    public static function preProcessPostData($post): array
     {
         if (isset($post['_followup_content'])) {
             $post['_followup']['content'] = $post['_followup_content'];
