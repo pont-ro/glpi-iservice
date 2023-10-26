@@ -1,0 +1,25 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{{ fields.textareaField(
+    '_followup_content',
+    item.fields['_followup[content]'],
+    __('Followup description', 'iservice'),
+    field_options|merge({
+        'enable_richtext': 1,
+    })
+) }}
+
+{{ fields.checkboxField(
+    '_followup[is_private]]',
+    item.fields['_followup[is_private]'],
+    __('Private followup', 'iservice'),
+    field_options
+) }}
+
+{% if followups %}
+    {{ fieldsIservice.customFormRow(
+        _n('Followup', 'Followups', 2),
+        followups
+    ) }}
+{% endif %}

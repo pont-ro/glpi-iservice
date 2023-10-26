@@ -237,4 +237,9 @@ class ToolBox
         return $date->format("Y-m-d");
     }
 
+    public static function isDateEmpty($dateValue)
+    {
+        return empty($dateValue) || trim($dateValue) === '0000-00-00' || trim($dateValue) === '0000-00-00 00:00:00';
+    }
+
 }

@@ -42,6 +42,8 @@ class PluginIserviceTicket extends Ticket
     protected static $itil_categories      = null;
     protected static $installed_cartridges = [];
 
+    public $printer = null;
+
     public static function getFormModeUrl($mode): string
     {
         switch ($mode) {
@@ -132,33 +134,28 @@ class PluginIserviceTicket extends Ticket
         return new PluginIservicePrinter();
     }
 
-    public function getPrinterUsageAddress($printerId): string
+    public function getPrinterUsageAddress(): string
     {
-        $printer = $this->getPrinter($printerId);
-
-        if (!empty($printer->customfields->fields['usage_address_field'])) {
-            return $printer->customfields->fields['usage_address_field'];
+        if (!empty($this->printer->customfields->fields['usage_address_field'])) {
+            return $this->printer->customfields->fields['usage_address_field'];
         }
 
         return '';
     }
 
-    public function getPrinterFieldLabel($printerId): string
+    public function getPrinterFieldLabel(): string
     {
-        $printer = $this->getPrinter($printerId);
-
-        return __('Printer', 'iservice') . ($printer->isNewItem() ? '' : ($printer->isColor() ? ' color' : __(' black and white', 'iservice')));
+        return __('Printer', 'iservice') . ($this->printer->isNewItem() ? '' : ($this->printer->isColor() ? ' color' : __(' black and white', 'iservice')));
     }
 
-    public function getLocation($printerId = null): bool|Location
+    public function getLocation(): bool|Location
     {
         $location = new Location();
-        $printer  = $this->getPrinter($printerId);
 
         if (!empty($this->fields['locations_id'])) {
             $location->getFromDB($this->fields['locations_id']);
-        } else if (empty($id) && $printer->getID() > 0) {
-            $location->getFromDB($printer->fields['locations_id']);
+        } else if (empty($id) && $this->printer->getID() > 0) {
+            $location->getFromDB($this->printer->fields['locations_id']);
         } else {
             return false;
         }
@@ -166,7 +163,7 @@ class PluginIserviceTicket extends Ticket
         return $location;
     }
 
-    public function getPrinter($printerId = null)
+    public function setPrinter($printerId = null): void
     {
         $printer = new PluginIservicePrinter();
 
@@ -177,10 +174,8 @@ class PluginIserviceTicket extends Ticket
         }
 
         if (!$printer->isDeleted()) {
-            return $printer;
+            $this->printer = $printer;
         }
-
-        return null;
     }
 
     public function getPartnerHMarfaCode($partnerId = null): ?string
@@ -412,7 +407,13 @@ class PluginIserviceTicket extends Ticket
     public function showForm($ID, $options = []): bool
     {
         $this->initForm($ID, $options);
-        $location = $this->getLocation($options['printerId'] ?? null);
+        $this->setPrinter($options['printerId'] ?? null);
+        $location = $this->getLocation();
+        $this->setTicketUsersFields($ID);
+        $this->setEffectiveDateField();
+        $canupdate = !$ID
+            || (Session::getCurrentInterface() == "central"
+                && $this->canUpdateItem());
 
         $templateParams = [
             'item'                    => $this,
@@ -420,21 +421,24 @@ class PluginIserviceTicket extends Ticket
             'partnerId'               => $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : ''),
             'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
             'printerId'               => $options['printerId'] ?? ($ID > 0 ? $this->getFirstPrinter()->getID() : ''),
-            'printerFieldLabel'       => $this->getPrinterFieldLabel($options['printerId'] ?? null),
+            'printerFieldLabel'       => $this->getPrinterFieldLabel(),
             'printersFieldDisabled'   => $this->getFirstPrinter()->getID() > 0,
-            'usageAddressField'       => $this->getPrinterUsageAddress($options['printerId'] ?? null),
+            'usageAddressField'       => $this->getPrinterUsageAddress(),
             'locationName'            => $location->fields['completename'] ?? null,
             'locationId'              => empty($this->fields['locations_id']) ? ($location ? ($location->getID() > 0 ? $location->getID() : 0) : null) : null,
             'sumOfUnpaidInvoicesLink' => IserviceToolBox::getSumOfUnpaidInvoicesLink(
                 $options['partnerId'] ?? $this->getFirstAssignedPartner()->getID(),
                 $this->getPartnerHMarfaCode($options['partnerId'] ?? null)
             ),
+            'lastInvoiceAndCountersTable' => $this->getLastInvoiceAndCountersTable($this->printer),
+            'followups'                   => $this->getFollowups($ID),
+            'canupdate'                   => $canupdate,
         ];
 
         if ($options['mode'] == self::MODE_CLOSE) {
             $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $options['printerId'] ?? $this->getFirstPrinter()->getID(), false);
 
-            $templateParams['printer']                    = $this->getPrinter($options['printerId'] ?? null);
+            $templateParams['printer']                    = $this->printer;
             $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
             $templateParams['total2ColorRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_color_field'] ?? 0;
 
@@ -443,9 +447,12 @@ class PluginIserviceTicket extends Ticket
                 $templateParams['total2BlackDisabled'] = true;
                 $templateParams['total2ColorDisabled'] = true;
             }
+
+            $templateParams['observerVisible'] = true;
+            $templateParams['assignedVisible'] = true;
         }
 
-        if ($ID > 0 && $options['mode'] == self::MODE_CLOSE) {
+        if ($options['mode'] == self::MODE_CLOSE) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
         } else {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/inquiry.html.twig", $templateParams);
@@ -781,14 +788,14 @@ class PluginIserviceTicket extends Ticket
         return self::wasTicketClosing($ticket) xor self::wasTicketClosed($ticket);
     }
 
-    public function updateItem($ticketId): void
+    public function updateItem($ticketId, $post): void
     {
-
-        $post = filter_input_array(INPUT_POST);
 
         $this->addPartner($ticketId, $post);
 
         $this->addPrinter($ticketId, $post);
+
+        $this->createFollowup($ticketId, $post);
     }
 
     public function addPartner($ticketId, $post): bool
@@ -985,6 +992,106 @@ class PluginIserviceTicket extends Ticket
 
         return true;
 
+    }
+
+    public function getLastInvoiceAndCountersTable($printer)
+    {
+        if ($printer->getID() < 1) {
+            return null;
+        }
+
+        $colorPrinter   = $printer->isColor();
+        $plotterPrinter = $printer->isPlotter();
+
+        $infoTableHeader = new PluginIserviceHtml_table_row();
+        $infoTableHeader->populateCells(
+            [
+                __('Last invoice date', 'iservice'),
+                __('Invoice expiry date', 'iservice'),
+                ($plotterPrinter ? __('Printed surface', 'iservice') : __('Color counter', 'iservice')) . ' ' . __('last invoice', 'iservice'),
+                ($plotterPrinter ? __('Printed surface', 'iservice') : __('Color counter', 'iservice')) . ' ' . __('last closed ticket', 'iservice'),
+                __('Black counter', 'iservice') . ' ' . __('last invoice', 'iservice'),
+                __('Black counter', 'iservice') . ' ' . __('last closed ticket', 'iservice'),
+            ], '', '', 'th'
+        );
+        return new PluginIserviceHtml_table(
+            'tab_cadrehov wide80', $infoTableHeader, new PluginIserviceHtml_table_row(
+                '', [
+                    new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_date_field'] ?? '', 'nowrap'),
+                    new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_expiry_date_field'] ?? '', 'nowrap'),
+                    $printer->customfields->fields['invoiced_total_color_field'] ?? '',
+                    $printer->lastClosedTicket()->customfields->fields['total2_color_field'] ?? '',
+                    $printer->customfields->fields['invoiced_total_black_field'] ?? '',
+                    $printer->lastClosedTicket()->customfields->fields['total2_black_field'] ?? '',
+                ]
+            ), 'display: inline-block;text-align: center;'
+        );
+    }
+
+    public function getFollowUps($ticketId)
+    {
+        if ($ticketId < 1) {
+            return null;
+        }
+
+        return (new PluginIserviceTicketFollowup())->showShortForTicket($ticketId);
+    }
+
+    public function setTicketUsersFields($ticketId): void
+    {
+        if ($ticketId < 1) {
+            return;
+        }
+
+        $ticketUsers = (new Ticket_User())->getActors($ticketId);
+
+        $this->fields['_users_id_assign']    = $ticketUsers[CommonITILActor::ASSIGN][0]['users_id'] ?? '';
+        $this->fields['_users_id_observer']  = $ticketUsers[CommonITILActor::OBSERVER][0]['users_id'] ?? '';
+        $this->fields['_users_id_requester'] = $ticketUsers[CommonITILActor::REQUESTER][0]['users_id'] ?? '';
+
+        if (empty($this->fields['_users_id_assign']) || $this->fields['_users_id_assign'] < 1) {
+            $this->fields['_users_id_assign'] = empty($this->printer->fields['users_id_tech']) ? '' : $this->printer->fields['users_id_tech'];
+        }
+    }
+
+    public function preProcessPostData($post): array
+    {
+        if (isset($post['_followup_content'])) {
+            $post['_followup']['content'] = $post['_followup_content'];
+            unset($post['_followup_content']);
+        }
+
+        return $post;
+    }
+
+    public function createFollowup($id, $post)
+    {
+        if (isset($post['_followup'])) {
+            $followup = new ITILFollowup();
+            $type     = "new";
+            if (isset($item->fields["status"]) && ($item->fields["status"] == Ticket::SOLVED)) {
+                $type = "solved";
+            }
+
+            $post['_followup']['items_id'] = $id;
+            $post['_followup']['itemtype'] = 'Ticket';
+            $post['_followup']['type']     = $type;
+            if (!empty($post['_followup']['content'])) {
+                $followup->add($post['_followup']);
+            }
+        }
+
+    }
+
+    public function setEffectiveDateField(): void
+    {
+        if (empty($this->customfields)) {
+            $this->customfields = new PluginFieldsTicketticketcustomfield();
+        }
+
+        if (!isset($this->customfields->fields['effective_date_field']) || IserviceToolBox::isDateEmpty($this->customfields->fields['effective_date_field'])) {
+            $this->customfields->fields['effective_date_field'] = date('Y-m-d H:i:s');
+        }
     }
 
 }

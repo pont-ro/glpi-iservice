@@ -27,8 +27,6 @@
                         {% block form_fields %}
                             {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
 
-                            {{ include('@iservice/pages/support/components/title_content.html.twig') }}
-
                             {{ fields.numberField(
                                 'total2_black_field',
                                 item.customfields.fields['total2_black_field'],
@@ -51,6 +49,48 @@
                                 ) }}
                             {% endif %}
 
+                            {{ fields.dropdownField(
+                                'ITILCategory',
+                                'itilcategories_id',
+                                item.fields['itilcategories_id'],
+                                __('Category'),
+                                field_options
+                            ) }}
+
+                            {{ include('@iservice/pages/support/components/title_content.html.twig') }}
+
+                            {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
+
+                            {{ include('components/itilobject/fields/status.html.twig') }}
+
+                            {{ fields.checkboxField(
+                                '_operator_reading',
+                                item.fields['_operator_reading'],
+                                __('Operator reading', 'iservice'),
+                                field_options
+                            ) }}
+
+                            {{ fields.checkboxField(
+                                'without_paper_field',
+                                item.customfields.fields['without_paper_field'],
+                                __('Without papers', 'iservice'),
+                                field_options
+                            ) }}
+
+                            {{ fields.checkboxField(
+                                'no_travel_field',
+                                item.customfields.fields['no_travel_field'],
+                                __('Without moving', 'iservice'),
+                                field_options
+                            ) }}
+
+                            {{ fields.checkboxField(
+                                'exported_field',
+                                item.customfields.fields['exported_field'],
+                                __('Exported in csv and imported in hMarfa', 'iservice'),
+                                field_options
+                            ) }}
+
                             {{ fields.dateField(
                                 'effective_date_field',
                                 item.customfields.fields['effective_date_field'],
@@ -59,6 +99,14 @@
                                     'min': "now"|date("Y-m-d H:i:s"),
                                 })
                             ) }}
+
+                            {{ fields.textField(
+                                'notification_mail_field',
+                                item.customfields.fields['notification_mail_field'],
+                                __('Notification e-mail', 'iservice'),
+                                field_options
+                            ) }}
+
                         {% endblock %}
                     </div>
                 </div>
