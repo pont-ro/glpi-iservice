@@ -11,8 +11,9 @@ $id                   = IserviceToolBox::getInputVariable('id', 0);
 $add                  = IserviceToolBox::getInputVariable('add');
 $update               = IserviceToolBox::getInputVariable('update');
 $post                 = filter_input_array(INPUT_POST);
-$options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id');
-$options['printerId'] = IserviceToolBox::getInputVariable('printer_id');
+$get                  = filter_input_array(INPUT_GET);
+$options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get);
+$options['printerId'] = IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($get, 'Printer');
 $options['mode']      = IserviceToolBox::getInputVariable('mode');
 
 if ($id > 0) {
