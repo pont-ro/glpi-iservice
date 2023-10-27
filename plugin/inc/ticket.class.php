@@ -171,15 +171,16 @@ class PluginIserviceTicket extends Ticket
 
     public function setPrinter($printerId = null): void
     {
-        $printer = new PluginIservicePrinter();
+        $printer = $this->getFirstPrinter();
 
-        if (!empty($printerId)) {
-            $printer->getFromDB($printerId);
-        } else {
-            $printer = $this->getFirstPrinter();
-        }
-
-        if (!$printer->isDeleted() && $printer->getID() > 0) {
+        if ($printer->getID() > 0) {
+            $this->printer = $printer;
+            return;
+        } elseif (!empty($printerId)
+            && $printer->getFromDB($printerId)
+            && !$printer->isDeleted()
+            && $printer->getID() > 0
+        ) {
             $this->printer = $printer;
             return;
         }
@@ -417,7 +418,7 @@ class PluginIserviceTicket extends Ticket
     {
         $this->initForm($ID, $options);
         $this->setPrinter($options['printerId'] ?? null);
-        $partnerId = $this->printer->fields['supplier_id'] ?? $options['partnerId'] ?? ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : null);
+        $partnerId = ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : null) ?? $this->printer->fields['supplier_id'] ?? $options['partnerId'] ?? null;
         $location  = $this->getLocation();
         $this->setTicketUsersFields($ID);
         $this->setEffectiveDateField();
@@ -430,7 +431,7 @@ class PluginIserviceTicket extends Ticket
             'params'                  => $options,
             'partnerId'               => $partnerId,
             'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
-            'printerId'               => $options['printerId'] ?? ($ID > 0 ? $this->getFirstPrinter()->getID() : ''),
+            'printerId'               => $this->printer->getID(),
             'printerFieldLabel'       => $this->getPrinterFieldLabel(),
             'printersFieldDisabled'   => $this->getFirstPrinter()->getID() > 0,
             'usageAddressField'       => $this->getPrinterUsageAddress(),
