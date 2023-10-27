@@ -431,7 +431,7 @@ class PluginIserviceTicket extends Ticket
             'params'                  => $options,
             'partnerId'               => $partnerId,
             'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
-            'printerId'               => $this->printer->getID(),
+            'printerId'               => $this->printer ? $this->printer->getID() : null,
             'printerFieldLabel'       => $this->getPrinterFieldLabel(),
             'printersFieldDisabled'   => $this->getFirstPrinter()->getID() > 0,
             'usageAddressField'       => $this->getPrinterUsageAddress(),
