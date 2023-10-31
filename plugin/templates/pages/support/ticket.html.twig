@@ -61,7 +61,15 @@
 
                             {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
 
+                            {% set field_options = field_options|merge({
+                                'on_change': 'if (' ~ alertOnStatusChange ~ ' == 1 && $(this).val() != ' ~ solvedStatusValue ~ ') { alert("ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de ' ~ item.customfields.fields['effective_date_field'] ~ '!") }',
+                            }) %}
+
                             {{ include('components/itilobject/fields/status.html.twig') }}
+
+                            {% set field_options = field_options|merge({
+                                'on_change': null,
+                            }) %}
 
                             {{ fields.checkboxField(
                                 '_operator_reading',
@@ -84,6 +92,10 @@
                                 field_options
                             ) }}
 
+                            {% if consumablesTableData %}
+                                {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
+                            {% endif %}
+
                             {{ fields.checkboxField(
                                 'exported_field',
                                 item.customfields.fields['exported_field'],
@@ -91,20 +103,13 @@
                                 field_options
                             ) }}
 
-                            {{ fields.dateField(
+                            {{ fields.datetimeField(
                                 'effective_date_field',
                                 item.customfields.fields['effective_date_field'],
                                 __('Effective date', 'iservice'),
                                 field_options|merge({
                                     'min': "now"|date("Y-m-d H:i:s"),
                                 })
-                            ) }}
-
-                            {{ fields.textField(
-                                'notification_mail_field',
-                                item.customfields.fields['notification_mail_field'],
-                                __('Notification e-mail', 'iservice'),
-                                field_options
                             ) }}
 
                         {% endblock %}

@@ -57,11 +57,12 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         return empty($result_data) ? false : $result_data;
     }
 
-    public static function showForTicket(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false)
+    public static function getDataForTicketConsumablesSection(PluginIserviceTicket $ticket, &$required_fields, $readonly = false): bool|array
     {
-        global $DB, $CFG_PLUGIN_ISERVICE;
+        $data = [];
 
-        $html         = new PluginIserviceHtml();
+        global $DB;
+
         $instID       = $ticket->getID();
         $suppliers_id = $ticket->fields['_suppliers_id_assign'] ?? 0;
         $items_id     = $ticket->fields['items_id']['Printer'][0] ?? 0;
@@ -71,8 +72,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             return false;
         }
 
-        $canedit = !$readonly && ($ticket->canEdit($instID) && isset($_SESSION["glpiactiveprofile"]) && $_SESSION["glpiactiveprofile"]["interface"] == "central");
-        $rand    = mt_rand();
+        $canEdit = !$readonly && ($ticket->canEdit($instID) && isset($_SESSION["glpiactiveprofile"]) && $_SESSION["glpiactiveprofile"]["interface"] == "central");
 
         $ticket->fields          = $ticket_fields;
         $ticket->consumable_data = [];
@@ -108,124 +108,119 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             }
         }
 
-        if ($canedit) {
-            echo "<div class='add-consumable-div'>";
-            if ($generate_form) {
-                echo "<form name='ticketitem_form$rand' id='ticketitem_form$rand' method='post'
-                                  action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-            }
-
-            echo "<table class='tab_cadre_fixe wide add-consumable-table no-margin full-selects'>";
-            if ($generate_form) {
-                echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Add an item') . "</th></tr>";
-            }
-
-            echo "<tr class='tab_bg_1'><td width='81%'>";
+        if ($canEdit) {
             $compatible_consumables       = array_column(PluginIserviceCartridgeItem::getCompatiblesForTicket($ticket), 'ref');
             $consumables_selector_options = [
-                'comments' => false,
-                'display' => false,
-                'name' => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
-                'used' => array_keys($consumables),
+                'comments'      => false,
+                'display'       => false,
+                'name'          => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
+                'used'          => array_keys($consumables),
                 'specific_tags' => ['transform_function' => "PluginIserviceConsumable_Ticket::TransformDropdownValue($suppliers_id, $items_id, %s)"],
-                'on_change' => '$("[name=\'add_consumable\']").click();'
+                'no_label' => true,
             ];
-            echo "<table><tr style='vertical-align:bottom;'>";
-            echo "<td style='white-space:nowrap;'>";
-            echo __('Amount', 'iservice') . " <input type='text' name='_plugin_iservice_consumable[amount]' class='consumables-amount' value='1'/>";
-            echo "</td><td style='white-space:nowrap;'>";
-            echo __('Price', 'iservice') . " <input type='text' name='_plugin_iservice_consumable[price]' class='consumables-price' value='0'/>";
-            echo "</td>";
+
+            $data['addConsumablesSection'] = [
+                'type'   => 'table',
+                'class'  => 'add-consumable-div',
+                'inputs' => [
+                    'amount'                 => [
+                        'order' => 1,
+                        'label' => __('Amount', 'iservice'),
+                        'type'  => 'textField',
+                        'name'  => '_plugin_iservice_consumable[amount]',
+                        'class' => 'consumables-amount',
+                        'value' => '1',
+                        'options' => [
+                            'no_label' => true,
+                        ],
+                    ],
+                    'price'                  => [
+                        'order' => 2,
+                        'label' => __('Price', 'iservice'),
+                        'type'  => 'textField',
+                        'name'  => '_plugin_iservice_consumable[price]',
+                        'class' => 'consumables-price',
+                        'value' => '0',
+                        'options' => [
+                            'no_label' => true,
+                        ],
+                    ],
+                    'allConsumablesDropdown' => [
+                        'order'    => 3,
+                        'label'    => __('Full list', 'iservice'),
+                        'type'     => 'dropdown',
+                        'value'    => '',
+                        'itemType' => 'PluginIserviceConsumable',
+                        'name'     => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
+                        'options'    => $consumables_selector_options,
+                    ],
+                    'addButton'              => [
+                        'no_label'      => true,
+                        'order'         => 5,
+                        'label'         => _sx('button', 'Add'),
+                        'type'          => 'button',
+                        'name'          => 'add_consumable',
+                        'value'         => _sx('button', 'Add'),
+                        'options'       => [
+                            'class' => 'submit',
+                            'data-required' => implode(',', array_keys(array_filter($required_fields))) . ",_export_type",
+                            'on_click' => "$(this).closest('form').attr('action', window.location.href).submit();",
+                            'buttonClass'     => 'btn-primary me-2',
+                            'buttonIconClass' => 'fas fa-plus',
+                        ],
+                    ],
+                ],
+            ];
+
             if (count($compatible_consumables) > 0) {
                 if (count(array_keys($consumables)) > 0) {
                     $compatible_consumables = array_diff($compatible_consumables, array_keys($consumables));
                 }
 
-                echo "<td style='width:50%;'>Listă completă:<br>";
-                echo PluginIserviceConsumable::dropdown($consumables_selector_options);
-                $consumables_selector_options['name']      = '_plugin_iservice_consumable[plugin_iservice_cartridge_consumables_id]';
                 $consumables_selector_options['condition'] = ["id in ('" . implode("','", $compatible_consumables) . "')"];
-                echo "</td><td style='width:50%;'>Listă cartușe compatibile:<br>", PluginIserviceConsumable::dropdown($consumables_selector_options);
-            } else {
-                echo "<td style='width:100%;'>";
-                echo PluginIserviceConsumable::dropdown($consumables_selector_options);
+
+                $data['addConsumablesSection']['inputs']['compatibleConsumablesDropdown'] = [
+                    'order'    => 4,
+                    'label'    => __('Compatible cartridges list', 'iservice'),
+                    'name'     => '_plugin_iservice_consumable[plugin_iservice_cartridge_consumables_id]',
+                    'type'     => 'dropdown',
+                    'itemType' => 'PluginIserviceConsumable',
+                    'value'    => '',
+                    'options'  => $consumables_selector_options,
+                ];
             }
-
-            echo "</td></tr></table>";
-            echo "</td><td>";
-            echo "<input type='submit' name='add_consumable' value=\"" . _sx('button', 'Add') . "\" class='submit' data-required='" . implode(',', array_keys(array_filter($required_fields))) . ",_export_type'>";
-            echo "</td></tr>";
-            echo "</table>";
-            if ($generate_form) {
-                Html::closeForm();
-            }
-
-            echo "</div>";
         }
 
-        if (!($number = count($consumables))) {
-            return 0;
-        } else {
-            $required_fields['_export_type'] = true;
-        }
+        $data['consumablesTableSection'] = [
+            'type' => 'table',
+            'header' => [
+                'checkbox' => [
+                    'hidden' => !$canEdit,
+                    'value' => '',
+                ],
+                'name' => [
+                    'value' => __('Name'),
+                ],
+                'cartridge' => [
+                    'value' => __('Cartridge'),
+                ],
+                'location' => [
+                    'value' => _n('Location', 'Locations', 1),
+                ],
+                'price' => [
+                    'value' => __('Price', 'iservice'),
+                ],
+                'inEur' => [
+                    'value' => __('in €', 'iservice'),
+                ],
+                'amount' => [
+                    'value' => __('Amount', 'iservice'),
+                ],
+            ],
+        ];
 
-        echo "<table class='tab_cadre_fixe wide no-margin full-selects'>";
-        echo "<tr><td width='81%'>";
-        if ($canedit && $number && $generate_form) {
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
-            Html::showMassiveActions($massiveactionparams);
-        }
-
-        echo "<table class='tab_cadre_fixe'>";
-        $header = '<tr>';
-        if ($canedit && $number) {
-            $header .= "<th width='10'>"; // . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            $header .= "</th>";
-        }
-
-        $header .= "<th>" . __('Name') . "</th>";
-        $header .= "<th>" . __('Cartridge') . "</th>";
-        $header .= "<th>" . _n('Location', 'Locations', 1) . "</th>";
-        $header .= "<th>" . __('Price', 'iservice') . "</th>";
-        $header .= "<th style='white-space:nowrap;'>" . __('in €', 'iservice') . "</th>";
-        $header .= "<th>" . __('Amount', 'iservice') . "</th>";
-        $header .= "<th>" . _x('item', 'State') . "</th></tr>";
-        echo $header;
-
-        foreach ($consumables as $consumable) {
-            echo "<tr class='tab_bg_1'>";
-            if ($canedit) {
-                echo "<td width='10'>";
-                // Html::showMassiveActionCheckBox(__CLASS__, $consumable["IDD"]);
-                echo Html::getCheckbox(
-                    [
-                        'name' => "_plugin_iservice_consumables_tickets[$consumable[IDD]]",
-                        'zero_on_empty' => false,
-                    ]
-                );
-                echo "</td>";
-            }
-
+        foreach ($consumables as $key => $consumable) {
             $ticket->consumable_data['installed_cartridges'] = [];
-            if (!empty($consumable['new_cartridge_ids'])) {
-                $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
-                if (empty($ticket->consumable_data['delivery_date'])) {
-                    $cartridge = new PluginIserviceCartridge();
-                    foreach ($cartridge->find("id in ($cartridge_ids)") as $cartr) {
-                        $ticket->consumable_data['delivery_date'] = $cartr['date_in'];
-                    }
-                }
-
-                $cartridge_ticket = new PluginIserviceCartridge_Ticket();
-                foreach ($cartridge_ticket->find("cartridges_id in ($cartridge_ids)") as $cartr) {
-                    $ticket->consumable_data['installed_cartridges'][$cartr['cartridges_id']] = ['id' => $cartr['cartridges_id'], 'ticket_use' => $cartr['tickets_id']];
-                }
-
-                $title = str_replace(',', ', ', $cartridge_ids);
-            } else {
-                $title = "";
-            }
 
             $force_cartridge_creation = null;
             $cartridge_creation_title = "Creează cartuș?";
@@ -238,94 +233,166 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 $cartridge_creation_title = "Consumabilul va ștrege " . abs($consumable['amount']) . " cartuș" . ($consumable['amount'] > 1 ? "e" : "");
             }
 
-            echo "<td title='$title'>";
-            echo "$consumable[name]" . ($would_create_cartridge ? " [*]" : "");
-            $html->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, "_plugin_iservice_consumable_codes[$consumable[IDD]]", $consumable['id']);
-            echo "</td>";
-            echo "<td class='center'>";
-
+            // Cartridge checkbox.
             $in_cm = PluginIserviceDB::getQueryResult("SELECT cm_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $suppliers_id");
             if (!$in_cm[0]['cm_field']) {
                 $force_cartridge_creation = 0;
                 $cartridge_creation_title = "Aparatul nu este in Management cartușe";
             }
 
-            $html->displayField(
-                PluginIserviceHtml::FIELDTYPE_CHECKBOX,
-                "_plugin_iservice_consumable_create_cartridges[$consumable[IDD]]",
-                $force_cartridge_creation === null ? $consumable['create_cartridge'] : $force_cartridge_creation,
-                $readonly || $force_cartridge_creation !== null,
-                [
+            $cartridgeCheckBoxSettings = [
+                'type' => 'checkbox',
+                'name' => "_plugin_iservice_consumable_create_cartridges[$consumable[IDD]]",
+                'value' => $force_cartridge_creation === null ? $consumable['create_cartridge'] : $force_cartridge_creation,
+                'readonly' => $readonly || $force_cartridge_creation !== null,
+                'options' => [
                     'title' => $cartridge_creation_title,
-                    'onchange' => 'consumablesChanged = true;'
+                    'onchange' => 'consumablesChanged = true;',
+                    'options' => [
+                        'no_label' => true,
+                    ],
                 ]
-            );
-            echo "</td>";
-            echo "<td class='center'>";
+            ];
+
+            // Location dropdown.
             $location_condition_select = "
                 SELECT distinct(p.locations_id)
                 FROM glpi_infocoms ic 
                 LEFT JOIN glpi_printers p ON p.id = ic.items_id AND itemtype = 'Printer'
                 WHERE ic.suppliers_id = " . $ticket->getFirstAssignedPartner()->getID();
-            $location_dropdown_options = [
-                'class' => 'full',
-                'type' => 'Location',
-                'options' => [
-                    'comments' => false,
-                    'condition' => ["glpi_locations.id IN ($location_condition_select)"],
-                    'on_change' => 'consumablesChanged = true;',
+
+            $data['consumablesTableSection']['rows'][$key] = [
+                'cols' => [
+                    'checkbox' => [
+                        'hidden' => !$canEdit,
+                        'input' => [
+                            'type' => 'checkbox',
+                            'name' => "_plugin_iservice_consumables_tickets[$consumable[IDD]]",
+                            'value' => $consumable['IDD'],
+                            'disabled' => !$canEdit,
+                            'zero_on_empty' => false,
+                            'options' => [
+                                'no_label' => true,
+                            ],
+                        ],
+                    ],
+                    'name' => [
+                        'value' => $consumable['name'] . ($would_create_cartridge ? " [*]" : ""),
+                        'input' => [
+                            'type' => 'hidden',
+                            'name' => "_plugin_iservice_consumable_codes[$consumable[IDD]]",
+                            'value' => $consumable['id'],
+                        ],
+                    ],
+                    'cartridge' => [
+                        'input' => $cartridgeCheckBoxSettings,
+                    ],
+                    'location' => [
+                        'input' => [
+                            'type' => 'dropdown',
+                            'itemType' => 'Location',
+                            'name' => "_plugin_iservice_consumable_locations[$consumable[IDD]]",
+                            'value' => $consumable['locations_id'],
+                            'options' => [
+                                'no_label' => true,
+                                'class' => 'full',
+                                'input_class' => 'input_class',
+                                'field_class' => 'field_class',
+                                'comments' => false,
+                                'condition' => ["glpi_locations.id IN ($location_condition_select)"],
+                                'on_change' => 'consumablesChanged = true;',
+                                'readonly' => $readonly,
+                            ],
+                        ],
+                    ],
+                    'price' => [
+                        'input' => [
+                            'type' => 'textField',
+                            'name' => "_plugin_iservice_consumable_prices[$consumable[IDD]]",
+                            'value' => $consumable['price'],
+                            'readonly' => $readonly,
+                            'options' => [
+                                'onchange' => 'consumablesChanged = true;',
+                                'style' => '',
+                                'no_label' => true,
+                            ],
+                        ],
+                    ],
+                    'origPrice' => [
+                        'hidden' => true,
+                        'input' => [
+                            'type' => 'hidden',
+                            'name' => "_plugin_iservice_consumable_orig_prices[$consumable[IDD]]",
+                            'value' => $consumable['price'],
+                            'options' => [
+                                'no_label' => true,
+                            ]
+                        ],
+                    ],
+                    'inEur' => [
+                        'input' => [
+                            'type' => 'checkbox',
+                            'name' => "_plugin_iservice_consumable_prices_in_euro[$consumable[IDD]]",
+                            'value' => $consumable['euro_price'],
+                            'readonly' => $readonly,
+                            'options' => [
+                                'onchange' => 'consumablesChanged = true;',
+                                'no_label' => true,
+                            ],
+                        ],
+                    ],
+                    'amount' => [
+                        'input' => [
+                            'type' => 'textField',
+                            'name' => "_plugin_iservice_consumable_amounts[$consumable[IDD]]",
+                            'value' => $consumable['amount'],
+                            'readonly' => $readonly,
+                            'options' => [
+                                'onchange' => 'consumablesChanged = true;',
+                                'style' => '',
+                                'no_label' => true,
+                            ],
+                        ],
+                    ],
                 ],
             ];
-            $html->displayField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, "_plugin_iservice_consumable_locations[$consumable[IDD]]", $consumable['locations_id'], $readonly, $location_dropdown_options);
-            echo "</td>";
-            echo "<td class='center'>";
-            $html->displayField(PluginIserviceHtml::FIELDTYPE_TEXT, "_plugin_iservice_consumable_prices[$consumable[IDD]]", $consumable['price'], $readonly, ['onchange' => 'consumablesChanged = true;', 'style' => 'width:3em;']);
-            $html->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, "_plugin_iservice_consumable_orig_prices[$consumable[IDD]]", $consumable['price']);
-            echo "</td>";
-            echo "<td class='center'>";
-            $html->displayField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, "_plugin_iservice_consumable_prices_in_euro[$consumable[IDD]]", $consumable['euro_price'], $readonly, ['onchange' => 'consumablesChanged = true;', ]);
-            echo "</td>";
-            echo "<td class='center'>";
-            $html->displayField(PluginIserviceHtml::FIELDTYPE_TEXT, "_plugin_iservice_consumable_amounts[$consumable[IDD]]", $consumable['amount'], $readonly, ['onchange' => 'consumablesChanged = true;', 'style' => 'width:3em;']);
-            echo "</td>";
-            if ($consumable['plugin_iservice_orderstatuses_id'] >= PluginIserviceOrderStatus::getIdReceived()) {
-                $color = "_yellow";
-                $title = "Recepționat";
-            } elseif (!empty($consumable['plugin_iservice_extorders_id'])) {
-                $color = "_blue";
-                $title = "Comandă în așteptare";
-            } elseif (!empty($consumable['plugin_iservice_orderstatuses_id'])) {
-                $color = "_orange";
-                $title = "Comandă internă";
-            } else {
-                $color = "_red";
-                $title = "Necomandat";
+
+            if ($canEdit) {
+                $data['consumablesTableSection']['buttons']['updateButton'] = [
+                    'input' => [
+                        'label'   => __('Update'),
+                        'type'    => 'button',
+                        'name'    => 'update_consumable',
+                        'value'   => __('Update'),
+                        'options' => [
+                            'class'         => 'submit',
+                            'data-required' => implode(',', array_keys(array_filter($required_fields))),
+                            'on_click' => "$(this).closest('form').attr('action', window.location.href).submit();",
+                            'buttonClass'     => 'btn-primary me-2',
+                            'buttonIconClass' => 'far fa-save',
+                        ],
+                    ],
+                ];
+
+                $data['consumablesTableSection']['buttons']['deleteButton'] = [
+                    'input' => [
+                        'label'           => __('Delete'),
+                        'type'            => 'button',
+                        'name'            => 'remove_consumable',
+                        'value'           => __('Delete'),
+                        'options'         => [
+                            'class'         => 'submit',
+                            'data-required' => implode(',', array_keys(array_filter($required_fields))),
+                            'on_click' => "$(this).closest('form').attr('action', window.location.href).submit();",
+                            'buttonClass'     => 'btn-outline-warning me-2',
+                            'buttonIconClass' => 'ti ti-trash',
+                        ],
+                    ],
+                ];
             }
-
-            echo "<td class='center'>";
-            echo "<a href='views.php?view=GlpiPlugin\Iservice\Specialviews\Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$instID'>";
-            echo "<img title='$title' src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_go$color.png' /></a></td>";
         }
 
-        echo $header;
-        echo "</table>";
-
-        if ($canedit && $number && $generate_form) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-        }
-
-        echo "</td><td>";
-        if ($canedit) {
-            echo "<input type='submit' name='remove_consumable' onclick='consumablesChanged=false;' value='" . __('Delete') . "' class='submit' style='margin: 2px;' data-required='" . implode(',', array_keys(array_filter($required_fields))) . "'><br>";
-            echo "<input type='submit' name='update_consumable' onclick='consumablesChanged=false;' value='" . __('Update') . "' class='submit' style='margin: 2px;' data-required='" . implode(',', array_keys(array_filter($required_fields))) . "'>";
-        }
-
-        echo "</td></tr>";
-        echo "</table>";
-
-        return $number;
+        return $data;
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string

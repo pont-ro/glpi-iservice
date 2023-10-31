@@ -33,3 +33,67 @@
       </div>
    </div>
 {% endmacro %}
+
+{% macro bootstrapGripTable(label, data, options = {}) %}
+   <div class="form-field row col-12 mb-2">
+      <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
+         {{ label }}
+      </label>
+      <div class="col-xxl-8 field-container {{ options.valueClass }}">
+         <div class="row">
+            {% for colData in data['header'] %}
+               <div class="col fw-bold m-2 {{ colData.class }}">
+                   {{ colData.value }}
+               </div>
+            {% endfor %}
+         </div>
+         {% for key, rowData in data['rows'] %}
+            <div class="row {{ rowData.class }}">
+               {% for colData in rowData.cols %}
+                  <div class="col m-2 {{ colData.class }}">
+                     {{ colData.value|raw }}
+                  </div>
+               {% endfor %}
+            </div>
+         {% endfor %}
+      </div>
+   </div>
+{% endmacro %}
+
+{% macro marcoCallHelper(type, name, value, label = '', options = {}, itemType = '') %}
+   {% import 'components/form/fields_macros.html.twig' as fields %}
+   {% if type == 'textField' %}
+      {{ fields.textField(name, value, label, options) }}
+   {% elseif type == 'checkbox' %}
+      {{ fields.checkboxField(name, value, label, options) }}
+   {% elseif type == 'customFormRow' %}
+      {{ _self.customFormRow(label, value, options) }}
+   {% elseif type == 'hidden' %}
+      {{ fields.hiddenField(name, value, label, options) }}
+   {% elseif type == 'dropdown' %}
+      {{ fields.dropdownField(itemType, name, value, label, options) }}
+   {% elseif type == 'button' %}
+      {{ _self.button('', name, value, label, options) }}
+   {% endif %}
+{% endmacro %}
+
+{% macro button(type, name, value, label = '', options = {}) %}
+   <button
+      class="btn {{ options.buttonClass ?? '' }}"
+      {% if type %}
+         type="{{ type }}"
+      {% endif %}
+      name="{{ name }}"
+      value="{{ value }}"
+      data-required="{{ options.data-required }}"
+      {% if options.on_click %}
+         onclick="{{ options.on_click }}"
+      {% endif %}
+   >
+      {% if options.buttonIconClass %}
+         <i class="{{ options.buttonIconClass }}"></i>
+      {% endif %}
+      <span>{{ label ?? value }}</span>
+   </button>
+{% endmacro %}
+

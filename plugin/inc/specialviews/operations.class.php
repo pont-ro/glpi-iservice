@@ -111,7 +111,7 @@ class Operations extends View
                         , p.id printer_id
                         , s.id supplier_id
                         , s.name supplier_name
-                        , GROUP_CONCAT(CONCAT('<span class=\"followup', CASE tf.is_private WHEN 1 THEN '_private' ELSE '' END, '\">', DATE_FORMAT(tf.date, '%Y-%m-%d %T'), ' - ', tf.content, '</span>') SEPARATOR '<br>') ticket_followups
+                        , GROUP_CONCAT(CONCAT('<span class=\"followup', CASE tf.is_private WHEN 1 THEN ' text-danger' ELSE '' END, '\">', DATE_FORMAT(tf.date, '%Y-%m-%d %T'), ' - ', tf.content, '</span>') SEPARATOR '<br>') ticket_followups
                         , (SELECT GROUP_CONCAT(CONCAT(ct.plugin_iservice_consumables_id, '<br>(', TRIM(ct.amount) + 0, COALESCE(CONCAT(': ', REPLACE(ct.new_cartridge_ids, '|', '')), ''), ')') SEPARATOR '<br>') ticket_consumables
                            FROM glpi_plugin_iservice_consumables_tickets ct
                            WHERE ct.tickets_id = t.id) ticket_consumables

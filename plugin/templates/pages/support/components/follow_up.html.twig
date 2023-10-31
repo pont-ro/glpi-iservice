@@ -7,6 +7,7 @@
     __('Followup description', 'iservice'),
     field_options|merge({
         'enable_richtext': 1,
+        'enable_images': 0,
     })
 ) }}
 
@@ -17,9 +18,9 @@
     field_options
 ) }}
 
-{% if followups %}
-    {{ fieldsIservice.customFormRow(
+{% if followupsData %}
+    {{ fieldsIservice.bootstrapGripTable(
         _n('Followup', 'Followups', 2),
-        followups
+        followupsData
     ) }}
 {% endif %}

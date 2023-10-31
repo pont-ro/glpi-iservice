@@ -8,9 +8,20 @@
     __('Partener'),
     field_options|merge({
         'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
-        'disabled': partnersFieldDisabled
+        'readonly': partnersFieldReadonly
     })
 ) }}
+
+{% if partnersFieldReadonly %}
+    {{ fields.hiddenField(
+        'suppliers_id',
+        partnerId,
+        __('Partener'),
+        field_options|merge({
+            'no_label': true
+        })
+    ) }}
+{% endif %}
 
 {{ fields.dropdownField(
     'Printer',
@@ -32,9 +43,20 @@
             }
         },
         'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
-        'disabled': printersFieldDisabled
+        'readonly': printersFieldReadonly
     })
 ) }}
+
+{% if printersFieldReadonly %}
+    {{ fields.hiddenField(
+        'printer_id',
+        printerId,
+        printerFieldLabel,
+        field_options|merge({
+            'no_label': true
+        })
+    ) }}
+{% endif %}
 
 {% if usageAddressField %}
     {{ fields.textField(
