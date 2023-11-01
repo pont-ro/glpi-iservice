@@ -34,30 +34,34 @@
    </div>
 {% endmacro %}
 
-{% macro bootstrapGripTable(label, data, options = {}) %}
+{% macro bootstrapGridTableField(label, data, options = {}) %}
    <div class="form-field row col-12 mb-2">
       <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
          {{ label }}
       </label>
       <div class="col-xxl-8 field-container {{ options.valueClass }}">
-         <div class="row">
-            {% for colData in data['header'] %}
-               <div class="col fw-bold m-2 {{ colData.class }}">
-                   {{ colData.value }}
-               </div>
-            {% endfor %}
+         {{ _self.bootstrapGridTable(data) }}
+      </div>
+   </div>
+{% endmacro %}
+
+{% macro bootstrapGridTable(data) %}
+   <div class="row">
+      {% for colData in data['header'] %}
+         <div class="col fw-bold m-2 {{ colData.class }}">
+            {{ colData.value }}
          </div>
-         {% for key, rowData in data['rows'] %}
-            <div class="row {{ rowData.class }}">
-               {% for colData in rowData.cols %}
-                  <div class="col m-2 {{ colData.class }}">
-                     {{ colData.value|raw }}
-                  </div>
-               {% endfor %}
+      {% endfor %}
+   </div>
+   {% for key, rowData in data['rows'] %}
+      <div class="row {{ rowData.class }}">
+         {% for colData in rowData.cols %}
+            <div class="col m-2 {{ colData.class }}">
+               {{ colData.value|raw }}
             </div>
          {% endfor %}
       </div>
-   </div>
+   {% endfor %}
 {% endmacro %}
 
 {% macro marcoCallHelper(type, name, value, label = '', options = {}, itemType = '') %}

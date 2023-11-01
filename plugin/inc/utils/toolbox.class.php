@@ -248,4 +248,9 @@ class ToolBox
         return empty($dateValue) || trim($dateValue) === '0000-00-00' || trim($dateValue) === '0000-00-00 00:00:00';
     }
 
+    public static function clearNotAllowedTags($string): string
+    {
+        $allowedTags = ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>'];
+        return strip_tags($string, $allowedTags);
+    }
 }

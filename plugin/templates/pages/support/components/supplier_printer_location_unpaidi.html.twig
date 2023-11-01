@@ -12,17 +12,6 @@
     })
 ) }}
 
-{% if partnersFieldReadonly %}
-    {{ fields.hiddenField(
-        'suppliers_id',
-        partnerId,
-        __('Partener'),
-        field_options|merge({
-            'no_label': true
-        })
-    ) }}
-{% endif %}
-
 {{ fields.dropdownField(
     'Printer',
     'printer_id',
@@ -46,17 +35,6 @@
         'readonly': printersFieldReadonly
     })
 ) }}
-
-{% if printersFieldReadonly %}
-    {{ fields.hiddenField(
-        'printer_id',
-        printerId,
-        printerFieldLabel,
-        field_options|merge({
-            'no_label': true
-        })
-    ) }}
-{% endif %}
 
 {% if usageAddressField %}
     {{ fields.textField(

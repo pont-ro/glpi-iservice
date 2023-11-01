@@ -11,30 +11,31 @@ class PluginIserviceTicketFollowup extends ITILFollowup
     /**
      * @param $ID  integer  ID of the ticket
      **/
-    static function getTicketFollowupsData($ID): array
+    public static function getTicketFollowupsData($ID): array
     {
-        global $DB, $CFG_GLPI;
+        global $CFG_GLPI;
 
-        // Print Followups for a job
         $showprivate = Session::haveRight(self::$rightname, self::SEEPRIVATE);
 
-        $RESTRICT = "";
+        $criteria = [
+            'items_id' => $ID,
+            'itemtype' => 'Ticket',
+        ];
         if (!$showprivate) {
-            $RESTRICT = " AND (`is_private` = '0'
-                            OR `users_id` ='" . Session::getLoginUserID() . "') ";
+            $criteria['AND']['OR'] = [
+                'is_private' => 0,
+                'users_id' => Session::getLoginUserID(),
+            ];
         }
 
-        // Get Number of Followups.
-        $query  = "SELECT *
-                FROM `glpi_itilfollowups`
-                WHERE `items_id` = '$ID' and `itemtype` = 'Ticket'
-                      $RESTRICT
-                ORDER BY `date` DESC";
-        $result = $DB->query($query);
+        $result = (new self)->find(
+            $criteria,
+            ['order' => 'date DESC']
+        );
 
         $followupsData = [];
 
-        if ($DB->numrows($result) > 0) {
+        if (count($result) > 0) {
             $followupsData['header'] = [
                 'date' => [
                     'value' => __('Date'),
@@ -55,7 +56,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
                 $showuserlink = 1;
             }
 
-            while ($data = $DB->fetchAssoc($result)) {
+            foreach ($result as $data) {
                 $followupsData['rows'][] = [
                     'class' => ($data['is_private'] ? 'bg-danger' : ''),
                     'cols' => [

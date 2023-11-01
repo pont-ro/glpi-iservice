@@ -422,7 +422,7 @@ class PluginIserviceTicket extends Ticket
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
         $location                             = $this->getLocation();
         $this->setTicketUsersFields($ID);
-        $this->setEffectiveDateField();
+        $this->setDefaultEffectiveDateField();
         $canupdate                       = !$ID
             || (Session::getCurrentInterface() == "central"
                 && $this->canUpdateItem());
@@ -813,6 +813,8 @@ class PluginIserviceTicket extends Ticket
         $this->addPrinter($ticketId, $post);
 
         $this->createFollowup($ticketId, $post);
+
+        $this->updateEffectiveDate($ticketId, $post);
     }
 
     public function addPartner($ticketId, $post): bool
@@ -1074,21 +1076,15 @@ class PluginIserviceTicket extends Ticket
     public static function preProcessPostData($post): array
     {
         if (isset($post['content'])) {
-            $post['content'] = self::clearNotAllowedTags($post['content']);
+            $post['content'] = IserviceToolBox::clearNotAllowedTags($post['content']);
         }
 
         if (isset($post['_followup_content'])) {
-            $post['_followup']['content'] = self::clearNotAllowedTags($post['_followup_content']);
+            $post['_followup']['content'] = IserviceToolBox::clearNotAllowedTags($post['_followup_content']);
             unset($post['_followup_content']);
         }
 
         return $post;
-    }
-
-    public static function clearNotAllowedTags($string): string
-    {
-        $allowedTags = ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>'];
-        return strip_tags($string, $allowedTags);
     }
 
     public function createFollowup($id, $post)
@@ -1110,7 +1106,7 @@ class PluginIserviceTicket extends Ticket
 
     }
 
-    public function setEffectiveDateField(): void
+    public function setDefaultEffectiveDateField(): void
     {
         if (empty($this->customfields)) {
             $this->customfields = new PluginFieldsTicketticketcustomfield();
@@ -1118,7 +1114,6 @@ class PluginIserviceTicket extends Ticket
 
         if (!isset($this->customfields->fields['effective_date_field'])
             || IserviceToolBox::isDateEmpty($this->customfields->fields['effective_date_field'])
-            || $this->fields['status'] != Ticket::SOLVED // Should we do this? This way saved effective date will not be visible only if status is solved.
         ) {
             $this->customfields->fields['effective_date_field'] = date('Y-m-d H:i:s');
         }
@@ -1155,9 +1150,7 @@ class PluginIserviceTicket extends Ticket
                 $plugin_iservice_consumable_ticket_data['plugin_fields_typefielddropdowns_id'] = $cartridgeitem->getSupportedTypes()[0];
             }
 
-            (new PluginIserviceConsumable_Ticket())->add(
-                $plugin_iservice_consumable_ticket_data, ['printer_id' => IserviceToolBox::getInputVariable('printer_id')]
-            );
+            (new PluginIserviceConsumable_Ticket())->add($plugin_iservice_consumable_ticket_data);
         } else {
             Session::addMessageAfterRedirect('Selectați un consumabil / o piesă', false, ERROR);
         }
@@ -1216,6 +1209,27 @@ class PluginIserviceTicket extends Ticket
                 [
                     'id' => $this->customfields->getID(),
                     'consumable_prices_field' => $consumable_prices
+                ]
+            );
+        }
+
+    }
+
+    public function updateEffectiveDate($ticketId, $post): void
+    {
+        // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change.
+        // We presume that in such cases effective date is always set.
+        if ($this->fields['status'] == Ticket::SOLVED && $this->fields['status'] == Ticket::CLOSED) {
+            return;
+        } else {
+            if (empty($this->customfields)) {
+                $this->customfields = new PluginFieldsTicketticketcustomfield();
+            }
+
+            $this->customfields->update(
+                [
+                    'id' => $this->customfields->getID(),
+                    'effective_date_field' => date('Y-m-d H:i:s')
                 ]
             );
         }
