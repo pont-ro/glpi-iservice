@@ -177,7 +177,7 @@ class ToolBox
             }
         }
 
-        return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Views\UnpaidInvoices&unpaid_invoices0[cod]=$supplier_code'>$sum</a>";
+        return "<a target='_blank' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Views\UnpaidInvoices&unpaidinvoices0[cod]=$supplier_code'>$sum</a>";
     }
 
     public static function clearAfterRedirectMessages($type = null)
@@ -246,6 +246,11 @@ class ToolBox
     public static function isDateEmpty($dateValue)
     {
         return empty($dateValue) || trim($dateValue) === '0000-00-00' || trim($dateValue) === '0000-00-00 00:00:00';
+    }
+
+    public static function clearNotAllowedTags(string $string, array $allowedTags = null): string
+    {
+        return strip_tags($string, $allowedTags ?? ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>']);
     }
 
 }

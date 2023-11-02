@@ -11,51 +11,73 @@ class PluginIserviceTicketFollowup extends ITILFollowup
     /**
      * @param $ID  integer  ID of the ticket
      **/
-    static function showShortForTicket($ID)
+    public static function getTicketFollowupsData($ID): array
     {
-        global $DB, $CFG_GLPI;
+        global $CFG_GLPI;
 
-        // Print Followups for a job
         $showprivate = Session::haveRight(self::$rightname, self::SEEPRIVATE);
 
-        $RESTRICT = "";
+        $criteria = [
+            'items_id' => $ID,
+            'itemtype' => 'Ticket',
+        ];
         if (!$showprivate) {
-            $RESTRICT = " AND (`is_private` = '0'
-                            OR `users_id` ='" . Session::getLoginUserID() . "') ";
+            $criteria['AND']['OR'] = [
+                'is_private' => 0,
+                'users_id' => Session::getLoginUserID(),
+            ];
         }
 
-        // Get Number of Followups
-        $query  = "SELECT *
-                FROM `glpi_itilfollowups`
-                WHERE `items_id` = '$ID' and `itemtype` = 'Ticket'
-                      $RESTRICT
-                ORDER BY `date` DESC";
-        $result = $DB->query($query);
+        $result = (new self)->find(
+            $criteria,
+            ['order' => 'date DESC']
+        );
 
-        $out = "";
-        if ($DB->numrows($result) > 0) {
-            $out .= "<div class='center'><table class='tab_cadre' width='100%'>\n
-                  <tr><th>" . __('Date') . "</th><th>" . __('Requester') . "</th>
-                  <th>" . __('Description') . "</th></tr>\n";
+        $followupsData = [];
+
+        if (count($result) > 0) {
+            $followupsData['header'] = [
+                'date' => [
+                    'value' => __('Date'),
+                    'class' => 'center',
+                ],
+                'requester' => [
+                    'value' => __('Requester'),
+                    'class' => 'center',
+                ],
+                'description' => [
+                    'value' => __('Description'),
+                    'class' => 'center',
+                ],
+            ];
 
             $showuserlink = 0;
             if (Session::haveRight('user', READ)) {
                 $showuserlink = 1;
             }
 
-            while ($data = $DB->fetchAssoc($result)) {
-                $out .= "<tr class='tab_bg_3'>
-                     <td class='center'>" . Html::convDateTime($data["date"]) . "</td>
-                     <td class='center'>" . getUserName($data["users_id"], $showuserlink) . "</td>
-                     <td width='70%' class='b followup" . ($data['is_private'] ? '_private' : '') . "'>"
-                . Html::resume_text($data["content"], $CFG_GLPI["cut"]) . "
-                     </td></tr>";
+            foreach ($result as $data) {
+                $followupsData['rows'][] = [
+                    'class' => ($data['is_private'] ? 'bg-danger' : ''),
+                    'cols' => [
+                        'date' => [
+                            'value' => Html::convDateTime($data["date"]),
+                            'class' => 'center',
+                        ],
+                        'requester' => [
+                            'value' => getUserName($data["users_id"], $showuserlink),
+                            'class' => 'center',
+                        ],
+                        'description' => [
+                            'value' => Html::resume_text($data["content"], $CFG_GLPI["cut"]),
+                            'class' => 'center',
+                        ],
+                    ],
+                ];
             }
-
-            $out .= "</table></div>";
         }
 
-        return $out;
+        return $followupsData;
     }
 
     static function getShortForMail($id, $showprivate = false)

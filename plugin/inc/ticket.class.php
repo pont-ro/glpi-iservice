@@ -418,22 +418,25 @@ class PluginIserviceTicket extends Ticket
     {
         $this->initForm($ID, $options);
         $this->setPrinter($options['printerId'] ?? null);
-        $partnerId = ($ID > 0 ? $this->getFirstAssignedPartner()->getID() : null) ?? $this->printer->fields['supplier_id'] ?? $options['partnerId'] ?? null;
-        $location  = $this->getLocation();
+        $printerId                            = $this->printer ? $this->printer->getID() : null;
+        $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
+        $location                             = $this->getLocation();
         $this->setTicketUsersFields($ID);
-        $this->setEffectiveDateField();
-        $canupdate = !$ID
+        $this->setDefaultEffectiveDateField();
+        $canupdate                       = !$ID
             || (Session::getCurrentInterface() == "central"
                 && $this->canUpdateItem());
+        $prepared_data['field_required'] = [];
+        $orderStatus                     = $this->getOrderStatus();
 
         $templateParams = [
             'item'                    => $this,
             'params'                  => $options,
             'partnerId'               => $partnerId,
-            'partnersFieldDisabled'   => $this->getFirstAssignedPartner()->getID() > 0,
-            'printerId'               => $this->printer ? $this->printer->getID() : null,
+            'partnersFieldReadonly'   => $this->getFirstAssignedPartner()->getID() > 0,
+            'printerId'               => $printerId,
             'printerFieldLabel'       => $this->getPrinterFieldLabel(),
-            'printersFieldDisabled'   => $this->getFirstPrinter()->getID() > 0,
+            'printersFieldReadonly'   => $this->getFirstPrinter()->getID() > 0,
             'usageAddressField'       => $this->getPrinterUsageAddress(),
             'locationName'            => $location->fields['completename'] ?? null,
             'locationId'              => empty($this->fields['locations_id']) ? ($location ? ($location->getID() > 0 ? $location->getID() : 0) : null) : null,
@@ -442,12 +445,15 @@ class PluginIserviceTicket extends Ticket
                 $this->getPartnerHMarfaCode($partnerId)
             ) : null,
             'lastInvoiceAndCountersTable' => $this->getLastInvoiceAndCountersTable($this->printer),
-            'followups'                   => $this->getFollowups($ID),
+            'followupsData'               => $this->getFollowups($ID),
             'canupdate'                   => $canupdate,
+            'alertOnStatusChange'         => $this->fields['status'] == self::SOLVED && $this->getID() > 0,
+            'solvedStatusValue'           => self::SOLVED,
+            'consumablesTableData'      => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']) || $orderStatus != 0)),
         ];
 
         if ($options['mode'] == self::MODE_CLOSE) {
-            $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $options['printerId'] ?? $this->getFirstPrinter()->getID(), false);
+            $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $printerId, false);
 
             $templateParams['printer']                    = $this->printer;
             $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
@@ -807,6 +813,8 @@ class PluginIserviceTicket extends Ticket
         $this->addPrinter($ticketId, $post);
 
         $this->createFollowup($ticketId, $post);
+
+        $this->updateEffectiveDate($ticketId, $post);
     }
 
     public function addPartner($ticketId, $post): bool
@@ -1045,7 +1053,7 @@ class PluginIserviceTicket extends Ticket
             return null;
         }
 
-        return (new PluginIserviceTicketFollowup())->showShortForTicket($ticketId);
+        return (new PluginIserviceTicketFollowup())->getTicketFollowupsData($ticketId);
     }
 
     public function setTicketUsersFields($ticketId): void
@@ -1067,8 +1075,12 @@ class PluginIserviceTicket extends Ticket
 
     public static function preProcessPostData($post): array
     {
+        if (isset($post['content'])) {
+            $post['content'] = IserviceToolBox::clearNotAllowedTags($post['content']);
+        }
+
         if (isset($post['_followup_content'])) {
-            $post['_followup']['content'] = $post['_followup_content'];
+            $post['_followup']['content'] = IserviceToolBox::clearNotAllowedTags($post['_followup_content']);
             unset($post['_followup_content']);
         }
 
@@ -1094,15 +1106,134 @@ class PluginIserviceTicket extends Ticket
 
     }
 
-    public function setEffectiveDateField(): void
+    public function setDefaultEffectiveDateField(): void
     {
         if (empty($this->customfields)) {
             $this->customfields = new PluginFieldsTicketticketcustomfield();
         }
 
-        if (!isset($this->customfields->fields['effective_date_field']) || IserviceToolBox::isDateEmpty($this->customfields->fields['effective_date_field'])) {
+        if (!isset($this->customfields->fields['effective_date_field'])
+            || IserviceToolBox::isDateEmpty($this->customfields->fields['effective_date_field'])
+        ) {
             $this->customfields->fields['effective_date_field'] = date('Y-m-d H:i:s');
         }
+    }
+
+    public function getPartnerId($options = []): ?int
+    {
+        $partnerId = $this->getID() > 0 ? $this->getFirstAssignedPartner()->getID() : null;
+
+        if ($partnerId > 0) {
+            return $partnerId;
+        }
+
+        $partnerId = $this->printer->fields['supplier_id'] ?? $options['partnerId'] ?? null;
+
+        return intval($partnerId);
+    }
+
+    public function addConsumable($ticketId, $post): void
+    {
+        if (!empty($post['_plugin_iservice_consumable']) && (!empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id']) || !empty($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id']))) {
+            $this->check($ticketId, UPDATE);
+
+            if (empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
+                $post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'] = $post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id'];
+            }
+
+            unset($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id']);
+
+            $plugin_iservice_consumable_ticket_data               = $post['_plugin_iservice_consumable'];
+            $plugin_iservice_consumable_ticket_data['tickets_id'] = $ticketId;
+            $cartridgeitem                                        = new PluginIserviceCartridgeItem();
+            if ($cartridgeitem->getFromDBByRef($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
+                $plugin_iservice_consumable_ticket_data['plugin_fields_typefielddropdowns_id'] = $cartridgeitem->getSupportedTypes()[0];
+            }
+
+            (new PluginIserviceConsumable_Ticket())->add($plugin_iservice_consumable_ticket_data);
+        } else {
+            Session::addMessageAfterRedirect('Selectați un consumabil / o piesă', false, ERROR);
+        }
+    }
+
+    public function removeConsumable($ticketId, $post): void
+    {
+        $this->check($ticketId, UPDATE);
+
+        if (!empty($post['_plugin_iservice_consumables_tickets']) && is_array($post['_plugin_iservice_consumables_tickets'])) {
+            $plugin_iservice_consumable_ticket = new PluginIserviceConsumable_Ticket();
+            foreach (array_keys($post['_plugin_iservice_consumables_tickets']) as $id_to_delete) {
+                $plugin_iservice_consumable_ticket->delete(['id' => $id_to_delete]);
+            }
+        } else {
+            Session::addMessageAfterRedirect('Selectați un consumabil / o piesă', false, ERROR);
+        }
+
+    }
+
+    public function updateConsumable($ticketId, $post): void
+    {
+        $this->check($ticketId, UPDATE);
+
+        $success                   = $this->update($post);
+        $consumable_prices         = explode('###', $this->customfields->fields['consumable_prices_field']);
+        $consumable_prices_by_code = [];
+        foreach ($consumable_prices as $consumable_price_row) {
+            $consumable_price_data = explode(':', $consumable_price_row);
+            if (count($consumable_price_data) > 1) {
+                $consumable_prices_by_code[$consumable_price_data[0]] = $consumable_price_row;
+            }
+        }
+
+        $plugin_iservice_consumable_ticket = new PluginIserviceConsumable_Ticket();
+        foreach ($post['_plugin_iservice_consumable_amounts'] as $consumable_ticket_id => $amount) {
+            $success &= $plugin_iservice_consumable_ticket->update(
+                [
+                    'id' => $consumable_ticket_id,
+                    'amount' => $amount,
+                    'plugin_fields_typefielddropdowns_id' => 0,
+                    'create_cartridge' => $post['_plugin_iservice_consumable_create_cartridges'][$consumable_ticket_id],
+                    'price' => $post['_plugin_iservice_consumable_prices'][$consumable_ticket_id],
+                    'euro_price' => $post['_plugin_iservice_consumable_prices_in_euro'][$consumable_ticket_id] ? 1 : 0,
+                    'locations_id' => $post['_plugin_iservice_consumable_locations'][$consumable_ticket_id],
+                ]
+            );
+            if ($success && $post['_plugin_iservice_consumable_prices'][$consumable_ticket_id] != $post['_plugin_iservice_consumable_orig_prices'][$consumable_ticket_id]) {
+                unset($consumable_prices_by_code[$post['_plugin_iservice_consumable_codes'][$consumable_ticket_id]]);
+            }
+        }
+
+        $consumable_prices = implode('###', $consumable_prices_by_code);
+        if ($this->customfields->fields['consumable_prices_field'] !== $consumable_prices) {
+            $this->customfields->update(
+                [
+                    'id' => $this->customfields->getID(),
+                    'consumable_prices_field' => $consumable_prices
+                ]
+            );
+        }
+
+    }
+
+    public function updateEffectiveDate($ticketId, $post): void
+    {
+        // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change.
+        // We presume that in such cases effective date is always set.
+        if ($this->fields['status'] === Ticket::SOLVED || $this->fields['status'] === Ticket::CLOSED) {
+            return;
+        } else {
+            if (empty($this->customfields)) {
+                $this->customfields = new PluginFieldsTicketticketcustomfield();
+            }
+
+            $this->customfields->update(
+                [
+                    'id' => $this->customfields->getID(),
+                    'effective_date_field' => date('Y-m-d H:i:s')
+                ]
+            );
+        }
+
     }
 
 }

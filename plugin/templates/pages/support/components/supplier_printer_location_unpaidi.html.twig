@@ -8,7 +8,7 @@
     __('Partener'),
     field_options|merge({
         'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
-        'disabled': partnersFieldDisabled
+        'readonly': partnersFieldReadonly
     })
 ) }}
 
@@ -32,7 +32,7 @@
             }
         },
         'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
-        'disabled': printersFieldDisabled
+        'readonly': printersFieldReadonly
     })
 ) }}
 
