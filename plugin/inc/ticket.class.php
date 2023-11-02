@@ -1219,7 +1219,7 @@ class PluginIserviceTicket extends Ticket
     {
         // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change.
         // We presume that in such cases effective date is always set.
-        if ($this->fields['status'] == Ticket::SOLVED && $this->fields['status'] == Ticket::CLOSED) {
+        if ($this->fields['status'] === Ticket::SOLVED || $this->fields['status'] === Ticket::CLOSED) {
             return;
         } else {
             if (empty($this->customfields)) {
