@@ -75,17 +75,8 @@ trait PluginIserviceItem
         $model  = new parent;
         $result = $model->add($input, $options, $history);
 
-        if ($result && $this->getCustomFieldsModelName() !== '') {
-            $model->customfields  = new ($this->getCustomFieldsModelName());
-            $input['add']         = 'add';
-            $input['items_id']    = $model->getID();
-            $input['itemtype']    = $model->getType();
-            $input['_no_message'] = true;
-            $customFieldsResult   = $model->customfields->add($input, $options, $history);
-
-            if (!$customFieldsResult) {
-                Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
-            }
+        if ($result && !$this->updateCustomFields($model->getID(), $input)) {
+            Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
         }
 
         return $result;
@@ -97,15 +88,23 @@ trait PluginIserviceItem
         $model->getFromDB($this->getID());
         $result = $model->update($input, $history, $options);
 
-        return $result && $this->customfields->update(array_merge($input, ['id' => $this->customfields->getID()]), $history, $options);
+        return $result && $this->updateCustomFields($model->getID(), $input);
 
+    }
+
+    public function updateCustomFields($parentId, $input, $history = 1, $options = []): bool
+    {
+        if ($this->loadOrCreateCustomFields($parentId)) {
+            return $this->customfields->update(array_filter(array_merge($input, ['id' => $this->customfields->getID()])), $history, $options);
+        }
+
+        return false;
     }
 
     public function getFromDB($ID): bool
     {
-        $this->customfields = new ($this->getCustomFieldsModelName());
         if (parent::getFromDB($ID)) {
-            if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID) && !$this->customfields->add(['add' => 'add', 'items_id' => $ID, '_no_message' => true])) {
+            if (!$this->loadOrCreateCustomFields($ID)) {
                 return false;
             }
 
@@ -117,6 +116,26 @@ trait PluginIserviceItem
         }
 
         return false;
+    }
+
+    public function loadOrCreateCustomFields($ID): bool
+    {
+        $this->customfields = new ($this->getCustomFieldsModelName());
+
+        if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID)
+            && !$this->customfields->add(
+                [
+                    'add' => 'add',
+                    'items_id' => $ID,
+                    'itemtype' => $this->getType(),
+                    '_no_message' => true
+                ]
+            )
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getCustomFieldsModelName(): string

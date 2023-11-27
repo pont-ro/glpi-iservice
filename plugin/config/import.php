@@ -210,6 +210,10 @@ return [
                 'itemtype' => 'PluginIserviceConsumable_Ticket',
                 'label' => _n('Consumable Ticket', 'Consumable Tickets', Session::getPluralNumber()),
             ],
+            'cartridgeTicket' => [
+                'itemtype' => 'PluginIserviceCartridge_Ticket',
+                'label' => _n('Cartridge Ticket', 'Cartridge Tickets', Session::getPluralNumber()),
+            ],
         ]
     ],
     'orders' => [

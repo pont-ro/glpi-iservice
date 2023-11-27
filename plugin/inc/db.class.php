@@ -113,10 +113,12 @@ class PluginIserviceDB extends DB
 
         $query  = "create table $tableName (";
         $query .= implode(
-            ', ', array_filter([
-                self::getColumnsCreateModifySql($tableName, $tableConfig, $db),
-                self::getIndexesCreateModifySql($tableName, $tableConfig, $db),
-            ])
+            ', ', array_filter(
+                [
+                    self::getColumnsCreateModifySql($tableName, $tableConfig, $db),
+                    self::getIndexesCreateModifySql($tableName, $tableConfig, $db),
+                ]
+            )
         );
         $query  = rtrim($query, ', ');
         $query .= ')';
@@ -149,10 +151,12 @@ class PluginIserviceDB extends DB
 
         $query  = "alter table $tableName ";
         $query .= implode(
-            ', ', array_filter([
-                self::getColumnsCreateModifySql($tableName, $tableConfig, $db),
-                self::getIndexesCreateModifySql($tableName, $tableConfig, $db),
-            ])
+            ', ', array_filter(
+                [
+                    self::getColumnsCreateModifySql($tableName, $tableConfig, $db),
+                    self::getIndexesCreateModifySql($tableName, $tableConfig, $db),
+                ]
+            )
         );
         $query  = rtrim($query, ', ');
 
@@ -175,7 +179,13 @@ class PluginIserviceDB extends DB
 
         foreach ($tableConfig['columns'] as $columnName => $columnConfig) {
             if ($db->tableExists($tableName)) {
-                $action = $db->fieldExists($tableName, $columnName) ? ' modify column' : ' add column';
+                if (str_starts_with($columnConfig, 'drop|')) {
+                    $sql         .= " drop `$columnName`,";
+                    $columnConfig = str_replace('drop|', '', $columnConfig);
+                    $action       = ' add column';
+                } else {
+                    $action = $db->fieldExists($tableName, $columnName) ? ' modify column' : ' add column';
+                }
             }
 
             $sql .= "$action `$columnName` $columnConfig,";

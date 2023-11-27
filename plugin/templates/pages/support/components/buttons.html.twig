@@ -1,0 +1,43 @@
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+{% set canedit      = params['canedit'] ?? true %}
+{% set id           = item.fields['id'] ?? -1 %}
+
+         <div class="row">
+         {{ call_plugin_hook(constant('Glpi\\Plugin\\Hooks::POST_ITEM_FORM'), {'item': item, 'options': params}) }}
+         </div>
+
+{% if canedit or item.canEdit(item.fields['id']) %}
+      <div class="card-body mx-n2 mb-4 border-top d-flex align-items-center flex-wrap">
+          {% if id <= 0 %}
+              <button class="btn btn-primary me-2" type="submit" name="add" value="1">
+                  <i class="fas fa-plus"></i>
+                  <span>{{ _x('button', 'Add') }}</span>
+              </button>
+          {% elseif canedit and item.can(id, constant('UPDATE')) and submitButtons %}
+              <input type="hidden" name="status" value="{{ item.fields['status'] }}" />
+              {% for button in submitButtons %}
+                  {{ fieldsIservice.button(
+                      button.type,
+                      button.name,
+                      button.value,
+                      button.label,
+                      button.options
+                  ) }}
+              {% endfor %}
+
+              {% if item.isField('date_mod') %}
+                  <input type="hidden" name="_read_date_mod" value="{{ item.fields['date_mod'] }}" />
+              {% endif %}
+          {% endif %}
+
+          {% if not item.isNewID(id) %}
+              <input type="hidden" name="id" value="{{ id }}" />
+          {% endif %}
+      </div>
+
+      <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+   </div> {# #mainformtable #}
+</form> {# [name=asset_form] #}
+{% else %}
+   </div> {# #mainformtable #}
+{% endif %}

@@ -58,76 +58,75 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return CartridgeItem::getTable($classname);
     }
 
-    public static function dropdownChangeableForTicket($ticket, array $dropdown_options = []): bool|int
+    public static function getChangeableDropdownDataForTicket($ticket, array $dropdownOptions = []): array
     {
-        $changeable_cartridges = self::getChangeablesForTicket($ticket, $dropdown_options);
-        if (empty($changeable_cartridges)) {
-            if ($dropdown_options['used']) {
-                $unused_changeable_cartridges = self::getChangeablesForTicket($ticket);
-                if (empty($unused_changeable_cartridges)) {
-                    echo __('You have no more compatible cartridges', 'iservice');
+        $data                 = [];
+        $changeableCartridges = self::getChangeablesForTicket($ticket, $dropdownOptions);
+        if (empty($changeableCartridges)) {
+            if ($dropdownOptions['used']) {
+                $unusedChangeableCartridges = self::getChangeablesForTicket($ticket);
+                if (empty($unusedChangeableCartridges)) {
+                    $data['warning'] = __('You have no more compatible cartridges', 'iservice');
                 } else {
-                    echo "<table style='table-layout:fixed;'><tr><th>Cartușe neinstalate</th></tr>";
-                    foreach ($unused_changeable_cartridges as $unused_cartridge) {
-                        echo "<tr><td>";
-                        $cartridge_name = $unused_cartridge["name"];
-                        if (!empty($unused_cartridge['location_name'])) {
-                            $cartridge_name .= " din locația $unused_cartridge[location_completename]";
+                    $data['notInstalledCartridgesTable'] = [
+                        'header' => [
+                            'notInstalledCartridges' =>
+                                [
+                                    'value' => __('Cartridges available', 'iservice'),
+                                ],
+                        ]
+                    ];
+                    foreach ($unusedChangeableCartridges as $unusedCartridge) {
+                        $cartridgeName = $unusedCartridge["name"];
+                        if (!empty($unusedCartridge['location_name'])) {
+                            $cartridgeName .= " din locația $unusedCartridge[location_completename]";
                         }
 
-                        echo "$cartridge_name ($unused_cartridge[cpt])";
-                        echo "</td></tr>";
+                        $data['notInstalledCartridgesTable']['rows'][] = [
+                            'notInstalledCartridges' => [
+                                'value' => "$cartridgeName ($unusedCartridge[cpt])",
+                            ],
+                        ];
                     }
-
-                    echo "</table>";
                 }
             } else {
-                echo __('You have no compatible cartridges', 'iservice');
+                $data['warning'] = __('You have no compatible cartridges', 'iservice');
             }
 
             if (!empty($ticket->customfields->fields['cartridge_install_date_field'])) {
-                echo ' (', sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))), ')';
+                $data['cartridgeInstallDate'] = ' (' . sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))) . ')';
             }
 
-            echo '!';
-            return false;
+            return $data;
         }
 
-        if (empty($dropdown_options['used'])) {
-            $options                  = [0 => 'Nu am înlocuit cartușe'];
-            $dropdown_options['used'] = [];
+        if (empty($dropdownOptions['used'])) {
+            $elements = [0 => 'Nu am înlocuit cartușe'];
         } else {
-            $options = [0 => '---'];
+            $elements = [0 => '---'];
         }
 
-        if (isset($ticket->fields['_cartridge_id']) && isset($ticket->fields['_cartridgeitem_id']) && !in_array($ticket->fields['_cartridgeitem_id'], $dropdown_options['used'])) {
-            echo "<input type='hidden' name='_cartridge_id' value='{$ticket->fields['_cartridge_id']}'/>";
-            $dropdown_options['value'] = $ticket->fields['_cartridgeitem_id'];
+        if (isset($ticket->fields['_cartridge_id']) && isset($ticket->fields['_cartridgeitem_id']) && !in_array($ticket->fields['_cartridgeitem_id'], $dropdownOptions['used'])) {
+            $data['hiddenInput'] = [
+                'name' => '_cartridge_id',
+                'value' => $ticket->fields['_cartridge_id'],
+            ];
         }
 
-        foreach ($changeable_cartridges as $changeable_cartridge) {
-            $cartridge_name = $changeable_cartridge["name"];
-            $index          = $changeable_cartridge['id'];
+        foreach ($changeableCartridges as $changeable_cartridge) {
+            $cartridgeName = $changeable_cartridge["name"];
+            $index         = $changeable_cartridge['id'];
             if (!empty($changeable_cartridge['location_name'])) {
-                $cartridge_name .= " din locația $changeable_cartridge[location_completename]";
-                $index          .= "l" . $changeable_cartridge['locations_id_field'];
+                $cartridgeName .= " din locația $changeable_cartridge[location_completename]";
+                $index         .= "l" . $changeable_cartridge['locations_id_field'];
             }
 
-            $options[$index] = sprintf(__('%1$s (%2$s)'), $cartridge_name, $changeable_cartridge["cpt"]);
+            $elements[$index] = sprintf(__('%1$s (%2$s)'), $cartridgeName, $changeable_cartridge["cpt"]);
         }
 
-        $drawtable = !isset($dropdown_options['draw_table']) || $dropdown_options['draw_table'];
-        echo $drawtable ? "<table style='table-layout:fixed;width:100%;'><tr><td>" : "";
-        Dropdown::showFromArray($dropdown_options['name'], $options, $dropdown_options);
-        /*
-          echo "</td><td style='width:7em;'>";
-          echo "<label for='_other_printer'>", __('Other printer', 'iservice'), "</label> <input type='checkbox' id='_other_printer' name='_other_printer' value='1'>";
-          echo "</td><td style='width:7em;'>";
-          echo "<label for='_other_location'>", __('Other location', 'iservice'), "</label> <input type='checkbox' id='_other_location' name='_other_location' value='1'>";
-          /**/
+        $data['elementsArray'] = $elements;
 
-        echo $drawtable ? "</td></tr></table>" : "";
-        return count($options);
+        return $data;
     }
 
     public static function tableChangeablesForTicket($ticket): string|bool
@@ -292,12 +291,11 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return PluginIserviceDB::getQueryResult($query, '_');
     }
 
-    public static function dropdownForTicket($ticket, array $dropdown_options = []): bool|int
+    public static function getCartridgesDropdownOptions($ticket, $options = []): array
     {
         $compatible_cartridges = self::getCompatiblesForTicket($ticket);
         if (empty($compatible_cartridges)) {
-            echo __('There are no compatible cartridges on stock!', 'iservice');
-            return false;
+            return [];
         }
 
         $options = [];
@@ -305,7 +303,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $options[$compatible_cartridge['id']] = sprintf(__('%1$s (%2$s)'), sprintf(__('%1$s - %2$s'), $compatible_cartridge["name"], $compatible_cartridge["ref"]), $compatible_cartridge["cpt"]);
         }
 
-        return Dropdown::showFromArray($dropdown_options['name'], $options, $dropdown_options) ? count($options) : false;
+        return $options;
     }
 
     public static function getCompatiblesForTicket($ticket, array $dropdown_options = []): bool|array

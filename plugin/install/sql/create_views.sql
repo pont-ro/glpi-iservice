@@ -246,7 +246,7 @@ select
     cfc.plugin_fields_containers_id as plugin_fields_containers_id,
     cfc.tickets_id_use_field as tickets_id_use_field,
     cfc.tickets_id_out_field as tickets_id_out_field,
-    cfc.pages_color_field as pages_color_field,
+    cfc.pages_color_out_field as pages_color_out_field,
     cfc.pages_use_field as pages_use_field,
     cfc.pages_color_use_field as pages_color_use_field,
     cfc.printed_pages_field as printed_pages_field,

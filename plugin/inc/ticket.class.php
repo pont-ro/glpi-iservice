@@ -418,7 +418,7 @@ class PluginIserviceTicket extends Ticket
     {
         $this->initForm($ID, $options);
         $this->setPrinter($options['printerId'] ?? null);
-        $printerId                            = $this->printer ? $this->printer->getID() : null;
+        $printerId                            = $this->getPrinterId();
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
         $location                             = $this->getLocation();
         $this->setTicketUsersFields($ID);
@@ -428,6 +428,7 @@ class PluginIserviceTicket extends Ticket
                 && $this->canUpdateItem());
         $prepared_data['field_required'] = [];
         $orderStatus                     = $this->getOrderStatus();
+        $closed                          = $this->isClosed();
 
         $templateParams = [
             'item'                    => $this,
@@ -439,7 +440,7 @@ class PluginIserviceTicket extends Ticket
             'printersFieldReadonly'   => $this->getFirstPrinter()->getID() > 0,
             'usageAddressField'       => $this->getPrinterUsageAddress(),
             'locationName'            => $location->fields['completename'] ?? null,
-            'locationId'              => empty($this->fields['locations_id']) ? ($location ? ($location->getID() > 0 ? $location->getID() : 0) : null) : null,
+            'locationId'              => !empty($this->fields['locations_id']) ? $this->fields['locations_id'] : ($location ? ($location->getID() > 0 ? $location->getID() : 0) : null),
             'sumOfUnpaidInvoicesLink' => $partnerId ? IserviceToolBox::getSumOfUnpaidInvoicesLink(
                 $partnerId,
                 $this->getPartnerHMarfaCode($partnerId)
@@ -449,7 +450,11 @@ class PluginIserviceTicket extends Ticket
             'canupdate'                   => $canupdate,
             'alertOnStatusChange'         => $this->fields['status'] == self::SOLVED && $this->getID() > 0,
             'solvedStatusValue'           => self::SOLVED,
-            'consumablesTableData'      => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']) || $orderStatus != 0)),
+            'consumablesTableData'        => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']) || $orderStatus != 0)),
+
+            'effectiveDate'                => $this->fields['status'] == self::SOLVED ? $this->customfields->fields['effective_date_field'] : date('Y-m-d H:i:s'),
+            'effectiveDateFieldReadonly'   => $this->fields['status'] == self::CLOSED,
+            'cartInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
         ];
 
         if ($options['mode'] == self::MODE_CLOSE) {
@@ -467,7 +472,25 @@ class PluginIserviceTicket extends Ticket
 
             $templateParams['observerVisible'] = true;
             $templateParams['assignedVisible'] = true;
+
+            $lastTicketWithCartridge = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
+            if ($ID > 0 && ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
+                $warning = "Atenție. Există un tichet mai nou ({$lastTicketWithCartridge->getID()}) cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet.";
+            }
+
+            $templateParams['changeablesTableData'] = array_merge(
+                [
+                    'warning' => $warning ?? null,
+                ],
+                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($closed || (($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'] && $ID > 0))),
+            );
+
+            if (!empty($this->printer->fields['printermodels_id'])) {
+                $templateParams['changeablesTableData']['cartridgeLink'] = "view.php?view=cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}";
+            }
         }
+
+        $templateParams['submitButtons'] = $this->getButtonsConfig($options);
 
         if ($options['mode'] == self::MODE_CLOSE) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
@@ -476,6 +499,11 @@ class PluginIserviceTicket extends Ticket
         }
 
         return true;
+    }
+
+    public function isClosed(): bool
+    {
+        return isset($this->fields['status']) && in_array($this->fields['status'], $this->getClosedStatusArray());
     }
 
     public function additionalGetFromDbSteps($ID = null): void
@@ -532,55 +560,66 @@ class PluginIserviceTicket extends Ticket
         }
     }
 
-    public function addCartridge(&$error_message, $cartridgeitems_id, $supplier_id, $printer_id, $install_date = null, $imposed_cartridge_id = null): bool
+    public function addCartridge($ticketId, $post, &$errorMessage = ''): bool
     {
-        $cartridge_item_data = explode('l', $cartridgeitems_id, 2);
-        $cartridge_item_id   = $cartridge_item_data[0];
-        $base_condition      = "AND EXISTS (SELECT * FROM glpi_plugin_iservice_consumables_tickets WHERE amount > 0 AND new_cartridge_ids LIKE CONCAT('%|', glpi_cartridges.id, '|%'))";
-        $location_condition  = 'AND (locations_id_field IS null OR locations_id_field < 1)';
-        $printer_condition   = 'AND printers_id = 0 AND date_use IS null AND date_out IS null';
-        $date_condition      = empty($install_date) ? '' : "AND date_in <= '$install_date'";
-        if (count($cartridge_item_data) > 1) {
-            $cartridge_item_data = explode('p', $cartridge_item_data[1], 2);
-            $location_condition  = "AND locations_id_field = $cartridge_item_data[0]";
-            if (count($cartridge_item_data) > 1) {
-                $printer_condition = "AND printers_id = $cartridge_item_data[1] AND date_out IS null";
-            }
-        }
+        $supplierId = IserviceToolBox::getInputVariable('suppliers_id');
+        $printerId  = IserviceToolBox::getInputVariable('printer_id');
 
-        $cartridge              = new PluginIserviceCartridge();
-        $cartridge_customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
-        $cartridges             = $cartridge->find("suppliers_id_field = $supplier_id AND cartridgeitems_id = $cartridge_item_id $base_condition $location_condition $printer_condition $date_condition", ["id ASC"]);
-
-        // First check the cartridges at the given partner. If there are none, check the partners in the same group.
-        if (count($cartridges) === 0) {
-            $cartridges = $cartridge->find("FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id)) AND cartridgeitems_id = $cartridge_item_id $location_condition $printer_condition $date_condition", ["id ASC"]);
-        }
-
-        if (count($cartridges) === 0) {
-            $error_message = "Stoc insuficient!";
+        if (!$this->preCartridgeAddChecks($post, $supplierId, $printerId) || !$this->getFromDB($ticketId)) {
             return false;
         }
 
-        if (!empty($imposed_cartridge_id)) {
-            if (in_array($imposed_cartridge_id, array_column($cartridges, 'id'))) {
-                $cartridge_id_to_install = $imposed_cartridge_id;
+        $cartridgeitemsId   = $post['_plugin_iservice_cartridge']['cartridgeitems_id'] ?? '';
+        $installDate        = $post['_cartridge_installation_date'] ?? '';
+        $imposedCartridgeId = $post['_cartridge_id'] ?? null;
+
+        $cartridgeItemData = explode('l', $cartridgeitemsId, 2);
+        $cartridgeItemId   = $cartridgeItemData[0];
+        $baseCondition     = "AND EXISTS (SELECT * FROM glpi_plugin_iservice_consumables_tickets WHERE amount > 0 AND new_cartridge_ids LIKE CONCAT('%|', glpi_plugin_iservice_cartridges.id, '|%'))";
+        $locationCondition = 'AND (locations_id_field IS null OR locations_id_field < 1)';
+        $printerCondition  = 'AND printers_id = 0 AND date_use IS null AND date_out IS null';
+        $dateCondition     = empty($installDate) ? '' : "AND date_in <= '$installDate'";
+        if (count($cartridgeItemData) > 1) {
+            $cartridgeItemData = explode('p', $cartridgeItemData[1], 2);
+            $locationCondition = "AND locations_id_field = $cartridgeItemData[0]";
+            if (count($cartridgeItemData) > 1) {
+                $printerCondition = "AND printers_id = $cartridgeItemData[1] AND date_out IS null";
+            }
+        }
+
+        $cartridge             = new PluginIserviceCartridge();
+        $cartridgeCustomfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
+        $cartridges            = $cartridge->find(["suppliers_id_field = $supplierId AND cartridgeitems_id = $cartridgeItemId $baseCondition $locationCondition $printerCondition $dateCondition"], ["id ASC"]);
+
+        // First check the cartridges at the given partner. If there are none, check the partners in the same group.
+        if (count($cartridges) === 0) {
+            $cartridges = $cartridge->find(["FIND_IN_SET (suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplierId)) AND cartridgeitems_id = $cartridgeItemId $locationCondition $printerCondition $dateCondition"], ["id ASC"]);
+        }
+
+        if (count($cartridges) === 0) {
+            $errorMessage = "Stoc insuficient!";
+            return false;
+        }
+
+        if (!empty($imposedCartridgeId)) {
+            if (in_array($imposedCartridgeId, array_column($cartridges, 'id'))) {
+                $cartridgeIdToInstall = $imposedCartridgeId;
             } else {
-                $error_message = "Cartușul impus pentru instalare nu este instalabil pe acest aparat!";
+                $errorMessage = "Cartușul impus pentru instalare nu este instalabil pe acest aparat!";
                 return false;
             }
         } else {
-            $cartridge_id_to_install = array_shift($cartridges)['id'];
+            $cartridgeIdToInstall = array_shift($cartridges)['id'];
         }
 
-        $cartridge->getFromDB($cartridge_id_to_install);
-        PluginIserviceDB::populateByItemsId($cartridge_customfields, $cartridge->fields['cartridgeitems_id']);
-        $cartridge->fields['printers_id']        = $printer_id;
-        $cartridge->fields['mercury_code_field'] = $cartridge_customfields->fields['mercury_code_field'];
+        $cartridge->getFromDB($cartridgeIdToInstall);
+        PluginIserviceDB::populateByItemsId($cartridgeCustomfields, $cartridge->fields['cartridgeitems_id']);
+        $cartridge->fields['printers_id']        = $printerId;
+        $cartridge->fields['mercury_code_field'] = $cartridgeCustomfields->fields['mercury_code_field'];
 
-        $plugin_iservice_cartridges_tickets = new PluginIserviceCartridge_Ticket();
+        $pluginIserviceCartridgesTickets = new PluginIserviceCartridge_Ticket();
 
-        $used_types = PluginIserviceDB::getQueryResult(
+        $usedTypes = PluginIserviceDB::getQueryResult(
             "
             select ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type
             from glpi_plugin_iservice_cartridges_tickets ct
@@ -590,34 +629,131 @@ class PluginIserviceTicket extends Ticket
             "
         );
 
-        foreach (explode(',', $cartridge_customfields->fields['supported_types_field']) as $supported_type) {
-            if (!in_array($supported_type, array_column($used_types, 'selected_type'))) {
-                $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'] = $supported_type;
+        foreach (explode(',', $cartridgeCustomfields->fields['supported_types_field']) as $supportedType) {
+            if (!in_array($supportedType, array_column($usedTypes, 'selected_type'))) {
+                $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'] = $supportedType;
                 break;
             }
         }
 
-        $first_emptiable_cartridge = PluginIserviceCartridge::getFirstEmptiableByCartridge($cartridge);
+        $firstEmptiableCartridge = PluginIserviceCartridge::getFirstEmptiableByCartridge($cartridge);
 
-        if (!$plugin_iservice_cartridges_tickets->add(
+        if (!$pluginIserviceCartridgesTickets->add(
             [
-                'add' => 'add',
-                'tickets_id' => $this->getID(),
-                'cartridges_id' => $cartridge_id_to_install,
+                'add'                                         => 'add',
+                'tickets_id'                                  => $this->getID(),
+                'cartridges_id'                               => $cartridgeIdToInstall,
                 'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id'],
-                'cartridges_id_emptied' => empty($first_emptiable_cartridge[$cartridge->getIndexName()]) ? 'NULL' : $first_emptiable_cartridge[$cartridge->getIndexName()],
-                '_no_message' => true
+                'cartridges_id_emptied'                       => empty($firstEmptiableCartridge[$cartridge->getIndexName()]) ? 'NULL' : $firstEmptiableCartridge[$cartridge->getIndexName()],
+                '_no_message'                                 => true
             ]
         )
         ) {
             return false;
         }
 
-        if (!$cartridge->update(['id' => $cartridge_id_to_install, 'printers_id' => $printer_id, '_no_message' => true])) {
+        if (!$cartridge->update(['id' => $cartridgeIdToInstall, 'printers_id' => $printerId, '_no_message' => true])) {
             return  false;
         }
 
         return true;
+    }
+
+    public function preCartridgeAddChecks($post, $supplierId, $printerId): bool
+    {
+        if ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, false)->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
+            Session::addMessageAfterRedirect('Nu puteți adăuga cartușe cât timp există un tichet închis mai nou.', false, WARNING);
+            return false;
+        } elseif ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id')->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
+            Session::addMessageAfterRedirect('Nu puteți adăuga cartușe cât timp există un tichet mai nou cu cartușe.', false, WARNING);
+            return false;
+        }
+
+        return !empty($post['_plugin_iservice_cartridge']['cartridgeitems_id']);
+    }
+
+    public function removeCartridge($ticketId, $post): bool
+    {
+        $this->check($ticketId, UPDATE);
+
+        $supplierId = IserviceToolBox::getInputVariable('suppliers_id');
+        $printerId  = IserviceToolBox::getInputVariable('printer_id');
+
+        if (!$this->getFromDB($ticketId)) {
+            return false;
+        }
+
+        $success = true;
+
+        if ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, false)->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
+            $success = false;
+            Session::addMessageAfterRedirect('Nu puteți șterge cartușe cât timp există un tichet închis mai nou', false, WARNING);
+        } elseif ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id')->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
+            $success = false;
+            Session::addMessageAfterRedirect('Nu puteți șterge cartușe cât timp există un tichet mai nou cu cartușe.', false, WARNING);
+        }
+
+        if (!$success) {
+            // Do nothing in particular if no success so far but check if there is a selected cartridge.
+        } elseif (!empty($post['_plugin_iservice_cartridges_tickets']) && is_array($post['_plugin_iservice_cartridges_tickets'])) {
+            $cartridge                       = new PluginIserviceCartridge();
+            $pluginIserviceCartridgesTickets = new PluginIserviceCartridge_Ticket();
+            foreach (array_keys($post['_plugin_iservice_cartridges_tickets']) as $idToDelete) {
+                if ($post['_plugin_iservice_cartridges_tickets'][$idToDelete] === '0' || !$pluginIserviceCartridgesTickets->getFromDB($idToDelete)) {
+                    continue;
+                }
+
+                $success &= $cartridge->update(
+                    [
+                        'id' => $pluginIserviceCartridgesTickets->fields['cartridges_id'],
+                        'printers_id' => 0,
+                        'date_use' => 'NULL',
+                        'tickets_id_use' => 'NULL',
+                        'date_out' => 'NULL',
+                        'tickets_id_out' => 'NULL',
+                        'pages_out_field' => 0,
+                        'pages_color' => 0,
+                        'pages_use' => 0,
+                        'pages_color_use' => 0,
+                    ]
+                );
+                $success &= $pluginIserviceCartridgesTickets->delete(['id' => $idToDelete]);
+            }
+        } else {
+            Session::addMessageAfterRedirect('Selectați un cartuș', false, ERROR);
+        }
+
+        return true;
+    }
+
+    public function updateCartridge($ticketId, $post): bool
+    {
+        $this->check($ticketId, UPDATE);
+
+        $success                        = false;
+        $pluginIserviceCartridgesTicket = new PluginIserviceCartridge_Ticket();
+        foreach ($post['_plugin_iservice_cartridge_type_ids'] as $cartridgeTicketId => $cartridgeTypeId) {
+            $emptyableCartridges = PluginIserviceCartridge::getEmptyablesByParams(
+                $post['_plugin_iservice_cartridge_mercurycodes'][$cartridgeTicketId],
+                $cartridgeTypeId,
+                $post['printer_id'],
+            );
+            if (empty($post['_plugin_iservice_emptied_cartridge_ids'][$cartridgeTicketId]) || !in_array($post['_plugin_iservice_emptied_cartridge_ids'][$cartridgeTicketId], $emptyableCartridges)) {
+                $emptied_id = count($emptyableCartridges) > 0 ? array_shift($emptyableCartridges)['id'] : 'NULL';
+            } else {
+                $emptied_id = $post['_plugin_iservice_emptied_cartridge_ids'][$cartridgeTicketId];
+            }
+
+            $success &= $pluginIserviceCartridgesTicket->update(
+                [
+                    'id' => $cartridgeTicketId,
+                    'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridgeTypeId,
+                    'cartridges_id_emptied' => $emptied_id,
+                ]
+            );
+        }
+
+        return $success;
     }
 
     public function addMessageOnAddAction(): void
@@ -720,11 +856,6 @@ class PluginIserviceTicket extends Ticket
         }
 
         return self::$installed_cartridges[$ticket->getID()];
-    }
-
-    public function isClosed(): bool
-    {
-        return self::isTicketClosed($this);
     }
 
     public static function isTicketClosed(Ticket $ticket): bool
@@ -1084,12 +1215,23 @@ class PluginIserviceTicket extends Ticket
             unset($post['_followup_content']);
         }
 
+        if (!isset($post['effective_date_field'])
+        ) {
+            $post['effective_date_field'] = date('Y-m-d H:i:s');
+        }
+
+        if (isset($post['_cartridge_installation_date'])
+            && !empty($post['cartridge_install_date_manually_changed'])
+        ) {
+            $post['cartridge_install_date_field'] = $post['_cartridge_installation_date'];
+        }
+
         return $post;
     }
 
     public function createFollowup($id, $post)
     {
-        if (isset($post['_followup'])) {
+        if (isset($post['_followup']) && !empty($post['_followup']['content'])) {
             $followup = new ITILFollowup();
             $type     = "new";
             if (isset($item->fields["status"]) && ($item->fields["status"] == Ticket::SOLVED)) {
@@ -1132,6 +1274,11 @@ class PluginIserviceTicket extends Ticket
         return intval($partnerId);
     }
 
+    public function getPrinterId(): ?int
+    {
+        return $this->printer ? $this->printer->getID() : null;
+    }
+
     public function addConsumable($ticketId, $post): void
     {
         if (!empty($post['_plugin_iservice_consumable']) && (!empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id']) || !empty($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id']))) {
@@ -1143,9 +1290,12 @@ class PluginIserviceTicket extends Ticket
 
             unset($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id']);
 
-            $plugin_iservice_consumable_ticket_data               = $post['_plugin_iservice_consumable'];
-            $plugin_iservice_consumable_ticket_data['tickets_id'] = $ticketId;
-            $cartridgeitem                                        = new PluginIserviceCartridgeItem();
+            $plugin_iservice_consumable_ticket_data                     = $post['_plugin_iservice_consumable'];
+            $plugin_iservice_consumable_ticket_data['tickets_id']       = $ticketId;
+            $create_cartridge                                           = in_array($plugin_iservice_consumable_ticket_data['plugin_iservice_consumables_id'], PluginIserviceConsumable_Ticket::getCompatibleCartridges(IserviceToolBox::getValueFromInput('suppliers_id', $post), IserviceToolBox::getValueFromInput('printer_id', $post)));
+             $create_cartridge                                         &= $post['_export_type'] === 'aviz' || $plugin_iservice_consumable_ticket_data['amount'] < 0;
+            $plugin_iservice_consumable_ticket_data['create_cartridge'] = $create_cartridge;
+            $cartridgeitem                                              = new PluginIserviceCartridgeItem();
             if ($cartridgeitem->getFromDBByRef($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
                 $plugin_iservice_consumable_ticket_data['plugin_fields_typefielddropdowns_id'] = $cartridgeitem->getSupportedTypes()[0];
             }
@@ -1234,6 +1384,284 @@ class PluginIserviceTicket extends Ticket
             );
         }
 
+    }
+
+    public static function handleDeliveredStatusChange(PluginFieldsTicketticketcustomfield $item)
+    {
+        // This is used only to handle the consumables when changing the "delivered" checkbox
+        if (!in_array('delivered_field', $item->updates) || !array_key_exists('without_paper_field', $item->fields)) {
+            return;
+        }
+
+        global $DB;
+
+        $ticket_id = $item->fields['items_id'];
+        $supplier  = PluginIserviceTicket::get($ticket_id)->getFirstAssignedPartner();
+        if (!$supplier->hasCartridgeManagement()) {
+            return;
+        }
+
+        $cartridge         = new PluginIserviceCartridge();
+        $ticket            = new PluginIserviceTicket();
+        $consumable_ticket = new PluginIserviceConsumable_Ticket();
+
+        if (($consumables = $consumable_ticket->find(['tickets_id' => $ticket_id])) == [] || !$ticket->getFromDB($ticket_id)) {
+            return;
+        }
+
+        if (($compatible_cartridges = PluginIserviceCartridgeItem::getCompatiblesForTicket($ticket)) == []) {
+            return;
+        }
+
+        foreach ($consumables as $consumable) {
+            if (!$consumable['create_cartridge'] || false === ($index = array_search($consumable['plugin_iservice_consumables_id'], array_column($compatible_cartridges, 'ref', 'id')))) {
+                continue;
+            }
+
+            $add_cartridges = null;
+            if ($consumable['amount'] > 0) {
+                if ($item->input['delivered_field']) {
+                    $add_cartridges = true;
+                } elseif (!empty($consumable['new_cartridge_ids'])) {
+                    $add_cartridges = false;
+                }
+            } elseif ($consumable['amount'] < 0) {
+                if (!$item->input['delivered_field']) {
+                    $add_cartridges = true;
+                } elseif (!empty($consumable['new_cartridge_ids'])) {
+                    $add_cartridges = false;
+                }
+            }
+
+            if ($add_cartridges) {
+                $new_cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']) ?: [];
+                if (!empty($new_cartridge_ids)) {
+                    $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = null WHERE id IN ($new_cartridge_ids)", __('Error restoring cartridges', 'iservice'));
+                    $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = null WHERE items_id IN ($new_cartridge_ids) AND itemtype='Cartridge'", __('Error restoring cartridges custom fields', 'iservice'));
+                } else {
+                    for ($i = 0; $i < abs($consumable['amount']); $i++) {
+                        $new_cartridge_ids[] = $cartridge->add(
+                            [
+                                'add'                => 'add',
+                                'cartridgeitems_id'  => $compatible_cartridges[$index]['id'],
+                                'suppliers_id_field' => $supplier->getID(),
+                                'locations_id_field' => empty($consumable['locations_id']) ? '0' : $consumable['locations_id'],
+                            ]
+                        );
+                        // Due to glpi Cartridge adding code, we have to update FK_enterprise, FK_location and date_in in a separate process.
+                        $cartridge->update(
+                            [
+                                'id'                                          => $new_cartridge_ids[count($new_cartridge_ids) - 1],
+                                'plugin_fields_cartridgeitemtypedropdowns_id' => $consumable['plugin_fields_cartridgeitemtypedropdowns_id'],
+                                'date_in'                                     => $ticket->customfields->fields['effective_date_field'],
+                            ]
+                        );
+                    }
+
+                    $consumable_ticket->update(
+                        [
+                            'id'                => $consumable['id'],
+                            'new_cartridge_ids' => '|' . implode('|,|', $new_cartridge_ids) . '|',
+                        ]
+                    );
+                }
+            } elseif ($add_cartridges !== null) {
+                $ids_to_revoke     = str_replace('|', '', $consumable['new_cartridge_ids']);
+                $installer_tickets = PluginIserviceDB::getQueryResult("select * from glpi_plugin_iservice_cartridges_tickets ct where ct.cartridges_id in ($ids_to_revoke)");
+                if ($installer_tickets) {
+                    foreach ($installer_tickets as $installer_ticket) {
+                        Session::addMessageAfterRedirect("Cartușul $installer_ticket[cartridges_id] nu poate fi retras deoarece tichetul $installer_ticket[tickets_id] îl instalează.", false, ERROR);
+                    }
+
+                    $DB->queryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['deliveredfield'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
+                } else {
+                    if ($item->input['delivered_field']) {
+                        $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", __('Error deleting cartridges', 'iservice'));
+                        $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = {$ticket->fields['id']} WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", __('Error deleting cartridges custom fields', 'iservice'));
+                    } else {
+                        $consumable_ticket->update(
+                            [
+                                'id'                => $consumable['id'],
+                                'new_cartridge_ids' => 'NULL',
+                            ]
+                        );
+                        $DB->queryOrDie("DELETE FROM glpi_cartridges WHERE id IN ($ids_to_revoke)", __('Error deleting cartridges', 'iservice'));
+                        $DB->queryOrDie("DELETE FROM glpi_plugin_fields_cartridgecartridgecustomfields WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", __('Error deleting cartridges custom fields', 'iservice'));
+                        $DB->queryOrDie("DELETE FROM glpi_infocoms WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", __('Error deleting cartridges infocoms', 'iservice'));
+                    }
+                }
+            }
+        }
+    }
+
+    public function hasConsumables(): bool
+    {
+        $consumableTicket = new PluginIserviceConsumable_Ticket();
+        return $consumableTicket->find(['tickets_id' => $this->getID()]) !== [];
+    }
+
+    public function isCloseable(): bool
+    {
+        return !$this->hasConsumables() || (!empty($this->customfields->fields['delivered_field']) && !empty($this->customfields->fields['exported_field']));
+    }
+
+    public function getButtonsConfig($options): array
+    {
+        $close_confirm_message = '';
+        $available_cartridges  = PluginIserviceCartridgeItem::getChangeablesForTicket($this);
+
+        foreach (array_column($available_cartridges, 'ref') as $available_cartridge_id) {
+            if (substr($available_cartridge_id, 0, 4) !== 'CTON' && substr($available_cartridge_id, 0, 2) !== 'CC') {
+                $close_confirm_message .= "- $available_cartridge_id\n";
+            }
+        }
+
+        if (!empty($close_confirm_message)) {
+            $close_confirm_message = "Există consumabile instalabile dar neinstalate la client:\n$close_confirm_message\nSigur vreți să închideți tichetul?";
+        }
+
+        $buttons = [];
+        $closed  = $this->isClosed();
+        switch ($options['mode']) {
+        case self::MODE_CLOSE:
+            if ($closed && IserviceToolBox::inProfileArray(['super-admin'])) {
+                $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->customfields->fields['effective_date_field'], $this->getPartnerId(), $this->getPrinterId());
+                if (count($newer_closed_ticket_ids)) {
+                    $confirm = ['data-confirm-first' => count($newer_closed_ticket_ids) . " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"];
+                } else {
+                    $confirm = [];
+                }
+
+                $buttons['reopen'] = [
+                    'type'    => 'submit',
+                    'name'    => 'update',
+                    'label'   => __('Reopen', 'iservice'),
+                    'value'   => 1,
+                    'options' => array_merge(
+                        $confirm, [
+                            'on_click' => '$("[name=status]").val(' . Ticket::SOLVED . ');'
+                        ]
+                    ),
+                ];
+
+                break;
+            }
+
+            if ($this->isCloseable()) {
+                $buttons['close'] = [
+                    'type' => 'submit',
+                    'name' => 'update',
+                    'label' => __('Close', 'iservice'),
+                    'value' => 1,
+                    'options' => [
+                        'data-confirm-message' => $close_confirm_message,
+                        'on_click' => '$("[name=status]").val(' . Ticket::CLOSED . ');'
+                    ],
+                ];
+            }
+
+            $buttons['services_export'] = [
+                'type' => 'submit',
+                'name' => 'services_export',
+                'value' => __('Generate services invoice', 'iservice'),
+                'options' => [
+                    'data-confirm-message' => $close_confirm_message,
+                ],
+            ];
+
+            $button_statuses = [Ticket::SOLVED, Ticket::WAITING, Ticket::PLANNED, Ticket::ASSIGNED];
+            if (in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin'])) {
+                $button_statuses[] = Ticket::INCOMING;
+            }
+
+            $statusClassMap = [
+                Ticket::SOLVED => 'far fa-circle solved',
+                Ticket::WAITING => 'fas fa-circle waiting',
+                Ticket::PLANNED => 'far fa-calendar planned',
+                Ticket::ASSIGNED => 'far fa-circle assigned',
+                Ticket::INCOMING => 'fas fa-circle new',
+            ];
+
+            foreach ($button_statuses as $status) {
+                $confirm_alert    = ($status === Ticket::SOLVED || $this->fields['status'] != Ticket::SOLVED) ? '' : "if (!confirm(\"ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de {$this->customfields->fields['effective_date_field']}!\")) return false;";
+                $buttons[$status] = [
+                    'type' => 'submit',
+                    'name' => 'update',
+                    'label' => '',
+                    'value' => 1,
+                    'options' => [
+                        'buttonClass' => "itilstatus  $statusClassMap[$status]",
+                        'title' => Ticket::getStatus($status),
+                        'on_click' => "$confirm_alert$(\"[name=status]\").val($status);"
+                    ],
+                ];
+            }
+
+            $exportButtonOptions = [
+                'onclick' => 'if ($(this).hasClass("disabled")) { return false; }',
+                'data-title' => 'Ticketul nu poate fi exportat până livrarea nu este finalizată',
+            ];
+            if (empty($this->customfields->fields['delivered_field'])) {
+                $exportButtonOptions['buttonClass'] = 'submit disabled';
+                $exportButtonOptions['title']       = 'Ticketul nu poate fi exportat până livrarea nu este finalizată';
+            }
+
+            $buttons['export'] = [
+                'type' => 'submit',
+                'name' => 'export',
+                'value' => __('Save') . ' + ' . __('hMarfa export', 'iservice'),
+                'options' => $exportButtonOptions,
+            ];
+            break;
+        default:
+            break;
+        }
+
+        return $buttons;
+    }
+
+    public static function moveCartridges(Ticket $item): void
+    {
+        if ($item instanceof PluginIserviceTicket) {
+            $ticket = $item;
+        } else {
+            $ticket = new PluginIserviceTicket();
+            $ticket->getFromDB($item->getID());
+        }
+
+        if (PluginIserviceTicket::wasTicketClosing($item)) {
+            $operation      = 'installWithType';
+            $ticket->fields = $item->input;
+        } else {
+            $operation      = 'uninstallWithType';
+            $ticket->fields = PluginIserviceTicket::preProcessPostData($_POST);
+        }
+
+        $cartridge_ticket = new PluginIserviceCartridge_Ticket();
+        foreach ($cartridge_ticket->find(["tickets_id" => $item->getID()]) as $cartridge_item) {
+            $install_result = PluginIserviceCartridge_Ticket::$operation(
+                $item->getID(),
+                $cartridge_item['cartridges_id'],
+                $cartridge_item['plugin_fields_cartridgeitemtypedropdowns_id'],
+                $cartridge_item['cartridges_id_emptied'],
+                $ticket->getPrinterId(),
+                $ticket->getPartnerId(),
+                $ticket->fields['locations_id'] ?? null,
+                $ticket->customfields->fields['total2_black_field'] ?? null,
+                $ticket->customfields->fields['total2_color_field'] ?? null,
+                $ticket->customfields->fields['cartridge_install_date_field'] ?? $ticket->customfields->fields['effective_date_field']
+            );
+            if (abs($install_result) != $cartridge_item['cartridges_id']) {
+                Session::addMessageAfterRedirect($install_result, false, ERROR);
+            } else {
+                $cartridge_ticket->update(
+                    [
+                        'id' => $cartridge_item->fields['id'],
+                        'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge_item['plugin_fields_cartridgeitemtypedropdowns_id'],
+                    ]
+                );
+            }
+        }
     }
 
 }

@@ -7,17 +7,23 @@ require "../inc/includes.php";
 Session::checkLoginUser();
 $ticket = new PluginIserviceTicket();
 
-$id                   = IserviceToolBox::getInputVariable('id', 0);
-$add                  = IserviceToolBox::getInputVariable('add');
-$update               = IserviceToolBox::getInputVariable('update');
-$addConsumable        = IserviceToolBox::getInputVariable('add_consumable');
-$removeConsumable     = IserviceToolBox::getInputVariable('remove_consumable');
-$updateConsumable     = IserviceToolBox::getInputVariable('update_consumable');
+$id               = IserviceToolBox::getInputVariable('id', 0);
+$add              = IserviceToolBox::getInputVariable('add');
+$update           = IserviceToolBox::getInputVariable('update');
+$addConsumable    = IserviceToolBox::getInputVariable('add_consumable');
+$removeConsumable = IserviceToolBox::getInputVariable('remove_consumable');
+$updateConsumable = IserviceToolBox::getInputVariable('update_consumable');
+$addCartridge     = IserviceToolBox::getInputVariable('add_cartridge');
+$removeCartridge  = IserviceToolBox::getInputVariable('remove_cartridge');
+$updateCartridge  = IserviceToolBox::getInputVariable('update_cartridge');
+
 $post                 = filter_input_array(INPUT_POST);
 $get                  = filter_input_array(INPUT_GET);
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get);
 $options['printerId'] = IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($get, 'Printer');
 $options['mode']      = IserviceToolBox::getInputVariable('mode');
+
+$errorMessage = '';
 
 if (!empty($post)) {
     $post = PluginIserviceTicket::preProcessPostData($post);
@@ -59,6 +65,13 @@ if (!empty($addConsumable) && !empty($id)) {
     $ticket->removeConsumable($id, $post);
 } elseif (!empty($updateConsumable) && !empty($id)) {
     $ticket->updateConsumable($id, $post);
+} elseif (!empty($addCartridge) && !empty($id)) {
+    $ticket->addCartridge($id, $post, $errorMessage);
+    Session::addMessageAfterRedirect($errorMessage, false, ERROR);
+} elseif (!empty($removeCartridge) && !empty($id)) {
+    $ticket->removeCartridge($id, $post);
+} elseif (!empty($updateCartridge) && !empty($id)) {
+    $ticket->updateCartridge($id, $post);
 }
 
 Html::header($header_title);

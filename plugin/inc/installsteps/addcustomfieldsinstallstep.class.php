@@ -173,19 +173,21 @@ class AddCustomFieldsInstallStep
             $field_type = $fieldData['type'];
             $default    = $fieldData['default_value'] !== '' ? $fieldData['default_value'] : null;
             $mandatory  = $fieldData['mandatory'] === '1' ? 'not null' : '';
+            $as         = !empty($fieldData['as']) ? " as ($fieldData[as])" : null;
+            $drop       = !empty($as) ? "drop|" : null;
 
             switch ($field_type) {
             case 'yesno':
-                $fields[$field_name] = "tinyint" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                $fields[$field_name] = $drop . "tinyint" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default));
                 break;
             case 'date':
-                $fields[$field_name] = "date" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
+                $fields[$field_name] = $drop . "date" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null));
                 break;
-            case 'datetime':
-                $fields[$field_name] = "timestamp" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
+
+                $fields[$field_name] = $drop . "timestamp" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null));
                 break;
             case 'number':
-                $fields[$field_name] = "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                $fields[$field_name] = $drop . "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default));
                 break;
             default:
                 break;

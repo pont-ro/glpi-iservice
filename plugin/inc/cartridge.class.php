@@ -16,10 +16,10 @@ class PluginIserviceCartridge extends Cartridge
      */
     public $customfields = null;
 
-    public static function dropdownEmptyablesByCartridge($cartridge, array $dropdown_options = [])
+    public static function getEmptyablesByCartridgeDropdownElementsArray($cartridgeData, array $dropdownOptions = [])
     {
-        if (!empty($dropdown_options['readonly'])) {
-            if (empty($dropdown_options['value'])) {
+        if (!empty($dropdownOptions['readonly'])) {
+            if (empty($dropdownOptions['value'])) {
                 $emptyables = [];
             } else {
                 $emptyables = PluginIserviceDB::getQueryResult(
@@ -28,26 +28,24 @@ class PluginIserviceCartridge extends Cartridge
                     from glpi_plugin_iservice_cartridges c
                     left join glpi_plugin_iservice_cartridge_items ci on ci.id = c.cartridgeitems_id
                     left join glpi_plugin_fields_cartridgeitemtypedropdowns ctd ON ctd.id = c.plugin_fields_cartridgeitemtypedropdowns_id
-                    where c.id = $dropdown_options[value]
+                    where c.id = $dropdownOptions[value]
                     ", false
                 );
             }
         } else {
-            $emptyables = self::getEmptiablesByCartridge($cartridge);
+            $emptyables = self::getEmptiablesByCartridge($cartridgeData);
+        }
+
+        if (empty($emptyables)) {
+            return [];
         }
 
         foreach ($emptyables as $cartridge) {
-            $emptyable_cartridges[$cartridge['id']] = "$cartridge[id] - $cartridge[name] ($cartridge[type_name]) [instalat pe $cartridge[date_use]]";
+            $emptyableCartridges[$cartridge['id']] = "$cartridge[id] - $cartridge[name] ($cartridge[type_name]) [" . __('intalled on', 'iservice') . " $cartridge[date_use]]";
         }
 
-        if (empty($emptyable_cartridges)) {
-            echo "<input name='$dropdown_options[name]' type='hidden' value='0' />Nu există cartuș de golit";
-        } elseif (count($emptyable_cartridges) === 1) {
-            echo "<input name='$dropdown_options[name]' type='hidden' value='" . array_keys($emptyable_cartridges)[0] . "' />";
-            echo str_replace(") [", ")<br>[", $emptyable_cartridges[array_keys($emptyable_cartridges)[0]]);
-        } else {
-            Dropdown::showFromArray($dropdown_options['name'], $emptyable_cartridges, $dropdown_options);
-        }
+        return $emptyableCartridges ?? [];
+
     }
 
     public static function getFirstEmptiableByCartridge($cartridge)
@@ -71,7 +69,7 @@ class PluginIserviceCartridge extends Cartridge
         $safe_mercury_code = trim($mercury_code);
         return PluginIservicePrinter::getInstalledCartridges(
             $printer_id,
-            "AND c.plugin_fields_cartridgeitemtypedropdowns_id = $safe_type_id AND LOCATE(\"'$safe_mercury_code'\", cfc.compatible_mercury_codes_field) > 0 $query_limit"
+            "AND c.plugin_fields_cartridgeitemtypedropdowns_id = $safe_type_id AND LOCATE(\"'$safe_mercury_code'\", ci.compatible_mercury_codes_field) > 0 $query_limit"
         );
     }
 
