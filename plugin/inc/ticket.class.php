@@ -427,7 +427,6 @@ class PluginIserviceTicket extends Ticket
             || (Session::getCurrentInterface() == "central"
                 && $this->canUpdateItem());
         $prepared_data['field_required'] = [];
-        $orderStatus                     = $this->getOrderStatus();
         $closed                          = $this->isClosed();
 
         $templateParams = [
@@ -450,11 +449,11 @@ class PluginIserviceTicket extends Ticket
             'canupdate'                   => $canupdate,
             'alertOnStatusChange'         => $this->fields['status'] == self::SOLVED && $this->getID() > 0,
             'solvedStatusValue'           => self::SOLVED,
-            'consumablesTableData'        => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']) || $orderStatus != 0)),
+            'consumablesTableData'        => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']))),
 
             'effectiveDate'                => $this->fields['status'] == self::SOLVED ? $this->customfields->fields['effective_date_field'] : date('Y-m-d H:i:s'),
             'effectiveDateFieldReadonly'   => $this->fields['status'] == self::CLOSED,
-            'cartInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
+            'cartridgeInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
         ];
 
         if ($options['mode'] == self::MODE_CLOSE) {
@@ -476,6 +475,7 @@ class PluginIserviceTicket extends Ticket
             $lastTicketWithCartridge = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
             if ($ID > 0 && ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
                 $warning = "Atenție. Există un tichet mai nou ({$lastTicketWithCartridge->getID()}) cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet.";
+                $warning = sprintf(__('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.', 'iservice'), [$lastTicketWithCartridge->getID()]);
             }
 
             $templateParams['changeablesTableData'] = array_merge(
@@ -662,10 +662,10 @@ class PluginIserviceTicket extends Ticket
     public function preCartridgeAddChecks($post, $supplierId, $printerId): bool
     {
         if ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, false)->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
-            Session::addMessageAfterRedirect('Nu puteți adăuga cartușe cât timp există un tichet închis mai nou.', false, WARNING);
+            Session::addMessageAfterRedirect(__('You can not add new cartridges while there is a newer closed ticket.', 'iservice'), false, WARNING);
             return false;
         } elseif ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id')->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
-            Session::addMessageAfterRedirect('Nu puteți adăuga cartușe cât timp există un tichet mai nou cu cartușe.', false, WARNING);
+            Session::addMessageAfterRedirect(__('You can not add new cartridges while there is a newer ticket with cartridges.', 'iservice'), false, WARNING);
             return false;
         }
 
@@ -720,7 +720,7 @@ class PluginIserviceTicket extends Ticket
                 $success &= $pluginIserviceCartridgesTickets->delete(['id' => $idToDelete]);
             }
         } else {
-            Session::addMessageAfterRedirect('Selectați un cartuș', false, ERROR);
+            Session::addMessageAfterRedirect(__('Select a cartridge', 'iservice'), false, ERROR);
         }
 
         return true;

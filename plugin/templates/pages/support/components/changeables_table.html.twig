@@ -168,11 +168,11 @@
     item.customfields.fields['cartridge_install_date_field'] ?? 'now'|date('Y-m-d'),
     __('Change date', 'iservice'),
     field_options|merge({
-        'readonly': cartInstallDateFieldReadonly,
+        'readonly': cartridgeInstallDateFieldReadonly,
     })
 ) }}
 
-{% if not cartInstallDateFieldReadonly %}
+{% if not cartridgeInstallDateFieldReadonly %}
     {{ fields.hiddenField(
         'cartridge_install_date_manually_changed',
         0,

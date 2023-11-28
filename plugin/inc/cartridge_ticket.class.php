@@ -377,7 +377,9 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                         ],
                     ],
                     'name' => [
-                        'value' => "$cartridge[id] - $cartridge[name] ($cartridge[location_completename])" . (!empty($cartridge['date_use']) ? " instalat $cartridge[date_use]" : '') . (!empty($cartridge['date_out']) ? " golit $cartridge[date_out]" : ''),
+                        'value' => "$cartridge[id] - $cartridge[name] ($cartridge[location_completename])"
+                            . (!empty($cartridge['date_use']) ? " ". __('intalled on', 'iservice') . " $cartridge[date_use]" : '')
+                            . (!empty($cartridge['date_out']) ? " " . __('emptied', 'iservice') . " $cartridge[date_out]" : ''),
                     ],
                     'mercurycode' => [
                         'hidden' => true,
@@ -873,7 +875,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $old_cartridge->getID(),
                     'date_out' => 'NULL',
-                    'tickets_id_out_field' => -1,
+                    'tickets_id_out_field' => 0,
                     'pages_out_field' => 0,
                     'pages_color_out_field' => 0,
                 // 'printed_pages_field' => $old_cartridge->fields['printed_pages_field'] + $old_cartridge->fields['pages_use_field'] - $cartridge->fields['pages_use_field'],
@@ -889,7 +891,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 '_no_message' => true,
                 'suppliers_id_field' => $supplier_id,
                 'date_use' => 'NULL',
-                'tickets_id_use_field' => -1,
+                'tickets_id_use_field' => 0,
                 'date_out' => 'NULL',
                 'pages_use_field' => 0,
                 'pages_color_use_field' => 0,
