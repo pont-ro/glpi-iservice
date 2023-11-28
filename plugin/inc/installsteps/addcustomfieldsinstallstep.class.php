@@ -15,7 +15,7 @@ class AddCustomFieldsInstallStep
 
     const CONTAINERS = [
         [
-            'name'      => 'customfield',
+            'name'      => 'printercustomfield',
             'label'     => 'Printer Custom Fields',
             'itemtypes' => ['Printer'],
             'type'      => 'tab',
@@ -25,7 +25,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 1,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'ticketcustomfield',
             'label'     => 'Ticket Custom Fields',
             'itemtypes' => ['Ticket'],
             'type'      => 'tab',
@@ -35,7 +35,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 2,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'suppliercustomfield',
             'label'     => 'Supplier Custom Fields',
             'itemtypes' => ['Supplier'],
             'type'      => 'tab',
@@ -45,7 +45,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 3,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'contractcustomfield',
             'label'     => 'Contract Custom Fields',
             'itemtypes' => ['Contract'],
             'type'      => 'tab',
@@ -55,7 +55,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 4,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'cartridgeitemcustomfield',
             'label'     => 'Cartridge Item Custom Fields',
             'itemtypes' => ['CartridgeItem'],
             'type'      => 'tab',
@@ -65,7 +65,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 5,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'cartridgecustomfield',
             'label'     => 'Cartridge Custom Fields',
             'itemtypes' => ['Cartridge'],
             'type'      => 'tab',
@@ -75,7 +75,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => null,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'printermodelcustomfield',
             'label'     => 'Printer Model Custom Fields',
             'itemtypes' => ['PrinterModel'],
             'type'      => 'tab',
