@@ -58,7 +58,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return empty($result_data) ? false : $result_data;
     }
 
-    public static function showForTicket(Ticket $ticket, &$required_fields, $generate_form = true, $readonly = false): array|bool
+    public static function getDataForTicketCartrigesSection(Ticket $ticket, &$required_fields, $generate_form = true, $readonly = false)
     {
         global $DB;
 
@@ -91,126 +91,121 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             }
         }
 
+        $data = [];
+
         if ($canedit) {
-            echo "<div class='add-cartridge-div'>";
             if ($generate_form) {
-                echo "<form name='ticketitem_form$rand' id='ticketitem_form$rand' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
+                $data['form'] = [
+                    'thLabel' => __('Add an item'),
+                    'name' => 'ticketitem_form' . $rand,
+                    'id' => 'ticketitem_form' . $rand,
+                    'method' => 'post',
+                    'action' => Toolbox::getItemTypeFormURL(__CLASS__),
+                ];
             }
 
-            echo "<table class='tab_cadre_fixe add-cartridge-table full-selects'>";
-            if ($generate_form) {
-                echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Add an item') . "</th></tr>";
-            }
-
-            echo "<tr class='tab_bg_1'><td width='81%'>";
-            echo "<table><tr><td style='width:100%;'>";
-            $cartridges_selector_options = [
-                'comments' => false,
-                // 'condition' => ['Stoc != 0'],
-                // 'display' => false,
-                'name' => '_plugin_iservice_cartridge[cartridgeitems_id]',
-                'used' => $used_ids,
-                'on_change' => '$("[name=\'add_cartridge\']").click();'
+            $data['addCartridgesSection'] = [
+                'type' => 'table',
+                'class' => 'add-cartridge-div',
+                'inputs' => [
+                    'cartridgesDropdown' => [
+                        'type' => 'dropdownArray',
+                        'comments' => false,
+                        'name' => '_plugin_iservice_cartridge[cartridgeitems_id]',
+                        'used' => $used_ids,
+                        'on_change' => '$("[name=\'add_cartridge\']").click();',
+                        'elementsArray' => PluginIserviceCartridgeItem::getCartridgesDropdownOptions($ticket),
+                        'script' => '<script>
+                            setTimeout(function() {                    
+                                addRecurrentCheck(function() {
+                                    if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
+                                        $("[name=\\"add_cartridge\\"]").click();$("#page").hide();
+                                        return true;
+                                    }
+                                    return false;
+                                });}, 1000);
+                          </script>',
+                    ],
+                    'addButton' => [
+                        'type' => 'submit',
+                        'name' => 'add_cartridge',
+                        'value' => _sx('button', 'Add'),
+                        'class' => 'submit',
+                    ],
+                    'cartridgesAmount' => [
+                        'type' => 'text',
+                        'name' => '_plugin_iservice_cartridge[amount]',
+                        'class' => 'cartridges-amount',
+                        'value' => '1',
+                    ],
+                    'cartridgeLocationDropdown' => [
+                        'type' => 'dropdown',
+                        'name' => '_plugin_iservice_cartridge[locations_id]',
+                        'label' => __('Location'),
+                        'itemType' => 'Location',
+                        'display' => false,
+                        'comments' => false,
+                    ],
+                ],
             ];
-            if (false !== ($has_cartridge = PluginIserviceCartridgeItem::dropdownForTicket($ticket, $cartridges_selector_options))) {
-                if ($has_cartridge > 1) {
-                    echo '<script>
-                        setTimeout(function() {                    
-                            addRecurrentCheck(function() {
-                                if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
-                                    $("[name=\\"add_cartridge\\"]").click();$("#page").hide();
-                                    return true;
-                                }
-                                return false;
-                            });}, 1000);
-                      </script>';
-                }
-
-                echo "</td><td style='white-space:nowrap;'>";
-                echo __('Location') . " <span class='cartridges-location'>";
-                echo Location::dropdown(['display' => false, 'comments' => false, 'name' => '_plugin_iservice_cartridge[locations_id]']);
-                echo "</span>";
-                echo "</td><td style='white-space:nowrap;'>";
-                echo __('Amount', 'iservice') . " <input type='text' name='_plugin_iservice_cartridge[amount]' class='cartridges-amount' value='1'/>";
-                echo "</td></tr></table>";
-                echo "</td><td>";
-                echo "<input type='submit' name='add_cartridge' value=\"" . _sx('button', 'Add') . "\" class='submit' data-required='" . implode(',', array_keys(array_filter($required_fields))) . "'>";
-            } else {
-                echo "</td></tr></table>";
-            }
-
-            echo "</td></tr>";
-            echo "</table>";
-            if ($generate_form) {
-                Html::closeForm();
-            }
-
-            echo "</div>";
         }
 
-        if (!($number = count($cartridges))) {
-            return $cartridges;
+        if (count($cartridges) < 1) {
+            $data['cartridges'] = $cartridges;
+            return $data;
         }
 
-        echo "<table class='tab_cadre_fixe full-selects'>";
-        echo "<tr><td width='81%'>";
-        if ($canedit && $number && $generate_form) {
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
-            Html::showMassiveActions($massiveactionparams);
+        $data['cartridgesTableSection'] = [
+            'type' => 'table',
+            'header' => [
+                'checkbox' => [
+                    'hidden' => !$canedit,
+                    'value' => '',
+                ],
+            ],
+            'name' => [
+                'value' => __('Name'),
+            ],
+            'location' => [
+                'value' => __('Location'),
+            ],
+        ];
+
+        foreach ($cartridges as $key => $cartridge) {
+            $data['cartridgesTableSection']['rows'][$key] = [
+                'cols' => [
+                    'checkbox' => [
+                        'hidden' => !$canedit,
+                        'toRefactor' => Html::getCheckbox(
+                            [
+                                'name' => "_plugin_iservice_cartridges_tickets[$cartridge[IDD]]",
+                                'zero_on_empty' => false,
+                            ]
+                        ),
+                    ],
+                    'name' => [
+                        'value' => $cartridge['name'],
+                    ],
+                    'location' => [
+                        'toRefactor' => Dropdown::getDropdownName('glpi_locations', $cartridge['locations_id']),
+                    ],
+                ],
+            ];
         }
 
-        echo "<table class='tab_cadre_fixe' width='81%'>";
-        $header = '<tr>';
-        if ($canedit && $number) {
-            $header .= "<th width='10'>"; // . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            $header .= "</th>";
-        }
-
-        $header .= "<th>" . __('Name') . "</th>";
-        $header .= "<th>" . __('Location') . "</th>";
-        $header .= "</tr>";
-        echo $header;
-
-        foreach ($cartridges as $cartridge) {
-            echo "<tr class='tab_bg_1'>";
-            if ($canedit) {
-                echo "<td width='10'>";
-                // Html::showMassiveActionCheckBox(__CLASS__, $cartridge["IDD"]).
-                echo Html::getCheckbox(
-                    [
-                        'name' => "_plugin_iservice_cartridges_tickets[$cartridge[IDD]]",
-                        'zero_on_empty' => false,
-                    ]
-                );
-                echo "</td>";
-            }
-
-            echo "<td>$cartridge[name]</td>";
-            echo "<td>" . Dropdown::getDropdownName('glpi_locations', $cartridge['locations_id']) . "</td>";
-        }
-
-        echo $header;
-        echo "</table>";
-
-        if ($canedit && $number && $generate_form) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-        }
-
-        echo "</td><td>";
         if ($canedit) {
-            echo "<input type='submit' name='remove_cartridge' value='" . __('Delete') . "' class='submit' style='margin: 2px;' data-required='" . implode(',', array_keys(array_filter($required_fields))) . "'><br>";
+            $data['cartridgesTableSection']['buttons']['removeButton'] = [
+                'type' => 'submit',
+                'name' => 'remove_cartridge',
+                'value' => __('Delete'),
+                'class' => 'submit',
+            ];
         }
 
-        echo "</td></tr>";
-        echo "</table>";
-
-        return $cartridges;
+        return $data;
     }
 
-    public static function showChangeableForTicket(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false): int|bool
+    public static function getDataForTicketChangeableSection(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false): array
     {
         global $DB;
 
@@ -221,7 +216,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             return false;
         }
 
-        $canedit = !$readonly && $ticket->canEdit($id);
+        $canEdit = !$readonly && $ticket->canEdit($id);
         $rand    = mt_rand();
 
         $ticket->fields = $ticket_fields;
@@ -254,6 +249,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                  LEFT JOIN glpi_printers p ON p.id = c.printers_id
                  WHERE ct.tickets_id = $id ORDER BY ct.id"
         );
+
         if ($c_result) {
             while ($cartridge = $DB->fetchAssoc($c_result)) {
                 $cartridges[$cartridge['id']]               = $cartridge;
@@ -273,109 +269,132 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             }
         }
 
-        if ($canedit) {
-            // echo "<span class='add-cartridge-div'>";
+        $data = [];
+
+        if ($canEdit) {
             if ($generate_form) {
-                echo "<form name='ticketitem_form$rand' id='ticketitem_form$rand' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
+                $data['form'] = [
+                    'thLabel' => __('Add an item'),
+                    'name'    => "ticketitem_form$rand",
+                    'id'      => "ticketitem_form$rand",
+                    'method'  => 'post',
+                    'action'  => Toolbox::getItemTypeFormURL(__CLASS__),
+                ];
             }
 
-            echo "<div id='add-cartridge-div'>";
-            echo "<table class='tab_cadre_fixe add-cartridge-table no-margin wide full-selects'>";
-            if ($generate_form) {
-                echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Add an item') . "</th></tr>";
-            }
-
-            echo "<tr class='tab_bg_1'><td style='width:81%;'>";
-            $cartridges_selector_options = [
-                'comments' => false,
-                // 'condition' => ['Stoc != 0'],
-                // 'display' => false,
-                'name' => '_plugin_iservice_cartridge[cartridgeitems_id]',
-                'used' => $used_ids,
-                'used_data' => $used,
+            $data['addItemsSection'] = [
+                'type'   => 'table',
             ];
-            if (false !== ($has_changeable = PluginIserviceCartridgeItem::dropdownChangeableForTicket($ticket, $cartridges_selector_options))) {
-                if ($has_changeable > 1) {
-                    echo '<script>
+
+            $changeableDropdownSection = PluginIserviceCartridgeItem::getChangeableDropdownDataForTicket(
+                $ticket, ['used' => $used_ids, 'used_data' => $used ]
+            );
+
+            $data['addItemsSection']['notInstalledCartridgesTable'] = $changeableDropdownSection['notInstalledCartridgesTable'] ?? null;
+
+            $data['addItemsSection']['warning']              = $changeableDropdownSection['warning'] ?? null;
+            $data['addItemsSection']['cartridgeInstallDate'] = $changeableDropdownSection['cartridgeInstallDate'] ?? null;
+
+            if (!empty($changeableDropdownSection['hiddenInput'])) {
+                $data['addItemsSection']['inputs']['hiddenInput'] = $changeableDropdownSection['hiddenInput'];
+            }
+
+            if (!empty($changeableDropdownSection['elementsArray'])) {
+                $data['addItemsSection']['inputs']['changeableDropdown'] = [
+                    'order'         => 1,
+                    'type'          => 'dropdownArray',
+                    'elementsArray' => $changeableDropdownSection['elementsArray'],
+                    'comments'      => false,
+                    'name'          => '_plugin_iservice_cartridge[cartridgeitems_id]',
+                    'used'          => $used_ids ?? [],
+                    'used_data'     => $used,
+                    'value'         => $ticket->fields['_cartridgeitem_id'] ?? null,
+                    'no_label'      => true,
+                    'options'       => [
+                        'no_label' => true,
+                    ],
+                    'script' => '<script>
                             setTimeout(function() {                    
                                 addRecurrentCheck(function() {
                                     if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
-                                        $("[name=\\"add_cartridge\\"]").click();$("#page").hide();
+                                        $("[name=\\"add_cartridge\\"]").closest("form").attr("action", window.location.href).submit();
                                         return true;
                                     }
                                     return false;
                                 });}, 1000);
-                          </script>';
-                }
+                          </script>'
+                ];
 
-                echo "</td><td>";
-                $name = empty($used_ids) ? __('Select', 'iservice') : _sx('button', 'Add');
-                echo "<input type='submit' name='add_cartridge' value='$name' class='submit' data-required='" . implode(',', array_keys(array_filter($required_fields))) . "'>";
+                $data['addItemsSection']['inputs']['addButton'] = [
+                    'order' => 2,
+                    'type'  => 'button',
+                    'name'  => 'add_cartridge',
+                    'class' => 'submit',
+                    'value' => empty($used_ids) ? __('Select', 'iservice') : _sx('button', 'Add'),
+                    'options' => [
+                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                    ],
+                ];
             }
-
-            echo "</td></tr>";
-            echo "</table>";
-            echo "</div>";
-            if ($generate_form) {
-                Html::closeForm();
-            }
-
-            // echo "</span>";
         }
 
-        if (!($number = count($cartridges))) {
-            return empty($has_changeable) ? 0 : -1;
+        if (count($cartridges) < 1) {
+            return $data;
         }
 
-        echo "<table class='tab_cadre_fixe no-margin wide full-selects'>";
-        echo "<tr><td width='81%'>";
-        if ($canedit && $number && $generate_form) {
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
-            Html::showMassiveActions($massiveactionparams);
-        }
+        $data['tableSection'] = [
+            'type' => 'table',
+            'header' => [
+                'checkbox' => [
+                    'hidden' => !$canEdit,
+                    'value' => '',
+                ],
+                'name' => [
+                    'value' => __('Name'),
+                ],
+                'type' => [
+                    'value' => __('Type'),
+                ],
+                'empties' => [
+                    'value' => __('Empties', 'iservice'),
+                ],
+            ],
+        ];
 
-        echo "<table class='tab_cadre_fixe no-margin wide'>";
-        $header = '<tr>';
-        if ($canedit && $number) {
-            $header .= "<th width='10'>"; // . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            $header .= "</th>";
-        }
+        foreach ($cartridges as $key => $cartridge) {
+            $data['tableSection']['rows'][$key] = [
+                'cols' => [
+                    'checkbox' => [
+                        'hidden' => !$canEdit,
+                        'input' => [
+                            'type' => 'checkbox',
+                            'name' => "_plugin_iservice_cartridges_tickets[$cartridge[IDD]]",
+                            'disabled' => !$canEdit,
+                            'zero_on_empty' => false,
+                            'options' => [
+                                'no_label' => true,
+                            ],
+                        ],
+                    ],
+                    'name' => [
+                        'value' => "$cartridge[id] - $cartridge[name] ($cartridge[location_completename])"
+                            . (!empty($cartridge['date_use']) ? " ". __('intalled on', 'iservice') . " $cartridge[date_use]" : '')
+                            . (!empty($cartridge['date_out']) ? " " . __('emptied', 'iservice') . " $cartridge[date_out]" : ''),
+                    ],
+                    'mercurycode' => [
+                        'hidden' => true,
+                        'input' => [
+                            'type' => 'hidden',
+                            'name' => "_plugin_iservice_cartridge_mercurycodes[$cartridge[IDD]]",
+                            'value' => $cartridge['mercurycode'],
+                            'options' => [
+                                'no_label' => true,
+                            ],
+                        ],
+                    ],
+                ],
+            ];
 
-        $header .= "<th>" . __('Name') . "</th>";
-        $header .= "<th>" . __('Type') . "</th>";
-        $header .= "<th>" . __('Empties', 'iservice') . "</th>";
-        $header .= "</tr>";
-        echo $header;
-
-        foreach ($cartridges as $cartridge) {
-            echo "<tr class='tab_bg_1'>";
-            if ($canedit) {
-                echo "<td>";
-                // Html::showMassiveActionCheckBox(__CLASS__, $cartridge["IDD"]);
-                echo Html::getCheckbox(
-                    [
-                        'name' => "_plugin_iservice_cartridges_tickets[$cartridge[IDD]]",
-                        'zero_on_empty' => false,
-                    ]
-                );
-                echo "</td>";
-            }
-
-            echo "<td>";
-            echo "$cartridge[id] - $cartridge[name] ($cartridge[location_completename])";
-
-            if (!empty($cartridge['date_use'])) {
-                echo " instalat $cartridge[date_use]";
-            }
-
-            if (!empty($cartridge['date_out'])) {
-                echo " golit $cartridge[date_use]";
-            }
-
-            echo "<input type='hidden' name='_plugin_iservice_cartridge_mercurycodes[$cartridge[IDD]]' value='$cartridge[mercurycode]' />";
-            echo "</td>";
-            echo "<td style='text-align: center;'>";
             $supported_types = explode(',', $cartridge['supportedtypes']);
             if (empty($used[$cartridge['cid']]['types'])) {
                 $used[$cartridge['cid']]['types'] = [];
@@ -392,60 +411,101 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             }
 
             if (count($supported_types) > 1 && (empty($used[$cartridge['cid']]['last']) || $cartridge['id'] === $used[$cartridge['cid']]['last'])) {
-                PluginFieldsTypefieldDropdown::dropdown(
-                    [
-                        'comments' => false,
+                $data['tableSection']['rows'][$key]['cols']['cartridgeTypeIds'] = [
+                    'input' => [
+                        'itemType' => 'PluginFieldsCartridgeitemtypeDropdown',
+                        'type' => 'dropdown',
                         'name' => "_plugin_iservice_cartridge_type_ids[$cartridge[IDD]]",
                         'value' => $cartridge['selected_type_id'],
-                        'condition' => ['id in (' . implode(',', $supported_types) . ')'],
-                        'on_change' => '$("[name=update_cartridge]").click();',
-                    ]
-                );
+                        'options' => [
+                            'condition' => ['id in (' . implode(',', $supported_types) . ')'],
+                            'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                        ],
+                    ],
+                ];
             } else {
-                echo "<input name='_plugin_iservice_cartridge_type_ids[$cartridge[IDD]]' type='hidden' value='$cartridge[selected_type_id]' />";
-                $type_dropdown = new PluginFieldsTypefieldDropdown();
-                $type_dropdown->getFromDB($cartridge['selected_type_id']);
-                echo "<input type='text' readonly='readonly' value='{$type_dropdown->fields['name']}' style='width:6em;'/>";
+                $type_dropdown = new PluginFieldsCartridgeitemtypeDropdown();
+                if ($type_dropdown->getFromDB($cartridge['selected_type_id'])) {
+                    $data['tableSection']['rows'][$key]['cols']['cartridgeTypeIds'] = [
+                        'input' => [
+                            'type'  => 'hidden',
+                            'name'  => "_plugin_iservice_cartridge_type_ids[$cartridge[IDD]]",
+                            'value' => $cartridge['selected_type_id'],
+                        ],
+                        'value' => $type_dropdown->fields['name']
+                    ];
+                }
             }
 
-            echo "</td>";
-            echo "<td>";
-            PluginIserviceCartridge::dropdownEmptyablesByCartridge(
-                [
-                    'mercury_code_field' => $cartridge['mercurycode'],
-                    'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge['selected_type_id'],
-                    'printers_id' => $cartridge['pid'],
-                ], [
-                    'comments' => false,
-                    'name' => "_plugin_iservice_emptied_cartridge_ids[$cartridge[IDD]]",
-                    'value' => $cartridge['cartridges_id_emptied'],
-                    'readonly' => $readonly,
-                    'on_change' => 'cartridgesChanged = true;',
-                ]
-            );
-            echo "</td>";
-            echo "</tr>";
+            $cartridgeData = [
+                'mercury_code_field' => $cartridge['mercurycode'],
+                'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge['selected_type_id'],
+                'printers_id' => $cartridge['pid'],
+            ];
+
+            $emptyablesByCartridgeDropdownSettings = [
+                'comments' => false,
+                'name' => "_plugin_iservice_emptied_cartridge_ids[$cartridge[IDD]]",
+                'value' => $cartridge['cartridges_id_emptied'],
+                'readonly' => $readonly,
+                'on_change' => 'cartridgesChanged = true;',
+            ];
+
+            $emptyablesByCartridgeDropdownSettings['elementsArray'] = $emptyableCartridges = PluginIserviceCartridge::getEmptyablesByCartridgeDropdownElementsArray($cartridgeData, $emptyablesByCartridgeDropdownSettings);
+
+            if (empty($emptyableCartridges)) {
+                $emptyablesByCartridgeDropdownSettings['type']                = 'hidden';
+                $emptyablesByCartridgeDropdownSettings['value']               = 0;
+                $emptyablesByCartridgeDropdownSettings['options']['no_label'] = true;
+                $data['tableSection']['rows'][$key]['cols']['empties']        = [
+                    'input' => $emptyablesByCartridgeDropdownSettings,
+                    'value' => __('No cartridges to replace', 'iservice'),
+                ];
+            } elseif (count($emptyableCartridges) === 1) {
+                $emptyablesByCartridgeDropdownSettings['type']                = 'hidden';
+                $emptyablesByCartridgeDropdownSettings['value']               = array_keys($emptyableCartridges)[0];
+                $emptyablesByCartridgeDropdownSettings['options']['no_label'] = true;
+                $data['tableSection']['rows'][$key]['cols']['empties']        = [
+                    'input' => $emptyablesByCartridgeDropdownSettings,
+                    'value' => str_replace(") [", ")<br>[", $emptyableCartridges[array_keys($emptyableCartridges)[0]]),
+                ];
+            } else {
+                $emptyablesByCartridgeDropdownSettings['type'] = 'dropdownArray';
+            }
         }
 
-        echo $header;
-        echo "</table>";
+        $data['tableSection']['buttons'] = [
+            'updateButton' => [
+                'input' => [
+                    'type' => 'button',
+                    'name' => 'update_cartridge',
+                    'onclick' => 'cartridgesChanged=false;',
+                    'value' => __('Update'),
+                    'label' => __('Update'),
+                    'options' => [
+                        'buttonClass' => 'btn-outline-warning m-2',
+                        'buttonIconClass' => 'ti ti-trash',
+                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                    ],
+                ],
+            ],
+            'removeButton' => [
+                'input' => [
+                    'type' => 'button',
+                    'name' => 'remove_cartridge',
+                    'onclick' => 'cartridgesChanged=false;',
+                    'value' => __('Delete'),
+                    'label' => __('Delete'),
+                    'options' => [
+                        'buttonClass' => 'btn-primary m-2',
+                        'buttonIconClass' => 'far fa-save',
+                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                    ],
+                ],
+            ],
+        ];
 
-        if ($canedit && $number && $generate_form) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-        }
-
-        echo "</td><td>";
-        if ($canedit) {
-            echo "<input type='submit' name='remove_cartridge' onclick='cartridgesChanged=false;' value='" . __('Delete') . "' class='submit' style='margin: 2px;' data-required='" . implode(',', array_keys(array_filter($required_fields))) . "'><br>";
-            echo "<input type='submit' name='update_cartridge' onclick='cartridgesChanged=false;' value='" . __('Update') . "' class='submit' style='margin: 2px;' data-required='" . implode(',', array_keys(array_filter($required_fields))) . "'>";
-        }
-
-        echo "</td></tr>";
-        echo "</table>";
-
-        return $number;
+        return $data;
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
@@ -720,38 +780,41 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $cartridge_ticket->find("tickets_id = $ticket_id", [], $limit);
     }
 
-    public static function installWithType($ticket_id, $cartridge_id, $type_id, $emptied_cartridge_id, $printer_id, $supplier_id, $location_id, $total2_black, $total2_color, $install_time): string|int
+    public static function installWithType($ticketId, $cartridgeId, $typeId, $emptiedCartridgeId, $printerId, $supplierId, $locationId, $total2Black, $total2Color, $installTime): string|int
     {
-        $cartridge                  = new PluginIserviceCartridge();
-        $cartridgeitem_custom_field = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
-        if (!$cartridge->getFromDB($cartridge_id) || !PluginIserviceDB::populateByItemsId($cartridgeitem_custom_field, $cartridge->fields['cartridgeitems_id'])) {
-            return "Could not find cartridge with id $cartridge_id to install it.";
+        $cartridge                = new PluginIserviceCartridge();
+        $cartridgeitemCustomField = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
+        if (!$cartridge->getFromDB($cartridgeId) || !PluginIserviceDB::populateByItemsId($cartridgeitemCustomField, $cartridge->fields['cartridgeitems_id'])) {
+            return "Could not find cartridge with id $cartridgeId to install it.";
         }
 
-        if (!empty($emptied_cartridge_id)) {
-            $old_cartridge = new PluginIserviceCartridge();
-            if (!$old_cartridge->getFromDB($emptied_cartridge_id)) {
-                return "Could not find cartridge with id $emptied_cartridge_id to uninstall it.";
+        if (!empty($emptiedCartridgeId)) {
+            $oldCartridge = new PluginIserviceCartridge();
+            if (!$oldCartridge->getFromDB($emptiedCartridgeId)) {
+                return "Could not find cartridge with id $emptiedCartridgeId to uninstall it.";
             }
 
-            if (!$old_cartridge->update(
+            // if ($oldCartridge->fields['printers_id'] != $printerId) {
+            // return "Printer id mismatch. Old cartridge printer id: {$oldCartridge->fields['printers_id']}, new cartridge printer id: $printerId";
+            // }
+            if (!$oldCartridge->update(
                 [
                     '_no_message' => true,
-                    $old_cartridge->getIndexName() => $emptied_cartridge_id,
-                    'date_out' => $install_time,
-                    'tickets_id_out_field' => $ticket_id,
-                    'pages' => $total2_black,
-                    'pages_color_field' => $total2_color,
-                    'printed_pages_field' => $old_cartridge->fields['printed_pages_field'] + $total2_black - $old_cartridge->fields['pages_use_field'],
-                    'printed_pages_color_field' => $old_cartridge->fields['printed_pages_color_field'] + $total2_color - $old_cartridge->fields['pages_color_use_field'],
+                    $oldCartridge->getIndexName() => $emptiedCartridgeId,
+                    'date_out' => $installTime,
+                    'tickets_id_out_field' => $ticketId,
+                    'pages_out_field' => $total2Black,
+                    'pages_color_out_field' => $total2Color,
+                // 'printed_pages_field' => $oldCartridge->fields['printed_pages_field'] + $total2Black - $oldCartridge->fields['pages_use_field'],
+                // 'printed_pages_color_field' => $oldCartridge->fields['printed_pages_color_field'] + $total2Color - $oldCartridge->fields['pages_color_use_field'],
                 ]
             )
             ) {
-                return "Could not update old cartridge with id $emptied_cartridge_id";
+                return "Could not update old cartridge with id $emptiedCartridgeId";
             }
 
             if (!empty($GLOBALS['ECHO_CARTRIDGE_INSTALL_INFO'])) {
-                echo " Changed cartridge $emptied_cartridge_id. Total2_black: $total2_black, total2_color: $total2_color. Printed pages: {$old_cartridge->fields['printed_pages_field']}, printed color pages: {$old_cartridge->fields['printed_pages_color_field']}";
+                echo " Changed cartridge $emptiedCartridgeId. Total2_black: $total2Black, total2_color: $total2Color. Printed pages: {$oldCartridge->fields['printed_pages_field']}, printed color pages: {$oldCartridge->fields['printed_pages_color_field']}";
             }
 
             $uninstalled_multiplier = 1;
@@ -763,19 +826,19 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             [
                 $cartridge->getIndexName() => $cartridge->getID(),
                 '_no_message' => true,
-                'plugin_fields_cartridgeitemtypedropdowns_id' => $type_id,
-                'printers_id' => $printer_id,
-                'suppliers_id_field' => $supplier_id,
-                'locations_id_field' => empty($location_id) ? '0' : $location_id,
-                'date_use' => $install_time,
-                'tickets_id_use_field' => $ticket_id,
+                'plugin_fields_cartridgeitemtypedropdowns_id' => $typeId,
+                'printers_id' => $printerId,
+                'suppliers_id_field' => $supplierId,
+                'locations_id_field' => empty($locationId) ? '0' : $locationId,
+                'date_use' => $installTime,
+                'tickets_id_use_field' => $ticketId,
                 'date_out' => 'NULL',
-                'pages_use_field' => $total2_black,
-                'pages_color_use_field' => $total2_color,
+                'pages_use_field' => $total2Black,
+                'pages_color_use_field' => $total2Color,
             ]
         )
         ) {
-            return "Could not update cartridge with id $cartridge_id";
+            return "Could not update cartridge with id $cartridgeId";
         }
 
         return $uninstalled_multiplier * $cartridge->getID();
@@ -812,11 +875,11 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $old_cartridge->getIndexName() => $old_cartridge->getID(),
                     'date_out' => 'NULL',
-                    'tickets_id_out_field' => 'NULL',
-                    'pages' => '0',
-                    'pages_color_field' => '0',
-                    'printed_pages_field' => $old_cartridge->fields['printed_pages_field'] + $old_cartridge->fields['pages_use_field'] - $cartridge->fields['pages_use_field'],
-                    'printed_pages_color_field' => $old_cartridge->fields['printed_pages_color_field'] + $old_cartridge->fields['pages_color_use_field'] - $cartridge->fields['pages_color_use_field'],
+                    'tickets_id_out_field' => 0,
+                    'pages_out_field' => 0,
+                    'pages_color_out_field' => 0,
+                // 'printed_pages_field' => $old_cartridge->fields['printed_pages_field'] + $old_cartridge->fields['pages_use_field'] - $cartridge->fields['pages_use_field'],
+                // 'printed_pages_color_field' => $old_cartridge->fields['printed_pages_color_field'] + $old_cartridge->fields['pages_color_use_field'] - $cartridge->fields['pages_color_use_field'],
                 ]
             );
             $installed_multiplier = 1;
@@ -828,7 +891,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 '_no_message' => true,
                 'suppliers_id_field' => $supplier_id,
                 'date_use' => 'NULL',
-                'tickets_id_use_field' => 'NULL',
+                'tickets_id_use_field' => 0,
                 'date_out' => 'NULL',
                 'pages_use_field' => 0,
                 'pages_color_use_field' => 0,
@@ -841,4 +904,51 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $installed_multiplier * $cartridge->getID();
     }
 
+    // public static function getCartridgeData($cartridgeId): array
+    // {
+    // $query =
+    // "SELECT
+    // ct.id cartridge_ticket_id
+    // , ct.plugin_fields_cartridgeitemtypedropdowns_id cartridge_item_type_id
+    // , c.id cartridge_id
+    // , ci.mercury_code_field mercury_code
+    // , ci.compatible_mercury_codes_field compatible_mercury_codes
+    // , ci.supported_types_field supported_types
+    // FROM glpi_plugin_iservice_cartridges_tickets ct
+    // INNER JOIN glpi_plugin_iservice_cartridges c ON c.id = ct.cartridges_id
+    // INNER JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
+    // WHERE ct.cartridges_id = $cartridgeId LIMIT 1";
+    // global $DB;
+    // $result = $DB->query($query);
+    //
+    // return $DB->fetchAssoc($result);
+    // }
+    //
+    // public static function areCartridgesCompatible($newCartridgeId, $oldCartridgeId): bool
+    // {
+    // $newCartridge = self::getCartridgeData($newCartridgeId);
+    // $oldCartridge = self::getCartridgeData($oldCartridgeId);
+    //
+    // if (empty($newCartridge) || empty($oldCartridge)) {
+    // return false;
+    // }
+    //
+    // if ($newCartridge['cartridge_item_type_id'] != $oldCartridge['cartridge_item_type_id']) {
+    // return false;
+    // }
+    //
+    // $oldCartridgeMercuryCodes = explode(',', str_replace('', '\'', $newCartridge['compatible_mercury_codes']));
+    //
+    // if ($newCartridge['mercury_code'] != $oldCartridge['mercury_code']
+    // || !in_array($newCartridge['mercury_code'], $oldCartridgeMercuryCodes)
+    // ) {
+    // return false;
+    // }
+    //
+    // if (empty(array_intersect(explode(',', $newCartridge['supported_types']), explode(',', $oldCartridge['supported_types'])))) {
+    // return false;
+    // }
+    //
+    // return true;
+    // }
 }

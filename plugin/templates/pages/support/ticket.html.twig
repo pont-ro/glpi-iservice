@@ -61,15 +61,12 @@
 
                             {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
 
-                            {% set field_options = field_options|merge({
-                                'on_change': 'if (' ~ alertOnStatusChange ~ ' == 1 && $(this).val() != ' ~ solvedStatusValue ~ ') { alert("ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de ' ~ item.customfields.fields['effective_date_field'] ~ '!") }',
-                            }) %}
+                            {{ include('@iservice/pages/support/components/changeables_table.html.twig') }}
 
+                            {% set canUpdateInitalValue = canupdate %}
+                            {% set canupdate = false %}
                             {{ include('components/itilobject/fields/status.html.twig') }}
-
-                            {% set field_options = field_options|merge({
-                                'on_change': null,
-                            }) %}
+                            {% set canupdate = canUpdateInitalValue %}
 
                             {{ fields.checkboxField(
                                 '_operator_reading',
@@ -92,25 +89,62 @@
                                 field_options
                             ) }}
 
+                            {{ fields.dropdownArrayField(
+                                '_export_type',
+                                item.fields['_export_type'],
+                                {
+                                    '': '----',
+                                    'factura': 'Factură',
+                                    'aviz': 'Aviz',
+                                },
+                                __('Export type', 'iservice'),
+                                field_options
+                            ) }}
+
                             {% if consumablesTableData %}
                                 {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
                             {% endif %}
 
-                            {{ fields.checkboxField(
-                                'exported_field',
-                                item.customfields.fields['exported_field'],
-                                __('Exported in csv and imported in hMarfa', 'iservice'),
-                                field_options
-                            ) }}
+                            {% if item.hasConsumables() %}
+                                {{ fieldsIservice.checkboxFieldExtended(
+                                    'delivered_field',
+                                    item.getID() > 0 ? item.customfields.fields['delivered_field'] : deliveredDefaultValue,
+                                    __('Delivered', 'iservice'),
+                                    field_options|merge({
+                                        'on_change': 'if ($(this).is(":not(:checked)")) { $("[name=update]").val(1); $(this).closest("form").append(\'<input type="hidden" name="update" value="1">\').attr("action", window.location.href).submit(); }'
+                                    })
+                                ) }}
+
+                                {{ fieldsIservice.checkboxFieldExtended(
+                                    'exported_field',
+                                    item.customfields.fields['exported_field'],
+                                    __('Exported in csv and imported in hMarfa', 'iservice'),
+                                    field_options|merge({
+                                        'on_change': 'if ($(this).is(":not(:checked)")) { $("[name=update]").val(1); $(this).closest("form").append(\'<input type="hidden" name="update" value="1">\').attr("action", window.location.href).submit(); }'
+                                    })
+                                ) }}
+                            {%  endif %}
 
                             {{ fields.datetimeField(
                                 'effective_date_field',
-                                item.customfields.fields['effective_date_field'],
+                                effectiveDate,
                                 __('Effective date', 'iservice'),
                                 field_options|merge({
                                     'min': "now"|date("Y-m-d H:i:s"),
+                                    'readonly': effectiveDateFieldReadonly,
                                 })
                             ) }}
+
+                            {% if not effectiveDateFieldReadonly %}
+                                {{ fields.hiddenField(
+                                    'effective_date_manually_changed',
+                                    0,
+                                    '',
+                                    field_options|merge({
+                                        'no_label': true,
+                                    })
+                                ) }}
+                            {% endif %}
 
                         {% endblock %}
                     </div>
@@ -119,6 +153,6 @@
         </div>
     </div>
 
-    {{ include('components/form/buttons.html.twig') }}
+    {{ include('@iservice/pages/support/components/buttons.html.twig') }}
 </div>
 

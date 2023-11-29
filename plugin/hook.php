@@ -64,3 +64,13 @@ function plugin_iservice_redefine_menus($menus): array
 {
     return RedefineMenus::redefine($menus);
 }
+
+function plugin_iservice_PluginFieldsTicketticketcustomfield_update(PluginFieldsTicketticketcustomfield $item) {
+    PluginIserviceTicket::handleDeliveredStatusChange($item);
+}
+
+function plugin_iservice_Ticket_update(Ticket $item) {
+    if (PluginIserviceTicket::wasTicketClosedStatusChanging($item)) {
+        PluginIserviceTicket::moveCartridges($item);
+    }
+}

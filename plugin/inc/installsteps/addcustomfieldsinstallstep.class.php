@@ -15,7 +15,7 @@ class AddCustomFieldsInstallStep
 
     const CONTAINERS = [
         [
-            'name'      => 'customfield',
+            'name'      => 'printercustomfield',
             'label'     => 'Printer Custom Fields',
             'itemtypes' => ['Printer'],
             'type'      => 'tab',
@@ -25,7 +25,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 1,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'ticketcustomfield',
             'label'     => 'Ticket Custom Fields',
             'itemtypes' => ['Ticket'],
             'type'      => 'tab',
@@ -35,7 +35,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 2,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'suppliercustomfield',
             'label'     => 'Supplier Custom Fields',
             'itemtypes' => ['Supplier'],
             'type'      => 'tab',
@@ -45,7 +45,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 3,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'contractcustomfield',
             'label'     => 'Contract Custom Fields',
             'itemtypes' => ['Contract'],
             'type'      => 'tab',
@@ -55,7 +55,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 4,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'cartridgeitemcustomfield',
             'label'     => 'Cartridge Item Custom Fields',
             'itemtypes' => ['CartridgeItem'],
             'type'      => 'tab',
@@ -65,7 +65,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => 5,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'cartridgecustomfield',
             'label'     => 'Cartridge Custom Fields',
             'itemtypes' => ['Cartridge'],
             'type'      => 'tab',
@@ -75,7 +75,7 @@ class AddCustomFieldsInstallStep
             'old_id'    => null,
         ],
         [
-            'name'      => 'customfield',
+            'name'      => 'printermodelcustomfield',
             'label'     => 'Printer Model Custom Fields',
             'itemtypes' => ['PrinterModel'],
             'type'      => 'tab',
@@ -173,19 +173,21 @@ class AddCustomFieldsInstallStep
             $field_type = $fieldData['type'];
             $default    = $fieldData['default_value'] !== '' ? $fieldData['default_value'] : null;
             $mandatory  = $fieldData['mandatory'] === '1' ? 'not null' : '';
+            $as         = !empty($fieldData['as']) ? " as ($fieldData[as])" : null;
+            $drop       = !empty($as) ? "drop|" : null;
 
             switch ($field_type) {
             case 'yesno':
-                $fields[$field_name] = "tinyint" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                $fields[$field_name] = $drop . "tinyint" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default));
                 break;
             case 'date':
-                $fields[$field_name] = "date" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
+                $fields[$field_name] = $drop . "date" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null));
                 break;
-            case 'datetime':
-                $fields[$field_name] = "timestamp" . self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null);
+
+                $fields[$field_name] = $drop . "timestamp" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null));
                 break;
             case 'number':
-                $fields[$field_name] = "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                $fields[$field_name] = $drop . "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default));
                 break;
             default:
                 break;

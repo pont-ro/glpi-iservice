@@ -1,7 +1,7 @@
 {% import 'components/form/fields_macros.html.twig' as fields %}
 {% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
 
-{{ fields.dropdownField(
+{{ fieldsIservice.dropdownFieldExtended(
     'Supplier',
     'suppliers_id',
     partnerId,
@@ -12,7 +12,7 @@
     })
 ) }}
 
-{{ fields.dropdownField(
+{{ fieldsIservice.dropdownFieldExtended(
     'Printer',
     'printer_id',
     printerId,
@@ -59,12 +59,12 @@
 {% endif %}
 
 {% if locationId %}
-    {{ fields.textField(
+    {{ fields.hiddenField(
         'locations_id',
         locationId,
         '',
         field_options|merge({
-            'type': 'hidden',
+            'no_label': true,
         })
     ) }}
 {% endif %}

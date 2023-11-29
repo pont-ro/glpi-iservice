@@ -261,6 +261,26 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 LEFT JOIN glpi_printers p ON p.id = ic.items_id AND itemtype = 'Printer'
                 WHERE ic.suppliers_id = " . $ticket->getFirstAssignedPartner()->getID();
 
+            $ticket->consumable_data['installed_cartridges'] = [];
+            if (!empty($consumable['new_cartridge_ids'])) {
+                $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
+                if (empty($ticket->consumable_data['delivery_date'])) {
+                    $cartridge = new Cartridge();
+                    foreach ($cartridge->find(["id in ($cartridge_ids)"]) as $cartr) {
+                        $ticket->consumable_data['delivery_date'] = $cartr['date_in'];
+                    }
+                }
+
+                $cartridge_ticket = new PluginIserviceCartridge_Ticket();
+                foreach ($cartridge_ticket->find(["cartridges_id in ($cartridge_ids)"]) as $cartr) {
+                    $ticket->consumable_data['installed_cartridges'][$cartr['cartridges_id']] = ['id' => $cartr['cartridges_id'], 'ticket_use' => $cartr['tickets_id']];
+                }
+
+                $title = str_replace(',', ', ', $cartridge_ids);
+            } else {
+                $title = "";
+            }
+
             $data['consumablesTableSection']['rows'][$key] = [
                 'cols' => [
                     'checkbox' => [
@@ -277,6 +297,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                         ],
                     ],
                     'name' => [
+                        'title' => $title,
                         'value' => $consumable['name'] . ($would_create_cartridge ? " [*]" : ""),
                         'input' => [
                             'type' => 'hidden',

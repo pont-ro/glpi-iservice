@@ -116,8 +116,8 @@ case 'use':
         [
             'id' => $id,
             'date_out' => $install_date,
-            'pages' => $counter_black,
-            'pages_color_field' => $counter_color,
+            'pages_out_field' => $counter_black,
+            'pages_color_out_field' => $counter_color,
             'printed_pages_field' => $cartridge->fields['printed_pages_field'] + $counter_black - $cartridge->fields['pages_use_field'],
             'printed_pages_color_field' => $cartridge->fields['printed_pages_field'] + $counter_color - $cartridge->fields['pages_color_use_field'],
         ]

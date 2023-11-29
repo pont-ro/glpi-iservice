@@ -1,0 +1,192 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{%  set tableData = changeablesTableData %}
+
+<div class="form-field row col-12 mb-2">
+    <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
+        {{ __('Change cartridge', 'iservice') }}
+    </label>
+    <div class="col-xxl-8 field-container {{ options.valueClass }}">
+        {% if tableData.addItemsSection %}
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        {% if tableData.addItemsSection.inputs|length > 0 %}
+                            {% for input in tableData.addItemsSection.inputs|sort((a, b) => a.order - b.order) %}
+                                <td class="align-bottom">
+                                    {{ input.no_label ? '' : input.label }}
+                                </td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr class="{{ tableData.addItemsSection.class }}">
+                        {% if tableData.addItemsSection.inputs|length > 0 %}
+                            {% for input in tableData.addItemsSection.inputs|sort((a, b) => a.order - b.order) %}
+                                <td>
+                                    {{ fieldsIservice.marcoCallHelper(
+                                        input.type,
+                                        input.name,
+                                        input.value,
+                                        input.label,
+                                        field_options|merge(input.options ?? []),
+                                        input.itemType,
+                                        input.elementsArray
+                                    ) }}
+                                    {% if input.script == 'TODO' %}
+                                        {{ input.script|raw }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                </table>
+            </div>
+        {% endif %}
+        {% if tableData.tableSection.type == 'grid' %}
+            <div class="row">
+                {% for column in tableData.tableSection.header %}
+                    <div class="col {{ column.class }}">
+                        {{ column.value }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% for row in tableData.tableSection.rows %}
+                <div class="row">
+                    {% for column in row.cols %}
+                        <div class="col {{ column.class }}">
+                            {% if column.value %}
+                                {{ column.value|raw }}
+                            {% endif %}
+                            {% if column.input %}
+                                {{ fieldsIservice.marcoCallHelper(
+                                    column.input.type,
+                                    column.input.name,
+                                    column.input.value,
+                                    column.input.label ?? '',
+                                    field_options|merge(column.input.options ?? []),
+                                    column.input.itemType
+                                ) }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="row">
+                {% for button in tableData.tableSection.buttons %}
+                    <div class="col {{ column.class }}">
+                        {% if button.input %}
+                            {{ fieldsIservice.marcoCallHelper(
+                                button.input.type,
+                                button.input.name,
+                                button.input.value,
+                                button.input.label ?? '',
+                                field_options|merge(button.input.options ?? []),
+                                button.input.itemType
+                            ) }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if tableData.tableSection.type == 'table' %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        {% for column in tableData.tableSection.header %}
+                            {% if not column.hidden %}
+                                <th class="{{ column.class }}">
+                                    {{ column.value }}
+                                </th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in tableData.tableSection.rows %}
+                        <tr class="{{ row.class }}">
+                            {% for column in row.cols %}
+                                {% if not column.hidden %}
+                                    <td class="{{ column.class }}"
+                                            {% if column.title %}
+                                                title="{{ column.title }}"
+                                            {% endif %}
+                                    >
+                                        {% if column.value %}
+                                            {{ column.value|raw }}
+                                        {% endif %}
+                                        {% if column.input %}
+                                            {{ fieldsIservice.marcoCallHelper(
+                                                column.input.type,
+                                                column.input.name,
+                                                column.input.value,
+                                                column.input.label ?? '',
+                                                field_options|merge(column.input.options ?? []),
+                                                column.input.itemType
+                                            ) }}
+                                        {% endif %}
+                                    </td>
+                                {% elseif column.input.type == 'hidden' %}
+                                    {{ fieldsIservice.marcoCallHelper(
+                                        column.input.type,
+                                        column.input.name,
+                                        column.input.value,
+                                        column.input.label ?? '',
+                                        field_options|merge(column.input.options ?? []),
+                                        column.input.itemType
+                                    ) }}
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2 d-flex flex-row-reverse align-items-start flex-wrap">
+                {% for button in tableData.tableSection.buttons %}
+
+                    {% if button.input %}
+                        {{ fieldsIservice.marcoCallHelper(
+                            button.input.type,
+                            button.input.name,
+                            button.input.value,
+                            button.input.label ?? '',
+                            field_options|merge(button.input.options ?? []),
+                            button.input.itemType
+                        ) }}
+                    {% endif %}
+
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{{ fields.dateField(
+    '_cartridge_installation_date',
+    item.customfields.fields['cartridge_install_date_field'] ?? 'now'|date('Y-m-d'),
+    __('Change date', 'iservice'),
+    field_options|merge({
+        'readonly': cartridgeInstallDateFieldReadonly,
+    })
+) }}
+
+{% if not cartridgeInstallDateFieldReadonly %}
+    {{ fields.hiddenField(
+        'cartridge_install_date_manually_changed',
+        0,
+        '',
+        field_options|merge({
+            'no_label': true,
+        })
+    ) }}
+
+    <script>
+        $(document).ready(function () {
+            $("[name='_cartridge_installation_date']").on('change', function () {
+                $("[name='cartridge_install_date_manually_changed']").val(1);
+            });
+        });
+    </script>
+{% endif %}

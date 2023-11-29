@@ -927,6 +927,32 @@ msgstr "Lista completă"
 msgid "Compatible cartridges list"
 msgstr "Listă cartușe compatibile"
 
+msgid "intalled on"
+msgstr "instalat pe"
+
+msgid "emptied"
+msgstr "golit"
+
+msgid "No cartridges to replace"
+msgstr "Nu există cartuș de golit"
+
+msgid "Cartridges available"
+msgstr "Cartușe neinstalate"
+
+msgid "You can not add new cartridges while there is a newer closed ticket."
+msgstr "Nu puteți adăuga cartușe cât timp există un tichet închis mai nou."
+
+msgid "You can not add new cartridges while there is a newer ticket with cartridges."
+msgstr "Nu puteți adăuga cartușe cât timp există un tichet mai nou cu cartușe."
+
+msgid "Select a cartridge"
+msgstr "Selectați un cartuș"
+
+msgid "Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket."
+msgstr "Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet."
+
+
+
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
 

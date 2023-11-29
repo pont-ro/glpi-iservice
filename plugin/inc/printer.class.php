@@ -758,8 +758,12 @@ class PluginIservicePrinter extends Printer
         return "sunt în CM și status-ul începe cu CO, GAR sau PRO";
     }
 
-    public static function getInstalledCartridges($printer_id, $additional_condition = ''): array
+    public static function getInstalledCartridges($printer_id, $additional_condition = ''): array|bool
     {
+        if (empty($printer_id)) {
+            return false;
+        }
+
         return PluginIserviceDB::getQueryResult(
             "
                 select c.*, ci.mercury_code_field mercury_code, ci.compatible_mercury_codes_field compatible_mercury_codes, ci.atc_field atc, ci.name, c.plugin_fields_cartridgeitemtypedropdowns_id type_id, tfd.completename type_name

@@ -98,7 +98,11 @@
                             <tr class="">
                                 {% for column in row.cols %}
                                     {% if not column.hidden %}
-                                        <td class="{{ column.class }}">
+                                        <td class="{{ column.class }}"
+                                        {% if column.title %}
+                                            title="{{ column.title }}"
+                                        {% endif %}
+                                        >
                                             {% if column.value %}
                                                 {{ column.value|raw }}
                                             {% endif %}
