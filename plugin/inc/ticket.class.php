@@ -675,7 +675,7 @@ class PluginIserviceTicket extends Ticket
     public function removeCartridge($ticketId, $input): bool
     {
         $this->check($ticketId, UPDATE);
-        
+
         $supplierId = $input['suppliers_id'] ?? null;
         $printerId  = $input['printer_id'] ?? null;
 

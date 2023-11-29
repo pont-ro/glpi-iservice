@@ -29,6 +29,14 @@ if (!empty($post)) {
     $post = PluginIserviceTicket::preProcessPostData($post);
 }
 
+$post = array_merge(
+    $post,
+    [
+        'suppliers_id' => IserviceToolBox::getInputVariable('suppliers_id'),
+        'printer_id' => IserviceToolBox::getInputVariable('printer_id'),
+    ]
+);
+
 if ($id > 0) {
     $header_title = Ticket::getTypeName();
 } else {
