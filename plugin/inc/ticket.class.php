@@ -560,18 +560,18 @@ class PluginIserviceTicket extends Ticket
         }
     }
 
-    public function addCartridge($ticketId, $post, &$errorMessage = ''): bool
+    public function addCartridge($ticketId, $input, &$errorMessage = ''): bool
     {
-        $supplierId = IserviceToolBox::getInputVariable('suppliers_id');
-        $printerId  = IserviceToolBox::getInputVariable('printer_id');
+        $supplierId = $input['suppliers_id'] ?? null;
+        $printerId  = $input['printer_id'] ?? null;
 
-        if (!$this->preCartridgeAddChecks($post, $supplierId, $printerId) || !$this->getFromDB($ticketId)) {
+        if (!$this->preCartridgeAddChecks($input, $supplierId, $printerId) || !$this->getFromDB($ticketId)) {
             return false;
         }
 
-        $cartridgeitemsId   = $post['_plugin_iservice_cartridge']['cartridgeitems_id'] ?? '';
-        $installDate        = $post['_cartridge_installation_date'] ?? '';
-        $imposedCartridgeId = $post['_cartridge_id'] ?? null;
+        $cartridgeitemsId   = $input['_plugin_iservice_cartridge']['cartridgeitems_id'] ?? '';
+        $installDate        = $input['_cartridge_installation_date'] ?? '';
+        $imposedCartridgeId = $input['_cartridge_id'] ?? null;
 
         $cartridgeItemData = explode('l', $cartridgeitemsId, 2);
         $cartridgeItemId   = $cartridgeItemData[0];
@@ -672,12 +672,12 @@ class PluginIserviceTicket extends Ticket
         return !empty($post['_plugin_iservice_cartridge']['cartridgeitems_id']);
     }
 
-    public function removeCartridge($ticketId, $post): bool
+    public function removeCartridge($ticketId, $input): bool
     {
         $this->check($ticketId, UPDATE);
-
-        $supplierId = IserviceToolBox::getInputVariable('suppliers_id');
-        $printerId  = IserviceToolBox::getInputVariable('printer_id');
+        
+        $supplierId = $input['suppliers_id'] ?? null;
+        $printerId  = $input['printer_id'] ?? null;
 
         if (!$this->getFromDB($ticketId)) {
             return false;
@@ -685,21 +685,21 @@ class PluginIserviceTicket extends Ticket
 
         $success = true;
 
-        if ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, false)->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
+        if ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, false)->customfields->fields['effective_date_field'] ?? '') > $input['effective_date_field']) {
             $success = false;
             Session::addMessageAfterRedirect('Nu puteți șterge cartușe cât timp există un tichet închis mai nou', false, WARNING);
-        } elseif ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id')->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
+        } elseif ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id')->customfields->fields['effective_date_field'] ?? '') > $input['effective_date_field']) {
             $success = false;
             Session::addMessageAfterRedirect('Nu puteți șterge cartușe cât timp există un tichet mai nou cu cartușe.', false, WARNING);
         }
 
         if (!$success) {
             // Do nothing in particular if no success so far but check if there is a selected cartridge.
-        } elseif (!empty($post['_plugin_iservice_cartridges_tickets']) && is_array($post['_plugin_iservice_cartridges_tickets'])) {
+        } elseif (!empty($input['_plugin_iservice_cartridges_tickets']) && is_array($input['_plugin_iservice_cartridges_tickets'])) {
             $cartridge                       = new PluginIserviceCartridge();
             $pluginIserviceCartridgesTickets = new PluginIserviceCartridge_Ticket();
-            foreach (array_keys($post['_plugin_iservice_cartridges_tickets']) as $idToDelete) {
-                if ($post['_plugin_iservice_cartridges_tickets'][$idToDelete] === '0' || !$pluginIserviceCartridgesTickets->getFromDB($idToDelete)) {
+            foreach (array_keys($input['_plugin_iservice_cartridges_tickets']) as $idToDelete) {
+                if ($input['_plugin_iservice_cartridges_tickets'][$idToDelete] === '0' || !$pluginIserviceCartridgesTickets->getFromDB($idToDelete)) {
                     continue;
                 }
 
