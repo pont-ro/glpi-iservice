@@ -29,14 +29,6 @@ if (!empty($post)) {
     $post = PluginIserviceTicket::preProcessPostData($post);
 }
 
-$post = array_merge(
-    $post,
-    [
-        'suppliers_id' => IserviceToolBox::getInputVariable('suppliers_id'),
-        'printer_id' => IserviceToolBox::getInputVariable('printer_id'),
-    ]
-);
-
 if ($id > 0) {
     $header_title = Ticket::getTypeName();
 } else {
@@ -67,6 +59,11 @@ if (!empty($add)) {
     Html::redirect($ticket->getFormURL() . '?mode=9999&id=' . $id);
 }
 
+$partnerPrinterIds = [
+    'suppliers_id' => IserviceToolBox::getInputVariable('suppliers_id'),
+    'printer_id' => IserviceToolBox::getInputVariable('printer_id'),
+];
+
 if (!empty($addConsumable) && !empty($id)) {
     $ticket->addConsumable($id, $post);
 } elseif (!empty($removeConsumable) && !empty($id)) {
@@ -74,12 +71,12 @@ if (!empty($addConsumable) && !empty($id)) {
 } elseif (!empty($updateConsumable) && !empty($id)) {
     $ticket->updateConsumable($id, $post);
 } elseif (!empty($addCartridge) && !empty($id)) {
-    $ticket->addCartridge($id, $post, $errorMessage);
+    $ticket->addCartridge($id, array_merge($post, $partnerPrinterIds), $errorMessage);
     Session::addMessageAfterRedirect($errorMessage, false, ERROR);
 } elseif (!empty($removeCartridge) && !empty($id)) {
-    $ticket->removeCartridge($id, $post);
+    $ticket->removeCartridge($id, array_merge($post, $partnerPrinterIds));
 } elseif (!empty($updateCartridge) && !empty($id)) {
-    $ticket->updateCartridge($id, $post);
+    $ticket->updateCartridge($id, array_merge($post, $partnerPrinterIds));
 }
 
 Html::header($header_title);
