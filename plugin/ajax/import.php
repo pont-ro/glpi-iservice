@@ -35,6 +35,7 @@ function processItemData(array $oldItemData, array $importConfig, array &$foreig
 {
     $result = $oldItemData;
 
+    removeAutomaticallyCalculatedFields($importConfig);
     $result = mapFields($result, $importConfig['fieldMap'] ?? []);
     $result = changeEmptyStringToNull($result, $importConfig['fieldMap'] ?? []);
     $result = forceValues($result, $importConfig['forceValues'] ?? []);
@@ -59,6 +60,18 @@ function processItemData(array $oldItemData, array $importConfig, array &$foreig
     }
 
     return escapeValues($result);
+}
+
+function removeAutomaticallyCalculatedFields(array &$importConfig): void
+{
+    if (!empty($importConfig['fieldMap'])) {
+        // Fields that have 'as' key in fieldMap should be removed. Such fields are automatically calculated.
+        foreach ($importConfig['fieldMap'] as $key => $value) {
+            if (isset($value['as'])) {
+                unset($importConfig['fieldMap'][$key]);
+            }
+        }
+    }
 }
 
 function mapFields(array $input, array $fieldMap): array
