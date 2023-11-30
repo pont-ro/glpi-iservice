@@ -951,7 +951,11 @@ msgstr "Selectați un cartuș"
 msgid "Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket."
 msgstr "Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet."
 
+msgid "Notice"
+msgstr "Aviz"
 
+msgid "Pending"
+msgstr "In lucrare"
 
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."

@@ -7,15 +7,22 @@ require "../inc/includes.php";
 Session::checkLoginUser();
 $ticket = new PluginIserviceTicket();
 
-$id               = IserviceToolBox::getInputVariable('id', 0);
-$add              = IserviceToolBox::getInputVariable('add');
-$update           = IserviceToolBox::getInputVariable('update');
-$addConsumable    = IserviceToolBox::getInputVariable('add_consumable');
-$removeConsumable = IserviceToolBox::getInputVariable('remove_consumable');
-$updateConsumable = IserviceToolBox::getInputVariable('update_consumable');
-$addCartridge     = IserviceToolBox::getInputVariable('add_cartridge');
-$removeCartridge  = IserviceToolBox::getInputVariable('remove_cartridge');
-$updateCartridge  = IserviceToolBox::getInputVariable('update_cartridge');
+global $CFG_PLUGIN_ISERVICE;
+$id     = IserviceToolBox::getInputVariable('id', 0);
+$add    = IserviceToolBox::getInputVariable('add');
+$update = IserviceToolBox::getInputVariable('update');
+
+if (($addConsumable = IserviceToolBox::getInputVariable('add_consumable'))
+    ||($removeConsumable = IserviceToolBox::getInputVariable('remove_consumable'))
+    || ($updateConsumable = IserviceToolBox::getInputVariable('update_consumable'))
+    || ($addCartridge     = IserviceToolBox::getInputVariable('add_cartridge'))
+    || ($removeCartridge  = IserviceToolBox::getInputVariable('remove_cartridge'))
+    || ($updateCartridge  = IserviceToolBox::getInputVariable('update_cartridge'))
+    || ($export = IserviceToolBox::getInputVariable('export'))
+) {
+    $update                      = true;
+    $noRedirectAfterTicketUpdate = true;
+}
 
 $post                 = filter_input_array(INPUT_POST);
 $get                  = filter_input_array(INPUT_GET);
@@ -46,17 +53,15 @@ if (!empty($add)) {
         Html::back();
     }
 
-    $ticket->updateItem($ticketId, $post);
+    $ticket->updateItem($ticketId, $post, true);
 
     Html::redirect($ticket->getFormURL() . '?mode=' . PluginIserviceTicket::MODE_CLOSE . '&id=' . $ticketId);
 } elseif (!empty($update)) {
-    $ticket->check($id, UPDATE, $post);
-
-    $ticket->update($post);
-
     $ticket->updateItem($id, $post);
 
-    Html::redirect($ticket->getFormURL() . '?mode=9999&id=' . $id);
+    if (empty($noRedirectAfterTicketUpdate)) {
+        Html::redirect($ticket->getFormURL() . '?mode=' . PluginIserviceTicket::MODE_CLOSE . '&id=' . $id);
+    }
 }
 
 $partnerPrinterIds = [
@@ -77,6 +82,8 @@ if (!empty($addConsumable) && !empty($id)) {
     $ticket->removeCartridge($id, array_merge($post, $partnerPrinterIds));
 } elseif (!empty($updateCartridge) && !empty($id)) {
     $ticket->updateCartridge($id, array_merge($post, $partnerPrinterIds));
+} elseif (!empty($export)) {
+    Html::redirect($CFG_PLUGIN_ISERVICE['root_doc'] . "/front/hmarfaexport.form.php?id=$id&mode=" . PluginIserviceHmarfa::EXPORT_MODE_TICKET);
 }
 
 Html::header($header_title);

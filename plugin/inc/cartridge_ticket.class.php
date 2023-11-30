@@ -777,7 +777,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
     public static function getForTicketId($ticket_id, $limit = null): array
     {
         $cartridge_ticket = new self();
-        return $cartridge_ticket->find("tickets_id = $ticket_id", [], $limit);
+        return $cartridge_ticket->find(['tickets_id' => '$ticket_id'], [], $limit);
     }
 
     public static function installWithType($ticketId, $cartridgeId, $typeId, $emptiedCartridgeId, $printerId, $supplierId, $locationId, $total2Black, $total2Color, $installTime): string|int

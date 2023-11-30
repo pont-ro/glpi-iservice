@@ -52,7 +52,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
     public function getForTicket($id): array|bool
     {
-        $query       = "SELECT ct.*, c.Denumire, c.cartridgeitem_name FROM " . $this->getTable() . " ct LEFT JOIN glpi_plugin_iservice_consumables c ON c.id = ct.plugin_iservice_consumables_id WHERE " . self::$items_id_1 . " = $id ORDER BY id";
+        $query       = "SELECT ct.*, c.denumire, c.cartridgeitem_name FROM " . $this->getTable() . " ct LEFT JOIN glpi_plugin_iservice_consumables c ON c.id = ct.plugin_iservice_consumables_id WHERE " . self::$items_id_1 . " = $id ORDER BY id";
         $result_data = PluginIserviceDB::getQueryResult($query);
         return empty($result_data) ? false : $result_data;
     }

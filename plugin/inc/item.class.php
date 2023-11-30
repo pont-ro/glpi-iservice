@@ -120,7 +120,11 @@ trait PluginIserviceItem
 
     public function loadOrCreateCustomFields($ID): bool
     {
-        $this->customfields = new ($this->getCustomFieldsModelName());
+        if (empty($customFieldsModelName = $this->getCustomFieldsModelName())) {
+            return false;
+        }
+
+        $this->customfields = new $customFieldsModelName;
 
         if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID)
             && !$this->customfields->add(

@@ -482,7 +482,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
     {
         $cartridge_item_ids    = [];
         $cartridge_customfield = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
-        foreach ($cartridge_customfield->find("mercury_code_field = '$mercury_code'") as $ccf) {
+        foreach ($cartridge_customfield->find(['mercury_code_field' => '$mercury_code']) as $ccf) {
             $cartridge_item_ids[] = $ccf['items_id'];
         }
 

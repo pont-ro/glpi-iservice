@@ -60,7 +60,7 @@ class StockLots extends View
                       l.nrtran AS Nr_receptie
                     , t.dataint AS Data_Receptie
                     , codmat AS Cod_Articol
-                    , n.denum AS Denumire
+                    , n.denum AS denumire
                     , l.gest AS Gest
                     , tipgest AS Tip_Gest
                     , l.grupa AS Grupa

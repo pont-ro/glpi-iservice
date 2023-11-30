@@ -44,6 +44,9 @@ class PluginIserviceTicket extends Ticket
 
     public $printer = null;
 
+    const EXPORT_TYPE_NOTICE_ID  = 1;
+    const EXPORT_TYPE_INVOICE_ID = 2;
+
     public static function getFormModeUrl($mode): string
     {
         switch ($mode) {
@@ -488,6 +491,11 @@ class PluginIserviceTicket extends Ticket
             if (!empty($this->printer->fields['printermodels_id'])) {
                 $templateParams['changeablesTableData']['cartridgeLink'] = "view.php?view=cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}";
             }
+
+            $templateParams['exportTypeOptions'] = [
+                self::EXPORT_TYPE_NOTICE_ID => __('Notice', 'iservice'),
+                self::EXPORT_TYPE_INVOICE_ID => _n('Invoice', 'Invoices', 1, 'iservice'),
+            ];
         }
 
         $templateParams['submitButtons'] = $this->getButtonsConfig($options);
@@ -936,8 +944,12 @@ class PluginIserviceTicket extends Ticket
         return self::wasTicketClosing($ticket) xor self::wasTicketClosed($ticket);
     }
 
-    public function updateItem($ticketId, $post): void
+    public function updateItem($ticketId, $post, $add = false): void
     {
+        if (!$add) {
+            $this->check($ticketId, UPDATE, $post);
+            $this->update($post);
+        }
 
         $this->addPartner($ticketId, $post);
 
@@ -1226,6 +1238,10 @@ class PluginIserviceTicket extends Ticket
             $post['cartridge_install_date_field'] = $post['_cartridge_installation_date'];
         }
 
+        if (isset($post['_export_type'])) {
+            $post['plugin_fields_ticketexporttypedropdowns_id'] = $post['_export_type'];
+        }
+
         return $post;
     }
 
@@ -1293,7 +1309,7 @@ class PluginIserviceTicket extends Ticket
             $plugin_iservice_consumable_ticket_data                     = $post['_plugin_iservice_consumable'];
             $plugin_iservice_consumable_ticket_data['tickets_id']       = $ticketId;
             $create_cartridge                                           = in_array($plugin_iservice_consumable_ticket_data['plugin_iservice_consumables_id'], PluginIserviceConsumable_Ticket::getCompatibleCartridges(IserviceToolBox::getValueFromInput('suppliers_id', $post), IserviceToolBox::getValueFromInput('printer_id', $post)));
-             $create_cartridge                                         &= $post['_export_type'] === 'aviz' || $plugin_iservice_consumable_ticket_data['amount'] < 0;
+             $create_cartridge                                         &= self::isInvoice($post['_export_type']) || $plugin_iservice_consumable_ticket_data['amount'] < 0;
             $plugin_iservice_consumable_ticket_data['create_cartridge'] = $create_cartridge;
             $cartridgeitem                                              = new PluginIserviceCartridgeItem();
             if ($cartridgeitem->getFromDBByRef($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
@@ -1304,6 +1320,16 @@ class PluginIserviceTicket extends Ticket
         } else {
             Session::addMessageAfterRedirect('Selectați un consumabil / o piesă', false, ERROR);
         }
+    }
+
+    public static function isInvoice($value): bool
+    {
+        return self::EXPORT_TYPE_INVOICE_ID === $value;
+    }
+
+    public static function isNotice($value): bool
+    {
+        return self::EXPORT_TYPE_NOTICE_ID === $value;
     }
 
     public function removeConsumable($ticketId, $post): void

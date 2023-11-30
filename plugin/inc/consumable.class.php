@@ -24,6 +24,15 @@ class PluginIserviceConsumable extends CommonDBTM
         return $result && $this->getPrice() && $this->getMinimumStock();
     }
 
+    public function getID()
+    {
+
+        if (isset($this->fields[static::getIndexName()])) {
+            return $this->fields[static::getIndexName()];
+        }
+        return -1;
+    }
+
     public function getPrice(): bool
     {
         global $DB;

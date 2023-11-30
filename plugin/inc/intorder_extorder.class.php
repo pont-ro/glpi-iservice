@@ -71,7 +71,7 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
             return false;
         }
 
-        $sql = "SELECT ie.id idd, i.*, c.id consumable_code, c.Denumire consumable_name
+        $sql = "SELECT ie.id idd, i.*, c.id consumable_code, c.denumire consumable_name
             FROM `glpi_plugin_iservice_intorders_extorders` ie
 						LEFT JOIN `glpi_plugin_iservice_intorders` i on i.id = ie.plugin_iservice_intorders_id
 						LEFT JOIN `glpi_plugin_iservice_consumables` c on c.id = i.plugin_iservice_consumables_id
@@ -95,7 +95,7 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
             return false;
         }
 
-        $sql = "SELECT ie.id idd, ie.plugin_iservice_extorders_id extorder_id, i.*, c.id consumable_code, c.Denumire consumable_name
+        $sql = "SELECT ie.id idd, ie.plugin_iservice_extorders_id extorder_id, i.*, c.id consumable_code, c.denumire consumable_name
             FROM `glpi_plugin_iservice_intorders_extorders` ie
 						LEFT JOIN `glpi_plugin_iservice_intorders` i on i.id = ie.plugin_iservice_intorders_id
 						LEFT JOIN `glpi_plugin_iservice_consumables` c on c.id = i.plugin_iservice_consumables_id
@@ -113,7 +113,7 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
         return $intorders;
     }
 
-    static function showForExtOrder(PluginIserviceExtOrder $ext_order, $generate_form = true, $readonly = false)
+    public static function showForExtOrder(PluginIserviceExtOrder $ext_order, $generate_form = true, $readonly = false)
     {
         $id = $ext_order->getID();
 
