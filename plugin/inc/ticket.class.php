@@ -42,9 +42,11 @@ class PluginIserviceTicket extends Ticket
     protected static $itil_categories      = null;
     protected static $installed_cartridges = [];
 
-    public $printer = null;
+    public static $customFieldsModelName = 'PluginFieldsTicketticketcustomfield';
 
-    const EXPORT_TYPE_NOTICE_ID  = 1;
+    public $printer             = null;
+    const EXPORT_TYPE_NOTICE_ID = 1;
+
     const EXPORT_TYPE_INVOICE_ID = 2;
 
     public static function getFormModeUrl($mode): string
@@ -123,6 +125,7 @@ class PluginIserviceTicket extends Ticket
     /*
      * @return PluginIservicePrinter
      */
+
     public function getFirstPrinter($printerId = null): PluginIservicePrinter
     {
         $item_ticket = new Item_Ticket();
@@ -206,6 +209,7 @@ class PluginIserviceTicket extends Ticket
     /*
      * @return PluginIservicePartner
      */
+
     public function getFirstAssignedPartner(): PluginIservicePartner
     {
         if ($this->getID() > 0) {
@@ -225,6 +229,7 @@ class PluginIserviceTicket extends Ticket
     /*
      * @return PluginIserviceUser
      */
+
     public function getFirstAssignedUser(): PluginIserviceUser
     {
         $this->reloadActors();
@@ -517,11 +522,6 @@ class PluginIserviceTicket extends Ticket
     public function additionalGetFromDbSteps($ID = null): void
     {
         $this->fields['items_id']['Printer'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsTicketticketcustomfield';
     }
 
     /*
@@ -1327,9 +1327,19 @@ class PluginIserviceTicket extends Ticket
         return self::EXPORT_TYPE_INVOICE_ID === $value;
     }
 
+    public function isExportTypeInvoice(): bool
+    {
+        return self::isInvoice($this->fields['plugin_fields_ticketexporttypedropdowns_id'] ?? '');
+    }
+
     public static function isNotice($value): bool
     {
         return self::EXPORT_TYPE_NOTICE_ID === $value;
+    }
+
+    public function isExportTypeNotice(): bool
+    {
+        return self::isNotice($this->fields['plugin_fields_ticketexporttypedropdowns_id'] ?? '');
     }
 
     public function removeConsumable($ticketId, $post): void

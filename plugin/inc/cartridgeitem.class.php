@@ -22,6 +22,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
      */
     public $customfields = null;
 
+    public static $customFieldsModelName =  'PluginFieldsCartridgeitemcartridgeitemcustomfield';
+
     public function getSupportedTypes(): array
     {
         $customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
@@ -487,11 +489,6 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         }
 
         return $cartridge_item_ids;
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsCartridgeitemcartridgeitemcustomfield';
     }
 
 }

@@ -13,23 +13,25 @@ class PluginIservicePartner extends Supplier
 
     const ID_EXPERTLINE = 525;
 
-    const INVOICEINFO_FULL_UNPAID  = -2;
-    const INVOICEINFO_FULL         = -1;
-    const INVOICEINFO_DEBT         = 0;
-    const INVOICEINFO_UNPAID_COUNT = 1;
+    const INVOICEINFO_FULL_UNPAID        = -2;
+    const INVOICEINFO_FULL               = -1;
+    const INVOICEINFO_DEBT               = 0;
+    public static $customFieldsModelName = 'PluginFieldsSuppliersuppliercustomfield';
 
+    const INVOICEINFO_UNPAID_COUNT = 1;
     /*
      *
      *
      * @var PluginFieldsSuppliersuppliercustomfield
      */
-    public $customfields = null;
 
+    public $customfields = null;
     /*
      *
      *
      * @var array
      */
+
     public $hMarfa_fields = null;
 
     public static function getType(): string
@@ -50,11 +52,6 @@ class PluginIservicePartner extends Supplier
     public function additionalGetFromDbSteps($ID = null): void
     {
         $this->hMarfa_fields = self::gethMarfaFields($this->customfields->fields['hmarfa_code_field']);
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsSuppliersuppliercustomfield';
     }
 
     public function hasCartridgeManagement(): bool

@@ -1125,7 +1125,7 @@ class PluginIserviceHmarfa
         $export_file_name             = "$export_file_name_base.$safe_export_file_name_suffix.{$partner->getID()}.csv";
 
         // S039-M.
-        if (PluginIserviceTicket::isNotice($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id']) && !empty($printer)) {
+        if ($ticket->isExportTypeNotice() && !empty($printer)) {
             $contract_item  = new Contract_Item();
             $contract_items = $contract_item->find(['itemtype' => 'Printer', 'items_id' => $printer->getId()]);
             $contract       = new PluginIserviceContract();
@@ -1158,7 +1158,7 @@ class PluginIserviceHmarfa
 
             $consumable = new PluginIserviceConsumable();
             $consumable->getFromDB($ticket_consumable['Cod_Articol']);
-            $consumable_description                                            = IserviceToolBox::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? (PluginIserviceTicket::isNotice($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id']) ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
+            $consumable_description                                            = IserviceToolBox::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? ($ticket->isExportTypeNotice() ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
             $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']] = $consumable_description;
             $ticket_consumable['Descriere']                                    = $consumable->fields['denumire'] . "<br>" . $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, "consumable_description_$ticket_consumable[Cod_Articol]", $consumable_description, false, ['style' => 'height:2.5em;']);
             $ticket_consumable['Cant']                                         = number_format($ticket_consumable['amount'], 2, '.', '');
