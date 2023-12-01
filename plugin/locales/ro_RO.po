@@ -418,7 +418,7 @@ msgstr ""
 
 #: inc/hmarfa.class.php:861
 msgid "Ticket has an invalid export type"
-msgstr "Tiche"
+msgstr "Tichetul are tip export invalid"
 
 #: inc/hmarfa.class.php:867
 msgid "Ticket has no consumables"
