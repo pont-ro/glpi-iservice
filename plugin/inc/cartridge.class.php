@@ -16,6 +16,8 @@ class PluginIserviceCartridge extends Cartridge
      */
     public $customfields = null;
 
+    public static $customFieldsModelName = 'PluginFieldsCartridgecartridgecustomfield';
+
     public static function getEmptyablesByCartridgeDropdownElementsArray($cartridgeData, array $dropdownOptions = [])
     {
         if (!empty($dropdownOptions['readonly'])) {
@@ -71,11 +73,6 @@ class PluginIserviceCartridge extends Cartridge
             $printer_id,
             "AND c.plugin_fields_cartridgeitemtypedropdowns_id = $safe_type_id AND LOCATE(\"'$safe_mercury_code'\", ci.compatible_mercury_codes_field) > 0 $query_limit"
         );
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsCartridgecartridgecustomfield';
     }
 
 }

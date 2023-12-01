@@ -612,9 +612,6 @@ class PluginIserviceHmarfa
             $magic_link_button = "<span style='color: red'>CUI hMarfa si iService difera!<br>$part_cui != $cod_cui</span>";
         }
 
-        // } else {
-        // $magic_link = "<b>Nu exista</b>";
-        // }
         echo self::generateInputFieldRow($prefix, $magic_link_button, $magic_link_label);
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $enterprise->fields["name"], true), "Nume <a href='" . GLPI_ROOT . "/front/supplier.form.php?id={$enterprise->getID()}'>partener</a>:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printerLocation->fields["name"] ?? '', true), "Locatie:", 'se va folosi pentru managementul cartuselor');
@@ -920,11 +917,11 @@ class PluginIserviceHmarfa
         $ticket->check($id, READ); // This includes a getFromDB().
 
         $export_types = [
-            'factura' => [
+            PluginIserviceTicket::EXPORT_TYPE_INVOICE_ID => [
                 'doc_tip' => 'TFAC',
                 'file_prefix' => 'F',
             ],
-            'aviz' => [
+            PluginIserviceTicket::EXPORT_TYPE_NOTICE_ID => [
                 'doc_tip' => 'TAIM',
                 'file_prefix' => 'A',
             ],
@@ -1032,7 +1029,7 @@ class PluginIserviceHmarfa
 
         $default_sales_average_percent     = count($ticket_partner_sales_rows) == 0 ? 1.3 : number_format($total_gain / count($ticket_partner_sales_rows), 2, '.', '');
         $sales_average_percent             = IserviceToolBox::getInputVariable('sales_average_percent', $default_sales_average_percent);
-        $sales_average                     = __('Average percent', 'iservice') . ": " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'sales_average_percent', $sales_average_percent, false, ['style' => 'width:3em;']);
+        $sales_average                     = __('Average percent', 'iservice') . ": " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'sales_average_percent', $sales_average_percent, false, ['style' => 'width:4em;']);
         $ticket_partner_sales_average_cell = new PluginIserviceHtml_table_cell($sales_average, '', '', count($ticket_partner_sales_columns));
 
         $ticket_partner_sales_rows[] = new PluginIserviceHtml_table_row('tall', $ticket_partner_sales_average_cell, 'padding:1em;');
@@ -1128,9 +1125,9 @@ class PluginIserviceHmarfa
         $export_file_name             = "$export_file_name_base.$safe_export_file_name_suffix.{$partner->getID()}.csv";
 
         // S039-M.
-        if ($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'] === 'aviz' && !empty($printer)) {
+        if ($ticket->isExportTypeNotice() && !empty($printer)) {
             $contract_item  = new Contract_Item();
-            $contract_items = $contract_item->find("itemtype = 'Printer' and items_id = " . $printer->getId());
+            $contract_items = $contract_item->find(['itemtype' => 'Printer', 'items_id' => $printer->getId()]);
             $contract       = new PluginIserviceContract();
             if (count($contract_items) > 0) {
                 foreach ($contract_items as $item) {
@@ -1161,9 +1158,9 @@ class PluginIserviceHmarfa
 
             $consumable = new PluginIserviceConsumable();
             $consumable->getFromDB($ticket_consumable['Cod_Articol']);
-            $consumable_description                                            = IserviceToolBox::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? (($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'] == 'aviz') ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
+            $consumable_description                                            = IserviceToolBox::getInputVariable("consumable_description_$ticket_consumable[Cod_Articol]", empty($ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]) ? ($ticket->isExportTypeNotice() ? 'Livrat cu tichet ' . $ticket->fields['id'] : '') : $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']]);
             $ticket_consumable_descriptions[$ticket_consumable['Cod_Articol']] = $consumable_description;
-            $ticket_consumable['Descriere']                                    = $consumable->fields['Denumire'] . "<br>" . $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, "consumable_description_$ticket_consumable[Cod_Articol]", $consumable_description, false, ['style' => 'height:2.5em;']);
+            $ticket_consumable['Descriere']                                    = $consumable->fields['denumire'] . "<br>" . $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, "consumable_description_$ticket_consumable[Cod_Articol]", $consumable_description, false, ['style' => 'height:2.5em;']);
             $ticket_consumable['Cant']                                         = number_format($ticket_consumable['amount'], 2, '.', '');
             $consumable_history                                                = null;
             $gain                   = null;
@@ -1195,13 +1192,21 @@ class PluginIserviceHmarfa
             }
 
             // Final price.
-            $final_price                                                 = intval($agreed_price) == 0 ? $ticket_consumable['Pret_Rec'] : $agreed_price;
-            $final_final_price                                           = number_format(IserviceToolBox::getInputVariable("final_price_$ticket_consumable[Cod_Articol]", isset($ticket_consumable_prices[$ticket_consumable['Cod_Articol']]) ? $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] : $final_price), 2, '.', '');
+            $final_price = intval($agreed_price) == 0 ? $ticket_consumable['Pret_Rec'] : $agreed_price;
+            $final_price = isset($ticket_consumable_prices[$ticket_consumable['Cod_Articol']]) && $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] > 0 ? $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] : $final_price;
+
+            $final_final_price = number_format(IserviceToolBox::getInputVariable("final_price_$ticket_consumable[Cod_Articol]", $final_price), 2, '.', '');
+
             $ticket_consumable_prices[$ticket_consumable['Cod_Articol']] = $final_final_price;
-            $ticket_consumable['Pret_Vanz']                              = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "final_price_$ticket_consumable[Cod_Articol]", $final_final_price, false, ['style' => 'width:4em;']);
+            $ticket_consumable['Pret_Vanz']                              = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "final_price_$ticket_consumable[Cod_Articol]", $final_final_price, false, ['style' => 'width:6em;', 'class' => 'p-2']);
 
             $cartridge_ids = str_replace('|', '', $ticket_consumable['new_cartridge_ids']);
-            foreach ($cartridge->find("id in ($cartridge_ids) and not date_use is null") as $cartr) {
+            foreach ($cartridge->find(
+                [
+                    "id" => $cartridge_ids,
+                    'NOT' => ['date_use' => 'null'],
+                ]
+            ) as $cartr) {
                 $used_cartridges[$cartr['id']] = ['id' => $cartr['id'], 'ticket_use' => $cartr['tickets_id_use_field']];
             }
 
@@ -1237,7 +1242,7 @@ class PluginIserviceHmarfa
         }
 
         $vat                  = IserviceToolBox::getInputVariable('vat', 19);
-        $vatField             = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'vat', $vat, false, ['style' => 'width: 1.5em;']);
+        $vatField             = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'vat', $vat, false, ['style' => 'width: 3em;', 'class' => 'p-2']);
         $total_vat_value      = number_format($total_amount * $vat / 100, 2, '.', '');
         $total_value_with_vat = number_format($total_vat_value + $total_amount, 2, '.', '');
         $total_value          = number_format($total_amount, 2, '.', '');
@@ -1341,7 +1346,7 @@ class PluginIserviceHmarfa
 
         $action_buttons .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         if (Session::haveRight('plugin_iservice_ticket_hmarfa_export_close', CREATE)) {
-            $action_buttons .= '&nbsp;' . $form->generateSubmit('wait', __('Pending'), empty($wait_disabled_reason) ? [ 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }'] : ['class' => 'submit disabled', 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }', 'title' => $wait_disabled_reason]);
+            $action_buttons .= '&nbsp;' . $form->generateSubmit('wait', __('Pending', 'iservice'), empty($wait_disabled_reason) ? [ 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }'] : ['class' => 'submit disabled', 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }', 'title' => $wait_disabled_reason]);
             $action_buttons .= '&nbsp;' . $form->generateSubmit('finish', 'Finalizează', empty($export_disabled_reason) ? [ 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }'] : ['class' => 'submit disabled', 'onclick' => 'if ($(this).hasClass("disabled")) { return false; };', 'title' => $export_disabled_reason]);
         } else {
             $action_buttons .= '&nbsp;' . $form->generateSubmit('save', __('Save'));
@@ -1380,63 +1385,22 @@ class PluginIserviceHmarfa
         $datafiles_table .= "  </tr>";
         $datafiles_table .= "  <tr><td align='middle'>";
         $datafiles_table .=
-            "Istoric: <select id='backup_year' name='backup_year' style='width: 55px;' onchange='refreshHistoryData();'></select> " .
-            "<select id='backup_month' name='backup_month' style='width: 40px;' onchange='refreshHistoryData(true);'></select> " .
-            "<select id='backup_name' name='backup_name' style='width: 377px;'></select> " .
+            "Istoric: <select id='backup_year' name='backup_year' style='width: 75px;' class='p-2' onchange='refreshHistoryData();'></select> " .
+            "<select id='backup_month' name='backup_month' style='width: 75px;' class='p-2' onchange='refreshHistoryData(true);'></select> " .
+            "<select id='backup_name' name='backup_name' style='width: 377px;' class='p-2'></select> " .
             "<input class='submit' name='restore' type='submit' value='Restabilire'>";
         $datafiles_table .= "  </td></tr>";
         $datafiles_table .= "</table>";
 
-        $right_side_table = new PluginIserviceHtml_table(
-            'tab_cadre_fixe wide', $right_side_header, [
-                new PluginIserviceHtml_table_row('tall', $partner_email_table),
-                new PluginIserviceHtml_table_row('', $partner_info_table),
-                new PluginIserviceHtml_table_row('', $consumables_table),
-                new PluginIserviceHtml_table_row('tall', $otherCsvLineWarning, 'text-align:center;'),
-                new PluginIserviceHtml_table_row('tall', $action_buttons, 'text-align:center;'),
-                new PluginIserviceHtml_table_row('tall', [new PluginIserviceHtml_table_cell($datafiles_table, '', '', 2)])
-            ]
-        );
-
-        /*
-        * Left side *
-        */
-        // Invoice info.
-        $invoice_info_header = new PluginIserviceHtml_table_row('', new PluginIserviceHtml_table_cell(__('Invoice information', 'iservice'), '', '', 2, 1, 'th'));
-
         // Currency rate.
-        $invoice_currency_rate = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'currency_rate', $currency_rate, false, ['style' => 'width: 4em;']);
+        $invoice_currency_rate = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'currency_rate', $currency_rate, false, ['style' => 'width: 6em;']);
         if ($currency_error === null) {
             $invoice_currency_rate .= "&nbsp;&nbsp;<input type='button' name='refresh' class='submit' value='BNR: $official_currency->EuroCaNumar' onClick='document.getElementsByName(\"currency_rate\")[0].value=\"$official_currency->EuroCaNumar\";'>";
         } else {
             $invoice_currency_rate .= "&nbsp;&nbsp;<input type='button' name='refresh' class='submit' value='BNR: $currency_error'>";
         }
 
-        $invoice_info_rows[] = $form->generateFieldTableRow('Curs valutar', $invoice_currency_rate);
-
-        $invoice_info_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', $invoice_info_header, $invoice_info_rows);
-
-        // Ticket info.
-        ob_start();
-        $ticket->showForm($id, ['mode' => PluginIserviceTicket::MODE_HMARFAEXPORT, 'form' => false]);
-        $ticket_info_table = ob_get_contents();
-        ob_end_clean();
-
-        $left_side_table = new PluginIserviceHtml_table(
-            '', null, [
-                new PluginIserviceHtml_table_row('', $invoice_info_table),
-                new PluginIserviceHtml_table_row('', $ticket_info_table),
-            ]
-        );
-
-        $ticket_info_row = new PluginIserviceHtml_table_row(
-            '', [
-                new PluginIserviceHtml_table_cell($left_side_table, 'two-column border-spacing-2', 'padding:1%;vertical-align:top;width:34%;'),
-                new PluginIserviceHtml_table_cell($right_side_table, '', 'padding:1%;vertical-align:top;width:66%;')
-            ]
-        );
-
-        $full_ticket_export_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', null, [$ticket_info_row]);
+        $invoice_info_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', [$form->generateFieldTableRow('Curs valutar', $invoice_currency_rate)]);
 
         $form->openForm(
             [
@@ -1446,7 +1410,20 @@ class PluginIserviceHmarfa
                 'method' => 'post',
             ]
         );
-        echo $full_ticket_export_table;
+
+        $right_side_table = new PluginIserviceHtml_table(
+            'tab_cadre_fixe wide', $right_side_header, [
+                new PluginIserviceHtml_table_row('tall', $partner_email_table),
+                new PluginIserviceHtml_table_row('', $partner_info_table),
+                new PluginIserviceHtml_table_row('tall', $invoice_info_table),
+                new PluginIserviceHtml_table_row('', $consumables_table),
+                new PluginIserviceHtml_table_row('tall', $otherCsvLineWarning, 'text-align:center;'),
+                new PluginIserviceHtml_table_row('tall', $action_buttons, 'text-align:center;'),
+                new PluginIserviceHtml_table_row('tall', [new PluginIserviceHtml_table_cell($datafiles_table, '', '', 2)])
+            ]
+        );
+
+        echo $right_side_table;
         $form->closeForm();
 
         echo "<script>\n";

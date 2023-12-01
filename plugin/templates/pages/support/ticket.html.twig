@@ -91,14 +91,12 @@
 
                             {{ fields.dropdownArrayField(
                                 '_export_type',
-                                item.fields['_export_type'],
-                                {
-                                    '': '----',
-                                    'factura': 'Factură',
-                                    'aviz': 'Aviz',
-                                },
+                                item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
+                                exportTypeOptions,
                                 __('Export type', 'iservice'),
-                                field_options
+                                field_options|merge({
+                                    'display_emptychoice': true,
+                                })
                             ) }}
 
                             {% if consumablesTableData %}
@@ -111,7 +109,7 @@
                                     item.getID() > 0 ? item.customfields.fields['delivered_field'] : deliveredDefaultValue,
                                     __('Delivered', 'iservice'),
                                     field_options|merge({
-                                        'on_change': 'if ($(this).is(":not(:checked)")) { $("[name=update]").val(1); $(this).closest("form").append(\'<input type="hidden" name="update" value="1">\').attr("action", window.location.href).submit(); }'
+                                        'disabled': item.customfields.fields['exported_field']
                                     })
                                 ) }}
 
@@ -120,7 +118,7 @@
                                     item.customfields.fields['exported_field'],
                                     __('Exported in csv and imported in hMarfa', 'iservice'),
                                     field_options|merge({
-                                        'on_change': 'if ($(this).is(":not(:checked)")) { $("[name=update]").val(1); $(this).closest("form").append(\'<input type="hidden" name="update" value="1">\').attr("action", window.location.href).submit(); }'
+                                        'disabled': true,
                                     })
                                 ) }}
                             {%  endif %}

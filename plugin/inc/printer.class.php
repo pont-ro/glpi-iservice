@@ -21,19 +21,21 @@ class PluginIservicePrinter extends Printer
      */
     public $customfields = null;
 
+    public static $customFieldsModelName = 'PluginFieldsPrinterprintercustomfield';
     /*
      * @var bool
      */
+
     protected $has_cartridge_management = null;
-
     /*
      * @var PluginIserviceTicket
      */
+
     protected $last_ticket = null;
-
     /*
      * @var PluginIserviceTicket
      */
+
     protected $last_closed_ticket = null;
 
     public static function getTypeName($nb = 0): string
@@ -428,6 +430,7 @@ class PluginIservicePrinter extends Printer
      *
      * @return string
      */
+
     public function generateSupplierData($printer, $supplier, $supplier_customfields, $readonly): string
     {
         if ($supplier === null) {
@@ -695,11 +698,6 @@ class PluginIservicePrinter extends Printer
         }
 
         return '';
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsPrinterprintercustomfield';
     }
 
     public function getFromDBByEMSerial($serial, $use_cm_condition = false): bool

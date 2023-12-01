@@ -16,6 +16,8 @@ class PluginIserviceContract extends Contract
      */
     public $customfields = null;
 
+    public static $customFieldsModelName = 'PluginFieldsContractcontractcustomfield';
+
     public function showForm($ID, array $options = [])
     {
         $this->initForm($ID, $options);
@@ -36,11 +38,6 @@ class PluginIserviceContract extends Contract
     public function getTypeForeignKeyField(): ?string
     {
         return 'contracttypes_id';
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsContractcontractcustomfield';
     }
 
 }

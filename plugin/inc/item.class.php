@@ -120,7 +120,11 @@ trait PluginIserviceItem
 
     public function loadOrCreateCustomFields($ID): bool
     {
-        $this->customfields = new ($this->getCustomFieldsModelName());
+        if (empty(self::$customFieldsModelName)) {
+            return false;
+        }
+
+        $this->customfields = new self::$customFieldsModelName;
 
         if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID)
             && !$this->customfields->add(
@@ -136,11 +140,6 @@ trait PluginIserviceItem
         }
 
         return true;
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return '';
     }
 
     public function additionalGetFromDbSteps($ID = null): void

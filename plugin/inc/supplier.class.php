@@ -11,11 +11,7 @@ class PluginIserviceSupplier extends Supplier
     /*
      * @var PluginFieldsSuppliersuppliercustomfield
      */
-    public $customfields = null;
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsSuppliersuppliercustomfield';
-    }
+    public $customfields                 = null;
+    public static $customFieldsModelName = 'PluginFieldsSuppliersuppliercustomfield';
 
 }

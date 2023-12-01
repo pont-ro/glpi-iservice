@@ -107,7 +107,7 @@ class Intorders extends View
                     , ic.tickets_id ticket_id
                     , MAX(ioeo.plugin_iservice_extorders_id) extorder_id
                     , ic.plugin_iservice_consumables_id consumable_code
-                    , c.Denumire consumable_name
+                    , c.denumire consumable_name
                     , c.grupa consumable_grupa
                     , c.stoc consumable_stock
                     , ic.amount

@@ -22,6 +22,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
      */
     public $customfields = null;
 
+    public static $customFieldsModelName =  'PluginFieldsCartridgeitemcartridgeitemcustomfield';
+
     public function getSupportedTypes(): array
     {
         $customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
@@ -482,16 +484,11 @@ class PluginIserviceCartridgeItem extends CartridgeItem
     {
         $cartridge_item_ids    = [];
         $cartridge_customfield = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
-        foreach ($cartridge_customfield->find("mercury_code_field = '$mercury_code'") as $ccf) {
+        foreach ($cartridge_customfield->find(['mercury_code_field' => '$mercury_code']) as $ccf) {
             $cartridge_item_ids[] = $ccf['items_id'];
         }
 
         return $cartridge_item_ids;
-    }
-
-    public function getCustomFieldsModelName(): string
-    {
-        return 'PluginFieldsCartridgeitemcartridgeitemcustomfield';
     }
 
 }
