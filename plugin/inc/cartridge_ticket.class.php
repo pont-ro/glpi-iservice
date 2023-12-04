@@ -317,22 +317,26 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                             setTimeout(function() {                    
                                 addRecurrentCheck(function() {
                                     if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
-                                        $("[name=\\"add_cartridge\\"]").closest("form").attr("action", window.location.href).submit();
+                                        $("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]")
+                                            .append(\'<input name=\"add_cartridge\" value=\"1\">\')
+                                            .closest("form").attr("action", window.location.href).submit();
+                                        console.log("here");
                                         return true;
                                     }
                                     return false;
                                 });}, 1000);
                           </script>'
                 ];
-
-                $data['addItemsSection']['inputs']['addButton'] = [
-                    'order' => 2,
-                    'type'  => 'button',
-                    'name'  => 'add_cartridge',
-                    'class' => 'submit',
-                    'value' => empty($used_ids) ? __('Select', 'iservice') : _sx('button', 'Add'),
-                    'options' => [
-                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+            } else {
+                $message = $changeableDropdownSection['warning'] ?? '';
+//                $message = !empty($used) ? __('You have no more compatible cartridges', 'iservice') : __('You have no compatible cartridges', 'iservice');
+                $data['addItemsSection']['inputs']['changeableDropdown'] = [
+                    'order'         => 1,
+                    'type'          => 'textField',
+                    'value'         => $message,
+                    'options'       => [
+                        'disabled'  => true,
+                        'no_label'  => true,
                     ],
                 ];
             }
@@ -378,7 +382,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     ],
                     'name' => [
                         'value' => "$cartridge[id] - $cartridge[name] ($cartridge[location_completename])"
-                            . (!empty($cartridge['date_use']) ? " ". __('intalled on', 'iservice') . " $cartridge[date_use]" : '')
+                            . (!empty($cartridge['date_use']) ? " " . __('intalled on', 'iservice') . " $cartridge[date_use]" : '')
                             . (!empty($cartridge['date_out']) ? " " . __('emptied', 'iservice') . " $cartridge[date_out]" : ''),
                     ],
                     'mercurycode' => [

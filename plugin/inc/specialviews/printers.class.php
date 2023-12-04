@@ -17,8 +17,13 @@ use Ticket;
 
 class Printers extends View
 {
-    public static $rightname = 'plugin_iservice_view_printers';
+    public static $rightname                   = 'plugin_iservice_view_printers';
     protected $enable_emaintenance_data_import = true;
+
+    public static function getName(): string
+    {
+        return __('Printer list', 'iservice');
+    }
 
     public static function getTicketStatusDisplay($row_data): string
     {
@@ -362,7 +367,7 @@ class Printers extends View
         }
 
         return [
-            'name' => __('Printer list', 'iservice') . $contract_title,
+            'name' => self::getName() . $contract_title,
             'prefix' => "
                         <div class='printonly'>
                             <table style='width:40%;float:right;'><tr>

@@ -13,6 +13,11 @@ class Cartridges extends View
 {
     public static $rightname = 'plugin_iservice_view_cartridges';
 
+    public static function getName(): string
+    {
+        return _n('Cartridge', 'Cartridges', 1);
+    }
+
     public static function getRowBackgroundClass($row_data): string
     {
         if (!empty($row_data['date_out'])) {
@@ -75,7 +80,7 @@ class Cartridges extends View
             /**/
         ];
 
-        $out = "<div id='row_actions_$row_data[id]' class='actions'>$row_data[id] ";
+        $out = "<div id='row_actions_$row_data[id]' class='actions-wrap'>$row_data[id] ";
         foreach ($actions as $action) {
             if (!isset($action['visible']) || $action['visible']) {
                 if (isset($action['onclick']) && $action['onclick'] !== 'ajaxCall') {
@@ -259,7 +264,7 @@ class Cartridges extends View
         }
 
         $settings = [
-            'name' => _n('Cartridge', 'Cartridges', Session::getPluralNumber()),
+            'name' => self::getName(),
             'instant_display' => self::isRestrictedMode(),
             'query' => "
                         SELECT

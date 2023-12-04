@@ -52,14 +52,18 @@ class Operations extends View
                 'visible' => Session::haveRight('plugin_iservice_docgenerator', READ),
             ],
         ];
-        $out     = "<div class='actions'>";
+
+        $actionIcons      = '';
+        $actionIconsCount = 0;
         foreach ($actions as $action) {
             if (!isset($action['visible']) || $action['visible']) {
-                $out .= "<a href='$action[link]' target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                $actionIcons .= "<a href='$action[link]' target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                $actionIconsCount++;
             }
         }
 
-        $out .= "&nbsp;";
+        $out  = "<div class='actions' style='min-width: " . $actionIconsCount * 34 . "px;'>";
+        $out .= "$actionIcons&nbsp;";
         $out .= Ticket::getStatusIcon($row_data['status']);
         $out .= "</div>";
         return $out;
@@ -208,8 +212,8 @@ class Operations extends View
                 ],
                 'effective_date_field' => [
                     'title' => 'Data efectivă',
-                    'style' => 'white-space: nowrap;',
                     'default_sort' => 'DESC',
+                    'align' => 'center'
                 ],
                 'ticket_id' => [
                     'title' => 'Număr',

@@ -116,7 +116,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 'name'          => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
                 'used'          => array_keys($consumables),
                 'specific_tags' => ['transform_function' => "PluginIserviceConsumable_Ticket::TransformDropdownValue($suppliers_id, $items_id, %s)"],
-                'no_label' => true,
+                'no_label'      => true,
+                'on_change'     => "$(this).append('<input name=\"add_consumable\" value=\"1\">').closest('form').attr('action', window.location.href).submit();",
             ];
 
             $data['addConsumablesSection'] = [
@@ -153,21 +154,6 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                         'itemType' => 'PluginIserviceConsumable',
                         'name'     => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
                         'options'    => $consumables_selector_options,
-                    ],
-                    'addButton'              => [
-                        'no_label'      => true,
-                        'order'         => 5,
-                        'label'         => _sx('button', 'Add'),
-                        'type'          => 'button',
-                        'name'          => 'add_consumable',
-                        'value'         => _sx('button', 'Add'),
-                        'options'       => [
-                            'class' => 'submit',
-                            'data-required' => implode(',', array_keys(array_filter($required_fields))) . ",_export_type",
-                            'on_click' => "$(this).closest('form').attr('action', window.location.href).submit();",
-                            'buttonClass'     => 'btn-primary me-2',
-                            'buttonIconClass' => 'fas fa-plus',
-                        ],
                     ],
                 ],
             ];
@@ -241,12 +227,12 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             }
 
             $cartridgeCheckBoxSettings = [
-                'type' => 'checkbox',
+                'type' => 'checkboxExtended',
                 'name' => "_plugin_iservice_consumable_create_cartridges[$consumable[IDD]]",
                 'value' => $force_cartridge_creation === null ? $consumable['create_cartridge'] : $force_cartridge_creation,
-                'readonly' => $readonly || $force_cartridge_creation !== null,
                 'options' => [
                     'title' => $cartridge_creation_title,
+                    'disabled' => $readonly || $force_cartridge_creation !== null,
                     'onchange' => 'consumablesChanged = true;',
                     'options' => [
                         'no_label' => true,
