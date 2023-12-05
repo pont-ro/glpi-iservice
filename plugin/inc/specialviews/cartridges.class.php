@@ -15,7 +15,7 @@ class Cartridges extends View
 
     public static function getName(): string
     {
-        return _n('Cartridge', 'Cartridges', 1);
+        return _n('Cartridge', 'Cartridges', Session::getPluralNumber());
     }
 
     public static function getRowBackgroundClass($row_data): string

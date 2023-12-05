@@ -117,7 +117,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 'used'          => array_keys($consumables),
                 'specific_tags' => ['transform_function' => "PluginIserviceConsumable_Ticket::TransformDropdownValue($suppliers_id, $items_id, %s)"],
                 'no_label'      => true,
-                'on_change'     => "$(this).append('<input name=\"add_consumable\" value=\"1\">').closest('form').attr('action', window.location.href).submit();",
+                'on_change'     => "$(this).append('<input type=\"hidden\" name=\"add_consumable\" value=\"1\">').closest('form').submit();",
             ];
 
             $data['addConsumablesSection'] = [
@@ -374,7 +374,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                         'options' => [
                             'class'         => 'submit',
                             'data-required' => implode(',', array_keys(array_filter($required_fields))),
-                            'on_click' => "$(this).closest('form').attr('action', window.location.href).submit();",
+                            'on_click' => "$(this).closest('form').submit();",
                             'buttonClass'     => 'btn-primary me-2',
                             'buttonIconClass' => 'far fa-save',
                         ],
@@ -390,7 +390,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                         'options'         => [
                             'class'         => 'submit',
                             'data-required' => implode(',', array_keys(array_filter($required_fields))),
-                            'on_click' => "$(this).closest('form').attr('action', window.location.href).submit();",
+                            'on_click' => "$(this).closest('form').submit();",
                             'buttonClass'     => 'btn-outline-warning me-2',
                             'buttonIconClass' => 'ti ti-trash',
                         ],

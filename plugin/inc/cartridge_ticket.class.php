@@ -318,8 +318,8 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                                 addRecurrentCheck(function() {
                                     if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
                                         $("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]")
-                                            .append(\'<input name=\"add_cartridge\" value=\"1\">\')
-                                            .closest("form").attr("action", window.location.href).submit();
+                                            .append(\'<input type=\"hidden\" name=\"add_cartridge\" value=\"1\">\')
+                                            .closest("form").submit();
                                         console.log("here");
                                         return true;
                                     }
@@ -328,12 +328,10 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                           </script>'
                 ];
             } else {
-                $message = $changeableDropdownSection['warning'] ?? '';
-//                $message = !empty($used) ? __('You have no more compatible cartridges', 'iservice') : __('You have no compatible cartridges', 'iservice');
                 $data['addItemsSection']['inputs']['changeableDropdown'] = [
                     'order'         => 1,
                     'type'          => 'textField',
-                    'value'         => $message,
+                    'value'         => $changeableDropdownSection['warning'] ?? '',
                     'options'       => [
                         'disabled'  => true,
                         'no_label'  => true,
@@ -423,7 +421,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                         'value' => $cartridge['selected_type_id'],
                         'options' => [
                             'condition' => ['id in (' . implode(',', $supported_types) . ')'],
-                            'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                            'on_click' => '$(this).closest("form").submit();',
                         ],
                     ],
                 ];
@@ -489,7 +487,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'options' => [
                         'buttonClass' => 'btn-outline-warning m-2',
                         'buttonIconClass' => 'ti ti-trash',
-                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                        'on_click' => '$(this).closest("form").submit();',
                     ],
                 ],
             ],
@@ -503,7 +501,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'options' => [
                         'buttonClass' => 'btn-primary m-2',
                         'buttonIconClass' => 'far fa-save',
-                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                        'on_click' => '$(this).closest("form").submit();',
                     ],
                 ],
             ],
