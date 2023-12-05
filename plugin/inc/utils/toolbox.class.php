@@ -253,4 +253,23 @@ class ToolBox
         return strip_tags($string, $allowedTags ?? ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>']);
     }
 
+    public static function unlinkRecursively($filePath): void
+    {
+
+        if (is_file($filePath)) {
+            unlink($filePath);
+        }
+
+        if (is_dir($filePath)) {
+            $objects = scandir($filePath);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    self::unlinkRecursively($filePath . '/' . $object);
+                }
+            }
+
+            rmdir($filePath);
+        }
+    }
+
 }

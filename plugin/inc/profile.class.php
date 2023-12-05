@@ -109,6 +109,11 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_contract' => array_merge(right_array(READ, $level20_profiles), right_array(ALLSTANDARDRIGHT, $level30_profiles)),
         ];
 
+        // Temp solution for super-admin. TODO: confirm with hupu
+        if ($_SESSION['glpiactiveprofile']['name'] == 'super-admin') {
+            $_SESSION['glpiactiveprofile']['plugin_iservice_admintask_Backup'] = ALLSTANDARDRIGHT;
+        }
+
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);
         foreach ($profile_rights as $right => $profiles) {
             if (isset($profiles[$current_profile])) {

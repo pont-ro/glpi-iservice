@@ -1,0 +1,5 @@
+<form id="backup-task" method="post">
+    <input id="restore" name="restore" type="hidden" value="">
+    {{ restoreList|raw }}
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+</form>
