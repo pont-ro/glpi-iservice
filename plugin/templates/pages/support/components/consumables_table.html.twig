@@ -11,14 +11,18 @@
                 <table class="table">
                     <tr>
                         {% for input in consumablesTableData.addConsumablesSection.inputs|sort((a, b) => a.order - b.order) %}
+                            {% if input.type != 'hidden' %}
                             <td class="align-bottom">
                                 {{ input.no_label ? '' : input.label }}
                             </td>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                     <tr class="{{ consumablesTableData.addConsumablesSection.class }}">
                         {% for input in consumablesTableData.addConsumablesSection.inputs|sort((a, b) => a.order - b.order) %}
+                            {% if input.type != 'hidden' %}
                             <td>
+                            {% endif %}
                                 {{ fieldsIservice.marcoCallHelper(
                                     input.type,
                                     input.name,
@@ -27,7 +31,9 @@
                                     field_options|merge(input.options ?? []),
                                     input.itemType
                                 ) }}
+                            {% if input.type != 'hidden' %}
                             </td>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 </table>

@@ -70,6 +70,8 @@
       {{ fields.textField(name, value, label, options) }}
    {% elseif type == 'checkbox' %}
       {{ fields.checkboxField(name, value, label, options) }}
+   {% elseif type == 'checkboxExtended' %}
+      {{ _self.checkboxFieldExtended(name, value, label, options) }}
    {% elseif type == 'customFormRow' %}
       {{ _self.customFormRow(label, value, options) }}
    {% elseif type == 'hidden' %}
@@ -117,7 +119,7 @@
    }|merge(options) %}
 
    {% set field %}
-      <input type="hidden"   name="{{ name }}" value="{{ options.disabled ? value : '' }}" />
+      <input type="hidden"   name="{{ name }}" value="{{ options.disabled ? value : 0 }}" />
       <input type="checkbox" name="{{ name }}" value="1" class="form-check-input" id="%id%"
               {{ value == 1 ? 'checked' : '' }}
               {{ options.readonly ? 'readonly' : '' }}

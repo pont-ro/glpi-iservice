@@ -131,6 +131,10 @@ div.actions {
     white-space: nowrap;
 }
 
+div.actions-wrap {
+    text-align: center;
+}
+
 .iservice-view-popup {
     border-radius: 3px;
     display: inline-block;
