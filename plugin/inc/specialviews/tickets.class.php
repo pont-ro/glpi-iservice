@@ -17,6 +17,11 @@ class Tickets extends View
 {
     public static $rightname = 'plugin_iservice_view_tickets';
 
+    public static function getName(): string
+    {
+        return __('Ticket list', 'iservice');
+    }
+
     public static function getTicketStatusDisplay($row_data): string
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
@@ -279,7 +284,7 @@ class Tickets extends View
         }
 
         return [
-            'name' => __('Ticket list', 'iservice'),
+            'name' => self::getName(),
             'prefix' => $prefix,
             'query' => "
                         SELECT
@@ -368,7 +373,7 @@ class Tickets extends View
                         GROUP BY t.id
                         ",
             'default_limit' => self::inProfileArray('subtehnician', 'superclient', 'client') ? 20 : 30,
-            'show_limit' => 'ajax', //!self::inProfileArray('subtehnician', 'superclient', 'client'),
+            'show_limit' => 'ajax', // !self::inProfileArray('subtehnician', 'superclient', 'client'),
             'filters' => [
                 'printer_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,

@@ -437,6 +437,8 @@ class PluginIserviceTicket extends Ticket
         $prepared_data['field_required'] = [];
         $closed                          = $this->isClosed();
 
+        $options['target'] = $options['target'] ?? '';
+
         $templateParams = [
             'item'                    => $this,
             'params'                  => $options,
@@ -1309,7 +1311,7 @@ class PluginIserviceTicket extends Ticket
             $plugin_iservice_consumable_ticket_data                     = $post['_plugin_iservice_consumable'];
             $plugin_iservice_consumable_ticket_data['tickets_id']       = $ticketId;
             $create_cartridge                                           = in_array($plugin_iservice_consumable_ticket_data['plugin_iservice_consumables_id'], PluginIserviceConsumable_Ticket::getCompatibleCartridges(IserviceToolBox::getValueFromInput('suppliers_id', $post), IserviceToolBox::getValueFromInput('printer_id', $post)));
-             $create_cartridge                                         &= self::isInvoice($post['_export_type']) || $plugin_iservice_consumable_ticket_data['amount'] < 0;
+             $create_cartridge                                         &= self::isNotice(intval($post['_export_type'])) || $plugin_iservice_consumable_ticket_data['amount'] < 0;
             $plugin_iservice_consumable_ticket_data['create_cartridge'] = $create_cartridge;
             $cartridgeitem                                              = new PluginIserviceCartridgeItem();
             if ($cartridgeitem->getFromDBByRef($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {

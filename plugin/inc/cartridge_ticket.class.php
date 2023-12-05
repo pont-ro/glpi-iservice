@@ -317,22 +317,24 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                             setTimeout(function() {                    
                                 addRecurrentCheck(function() {
                                     if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
-                                        $("[name=\\"add_cartridge\\"]").closest("form").attr("action", window.location.href).submit();
+                                        $("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]")
+                                            .append(\'<input type=\"hidden\" name=\"add_cartridge\" value=\"1\">\')
+                                            .closest("form").submit();
+                                        console.log("here");
                                         return true;
                                     }
                                     return false;
                                 });}, 1000);
                           </script>'
                 ];
-
-                $data['addItemsSection']['inputs']['addButton'] = [
-                    'order' => 2,
-                    'type'  => 'button',
-                    'name'  => 'add_cartridge',
-                    'class' => 'submit',
-                    'value' => empty($used_ids) ? __('Select', 'iservice') : _sx('button', 'Add'),
-                    'options' => [
-                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+            } else {
+                $data['addItemsSection']['inputs']['changeableDropdown'] = [
+                    'order'         => 1,
+                    'type'          => 'textField',
+                    'value'         => $changeableDropdownSection['warning'] ?? '',
+                    'options'       => [
+                        'disabled'  => true,
+                        'no_label'  => true,
                     ],
                 ];
             }
@@ -378,7 +380,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     ],
                     'name' => [
                         'value' => "$cartridge[id] - $cartridge[name] ($cartridge[location_completename])"
-                            . (!empty($cartridge['date_use']) ? " ". __('intalled on', 'iservice') . " $cartridge[date_use]" : '')
+                            . (!empty($cartridge['date_use']) ? " " . __('intalled on', 'iservice') . " $cartridge[date_use]" : '')
                             . (!empty($cartridge['date_out']) ? " " . __('emptied', 'iservice') . " $cartridge[date_out]" : ''),
                     ],
                     'mercurycode' => [
@@ -419,7 +421,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                         'value' => $cartridge['selected_type_id'],
                         'options' => [
                             'condition' => ['id in (' . implode(',', $supported_types) . ')'],
-                            'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                            'on_click' => '$(this).closest("form").submit();',
                         ],
                     ],
                 ];
@@ -485,7 +487,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'options' => [
                         'buttonClass' => 'btn-outline-warning m-2',
                         'buttonIconClass' => 'ti ti-trash',
-                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                        'on_click' => '$(this).closest("form").submit();',
                     ],
                 ],
             ],
@@ -499,7 +501,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'options' => [
                         'buttonClass' => 'btn-primary m-2',
                         'buttonIconClass' => 'far fa-save',
-                        'on_click' => '$(this).closest("form").attr("action", window.location.href).submit();',
+                        'on_click' => '$(this).closest("form").submit();',
                     ],
                 ],
             ],

@@ -21,6 +21,7 @@ class Views
     public static function getView($view_class_name = '', $load_settings = true, $archive = false): View
     {
         if (!empty($view_class_name) && is_subclass_of("$view_class_name", 'GlpiPlugin\Iservice\Views\View')) {
+            \Html::header($view_class_name::getName());
             return new $view_class_name($load_settings, $archive ? "a_" : "");
         } else {
             return new View();

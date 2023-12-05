@@ -96,7 +96,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             }
 
             if (!empty($ticket->customfields->fields['cartridge_install_date_field'])) {
-                $data['cartridgeInstallDate'] = ' (' . sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))) . ')';
+                $data['warning'] .= ' (' . sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))) . ')';
             }
 
             return $data;

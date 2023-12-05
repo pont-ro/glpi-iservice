@@ -104,7 +104,7 @@ trait PluginIserviceItem
     public function getFromDB($ID): bool
     {
         if (parent::getFromDB($ID)) {
-            if (!$this->loadOrCreateCustomFields($ID)) {
+            if (!$this->loadOrCreateCustomFields($ID) && !empty(self::$customFieldsModelName)) {
                 return false;
             }
 

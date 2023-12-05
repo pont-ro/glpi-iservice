@@ -7,7 +7,7 @@
     partnerId,
     __('Partener'),
     field_options|merge({
-        'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
+        'on_change': "$(this).closest('form').submit();",
         'readonly': partnersFieldReadonly
     })
 ) }}
@@ -31,7 +31,7 @@
                 'i.suppliers_id': partnerId,
             }
         },
-        'on_change': "$(this).closest('form').attr('action', window.location.href).submit();",
+        'on_change': "$(this).closest('form').submit();",
         'readonly': printersFieldReadonly
     })
 ) }}
