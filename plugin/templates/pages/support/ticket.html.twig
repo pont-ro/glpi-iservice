@@ -9,9 +9,6 @@
 {% endif %}
 
 <div class="asset {{ bg }}">
-    {% set params = params|merge({
-        'target': ''
-    }) %}
     {{ include('components/form/header.html.twig', {'in_twig': true}) }}
 
     {% set params  = params ?? [] %}

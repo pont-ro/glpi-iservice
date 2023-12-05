@@ -437,6 +437,8 @@ class PluginIserviceTicket extends Ticket
         $prepared_data['field_required'] = [];
         $closed                          = $this->isClosed();
 
+        $options['target'] = $options['target'] ?? '';
+
         $templateParams = [
             'item'                    => $this,
             'params'                  => $options,
