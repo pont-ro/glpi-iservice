@@ -21,3 +21,5 @@ $task_class  = "PluginIserviceTask_$task";
 $task_object = new $task_class();
 
 $task_object->execute();
+
+Html::footer();
