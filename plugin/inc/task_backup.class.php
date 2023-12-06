@@ -1,5 +1,6 @@
 <?php
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 // Imported from iService2, needs refactoring.
@@ -15,8 +16,8 @@ class PluginIserviceTask_Backup
     {
         global $DB, $CFG_PLUGIN_ISERVICE;
         $this->database   = $DB->dbdefault;
-        $this->backup_key = $CFG_PLUGIN_ISERVICE['backup_restore']['backup_key'];
-        $this->backup_dir = $CFG_PLUGIN_ISERVICE['backup_restore']['backup_path'];
+        $this->backup_key = PluginIserviceConfig::getConfigValue('backup_restore.backup_key');
+        $this->backup_dir = PluginIserviceConfig::getConfigValue('backup_restore.backup_path');
 
         $mysql_params             = "-u $DB->dbuser -p$DB->dbpassword -h $DB->dbhost";
         $this->mysqldump_base     = "mysqldump $mysql_params $this->database";
@@ -39,14 +40,13 @@ class PluginIserviceTask_Backup
             echo $this->restoreDB($restore), "<br><br>";
         }
 
-        $html = new Html();
-        $html->openForm(['method' => 'post', 'id' => 'backup-task']);
-
-        $html->displayField(Html::FIELDTYPE_HIDDEN, 'restore');
-
-        $this->displayBackups();
-
-        $html->closeForm();
+        Html::header(__('Backup/restore', 'iservice'));
+        echo TemplateRenderer::getInstance()->render(
+            '@iservice/pages/admin/backup-restore.html.twig',
+            [
+                'backupList' => $this->getBackupsListHtml(),
+            ]
+        );
     }
 
     protected function createBackup()
@@ -91,14 +91,14 @@ class PluginIserviceTask_Backup
             $import_failed = " but you will have to reactivate the iService plugin";
         }
 
-        if (true !== ($result = $this->shellExecute($this->getImportCommandForFilePath(PLUGIN_ISERVICE_DIR . '/sql/stored_procedures.sql'), "Could not create stored procedures in <b>$this->database</b> database."))) {
+        if (true !== ($result = $this->shellExecute($this->getImportCommandForFilePath(PLUGIN_ISERVICE_DIR . '/install/sql/create_stored_procedures.sql'), "Could not create stored procedures in <b>$this->database</b> database."))) {
             return $result;
         }
 
         return $this->getResponseDiv("Restore sucessfull" . ($import_failed ?? '') . ".");
     }
 
-    protected function displayBackups($backups = [])
+    protected function getBackupsListHtml($backups = [])
     {
         global $CFG_PLUGIN_ISERVICE;
 
@@ -106,36 +106,41 @@ class PluginIserviceTask_Backup
             $backups = $this->getBackups();
         }
 
-        echo "<ul>";
+        $html = "<ul>";
         foreach (array_keys($backups) as $date_value) {
-            echo "<li class='collapsible' id='$date_value'>";
-            echo "<label>$date_value</label> ";
+            $html               .= "<li class='collapsible' id='$date_value'>";
+            $html               .= "<label>$date_value</label> ";
             $backup_path_encoded = urlencode($this->getBackupPath($date_value));
-            echo "<i class='pointer??? fa fa-trash' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageBackup.php?operation=remove_folder&id=$backup_path_encoded\", \"\", function(message) { if (message = \"" . IserviceToolBox::RESPONSE_OK . "\") { $(\"#$date_value\").remove(); } else { alert(message); }}); ' style='color:red;'></i>";
-            echo "<ul style='display: none'>";
+            $html               .= "<i class='pointer??? fa fa-trash' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageBackup.php?operation=remove_folder&id=$backup_path_encoded\", \"\", function(message) { if (message = \"" . IserviceToolBox::RESPONSE_OK . "\") { $(\"#$date_value\").remove(); } else { alert(message); }}); ' style='color:red;'></i>";
+            $html               .= "<ul style='display: none'>";
+
             foreach (array_keys($backups[$date_value]) as $time_value) {
                 $li_id               = "$date_value-$time_value";
                 $backup_path_encoded = urlencode($this->getBackupPath($date_value, $time_value));
-                echo "<li class='collapsible' id='$li_id'>";
-                echo sprintf("<label>%s:%s:%s</label> ", substr($time_value, 0, 2), substr($time_value, 2, 2), substr($time_value, 4, 2));
-                echo "<i class='pointer??? fa fa-trash' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageBackup.php?operation=remove_folder&id=$backup_path_encoded\", \"\", function(message) { if (message = \"" . IserviceToolBox::RESPONSE_OK . "\") { $(\"#$li_id\").remove(); } else { alert(message); }}); ' style='color:red;'></i>";
-                echo "<ul style='display: none'>";
+                $html               .= "<li class='collapsible' id='$li_id'>";
+                $html               .= sprintf("<label>%s:%s:%s</label> ", substr($time_value, 0, 2), substr($time_value, 2, 2), substr($time_value, 4, 2));
+                $html               .= "<i class='pointer??? fa fa-trash' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageBackup.php?operation=remove_folder&id=$backup_path_encoded\", \"\", function(message) { if (message = \"" . IserviceToolBox::RESPONSE_OK . "\") { $(\"#$li_id\").remove(); } else { alert(message); }}); ' style='color:red;'></i>";
+                $html               .= "<ul style='display: none'>";
                 foreach ($backups[$date_value][$time_value] as $backup_file) {
                     $li_id               = "$date_value-$time_value-" . IserviceToolBox::getHtmlSanitizedValue($backup_file);
                     $backup_path         = addslashes($this->getBackupPath($date_value, $time_value, $backup_file));
                     $backup_path_encoded = urlencode($this->getBackupPath($date_value, $time_value, $backup_file));
-                    echo "<li id='$li_id'>";
-                    echo "<input class ='submit' onclick='$(\"[name=restore]\").val(\"$backup_path\");' type='submit' value='Restore'> ";
-                    echo "$backup_file ";
-                    echo "<i class='pointer??? fa fa-trash' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageBackup.php?operation=remove_backup&id=$backup_path_encoded\", \"\", function(message) { if (message = \"" . IserviceToolBox::RESPONSE_OK . "\") { $(\"#$li_id\").remove(); } else { alert(message); }}); ' style='color:red;'></i>";
-                    echo "</li>";
+                    $html               .= "<li id='$li_id'>";
+                    $html               .= "<input class ='submit' onclick='$(\"[name=restore]\").val(\"$backup_path\");' type='submit' value='Restore'> ";
+                    $html               .= "$backup_file ";
+                    $html               .= "<i class='pointer??? fa fa-trash' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageBackup.php?operation=remove_backup&id=$backup_path_encoded\", \"\", function(message) { if (message = \"" . IserviceToolBox::RESPONSE_OK . "\") { $(\"#$li_id\").remove(); } else { alert(message); }}); ' style='color:red;'></i>";
+                    $html               .= "</li>";
                 }
 
-                echo "</ul></li>";
+                $html .= "</ul></li>";
             }
 
-            echo "</ul></li>";
+            $html .= "</ul></li>";
         }
+
+        $html .= "</ul></li>";
+
+        return $html;
     }
 
     protected function getBackups()
@@ -251,16 +256,16 @@ class PluginIserviceTask_Backup
             if ($current_backup_age_days > 45) {
                 if ($monthly_first_backup == $current_backup_time) {
                     foreach (array_slice(array_keys($backup_hours), 1) as $time) {
-                        IserviceToolBox::unlinkRecurrency_fieldively($this->getBackupPath($backup_date, $time));
+                        IserviceToolBox::unlinkRecursively($this->getBackupPath($backup_date, $time));
                         $result[] = "Removed " . $this->getBackupPath($backup_date, $time);
                     }
                 } else {
-                    IserviceToolBox::unlinkRecurrency_fieldively($this->getBackupPath($backup_date));
+                    IserviceToolBox::unlinkRecursively($this->getBackupPath($backup_date));
                     $result[] = "Removed " . $this->getBackupPath($backup_date);
                 }
             } else if ($current_backup_age_days > 10) {
                 foreach (array_slice(array_keys($backup_hours), 1, -1) as $time) {
-                    IserviceToolBox::unlinkRecurrency_fieldively($this->getBackupPath($backup_date, $time));
+                    IserviceToolBox::unlinkRecursively($this->getBackupPath($backup_date, $time));
                     $result[] = "Removed " . $this->getBackupPath($backup_date, $time);
                 }
             }

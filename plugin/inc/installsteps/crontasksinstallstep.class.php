@@ -37,7 +37,16 @@ class CronTasksInstallStep
             'hourmin'   => 0,
             'hourmax'   => 24,
             'comment'   => '',
-        ],
+        ], [
+            'itemtype'  => 'PluginIserviceBackupCleaner',
+            'name'      => 'backupClean',
+            'mode'      => CronTask::MODE_EXTERNAL,
+            'frequency' => 86400,
+            'param'     => 0,
+            'hourmin'   => 5,
+            'hourmax'   => 8,
+            'comment'   => '',
+        ]
     ];
 
     public static function do(): bool
