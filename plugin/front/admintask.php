@@ -20,14 +20,4 @@ if ($task !== 'DataIntegrityTest') {
 $task_class  = "PluginIserviceTask_$task";
 $task_object = new $task_class();
 
-Html::header(
-    __("iService", "iservice"),
-    $_SERVER['PHP_SELF'],
-    "plugin_iservice_views",
-    'admin_task',
-    "admin_task"
-);
-
 $task_object->execute();
-
-Html::footer();

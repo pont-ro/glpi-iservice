@@ -141,6 +141,14 @@ class RedefineMenus
         $menus['tools']['content']['reminder']['page']           = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Reminders";
         $menus['helpdesk']['content']['ticket']['page']          = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Tickets";
         $menus['helpdesk']['content']['create_ticket']['page'] = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php";
+
+        if (Session::haveRight('plugin_iservice_admintask_Backup', READ)) {
+            $menus['admin']['content']['backups'] = [
+                'title' => __('Backup/restore', 'iservice'),
+                'icon'  => 'fa fa-database',
+                'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=Backup",
+            ];
+        }
     }
 
 }

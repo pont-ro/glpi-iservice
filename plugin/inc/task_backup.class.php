@@ -40,10 +40,11 @@ class PluginIserviceTask_Backup
             echo $this->restoreDB($restore), "<br><br>";
         }
 
+        Html::header(__('Backup/restore', 'iservice'));
         echo TemplateRenderer::getInstance()->render(
-            '@iservice/pages/admin/restore.html.twig',
+            '@iservice/pages/admin/backup-restore.html.twig',
             [
-                'restoreList' => $this->getBackupsListHtml(),
+                'backupList' => $this->getBackupsListHtml(),
             ]
         );
     }

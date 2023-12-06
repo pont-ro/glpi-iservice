@@ -28,7 +28,7 @@ class PluginIserviceBackupCleaner extends CommonDBTM
         switch ($name) {
         case 'backupClean' :
             return [
-                'description' => 'Stergeti copiile de rezerva vechi',
+                'description' => 'Delete old backups',
             ];
         }
     }
