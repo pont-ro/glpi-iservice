@@ -271,6 +271,9 @@ msgstr "Citire contor"
 msgid "Create inquiry"
 msgstr "Creare sesizare"
 
+msgid "Inquiry"
+msgstr "Solicitare"
+
 #: inc/central.class.php:44 inc/hmarfa.class.php:1239 inc/views/Tickets.php:224
 msgid "Ticket list"
 msgstr "Lista tichete"
@@ -283,6 +286,9 @@ msgstr "Administrare aparat"
 #: inc/central.class.php:56 inc/views/Printers.php:314
 msgid "Printer list"
 msgstr "Lista aparate"
+
+msgid "Printers"
+msgstr "Aparate"
 
 #: inc/central.class.php:62 inc/views/Movements.php:6
 msgid "Movement list"
@@ -299,9 +305,8 @@ msgstr[2] "Mutări"
 msgid "Due partner list"
 msgstr "Scadență parteneri"
 
-#: inc/central.class.php:69
 msgid "Due partners"
-msgstr "Scadențe"
+msgstr "Scadențe facturi"
 
 #: inc/central.class.php:80 inc/central.class.php:81 inc/hmarfa.class.php:1242
 #: inc/ticket.class.php:833 inc/ticket.class.php:1922

@@ -9,18 +9,28 @@ use Session;
 class RedefineMenus
 {
     public const MENU_ITEMS_TO_REMOVE = [
+        'assets',
         'config',
-        'assets.content.allassets',
+        'helpdesk',
+        'management',
+        'reports',
+        'plugins',
+        'admin',
+        'preference',
     ];
 
     public static function redefine($menus): array
     {
         $activeProfile        = $_SESSION['glpiactiveprofile']['id'] ?? null;
+        $activeProfileName    = $_SESSION['glpiactiveprofile']['name'] ?? null;
         $superAdminProfileIds = \Profile::getSuperAdminProfilesId();
 
         ViewsMenu::setDropdownNameAndIcon($menus);
+        SpecialViewsMenu::setDropdownNameAndIcon($menus);
+        IserviceMenu::setDropdownNameAndIcon($menus);
         self::addDropdownWithHeaderIcons($menus);
-        self::modifyMenuItems($menus);
+        self::modifyMenuItems($menus, $activeProfileName);
+        self::extendIserviceMenu($menus, $activeProfileName);
 
         if (in_array($activeProfile, $superAdminProfileIds)) {
             return $menus;
@@ -128,27 +138,35 @@ class RedefineMenus
         ];
     }
 
-    public static function modifyMenuItems(&$menus): void
+    public static function modifyMenuItems(&$menus, $activeProfileName): void
     {
         global $CFG_PLUGIN_ISERVICE;
 
-        $menus['specialViews']['title'] = _n('Special View', 'Special Views', Session::getPluralNumber(), 'iservice');
-        $menus['specialViews']['icon']  = 'ti ti-eye';
-
-        $menus['assets']['content']['cartridgeitem']['page']     = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Cartridges";
-        $menus['assets']['content']['printer']['page']           = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Printers";
-        $menus['management']['content']['contract']['page']      = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Contracts";
-        $menus['tools']['content']['reminder']['page']           = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Reminders";
-        $menus['helpdesk']['content']['ticket']['page']          = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Tickets";
-        $menus['helpdesk']['content']['create_ticket']['page'] = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php";
-
-        if (Session::haveRight('plugin_iservice_admintask_Backup', READ)) {
-            $menus['admin']['content']['backups'] = [
-                'title' => __('Backup/restore', 'iservice'),
-                'icon'  => 'fa fa-database',
-                'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=Backup",
-            ];
+        if ($activeProfileName !== 'super-admin') {
+            return;
         }
+
+//        $menus['assets']['content']['cartridgeitem']['page']   = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Cartridges";
+//        $menus['assets']['content']['printer']['page']         = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Printers";
+//        $menus['management']['content']['contract']['page']    = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Contracts";
+//        $menus['tools']['content']['reminder']['page']         = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Reminders";
+//        $menus['helpdesk']['content']['ticket']['page']        = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Tickets";
+//        $menus['helpdesk']['content']['create_ticket']['page'] = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php";
+
+        $menus['admin']['content']['backups'] = [
+            'title' => __('Backup/restore', 'iservice'),
+            'icon'  => 'fa fa-database',
+            'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=Backup",
+        ];
+    }
+
+    public static function extendIserviceMenu(&$menus, $activeProfileName): void
+    {
+        if (empty($activeProfileName)) {
+            return;
+        }
+
+        $menus['iService']['content'] = array_merge($menus['iService']['content'] ?? [], IserviceMenu::getMenuUrls($activeProfileName));
     }
 
 }

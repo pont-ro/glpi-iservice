@@ -18,11 +18,17 @@ use Ticket;
 class Printers extends View
 {
     public static $rightname                   = 'plugin_iservice_view_printers';
+    public static $icon                        = 'fa-fw ti ti-printer';
     protected $enable_emaintenance_data_import = true;
 
     public static function getName(): string
     {
         return __('Printer list', 'iservice');
+    }
+
+    public static function getMenuName(): string
+    {
+        return __('Printers', 'iservice');
     }
 
     public static function getTicketStatusDisplay($row_data): string

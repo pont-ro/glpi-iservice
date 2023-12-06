@@ -15,6 +15,13 @@ class Reminders extends View
 {
     public static $rightname = 'plugin_iservice_view_reminders';
 
+    public static $icon = 'fa-fw ti ti-note';
+
+    public static function getName(): string
+    {
+        return _n('Reminder', 'Reminders', Session::getPluralNumber());
+    }
+
     public static function getRowBackgroundClass($row_data): string
     {
         return $row_data['state'] == Planning::TODO ? "tab_bg_3" : "tab_bg_1";
@@ -55,7 +62,7 @@ class Reminders extends View
         $visibility_condition    = "r.users_id = $_SESSION[glpiID] OR ((" . implode(") AND (", $visibility_conditions) . "))";
 
         return [
-            'name' => _n('Reminder', 'Reminders', Session::getPluralNumber()),
+            'name' => self::getName(),
             'prefix' => implode('&nbsp;&nbsp;&nbsp;', $reminder_buttons),
             'query' => "
 						SELECT

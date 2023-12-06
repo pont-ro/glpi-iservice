@@ -4,6 +4,7 @@ use Glpi\Plugin\Hooks;
 use GlpiPlugin\Iservice\Utils\HtaccessChecker;
 use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
+use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
 define('ISERVICE_VERSION', '0.0.1');
 
@@ -77,6 +78,7 @@ function plugin_init_iservice(): void
     // Add entry to configuration menu.
     $PLUGIN_HOOKS["menu_toadd"]['iservice'] = [
         'config'       => 'PluginIserviceMenu',
+        'iService'     => IserviceMenu::getClasses(),
         'views'        => ViewsMenu::getClasses(),
         'specialViews' => SpecialViewsMenu::getClasses(),
     ];
@@ -92,6 +94,8 @@ function plugin_init_iservice(): void
 
     $PLUGIN_HOOKS['item_update']['iservice']['Ticket']                              = 'plugin_iservice_Ticket_update';
     $PLUGIN_HOOKS['item_update']['iservice']['PluginFieldsTicketticketcustomfield'] = 'plugin_iservice_PluginFieldsTicketticketcustomfield_update';
+
+    $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
 
     PluginIserviceConfig::handleConfigValues();
 }

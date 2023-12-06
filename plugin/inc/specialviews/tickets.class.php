@@ -17,9 +17,16 @@ class Tickets extends View
 {
     public static $rightname = 'plugin_iservice_view_tickets';
 
+    public static $icon = 'fa-fw ti ti-alert-circle';
+
     public static function getName(): string
     {
         return __('Ticket list', 'iservice');
+    }
+
+    public static function getMenuName(): string
+    {
+        return __('Tickets');
     }
 
     public static function getTicketStatusDisplay($row_data): string

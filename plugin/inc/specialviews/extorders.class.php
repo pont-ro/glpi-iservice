@@ -16,7 +16,7 @@ class Extorders extends View
 
     public static function getName(): string
     {
-        return __('Extorders', 'iService');
+        return _n('External order', 'External orders', Session::getPluralNumber(), 'iservice');
     }
 
     protected function getSettings(): array

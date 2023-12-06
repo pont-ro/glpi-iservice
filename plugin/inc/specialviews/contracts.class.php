@@ -9,6 +9,9 @@ use Session;
 class Contracts extends View
 {
     public static $rightname = 'plugin_iservice_view_contracts';
+
+    public static $icon = 'fa-fw ti ti-writing-sign';
+
     static function getDocumentCountDisplay($row_data)
     {
         global $CFG_GLPI;
@@ -25,11 +28,16 @@ class Contracts extends View
         return "<span class='has-bootstrap-tooltip pointer' title='$title' data-new-title='Click pentru a vede Documentele' data-placement='right'>$row_data[document_count]</a>";
     }
 
+    public static function getName(): string
+    {
+        return _n('Contract', 'Contracts', 2);
+    }
+
     protected function getSettings(): array
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         return [
-            'name' => _n('Contract', 'Contracts', 2),
+            'name' => self::getName(),
             'prefix' => Session::haveRight('plugin_iservice_contract', CREATE) ? ("<a class='vsubmit noprint' href='contract.form.php'>" . __('Add') . " " . __('Contract') . "</a>") : '',
             'query' => "
                         SELECT
