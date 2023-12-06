@@ -25,7 +25,7 @@ return [
         'user' => 'c1iservice',
         'pass' => 'c1iservice.Password'
     ],
-    'backup_restore.backup_key'    => 'iservice', // Backup file is displayed only if it contains this string.
+    'backup_restore.backup_key'    => 'iservice_v3', // Backup file is displayed only if it contains this string.
     'backup_restore.backup_path'   => '/var/backup', // Without trailing slash!
     'backup_restore.backup_method' => 'bz2', // Supported: sql, bz2.
 ];

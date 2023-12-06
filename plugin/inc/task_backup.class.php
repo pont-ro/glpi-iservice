@@ -43,7 +43,7 @@ class PluginIserviceTask_Backup
         echo TemplateRenderer::getInstance()->render(
             '@iservice/pages/admin/restore.html.twig',
             [
-                'restoreList' => $this->getBackupsList(),
+                'restoreList' => $this->getBackupsListHtml(),
             ]
         );
     }
@@ -90,14 +90,14 @@ class PluginIserviceTask_Backup
             $import_failed = " but you will have to reactivate the iService plugin";
         }
 
-        if (true !== ($result = $this->shellExecute($this->getImportCommandForFilePath(PLUGIN_ISERVICE_DIR . '/sql/stored_procedures.sql'), "Could not create stored procedures in <b>$this->database</b> database."))) {
+        if (true !== ($result = $this->shellExecute($this->getImportCommandForFilePath(PLUGIN_ISERVICE_DIR . '/install/sql/create_stored_procedures.sql'), "Could not create stored procedures in <b>$this->database</b> database."))) {
             return $result;
         }
 
         return $this->getResponseDiv("Restore sucessfull" . ($import_failed ?? '') . ".");
     }
 
-    protected function getBackupsList($backups = [])
+    protected function getBackupsListHtml($backups = [])
     {
         global $CFG_PLUGIN_ISERVICE;
 
