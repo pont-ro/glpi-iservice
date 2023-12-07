@@ -30,7 +30,7 @@ class Contracts extends View
 
     public static function getName(): string
     {
-        return _n('Contract', 'Contracts', 2);
+        return _n('Contract', 'Contracts', Session::getPluralNumber());
     }
 
     protected function getSettings(): array

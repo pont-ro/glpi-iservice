@@ -26,7 +26,7 @@ class Tickets extends View
 
     public static function getMenuName(): string
     {
-        return __('Tickets');
+        return _n('Ticket', 'Tickets', Session::getPluralNumber());
     }
 
     public static function getTicketStatusDisplay($row_data): string
@@ -106,7 +106,7 @@ class Tickets extends View
             ],
             'counters' => [
                 'link' => "#",
-//                'link' => "view.php?view=printercounters2" . ($row_data['supplier_id'] ? "&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
+            // 'link' => "view.php?view=printercounters2" . ($row_data['supplier_id'] ? "&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
                 'title' => __('Printer counters', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),

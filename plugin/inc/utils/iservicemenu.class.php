@@ -24,7 +24,7 @@ class IserviceMenu
             return [];
         }
 
-        return !empty($menuConfig['iService']['content']) ? self::filterMenuByProfile($menuConfig['iService']['content'], $profile) : [];
+        return self::filterMenuByProfile($menuConfig['iService']['content'], $profile);
     }
 
     public static function filterMenuByProfile(array $menuConfig, string $profile): array
@@ -44,7 +44,7 @@ class IserviceMenu
     {
         $menuConfig = Toolbox::getMenuConfig();
 
-        return isset($menuConfig['iService']['classes']) && is_array($menuConfig['iService']['classes']) ? $menuConfig['iService']['classes'] : [];
+        return is_array($menuConfig['iService']['classes'] ?? '') ? $menuConfig['iService']['classes'] : [];
     }
 
 }
