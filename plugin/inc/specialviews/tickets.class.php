@@ -17,9 +17,16 @@ class Tickets extends View
 {
     public static $rightname = 'plugin_iservice_view_tickets';
 
+    public static $icon = 'fa-fw ti ti-alert-circle';
+
     public static function getName(): string
     {
         return __('Ticket list', 'iservice');
+    }
+
+    public static function getMenuName(): string
+    {
+        return _n('Ticket', 'Tickets', Session::getPluralNumber());
     }
 
     public static function getTicketStatusDisplay($row_data): string
@@ -99,7 +106,7 @@ class Tickets extends View
             ],
             'counters' => [
                 'link' => "#",
-//                'link' => "view.php?view=printercounters2" . ($row_data['supplier_id'] ? "&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
+            // 'link' => "view.php?view=printercounters2" . ($row_data['supplier_id'] ? "&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
                 'title' => __('Printer counters', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),

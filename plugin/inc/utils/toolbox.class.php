@@ -272,4 +272,27 @@ class ToolBox
         }
     }
 
+    public static function getMenuConfig(): array
+    {
+        $menuConfig = $_SESSION['plugin']['iservice']['menuConfig'] ?? null;
+
+        if (empty($menuConfig)) {
+            $menuConfig = $_SESSION['plugin']['iservice']['menuConfig'] = self::getMenuConfigFromConfigFile();
+        }
+
+        return $menuConfig;
+    }
+
+    public static function getMenuConfigFromConfigFile(): ?array
+    {
+        $configFile = GLPI_ROOT . "/plugins/iservice/config/menu.php";
+
+        if (!file_exists($configFile)) {
+            return null;
+        }
+
+        return include_once GLPI_ROOT . "/plugins/iservice/config/menu.php" ?: [];
+
+    }
+
 }

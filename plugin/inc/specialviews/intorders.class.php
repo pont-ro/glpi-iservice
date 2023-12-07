@@ -19,7 +19,7 @@ class Intorders extends View
 
     public static function getName(): string
     {
-        return __('Intorders', 'iService');
+        return _n('Internal order', 'Internal orders', SESSION::getPluralNumber(), 'iservice');
     }
 
     public static function getModelNamesDisplay($row_data): string

@@ -74,3 +74,10 @@ function plugin_iservice_Ticket_update(Ticket $item) {
         PluginIserviceTicket::moveCartridges($item);
     }
 }
+
+function redirect_from_central() {
+    global $CFG_PLUGIN_ISERVICE;
+
+    Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Tickets");
+
+}

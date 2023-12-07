@@ -15,7 +15,7 @@ class Movements extends View
 
     public static function getName(): string
     {
-        return __('Movements', 'iService');
+        return _n('Movement', 'Movements', \Session::getPluralNumber(), 'iservice');
     }
 
     protected function getSettings(): array

@@ -14,7 +14,7 @@ class Partners extends View
 
     public static function getName(): string
     {
-        return __('Partners', 'iService');
+        return __('Due partners', 'iservice');
     }
 
     protected function getSettings(): array
