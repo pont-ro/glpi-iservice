@@ -86,7 +86,7 @@
             </div>
         {% endif %}
         {% if consumablesTableData.consumablesTableSection.type == 'table' %}
-            <div class="table-responsive">
+            <div class="table-responsive consumables-update-section">
                 <table class="table">
                     <thead>
                         <tr>
@@ -158,3 +158,17 @@
         {% endif %}
     </div>
 </div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.consumables-update-section input').change(function () {
+            $('.consumables-update-section').addClass('border border-warning');
+
+            if ($('.consumables-update-section-changed-alert').length === 0) {
+                $('.consumables-update-section')
+                    .append('<div class="p-2 text-danger text-end consumables-update-section-changed-alert">' + __("Don't forget to press 'Update' button to save your changes", 'iservice') + '</div>');
+            }
+        });
+    });
+</script>

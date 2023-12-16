@@ -92,7 +92,10 @@ function plugin_init_iservice(): void
 
     $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
 
-    $PLUGIN_HOOKS['item_update']['iservice']['Ticket']                              = 'plugin_iservice_Ticket_update';
+    $PLUGIN_HOOKS['pre_item_update']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_update';
+
+    $PLUGIN_HOOKS['item_update']['iservice']['Ticket'] = 'plugin_iservice_Ticket_update';
+
     $PLUGIN_HOOKS['item_update']['iservice']['PluginFieldsTicketticketcustomfield'] = 'plugin_iservice_PluginFieldsTicketticketcustomfield_update';
 
     $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
@@ -108,15 +111,15 @@ function plugin_init_iservice(): void
 function plugin_version_iservice(): array
 {
     return [
-        'name'           => 'iService',
-        'version'        => ISERVICE_VERSION,
-        'author'         => 'hupu',
-        'license'        => 'GLPv3',
-        'homepage'       => '',
-        'requirements'   => [
-            'glpi'   => [
-                'min' => '10.0',
-                'max' => '10.1',
+        'name'         => 'iService',
+        'version'      => ISERVICE_VERSION,
+        'author'       => 'hupu',
+        'license'      => 'GLPv3',
+        'homepage'     => '',
+        'requirements' => [
+            'glpi' => [
+                'min'     => '10.0',
+                'max'     => '10.1',
                 'plugins' => ['fields', 'formcreator'],
             ],
         ],

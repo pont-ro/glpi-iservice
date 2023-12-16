@@ -226,7 +226,7 @@ class Printers extends View
         }
 
         $ticket                                   = new PluginIserviceTicket();
-        $ticket->fields['items_id']['Printer'][0] = $row_data['printer_id'];
+        $ticket->fields['printer_id'] = $row_data['printer_id'];
         $ticket->fields['_suppliers_id_assign']   = $row_data['supplier_id'];
         $changeable_cartridges                    = PluginIserviceCartridgeItem::getChangeablesForTicket($ticket);
         $title                                    = '';

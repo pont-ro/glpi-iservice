@@ -90,7 +90,7 @@
             </div>
         {% endif %}
         {% if tableData.tableSection.type == 'table' %}
-            <div class="table-responsive">
+            <div class="table-responsive changeables-update-section">
                 <table class="table">
                     <thead>
                     <tr>
@@ -190,3 +190,16 @@
         });
     </script>
 {% endif %}
+
+<script>
+    $(document).ready(function () {
+        $('.changeables-update-section input').change(function () {
+            $('.changeables-update-section').addClass('border border-warning');
+
+            if ($('.changeables-update-section-changed-alert').length === 0) {
+                $('.changeables-update-section')
+                    .append('<div class="p-2 text-danger text-end changeables-update-section-changed-alert">' + __("Don't forget to press 'Update' button to save your changes", 'iservice') + '</div>');
+            }
+        });
+    });
+</script>
