@@ -22,7 +22,7 @@ $supplier_id   = filter_input(INPUT_GET, 'supplier_id');
 $supplier_name = filter_input(INPUT_GET, 'supplier_name');
 
 $ticket                                   = new PluginIserviceTicket();
-$ticket->fields['items_id']['Printer'][0] = $printer_id;
+$ticket->fields['printer_id'] = $printer_id;
 $ticket->fields['_suppliers_id_assign']   = $supplier_id;
 
 

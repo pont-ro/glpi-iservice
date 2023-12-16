@@ -461,7 +461,7 @@ class PluginIserviceTicket extends Ticket
             'solvedStatusValue'           => self::SOLVED,
             'consumablesTableData'        => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']))),
 
-            'effectiveDate'                => $this->fields['status'] == self::SOLVED ? $this->customfields->fields['effective_date_field'] : date('Y-m-d H:i:s'),
+            'effectiveDate'                => $this->fields['status'] == self::SOLVED || $this->fields['status'] == self::CLOSED ? $this->customfields->fields['effective_date_field'] : date('Y-m-d H:i:s'),
             'effectiveDateFieldReadonly'   => $this->fields['status'] == self::CLOSED,
             'cartridgeInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
         ];
@@ -500,6 +500,7 @@ class PluginIserviceTicket extends Ticket
             }
 
             $templateParams['exportTypeOptions'] = [
+                '' => Dropdown::EMPTY_VALUE,
                 self::EXPORT_TYPE_NOTICE_ID => __('Notice', 'iservice'),
                 self::EXPORT_TYPE_INVOICE_ID => _n('Invoice', 'Invoices', 1, 'iservice'),
             ];
@@ -523,7 +524,7 @@ class PluginIserviceTicket extends Ticket
 
     public function additionalGetFromDbSteps($ID = null): void
     {
-        $this->fields['items_id']['Printer'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
+        $this->fields['printer_id'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer' limit 1"), 'items_id')[0] ?? null;
     }
 
     /*
@@ -1052,8 +1053,8 @@ class PluginIserviceTicket extends Ticket
         }
 
         $input = parent::prepareInputForUpdate($input);
-        if (isset($this->fields['items_id']['Printer'][0])) {
-            $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
+        if (isset($this->fields['printer_id'])) {
+            $this->fields['items_id'] = $this->fields['printer_id'];
         }
 
         if (isset($input['items_id']['Printer'][0])) {
@@ -1241,7 +1242,7 @@ class PluginIserviceTicket extends Ticket
         }
 
         if (isset($post['_export_type'])) {
-            $post['plugin_fields_ticketexporttypedropdowns_id'] = $post['_export_type'];
+            $post['plugin_fields_ticketexporttypedropdowns_id'] = $post['_export_type'] === '' ? 0 : $post['_export_type'];
         }
 
         return $post;
@@ -1405,9 +1406,9 @@ class PluginIserviceTicket extends Ticket
 
     public function updateEffectiveDate($ticketId, $post): void
     {
-        // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change.
+        // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change unless it was manually changed.
         // We presume that in such cases effective date is always set.
-        if ($this->fields['status'] === Ticket::SOLVED || $this->fields['status'] === Ticket::CLOSED) {
+        if ($this->fields['status'] === Ticket::SOLVED || $this->fields['status'] === Ticket::CLOSED || !empty($post['effective_date_manually_changed'])) {
             return;
         } else {
             if (empty($this->customfields)) {
@@ -1565,9 +1566,9 @@ class PluginIserviceTicket extends Ticket
             if ($closed && IserviceToolBox::inProfileArray(['super-admin'])) {
                 $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->customfields->fields['effective_date_field'], $this->getPartnerId(), $this->getPrinterId());
                 if (count($newer_closed_ticket_ids)) {
-                    $confirm = ['data-confirm-first' => count($newer_closed_ticket_ids) . " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"];
+                    $confirm = count($newer_closed_ticket_ids) . __(" closed tickets will be reopened. Are you sure you want to continue?", 'iservice');
                 } else {
-                    $confirm = [];
+                    $confirm = __('Are you sure you want to reopen the ticket?', 'iservice');
                 }
 
                 $buttons['reopen'] = [
@@ -1575,11 +1576,11 @@ class PluginIserviceTicket extends Ticket
                     'name'    => 'update',
                     'label'   => __('Reopen', 'iservice'),
                     'value'   => 1,
-                    'options' => array_merge(
-                        $confirm, [
-                            'on_click' => '$("[name=status]").val(' . Ticket::SOLVED . ');'
-                        ]
-                    ),
+                    'options' => [
+                        'on_click' => 'if (confirm("' . $confirm . '")) {
+                            $("[name=status]").val(' . Ticket::SOLVED . '); 
+                            } else {this.stopPropagation()}'
+                    ],
                 ];
 
                 break;
@@ -1700,6 +1701,37 @@ class PluginIserviceTicket extends Ticket
                 );
             }
         }
+    }
+
+    public function processFieldsByInput()
+    {
+        $result = [];
+
+        $printer_id = IserviceToolBox::getInputVariable('printer_id');
+        $printer    = new PluginIservicePrinter();
+        if (empty($printer_id) && $this->getID() > 0) {
+            $printer = $this->getFirstPrinter();
+            if (!$printer->isNewItem()) {
+                $printer_id = $printer->getID();
+            }
+        } else {
+            $printer->getFromDB($printer_id);
+        }
+
+        $result['variables']['printer']    = $printer;
+        $result['variables']['printer_id'] = $printer_id;
+
+        $this->fields['_suppliers_id_assign'] = $supplier_id = IserviceToolBox::getInputVariable('suppliers_id', $this->fields['_suppliers_id_assign'] ?? '');
+        if (empty($supplier_id) && !empty($printer_id)) {
+            $infocom = new Infocom();
+            if ($infocom->getFromDBforDevice('Printer', $printer_id)) {
+                $this->fields['_suppliers_id_assign'] = $supplier_id = $infocom->fields['suppliers_id'];
+            }
+        }
+
+        $result['variables']['supplier_id'] = $supplier_id;
+
+        return $result;
     }
 
 }

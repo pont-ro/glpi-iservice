@@ -65,7 +65,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
         $instID       = $ticket->getID();
         $suppliers_id = $ticket->fields['_suppliers_id_assign'] ?? 0;
-        $items_id     = $ticket->fields['items_id']['Printer'][0] ?? 0;
+        $items_id     = $ticket->fields['printer_id'] ?? 0;
 
         $ticket_fields = $ticket->fields;
         if (!$ticket->can($instID, READ)) {
@@ -234,7 +234,9 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     'title' => $cartridge_creation_title,
                     'disabled' => $readonly || $force_cartridge_creation !== null,
                     'onchange' => 'consumablesChanged = true;',
-                    'options' => [
+                    'add_field_attribs' => [
+                        'data-toggle' => 'tooltip',
+                        'title' => $cartridge_creation_title,
                         'no_label' => true,
                     ],
                 ]
@@ -827,7 +829,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         if (!isset(self::$compatible_cartridges["$suppliers_id - $items_id"])) {
             $ticket                                   = new PluginIserviceTicket();
             $ticket->fields['_suppliers_id_assign']   = $suppliers_id;
-            $ticket->fields['items_id']['Printer'][0] = $items_id;
+            $ticket->fields['printer_id'] = $items_id;
             self::$compatible_cartridges["$suppliers_id - $items_id"] = array_column(PluginIserviceCartridgeItem::getCompatiblesForTicket($ticket), 'ref', 'id');
         }
 
