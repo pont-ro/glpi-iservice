@@ -87,6 +87,7 @@
 
 {% macro button(type, name, value, label = '', options = {}) %}
    <button
+      data-bs-toggle="tooltip"
       class="btn {{ options.buttonClass ?? '' }}"
       {% if type %}
          type="{{ type }}"

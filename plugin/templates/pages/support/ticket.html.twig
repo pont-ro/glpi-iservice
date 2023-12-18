@@ -33,7 +33,11 @@
                                 __('Black counter reading', 'iservice'),
                                 field_options|merge({
                                     'min': total2BlackRequiredMinimum,
-                                    'disabled': total2BlackDisabled
+                                    'disabled': total2BlackDisabled,
+                                    'add_field_attribs': {
+                                        'data-toggle': 'tooltip',
+                                        'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
+                                    },
                                 })
                             ) }}
 
@@ -44,7 +48,11 @@
                                     __('Color counter reading', 'iservice'),
                                     field_options|merge({
                                         'min': total2ColorRequiredMinimum,
-                                        'disabled': total2ColorDisabled
+                                        'disabled': total2ColorDisabled,
+                                        'add_field_attribs': {
+                                            'data-toggle': 'tooltip',
+                                            'title': __('Counter') ~ ' 106',
+                                        },
                                     })
                                 ) }}
                             {% endif %}
@@ -95,7 +103,7 @@
                                 exportTypeOptions,
                                 __('Export type', 'iservice'),
                                 field_options|merge({
-                                    'display_emptychoice': true,
+                                    'required': item.hasConsumables(),
                                 })
                             ) }}
 
@@ -132,6 +140,14 @@
                                     'readonly': effectiveDateFieldReadonly,
                                 })
                             ) }}
+
+                            <script>
+                                $(document).ready(function(){
+                                    $('[name="effective_date_field"]').on('change', function(){
+                                        $('[name="effective_date_manually_changed"]').val(1);
+                                    });
+                                });
+                            </script>
 
                             {% if not effectiveDateFieldReadonly %}
                                 {{ fields.hiddenField(
