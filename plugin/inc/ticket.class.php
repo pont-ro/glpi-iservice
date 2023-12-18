@@ -299,7 +299,7 @@ class PluginIserviceTicket extends Ticket
     {
         return self::getLastIdForPrinterOrSupplier(
             IserviceToolBox::getValueFromInput('_suppliers_id_assign', $input),
-            IserviceToolBox::getItemsIdFromInput($input, 'Printer'),
+            IserviceToolBox::getValueFromInput('printer_id', $input),
             $open, $additional_condition, $additional_join
         );
     }
@@ -1055,10 +1055,6 @@ class PluginIserviceTicket extends Ticket
         $input = parent::prepareInputForUpdate($input);
         if (isset($this->fields['printer_id'])) {
             $this->fields['items_id'] = $this->fields['printer_id'];
-        }
-
-        if (isset($input['items_id']['Printer'][0])) {
-            $input['items_id'] = $input['items_id']['Printer'][0];
         }
 
         return $input;
