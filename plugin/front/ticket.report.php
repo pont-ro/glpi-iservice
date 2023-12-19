@@ -120,7 +120,7 @@ $query_tickets = sprintf(
                     left join glpi_tickets_users `to` on `to`.tickets_id = t.id and `to`.type = " . Ticket_User::OBSERVER . "
                     left join glpi_users ou on ou.id = `to`.users_id
                     left join glpi_itilfollowups tf on tf.items_id = t.id AND tf.itemtype='Ticket' AND tf.is_private = 0
-                    where t.is_deleted = 0 and t.id <= $ticket_id and t.itilcategories_id != " . PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE . "
+                    where t.is_deleted = 0 and t.id <= $ticket_id and t.itilcategories_id != " . PluginIserviceTicket::getItilCategoryId('Citire emaintenance') . "
                     group by t.id, t.effective_date_field
                     order by t.effective_date_field desc, t.id desc limit 3", $printer->getID()
 );

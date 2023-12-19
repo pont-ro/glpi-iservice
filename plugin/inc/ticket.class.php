@@ -33,10 +33,6 @@ class PluginIserviceTicket extends Ticket
 
     const USER_ID_READER = 27;
 
-    const ITIL_CATEGORY_ID_CITIRE_CONTOR         = 17;
-    const ITIL_CATEGORY_ID_CITIRE_CONTOR_ESTIMAT = 30;
-    const ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE   = 28;
-
     public static $field_settings          = null;
     public static $field_settings_id       = 0;
     protected static $itil_categories      = null;
@@ -69,17 +65,13 @@ class PluginIserviceTicket extends Ticket
         }
     }
 
-    public static function getItilCategoryId($itilcategory_name): int
+    public static function getItilCategoryId(string $itilcategory_name): int
     {
         if (self::$itil_categories == null) {
             self::refreshItilCategories();
         }
 
-        if (isset(self::$itil_categories[strtolower($itilcategory_name)])) {
-            return self::$itil_categories[strtolower($itilcategory_name)];
-        } else {
-            return 0;
-        }
+        return self::$itil_categories[strtolower($itilcategory_name)] ?? 0;
     }
 
     public static function refreshItilCategories(): void
@@ -500,9 +492,9 @@ class PluginIserviceTicket extends Ticket
             }
 
             $templateParams['exportTypeOptions'] = [
-                '' => Dropdown::EMPTY_VALUE,
                 self::EXPORT_TYPE_NOTICE_ID => __('Notice', 'iservice'),
                 self::EXPORT_TYPE_INVOICE_ID => _n('Invoice', 'Invoices', 1, 'iservice'),
+                '' => Dropdown::EMPTY_VALUE,
             ];
         }
 
@@ -524,7 +516,7 @@ class PluginIserviceTicket extends Ticket
 
     public function additionalGetFromDbSteps($ID = null): void
     {
-        $this->fields['printer_id'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer' limit 1"), 'items_id')[0] ?? null;
+        $this->fields['items_id']['Printer'] = array_column(PluginIserviceDB::getQueryResult("select it.items_id from glpi_items_tickets it where tickets_id = $ID and itemtype = 'Printer'"), 'items_id');
     }
 
     /*
@@ -1053,8 +1045,12 @@ class PluginIserviceTicket extends Ticket
         }
 
         $input = parent::prepareInputForUpdate($input);
-        if (isset($this->fields['printer_id'])) {
-            $this->fields['items_id'] = $this->fields['printer_id'];
+        if (isset($this->fields['items_id']['Printer'][0])) {
+            $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
+        }
+
+        if (isset($input['items_id']['Printer'][0])) {
+            $input['items_id'] = $input['items_id']['Printer'][0];
         }
 
         return $input;
@@ -1728,6 +1724,63 @@ class PluginIserviceTicket extends Ticket
         $result['variables']['supplier_id'] = $supplier_id;
 
         return $result;
+    }
+
+    public static function createGlobalReadCounterTickets(array $data): ?int
+    {
+        if (false !== ($success = isset($data['printer']) && is_array($data['printer']))) {
+            $ticket_count = 0;
+            foreach ($data['printer'] as $printerId => $ticketData) {
+                if ($ticketData['effective_date_field'] < $ticketData['effective_date_old']
+                    || (intval($ticketData['total2_black_field']) < intval($ticketData['total2_black_old']))
+                    || (intval($ticketData['total2_color_field']) < intval($ticketData['total2_color_old']))
+                    || (intval($ticketData['total2_black_field']) + intval($ticketData['total2_color_field']) < intval($ticketData['total2_black_old']) + intval($ticketData['total2_color_old']) + 10)
+                ) {
+                    continue;
+                }
+
+                $track = new PluginIserviceTicket();
+                PluginIserviceTicket::prepareDataForGlobalReadCounter($ticketData);
+                $track->explodeArrayFields();
+                $last_opened_ticket = PluginIserviceTicket::getLastForPrinterOrSupplier(0, $printerId, true);
+                if ($last_opened_ticket->getID() > 0 && $last_opened_ticket->customfields->fields['effective_date_field'] < $ticketData['effective_date_field']) {
+                    $ticketData['_dont_close'] = true;
+                }
+
+                if (!empty($ticketData['_dont_close'])) {
+                    $track->fields['status'] = Ticket::SOLVED;
+                    unset($ticketData['_dont_close']);
+                }
+
+                if (in_array($_SESSION["glpiactiveprofile"]["name"], ['tehnician', 'admin', 'super-admin'])) {
+                    $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
+                }
+
+                if ($track->add(array_merge($track->fields, $ticketData, ['add' => 'add', '_mode' => PluginIserviceTicket::MODE_READCOUNTER, '_no_message' => 1]))) {
+                    $ticket_count++;
+                } else {
+                    $success = false;
+                }
+            }
+
+            return $success ? $ticket_count : -$ticket_count;
+        }
+
+        return 0;
+    }
+
+    private static function prepareDataForGlobalReadCounter(&$ticketData): void
+    {
+        $ticketData = array_merge(
+            $ticketData,
+            [
+                'name'                => 'Citire contor eMaintenance',
+                'content'             => 'Periodic',
+                'status'              => IserviceToolBox::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::CLOSED : parent::SOLVED,
+                'without_paper_field' => 1,
+                'no_travel_field'     => 1,
+            ]
+        );
     }
 
 }

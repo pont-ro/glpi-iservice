@@ -150,7 +150,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id = $changeable_cartridge[suppliers_id_field]
                 join glpi_cartridgeitems_printermodels cp on cp.printermodels_id = p.printermodels_id and cp.cartridgeitems_id = $changeable_cartridge[id]
                 left join glpi_locations l on l.id = p.locations_id
-                where p.is_deleted = 0 and p.id != {$ticket->fields['printer_id']} and $location_condition
+                where p.is_deleted = 0 and p.id != {$ticket->fields['items_id']['Printer'][0]} and $location_condition
                 group by l.id
                 "
             );
@@ -222,7 +222,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
         $printer          = new Printer();
         $printer_location = new Location();
-        $printer_id       = $ticket->fields['printer_id'] ?? $ticket->getFirstPrinter()->getID();
+        $printer_id       = $ticket->fields['items_id']['Printer'][0] ?? $ticket->getFirstPrinter()->getID();
         $supplier_id      = $ticket->fields['_suppliers_id_assign'] ?? $ticket->getFirstAssignedPartner()->getID() ?: 0;
 
         if (!$printer->getFromDB($printer_id) || ($printer->fields['locations_id'] > 0 && !$printer_location->getFromDB($printer->fields['locations_id']))) {
@@ -318,16 +318,16 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             }
         }
 
-        if (!isset($ticket->fields['printer_id'])) {
-            $ticket->fields['printer_id'] = $ticket->getFirstPrinter()->getID();
+        if (!isset($ticket->fields['items_id']['Printer'][0])) {
+            $ticket->fields['items_id']['Printer'][0] = $ticket->getFirstPrinter()->getID();
         }
 
         if (!isset($ticket->fields['_suppliers_id_assign'])) {
             $ticket->fields['_suppliers_id_assign'] = $ticket->getFirstAssignedPartner()->getID();
         }
 
-        if ($ticket->fields['printer_id'] > 0) {
-            return self::getCompatiblesForPrinterId($ticket->fields['printer_id'], $dropdown_options);
+        if ($ticket->fields['items_id']['Printer'][0] > 0) {
+            return self::getCompatiblesForPrinterId($ticket->fields['items_id']['Printer'][0], $dropdown_options);
         } else {
             return self::getCompatiblesForSupplierId($ticket->fields['_suppliers_id_assign'], $dropdown_options);
         }

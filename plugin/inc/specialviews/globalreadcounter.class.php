@@ -24,7 +24,7 @@ class GlobalReadCounter extends View
 
     public static function getPrinterDisplay($row_data, $import_data): string
     {
-        $hidden_data = "<input type='hidden' name='global_readcounter0[printer][$row_data[id]][items_id][Printer][0]' value='$row_data[id]' /><input type='hidden' name='global_readcounter0[printer][$row_data[id]][_suppliers_id_assign]' value='$row_data[supplier_id]' />";
+        $hidden_data = "<input type='hidden' name='globalreadcounter0[printer][$row_data[id]][items_id][Printer][0]' value='$row_data[id]' /><input type='hidden' name='globalreadcounter0[printer][$row_data[id]][_suppliers_id_assign]' value='$row_data[supplier_id]' />";
         if ($import_data === null || isset($import_data[$row_data['spaceless_serial']])) {
             return $hidden_data . $row_data['printer_name'];
         }
@@ -82,21 +82,21 @@ class GlobalReadCounter extends View
             return '';
         }
 
-        $data_difference = round((time() - strtotime($param_data['row_data']['last_data_luc'])) / (60 * 60 * 24));
+        $data_difference = round((time() - strtotime($param_data['row_data']['last_effective_date'])) / (60 * 60 * 24));
         $estimate_value  = '';
         $icon_click      = "";
         foreach (['total2_black_field', 'total2_color_field', 'effective_date_field'] as $fieldname) {
             switch ($fieldname) {
             case 'total2_black_field':
                 $estimate_value = $param_data['row_data']['last_total2_black'] + ($param_data['row_data']['daily_bk_average_field'] * $data_difference);
-                $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_black'], $param_data['row_data']['daily_bk_average_field'], $data_difference, $param_data['row_id'], $fieldname);
+                $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=globalreadcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_black'], $param_data['row_data']['daily_bk_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 break;
             case 'total2_color_field':
                 if ($param_data['row_data']['daily_color_average_field'] == 0) {
                     $estimate_value = 0;
                 } else {
                     $estimate_value = $param_data['row_data']['last_total2_color'] + ($param_data['row_data']['daily_color_average_field'] * $data_difference);
-                    $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=global_readcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_color'], $param_data['row_data']['daily_color_average_field'], $data_difference, $param_data['row_id'], $fieldname);
+                    $icon_click    .= sprintf("$(\"<i></i>\").addClass(\"fa fa-exclamation-triangle badge-error\").attr(\"style\", \"color:orange;\").attr(\"title\",\"Valoare estimată: %s + (%s * %s zile)\").insertAfter($(\"[name=globalreadcounter0\\\[printer\\\]\\\[%s\\\]\\\[%s\\\]]\")).parent().find(\"input\");", $param_data['row_data']['last_total2_color'], $param_data['row_data']['daily_color_average_field'], $data_difference, $param_data['row_id'], $fieldname);
                 }
                 break;
             case 'effective_date_field':
@@ -108,11 +108,11 @@ class GlobalReadCounter extends View
                 continue;
             }
 
-            $icon_click .= sprintf("$(\"[name=global_readcounter0\\\\[printer\\\\]\\\\[%s\\\\]\\\\[%s\\\\]]\").parent().find(\"input\").val(\"%s\");", $param_data['row_id'], $fieldname, $estimate_value);
+            $icon_click .= sprintf("$(\"[name=globalreadcounter0\\\\[printer\\\\]\\\\[%s\\\\]\\\\[%s\\\\]]\").parent().find(\"input\").val(\"%s\");", $param_data['row_id'], $fieldname, $estimate_value);
             $icon_click .= sprintf("$(\"#badge-%s-%s-%s\").hide();", $badge_type, $param_data['row_id'], $fieldname);
         }
 
-        $icon_click .= sprintf("setSelectField($(\"[name=global_readcounter0\\\\[printer\\\\]\\\\[%s\\\\]\\\\[itilcategories_id\\\\]]\") , \"30\", \"Citire contor - estimat\");", $param_data['row_id']);
+        $icon_click .= sprintf("setSelectField($(\"[name=globalreadcounter0\\\\[printer\\\\]\\\\[%s\\\\]\\\\[itilcategories_id\\\\]]\") , \"30\", \"Citire contor - estimat\");", $param_data['row_id']);
         return "onclick='$icon_click'";
     }
 
@@ -131,26 +131,26 @@ class GlobalReadCounter extends View
     protected function getSettings(): array
     {
         global $CFG_GLPI;
-        $items                  = IserviceToolBox::getArrayInputVariable('global_readcounter0', null);
+        $items                  = IserviceToolBox::getArrayInputVariable('globalreadcounter0', null);
         $import                 = IserviceToolBox::getInputVariable('import');
         $iwm_import             = IserviceToolBox::getInputVariable('iwm_import');
         $avitum_import          = IserviceToolBox::getInputVariable('avitum_import');
         $mass_action_group_read = IserviceToolBox::getInputVariable('mass_action_group_read');
         if (!empty($import)) {
-            $default_itil_category = PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE;
+            $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
             $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv(IserviceToolBox::getInputVariable('import_file'));
         } elseif (!empty($iwm_import)) {
-            $default_itil_category = PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE;
+            $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
             $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'IW');
         } elseif (!empty($avitum_import)) {
-            $default_itil_category = PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_EMAINTENANCE;
+            $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
             $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'AVITUM');
         } elseif (!empty($mass_action_group_read)) {
             $items = IserviceToolBox::getArrayInputVariable('item', []);
         }
 
         if (empty($default_itil_category)) {
-            $default_itil_category = PluginIserviceTicket::ITIL_CATEGORY_ID_CITIRE_CONTOR;
+            $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire contor');
         }
 
         if ($items !== null) {
@@ -192,7 +192,7 @@ class GlobalReadCounter extends View
                             , p.invoiced_total_black_field
                             , p.invoiced_total_color_field
                             , p.usage_address_field
-                            , plct.effective_date_field last_data_luc
+                            , plct.effective_date_field last_effective_date
                             , COALESCE(plct.total2_black_field, 0) last_total2_black
                             , COALESCE(plct.total2_color_field, 0) last_total2_color
                             , s.id supplier_id
@@ -240,21 +240,21 @@ class GlobalReadCounter extends View
                         'operation' => 'set_usage_address_field'
                     ],
                 ],
-                'last_data_luc' => [
+                'last_effective_date' => [
                     'title' => 'Data lucrare<br>ultimul tichet închis',
                     'align' => 'center',
                     'style' => 'white-space: nowrap;',
-                    'format' => "%s<input type='hidden' name='global_readcounter0[printer][[id]][data_luc_old]' value='[last_data_luc]'>"
+                    'format' => "%s<input type='hidden' name='globalreadcounter0[printer][[id]][effective_date_old]' value='[last_effective_date]'>"
                 ],
                 'last_total2_black' => [
                     'title' => 'Black2<br>u. t. î.',
                     'align' => 'right',
-                    'format' => "%s<input type='hidden' name='global_readcounter0[printer][[id]][total2_black_old]' value='[last_total2_black]'>"
+                    'format' => "%s<input type='hidden' name='globalreadcounter0[printer][[id]][total2_black_old]' value='[last_total2_black]'>"
                 ],
                 'last_total2_color' => [
                     'title' => 'Color2<br>u. t. î.',
                     'align' => 'right',
-                    'format' => "%s<input type='hidden' name='global_readcounter0[printer][[id]][total2_color_old]' value='[last_total2_color]'>"
+                    'format' => "%s<input type='hidden' name='globalreadcounter0[printer][[id]][total2_color_old]' value='[last_total2_color]'>"
                 ],
                 'total2_black_current' => [
                     'title' => 'Black2 curent',
@@ -265,7 +265,7 @@ class GlobalReadCounter extends View
                         'name' => 'total2_black_field',
                         'empty_value' => '[last_total2_black]',
                         'min_value' => '[last_total2_black]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
+                        'ignore_min_value_if_not_set' => '[name="globalreadcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Black2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
@@ -288,7 +288,7 @@ class GlobalReadCounter extends View
                         'name' => 'total2_color_field',
                         'empty_value' => '[last_total2_color]',
                         'min_value' => '[last_total2_color]',
-                        'ignore_min_value_if_not_set' => '[name="global_readcounter0[printer][[id]][effective_date_field]"]',
+                        'ignore_min_value_if_not_set' => '[name="globalreadcounter0[printer][[id]][effective_date_field]"]',
                         'label' => 'Color2 curent pentru [serial]',
                         'class' => 'agressive',
                         'style' => 'text-align:right; width: 5em;',
@@ -303,7 +303,7 @@ class GlobalReadCounter extends View
                         'post_widget' => '
                             <script>
                                 if (![' . PluginIservicePrinter::ID_COLOR_TYPE . ', ' . PluginIservicePrinter::ID_PLOTTER_TYPE . '].includes([printertypes_id])) {
-                                    $("[name=\'global_readcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color_field\\\\]\']").parent().children().hide();
+                                    $("[name=\'globalreadcounter0\\\\[printer\\\\]\\\\[[id]\\\\]\\\\[total2_color_field\\\\]\']").parent().children().hide();
                                 }
                             </script>',
                     ],
@@ -316,7 +316,7 @@ class GlobalReadCounter extends View
                         'type' => self::FILTERTYPE_DATETIME,
                         'name' => 'effective_date_field',
                         'empty_value' => date('Y-m-d H:i:s'),
-                        'min_value' => '[last_data_luc]',
+                        'min_value' => '[last_effective_date]',
                         'label' => 'Data citire pentru [serial]',
                         'import' => [
                             'id' => '[spaceless_serial]',

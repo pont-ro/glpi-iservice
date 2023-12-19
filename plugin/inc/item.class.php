@@ -94,6 +94,9 @@ trait PluginIserviceItem
 
     public function updateCustomFields($parentId, $input, $history = 1, $options = []): bool
     {
+        if (isset($input['items_id'])) {
+            unset($input['items_id']);
+        }
         if ($this->loadOrCreateCustomFields($parentId)) {
             return $this->customfields->update(array_filter(array_merge($input, ['id' => $this->customfields->getID()])), $history, $options);
         }
