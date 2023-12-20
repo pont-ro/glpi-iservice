@@ -35,7 +35,7 @@ class PluginIserviceTicket extends Ticket
 
     public static $field_settings          = null;
     public static $field_settings_id       = 0;
-    protected static $itil_categories      = null;
+    protected static $itilCategories      = null;
     protected static $installed_cartridges = [];
 
     public static $customFieldsModelName = 'PluginFieldsTicketticketcustomfield';
@@ -65,22 +65,22 @@ class PluginIserviceTicket extends Ticket
         }
     }
 
-    public static function getItilCategoryId(string $itilcategory_name): int
+    public static function getItilCategoryId(string $itilcategoryName): int
     {
-        if (self::$itil_categories == null) {
+        if (self::$itilCategories == null) {
             self::refreshItilCategories();
         }
 
-        return self::$itil_categories[strtolower($itilcategory_name)] ?? 0;
+        return self::$itilCategories[strtolower($itilcategoryName)] ?? 0;
     }
 
     public static function refreshItilCategories(): void
     {
         global $DB;
-        self::$itil_categories  = [];
+        self::$itilCategories = [];
         $itil_categories_result = $DB->query("SELECT id, name FROM glpi_itilcategories") or die($DB->error());
         while (($itil_category_row = $DB->fetchAssoc($itil_categories_result)) !== null) {
-            self::$itil_categories[strtolower($itil_category_row['name'])] = $itil_category_row['id'];
+            self::$itilCategories[strtolower($itil_category_row['name'])] = $itil_category_row['id'];
         }
     }
 
@@ -1756,7 +1756,7 @@ class PluginIserviceTicket extends Ticket
                     $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
                 }
 
-                if ($track->add(array_merge($track->fields, $ticketData, ['add' => 'add', '_mode' => PluginIserviceTicket::MODE_READCOUNTER, '_no_message' => 1]))) {
+                if ($track->add(array_merge($track->fields, $ticketData, ['add' => 'add', '_no_message' => 1]))) {
                     $ticket_count++;
                 } else {
                     $success = false;
