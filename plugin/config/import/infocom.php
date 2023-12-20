@@ -9,4 +9,7 @@ return [
         'suppliers_id' => 'Supplier',
     ],
     'identifierField' => ['itemtype', 'items_id'],
+    'handleMissingForeignKeys' => [
+        'items_id' => ['add' => 100000000], //Temporary fix for missing items_id
+    ],
 ];
