@@ -29,5 +29,6 @@ return [
     ],
     'handleMissingForeignKeys' => [
         'plugin_fields_cartridgeitemtypedropdowns_id' => ['add' => 100000000],
+        'locations_id'                                => ['add' => 100000000],
     ],
 ];

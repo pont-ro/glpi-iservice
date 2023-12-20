@@ -348,7 +348,7 @@ if (empty($importConfig)) {
 
 $foreignKeyData = getForeignKeyData($importConfig);
 $select         = $importConfig['select'] ?? '*';
-$limit          = $importConfig['limit'] ?? 50000;
+$limit          = $importConfig['limit'] ?? 5000;
 
 $oldItems = PluginIserviceDB::getQueryResult(
     "SELECT a.* FROM (SELECT $select FROM $importConfig[oldTable] ORDER BY id) a WHERE id > $input[startFromId] LIMIT $limit",
