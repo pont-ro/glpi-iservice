@@ -24,6 +24,8 @@ if (($addConsumable = IserviceToolBox::getInputVariable('add_consumable'))
     $noRedirectAfterTicketUpdate = true;
 }
 
+$global_readcounter = IserviceToolBox::getInputVariable('global_readcounter');
+
 $post                 = filter_input_array(INPUT_POST);
 $get                  = filter_input_array(INPUT_GET);
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get);
@@ -86,8 +88,16 @@ if (!empty($addConsumable) && !empty($id)) {
     Html::redirect($CFG_PLUGIN_ISERVICE['root_doc'] . "/front/hmarfaexport.form.php?id=$id&mode=" . PluginIserviceHmarfa::EXPORT_MODE_TICKET);
 }
 
+if (!empty($global_readcounter) && ($globalreadcounter0 = IserviceToolBox::getArrayInputVariable('globalreadcounter0', []))) {
+    $success = PluginIserviceTicket::createGlobalReadCounterTickets($globalreadcounter0);
+}
+
 Html::header($header_title);
 
-$ticket->showForm($id, $options);
+if ($global_readcounter) {
+    $ticket->displayResult('global_readcounter', $success);
+} else {
+    $ticket->showForm($id, $options);
+}
 
 Html::footer();

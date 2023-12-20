@@ -21,8 +21,7 @@ function getSearchStrings()
         '$CFG_GLPI[root_doc]/plugins/iservice' => '$CFG_PLUGIN_ISERVICE[root_doc]',
         'DIRECTORY_SEPARATOR' => "'/'???",
         'PluginIserviceHtml' => 'Html',
-        '["items_id"][' => "???",
-        "['items_id'][" => "???",
+        'global_readcounter0' => 'globalreadcounter0',
     ];
 
     $customFieldDefinitionFiles = glob(PLUGIN_ISERVICE_DIR . '/install/customfields/*.json');

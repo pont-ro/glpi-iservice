@@ -197,7 +197,7 @@ class PluginIserviceMovement extends CommonDBTM
                 $params                                  .= "&_close_on_success=1";
                 $params                                  .= "&add_cartridges_as_negative_consumables=1";
                 $ticket                                   = new PluginIserviceTicket();
-                $ticket->fields['printer_id'] = $this->fields['items_id'];
+                $ticket->fields['items_id']['Printer'][0] = $this->fields['items_id'];
                 $ticket->fields['locations_id']           = $printer->fields['locations_id'] ?? '';
                 $ticket->fields['_suppliers_id_assign']   = $this->fields['suppliers_id_old'];
                 $ticket_actions                           = PluginIserviceCartridgeItem::tableChangeablesForTicket($ticket);

@@ -819,7 +819,7 @@ class PluginIserviceEmaintenance extends MailCollector
             return false;
         }
 
-        $ticket->fields['printer_id'] = $extended_data['printers_id'];
+        $ticket->fields['items_id']['Printer'][0] = $extended_data['printers_id'];
         if (!empty($extended_data['suppliers_id'])) {
             // This field value will be needed to get the changeable cartridges.
             $ticket->fields['_suppliers_id_assign'] = $extended_data['suppliers_id'];
