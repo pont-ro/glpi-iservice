@@ -398,7 +398,7 @@ do {
         }
 
         if ($foundId === false) {
-            if (!$item->add($itemData, [], false)) {
+            if (!$item->add($itemData, [], false) && empty($importConfig['ignoreNotAdded'])) {
                 $errors['itemsNotAdded'][$itemTypeClass][]            = "Item old id: $oldItem[id]. Error: Could not add $itemTypeClass object with data: " . json_encode($itemData);
                 $errors['itemsNotAdded'][$itemTypeClass]['old_ids'][] = $oldItem['id'];
                 continue;
