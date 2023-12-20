@@ -4,6 +4,7 @@ return [
     'oldTable'      => 'glpi_itilfollowups where content != ""',
     'forceValues'   => [
         'requesttypes_id' => 0,
+        '_disablenotif'   => 1,
     ],
     'foreignKeys'   => [
         'items_id'        => [
