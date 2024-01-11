@@ -322,6 +322,43 @@ function logErrors(string $errors): void
     file_put_contents(getImportLogFilePath(), $errors . "\n", FILE_APPEND);
 }
 
+function recordPreImportIdsForJunkClean()
+{
+    global $DB;
+
+    $tables = [
+        'glpi_events',
+        'glpi_logs',
+        'glpi_plugin_formcreator_issues',
+    ];
+
+    foreach ($tables as $table) {
+        $sql    = "SELECT MAX(id) as max_id FROM $table";
+        $result = $DB->query($sql);
+        $row    = $result->fetch_assoc();
+
+        $_SESSION['plugin']['iservice']['import']['tablesToClean'][$table] = $row['max_id'] ?? 0;
+    }
+}
+
+function deleteJunkRecordsCreatedDuringImport()
+{
+    global $DB;
+
+    $tablesToClean = $_SESSION['plugin']['iservice']['import']['tablesToClean'] ?? [];
+
+    foreach ($tablesToClean as $table => $maxId) {
+        if ($maxId === null) {
+            continue;
+        }
+
+        $sql = "DELETE FROM $table WHERE id > $maxId";
+        if ($DB->query($sql)) {
+            $_SESSION['plugin']['iservice']['import']['tablesToClean'][$table] = null;
+        }
+    }
+}
+
 // -------------------
 /* End of functions */
 
@@ -366,6 +403,8 @@ set_time_limit(calculateExecutionTime(count($oldItems)));
 
 $messagesFromSessionInitial                         = $_SESSION['MESSAGE_AFTER_REDIRECT'] ?? [];
 $_SESSION['plugin']['iservice']['importInProgress'] = true;
+
+recordPreImportIdsForJunkClean();
 
 do {
     unset($errors['retry']);
@@ -439,6 +478,8 @@ if ($oldItemsCount > 0 && $oldItemsCount === count($errors['retry'] ?? [])) {
     $errors[] = implode(', ', array_keys($errors['retry']));
     unset($errors['retry']);
 }
+
+deleteJunkRecordsCreatedDuringImport();
 
 $_SESSION['plugin']['iservice']['importInProgress'] = false;
 
