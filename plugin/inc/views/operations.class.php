@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Operations.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
@@ -48,7 +48,7 @@ class Operations extends View
             'ticketreport' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.report.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_exp.png',
-                'title' => __('Generate', 'iservice') . ' ' . __('intervention report', 'iservice'),
+                'title' => __('Generate', 'iservice') . ' operations.class.php' . __('intervention report', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_docgenerator', READ),
             ],
         ];
@@ -207,7 +207,7 @@ class Operations extends View
             'columns' => [
                 'status' => [
                     'title' => 'Stare tichet',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Operations::getTicketStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Operations::getTicketStatusDisplay($row);',
                     'align' => 'center',
                 ],
                 'effective_date_field' => [

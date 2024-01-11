@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Emaintenance.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
@@ -33,7 +33,7 @@ class Emaintenance extends View
             ],
             'ticket' => self::getTicketButton($row_data),
             'list_ticket' => [
-                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0[printer_id]=$row_data[printers_id]&operations0[filter_description]=$operations_filter_description",
+                'link' => "views.php?view=Operations&operations0[printer_id]=$row_data[printers_id]&operations0[filter_description]=$operations_filter_description",
                 'icon' => "$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_detail.png",
                 'title' => __('Operations list', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
@@ -57,7 +57,7 @@ class Emaintenance extends View
             ],
         ];
 
-        return self::getIDDisplayLink($row_data['id'], true, $row_data['read']) . self::getIDDisplayLink($row_data['id'], false, !$row_data['read']) . ' ' . self::getActionButtons($buttons_config, true);
+        return phpself::getIDDisplayLink($row_data['id'], true, $row_data['read']) . self::getIDDisplayLink($row_data['id'], false, !$row_data['read']) . ' ' . self::getActionButtons($buttons_config, true);
     }
 
     protected static function getIDDisplayLink($id, $read, $visible)

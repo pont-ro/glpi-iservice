@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Pending_Emails.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
@@ -59,7 +59,7 @@ class PendingEmails extends View
                 global $CFG_GLPI;
 
                 $pending_email = new PluginIservicePendingEmail();
-                if (!$pending_email->getFromDB($item) || empty($pending_email->fields['attachment']) || !file_exists(PluginIservicePendingEmailUpdater::getInvoiceSearchFolder() . "/$pending_email->fields['attachment']")) {
+                if (!$pending_email->getFromDB($item) || empty($pending_email->fields['attachment']) || !file_exists(PluginIservicePendingEmailUpdater::getInvoiceSearchFolder() . "/pendingemails.class.php")) {
                     $result['ignored']++;
                     continue;
                 }
@@ -81,7 +81,7 @@ class PendingEmails extends View
 
                 $mmail->Body = urldecode($pending_email->fields['body']) . "\n\n--\n$CFG_GLPI[mailing_signature]";
 
-                $mmail->addAttachment(PluginIservicePendingEmailUpdater::getInvoiceSearchFolder() . "/$pending_email->fields['attachment']");
+                $mmail->addAttachment(PluginIservicePendingEmailUpdater::getInvoiceSearchFolder() . "/pendingemails.class.php");
 
                 if (!$mmail->Send()) {
                     $result['error']++;
@@ -124,11 +124,11 @@ class PendingEmails extends View
             'mass_actions' => [
                 'send_email' => [
                     'caption' => 'Trimite email(uri)',
-                    'action' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\PendingEmails',
+                    'action' => 'views.php?view=PendingEmails',
                 ],
                 'delete' => [
                     'caption' => 'Șterge definitiv',
-                    'action' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\PendingEmails',
+                    'action' => 'views.php?view=PendingEmails',
                 ],
             ],
 
@@ -139,7 +139,7 @@ class PendingEmails extends View
                 'partner_name' => [
                     'title' => 'Partener',
                     'link' => [
-                        'href' => $CFG_PLUGIN_ISERVICE['root_doc'] . '/front/views.php?view=GlpiPlugin\Iservice\Views\UnpaidInvoices&unpaidinvoices0[cod]=[hmarfa_code_field]',
+                        'href' => $CFG_PLUGIN_ISERVICE['root_doc'] . '/front/views.php?view=UnpaidInvoices&unpaidinvoices0[cod]=[hmarfa_code_field]',
                         'target' => '_blank',
                     ],
                 ],

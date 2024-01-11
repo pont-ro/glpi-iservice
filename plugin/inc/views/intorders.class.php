@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Introders.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
@@ -77,7 +77,7 @@ class Intorders extends View
         }
 
         if (Session::haveRight('plugin_iservice_view_extorders', READ)) {
-            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}views.php?view=GlpiPlugin\Iservice\Specialviews\Extorders'>" . _n('External order', 'External orders', Session::getPluralNumber(), 'iservice') . "</a>";
+            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}views.php?view=Extorders'>" . _n('External order', 'External orders', Session::getPluralNumber(), 'iservice') . "</a>";
         }
 
         $order_status_options                            = PluginIserviceOrderStatus::getAllForDropdown();

@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Tickets.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Views\View;
 use PluginIserviceHmarfa;
@@ -81,7 +81,7 @@ class Tickets extends View
         $list_ticket_description = urlencode(empty($row_data['printer_id']) ? "Toate" : "$row_data[printer_name] ($row_data[printer_serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                 = [
             'printers' => [
-                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_id]=$row_data[supplier_id]&printers0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=Printers&printers0[supplier_id]=$row_data[supplier_id]&printers0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/printer.png',
                 'title' => "Lista aparate " . htmlentities($row_data['supplier_name'], ENT_QUOTES),
                 'visible' => Session::haveRight('plugin_iservice_view_printers', READ),
@@ -95,11 +95,11 @@ class Tickets extends View
             'ticketreport' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.report.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_exp.png',
-                'title' => __('Generate', 'iservive') . ' ' . __('intervention report', 'iservice'),
+                'title' => __('Generate', 'iservive') . ' tickets.class.php' . __('intervention report', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_docgenerator', READ),
             ],
             'list_ticket' => [
-                'link' => $row_data['printer_id'] ? "views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$list_ticket_description" : 'javascript:void(0);',
+                'link' => $row_data['printer_id'] ? "views.php?view=Operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$list_ticket_description" : 'javascript:void(0);',
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_detail' . ($row_data['printer_id'] ? '' : '_disabled') . '.png',
                 'title' => $row_data['printer_id'] ? __('Operations list', 'iservice') : 'Tichetul nu are aparat', // Lista lucrari.
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
@@ -112,7 +112,7 @@ class Tickets extends View
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
             ],
             'cartridges' => [
-                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=Cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
                 'title' => __('Installable cartridges', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
@@ -120,7 +120,7 @@ class Tickets extends View
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_$row_data[ticket_id]'></div>",
             ],
             'invoices' => [
-                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Partners" . ($row_data['supplier_id'] ? "&partners0[partener]=" . urlencode($row_data['supplier_name']) : '') . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1" . ($row_data['supplier_id'] ? "&partners0[filter_description]=" . urlencode($row_data['supplier_name']) : ''),
+                'link' => "views.php?view=Partners" . ($row_data['supplier_id'] ? "&partners0[partener]=" . urlencode($row_data['supplier_name']) : '') . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1" . ($row_data['supplier_id'] ? "&partners0[filter_description]=" . urlencode($row_data['supplier_name']) : ''),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/price_alert.png',
                 'title' => __('Unpaid invoices', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_partners', READ),
@@ -168,7 +168,7 @@ class Tickets extends View
         case 'aviz':
         case 'comanda':
             if ($row_data['ordered_consumables']) {
-                return "<a title='Vezi comenzi interne' href='views.php?view=GlpiPlugin\Iservice\Specialviews\Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$row_data[ticket_id]'>$row_data[ticket_id]</a>";
+                return "<a title='Vezi comenzi interne' href='views.php?view=Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$row_data[ticket_id]'>$row_data[ticket_id]</a>";
             }
 
             // Here is an intentioned fallthrough to default!
@@ -275,7 +275,7 @@ class Tickets extends View
         if (Session::haveRight('plugin_iservice_view_emaintenance', READ)) {
             $em_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_ememails where `read` = 0');
             $em_count      = empty($em_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$em_count_data[0]['count']}</span>";
-            $prefix       .= "<a href='views.php?view=GlpiPlugin\Iservice\Specialviews\Emaintenance' target='_blank'>Număr emailuri E-maintenance necitite: $em_count</a>";
+            $prefix       .= "<a href='views.php?view=Emaintenance' target='_blank'>Număr emailuri E-maintenance necitite: $em_count</a>";
         }
 
         if (Session::haveRight('plugin_iservice_interface_original', READ)) {
@@ -287,7 +287,7 @@ class Tickets extends View
         if (Session::haveRight('plugin_iservice_view_movements', READ)) {
             $mo_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_movements m where m.moved = 0');
             $mo_count      = empty($mo_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$mo_count_data[0]['count']}</span>";
-            $prefix       .= "&nbsp;|&nbsp;<a href='views.php?view=GlpiPlugin\Iservice\Specialviews\Movements&movements0[finalized]=0' target='_blank'>Număr mutări nefinalizate: $mo_count</a>";
+            $prefix       .= "&nbsp;|&nbsp;<a href='views.php?view=Movements&movements0[finalized]=0' target='_blank'>Număr mutări nefinalizate: $mo_count</a>";
         }
 
         return [
@@ -489,13 +489,13 @@ class Tickets extends View
             'columns' => [
                 'status' => [
                     'title' => 'Stare tichet',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketStatusDisplay($row);',
                     'align' => 'center',
                 ],
                 'ticket_id' => [
                     'title' => 'Număr',
                     'align' => 'center',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketIdDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketIdDisplay($row);',
                 ],
                 'ticket_name' => [
                     'title' => 'Titlu',
@@ -522,7 +522,7 @@ class Tickets extends View
                 ],
                 'supplier_name' => [
                     'title' => 'Partener',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getSupplierDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getSupplierDisplay($row);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
@@ -541,7 +541,7 @@ class Tickets extends View
                 ],
                 'printer_serial' => [
                     'title' => 'Număr serie',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getSerialDisplay($row);',
                 ],
                 'date_open' => [
                     'title' => 'Data deschiderii',
@@ -555,7 +555,7 @@ class Tickets extends View
                 ],
                 'tech_assign_name' => [
                     'title' => 'Tehnician alocat',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketAssignTechDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketAssignTechDisplay($row);',
                 ],
                 'ticket_category' => [
                     'title' => 'Categorie'

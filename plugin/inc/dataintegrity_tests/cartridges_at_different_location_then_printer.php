@@ -22,7 +22,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges at different location as the printer they are installed on',
-            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> is at location '[l1_name]' while the printer <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[pname]</a> on which it is installed is at location '[l2_name]'. <a id='fix-location-[cid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=[cid]&location_id=[l2id]&operation=force_location\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-location-[cid]\").remove();}});'>»»» FIX «««</a>",
+            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> is at location '[l1_name]' while the printer <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[pname]</a> on which it is installed is at location '[l2_name]'. <a id='fix-location-[cid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=[cid]&location_id=[l2id]&operation=force_location\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-location-[cid]\").remove();}});'>»»» FIX «««</a>",
         ],
     ],
 ];

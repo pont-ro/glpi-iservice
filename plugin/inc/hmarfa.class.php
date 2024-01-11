@@ -1338,7 +1338,7 @@ class PluginIserviceHmarfa
         $consumables_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', $consumables_header, $consumables_rows, 'text-align:center;');
 
         // Action buttons.
-        $action_buttons = " <a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets' target='_blank'>" . __('Ticket list', 'iservice') . "</a>";
+        $action_buttons = " <a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets' target='_blank'>" . __('Ticket list', 'iservice') . "</a>";
         if ($ticket->getOrderStatus() === 0) {
             $action_buttons .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             $action_buttons .= "&nbsp;" . $form->generateSubmit('order', __('Order', 'iservice'));
