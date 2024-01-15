@@ -204,7 +204,6 @@ class GlobalReadCounter extends View
                         WHERE $printer_condition
                         ",
             'show_filter_buttons' => false,
-            'show_limit' => false,
             'itemtype' => 'printer',
             'filters' => [
                 'filter_buttons_prefix' => "<p>$import_button_IWM $import_button_AVITUM &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; $import_button</p><div style='color: saddlebrown;font-size:1.2em;margin-top:1em;'>Dacă nu vreți să raportați un aparat atunci ștergeți câmpul Data citire</div>",
