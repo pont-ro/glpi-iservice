@@ -137,9 +137,9 @@ class View extends \CommonGLPI
 
     public function __construct($load_settings = true, $table_prefix = '', $table_suffix = '')
     {
-        $this->table_prefix                    = $table_prefix;
-        $this->table_suffix                    = $table_suffix;
-        $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false');
+        $this->table_prefix = $table_prefix;
+        $this->table_suffix = $table_suffix;
+        $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false') && self::inProfileArray('super-admin', 'admin');
 
         if ($load_settings) {
             $this->loadSettings();

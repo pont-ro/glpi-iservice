@@ -216,7 +216,6 @@ class Evaluation extends View
             'query' => join(' UNION ', $queries),
             'default_limit' => 100,
             'show_filter_buttons' => Session::haveRight('plugin_iservice_view_evaluation', UPDATE),
-            'show_limit' => 'ajax', // Session::haveRight('plugin_iservice_view_evaluation', UPDATE),
             'filters' => [
                 'start_date' => [
                     'type' => 'date',
@@ -278,7 +277,6 @@ class Evaluation extends View
 												",
                         'default_limit' => 50,
                         'show_filter_buttons' => false,
-                        'show_limit' => true,
                         'columns' => [
                             'status' => [
                                 'title' => 'Stare tichet',
