@@ -41,6 +41,12 @@ return [
                 'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php",
                 'roles' => ['super-admin','admin'],
             ],
+            'aa' => [
+                'title' => 'AA',
+                'icon'  => 'fa-solid fa-file-contract',
+                'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php",
+                'roles' => ['super-admin','admin'],
+            ],
         ],
         'classes' => [
             'GlpiPlugin\Iservice\Views\Printers',
