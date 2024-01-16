@@ -97,7 +97,7 @@ class Printers extends View
             $actions['move'] = [
                 'link' => "movement.form.php?itemtype=Printer&items_id=$row_data[printer_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/cog.png',
-                'title' => __('Move', 'iservice') . " printers.class.php" . __('Printer', 'iservice'),
+                'title' => __('Move', 'iservice') . " " . __('Printer', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_movement', READ),
             ];
         }

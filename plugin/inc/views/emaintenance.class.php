@@ -57,7 +57,7 @@ class Emaintenance extends View
             ],
         ];
 
-        return phpself::getIDDisplayLink($row_data['id'], true, $row_data['read']) . self::getIDDisplayLink($row_data['id'], false, !$row_data['read']) . ' ' . self::getActionButtons($buttons_config, true);
+        return self::getIDDisplayLink($row_data['id'], true, $row_data['read']) . self::getIDDisplayLink($row_data['id'], false, !$row_data['read']) . ' ' . self::getActionButtons($buttons_config, true);
     }
 
     protected static function getIDDisplayLink($id, $read, $visible)

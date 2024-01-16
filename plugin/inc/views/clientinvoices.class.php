@@ -121,7 +121,7 @@ class ClientInvoices extends View
                 $form->generateFieldTableRow('Email pentru trimis facturi', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[email_for_invoices_field]', $partner->customfields->fields['email_for_invoices_field'])),
                 $form->generateButtonsTableRow(
                     [
-                        $form->generateButton('update', __('Save') . " clientinvoices.class.php" . __('Supplier'), ['type' => 'submit']),
+                        $form->generateButton('update', __('Save') . " " . __('Supplier'), ['type' => 'submit']),
                         $form->generateButton('generate_magic_link', 'Generează link magic' . (empty($magic_link) ? '' : ' nou'), $generate_magic_link_button_options),
                         empty($magic_link) ? '' : "<a href='mailto:$mail_recipient?subject=$mail_subject&body=$mail_body' class='vsubmit' style='margin:1em;'>Trimite email</a>",
                         "<a href='$contact_partner_link' class='vsubmit' style='margin:1em;' target='_blank'>Ticket plăți</a>",

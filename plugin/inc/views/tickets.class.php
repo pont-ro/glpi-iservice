@@ -95,7 +95,7 @@ class Tickets extends View
             'ticketreport' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.report.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_exp.png',
-                'title' => __('Generate', 'iservive') . ' tickets.class.php' . __('intervention report', 'iservice'),
+                'title' => __('Generate', 'iservive') . ' ' . __('intervention report', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_docgenerator', READ),
             ],
             'list_ticket' => [
