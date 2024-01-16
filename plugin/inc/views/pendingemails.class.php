@@ -59,7 +59,7 @@ class PendingEmails extends View
                 global $CFG_GLPI;
 
                 $pending_email = new PluginIservicePendingEmail();
-                if (!$pending_email->getFromDB($item) || empty($pending_email->fields['attachment']) || !file_exists(PluginIservicePendingEmailUpdater::getInvoiceSearchFolder() . "$pending_email->fields['attachment']")) {
+                if (!$pending_email->getFromDB($item) || empty($pending_email->fields['attachment']) || !file_exists(PluginIservicePendingEmailUpdater::getInvoiceSearchFolder() . "/$pending_email->fields['attachment']")) {
                     $result['ignored']++;
                     continue;
                 }
