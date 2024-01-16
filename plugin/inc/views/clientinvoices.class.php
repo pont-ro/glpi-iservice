@@ -2,12 +2,12 @@
 
 // Imported from iService2, needs refactoring. Original file: "Facturi_Client.php".
 // File and class will be renamed after review.
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
 use GlpiPlugin\Iservice\Views\Views;
-use GlpiPlugin\Iservice\Specialviews\LastNTickets;
+use GlpiPlugin\Iservice\Views\LastNTickets;
 use Html;
 use PluginIserviceDownload;
 use PluginIserviceHtml;
@@ -145,7 +145,7 @@ class ClientInvoices extends View
 
         ob_start();
         echo '<br/><h1>Ultimele 5 tichete cu categoria "Plati" pentru clientul ' . self::getName($partner, $client_access) . '</h1>';
-        $view = Views::getView('GlpiPlugin\Iservice\Specialviews\LastNTickets', false);
+        $view = Views::getView('GlpiPlugin\Iservice\Views\LastNTickets', false);
         $view->customize(['type' => LastNTickets::TYPE_PLATI, 'n' => 10, 'supplier_id' => $partner->getID()]);
         $view->display(true, false, 0, false);
         $suffix = ob_get_contents();
@@ -219,7 +219,7 @@ class ClientInvoices extends View
                           AND (tehnician is null and '[tehnician]' = '%%' OR tehnician LIKE '[tehnician]')
                         ",
             'default_limit' => 10,
-            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\ClientInvoices::getRowBackgroundClass($row_data);',
+            'row_class' => 'function:\GlpiPlugin\Iservice\Views\ClientInvoices::getRowBackgroundClass($row_data);',
             'filters' => [
                 'nrfac' => [
                     'type' => 'text',
@@ -337,7 +337,7 @@ class ClientInvoices extends View
                 'data_plata' => [
                     'title' => 'Achitat',
                     'tooltip' => 'Accesări ale linkului magic',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\ClientInvoices::getDataPlataDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\ClientInvoices::getDataPlataDisplay($row);',
                     'align' => 'center',
                     'style' => 'white-space: nowrap;',
                     'link' => [
@@ -375,7 +375,7 @@ class ClientInvoices extends View
                 'download' => [
                     'title' => 'Descarcă',
                     'align' => 'center',
-                    'format' => "function:\GlpiPlugin\Iservice\Specialviews\ClientInvoices::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link_field']}');",
+                    'format' => "function:\GlpiPlugin\Iservice\Views\ClientInvoices::getDownloadDisplay(\$row, '{$this->partner->customfields->fields['magic_link_field']}');",
                 ],
             ],
         ];

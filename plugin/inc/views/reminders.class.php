@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Reminders.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use Glpi\Toolbox\Sanitizer;
 use GlpiPlugin\Iservice\Views\View;
@@ -85,7 +85,7 @@ class Reminders extends View
 							[user_id]
 						",
             'default_limit' => 50,
-            'row_class' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getRowBackgroundClass($row_data);',
+            'row_class' => 'function:\GlpiPlugin\Iservice\Views\Reminders::getRowBackgroundClass($row_data);',
             'filters' => [
                 'date' => [
                     'type' => self::FILTERTYPE_DATE,
@@ -149,18 +149,18 @@ class Reminders extends View
                 ],
                 'visibility' => [
                     'title' => 'Public',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getVisibilityDisplay($row);'
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Reminders::getVisibilityDisplay($row);'
                 ],
                 'user_name' => [
                     'title' => 'Redactor',
                 ],
                 'state' => [
                     'title' => 'Status',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getStatusDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Reminders::getStatusDisplay($row);',
                 ],
                 'text' => [
                     'title' => 'Descriere',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Reminders::getTextDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Reminders::getTextDisplay($row);',
                 ],
             ],
         ];

@@ -158,10 +158,11 @@ class View extends \CommonGLPI
         }
 
         global $CFG_PLUGIN_ISERVICE;
+        $viewParamValue = basename(dirname(static::class)) . '-' . basename(static::class);
 
         return [
             'title' => static::getMenuName(),
-            'page' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=" . static::class,
+            'page' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=" . basename(static::class),
             'icon'  => static::$icon,
         ];
     }
@@ -1168,7 +1169,7 @@ class View extends \CommonGLPI
 
     protected function getCacheFileName(): string
     {
-        return Views::$default_views_directory . "/{$this->getMachineName()}.cache";
+        return Views::$defaultViewsDirectory . "/{$this->getMachineName()}.cache";
     }
 
     public function getCachedData(): array

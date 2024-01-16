@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Global_ReadCounter.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
@@ -211,11 +211,11 @@ class GlobalReadCounter extends View
             'columns' => [
                 'printer_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getPrinterDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::getPrinterDisplay($row, $this->import_data);',
                 ],
                 'supplier_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getSupplierDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::getSupplierDisplay($row, $this->import_data);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'target' => '_blank',
@@ -228,7 +228,7 @@ class GlobalReadCounter extends View
                 ],
                 'otherserial' => [
                     'title' => 'Număr inventar',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::getOtherSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::getOtherSerialDisplay($row);',
                 ],
                 'usage_address_field' => [
                     'title' => 'Adresa de exploatare',
@@ -271,10 +271,10 @@ class GlobalReadCounter extends View
                         'import' => [
                             'id' => '[spaceless_serial]',
                             'index' => 'total2_black_field',
-                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
-                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
-                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler("estimate");'
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateErrorBadgeText();',
+                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateEstimateBadgeText();',
+                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateBadgeClickHandler("estimate");'
                         ]
                     ],
                 ],
@@ -294,10 +294,10 @@ class GlobalReadCounter extends View
                         'import' => [
                             'id' => '[spaceless_serial]',
                             'index' => 'total2_color_field',
-                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
-                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText();',
-                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler("estimate");'
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateErrorBadgeText();',
+                            'estimate_text' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateEstimateBadgeText();',
+                            'estimate_handler' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateBadgeClickHandler("estimate");'
                         ],
                         'post_widget' => '
                             <script>
@@ -320,10 +320,10 @@ class GlobalReadCounter extends View
                         'import' => [
                             'id' => '[spaceless_serial]',
                             'index' => 'effective_date_field',
-                            'error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
-                            'error_text' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateErrorBadgeText();',
-                            'minimum_error_handler' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateBadgeClickHandler();',
-                            'minimum_error_hint' => 'function:\GlpiPlugin\Iservice\Specialviews\GlobalReadCounter::generateEstimateBadgeText("Click pentru a estima toate valorile");'
+                            'error_handler' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateBadgeClickHandler();',
+                            'error_text' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateErrorBadgeText();',
+                            'minimum_error_handler' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateBadgeClickHandler();',
+                            'minimum_error_hint' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::generateEstimateBadgeText("Click pentru a estima toate valorile");'
                         ]
                     ],
                 ],

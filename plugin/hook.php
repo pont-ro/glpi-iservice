@@ -82,7 +82,7 @@ function redirect_from_central()
 {
     global $CFG_PLUGIN_ISERVICE;
 
-    Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\SpecialViews\Tickets");
+    Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets");
 }
 
 function plugin_iservice_pre_Ticket_update(Ticket $item)

@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Evaluation.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Views\View;
 use \Session;
@@ -280,7 +280,7 @@ class Evaluation extends View
                         'columns' => [
                             'status' => [
                                 'title' => 'Stare tichet',
-                                'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketStatusDisplay($row);',
+                                'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketStatusDisplay($row);',
                                 'align' => 'center',
                             ],
                             'ticket_id' => [
@@ -322,7 +322,7 @@ class Evaluation extends View
                             ],
                             'tech_assign_name' => [
                                 'title' => 'Tehnician alocat',
-                                'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Tickets::getTicketAssignTechDisplay($row);',
+                                'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketAssignTechDisplay($row);',
                             ],
                             'printer_serial' => [
                                 'title' => 'Număr serie',

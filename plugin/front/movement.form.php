@@ -173,7 +173,7 @@ if (!empty($add)) {
     $movement->check($delete, DELETE);
     if ($movement->delete(['delete' => 'delete', 'id' => $delete, '_no_message' => true])) {
         Session::addMessageAfterRedirect('Mutare revocată', true);
-        Html::redirect('views.php?view=GlpiPlugin\Iservice\Specialviews\Movements');
+        Html::redirect('views.php?view=Movements');
     } else {
         Session::addMessageAfterRedirect('Could not delete movement', true, ERROR);
         Html::back();

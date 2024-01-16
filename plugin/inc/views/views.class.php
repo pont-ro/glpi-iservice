@@ -9,20 +9,21 @@ if (!defined('GLPI_ROOT')) {
 
 class Views
 {
-    public static $default_views_directory = null;
+    public static $defaultViewsDirectory = null;
 
     /**
      * Gets a View descendant by it's class name from the views collection
      *
-     * @param string $view_name The name of the view
+     * @param string $viewClassName The name of the view
      *
      * @return View
      */
-    public static function getView($view_class_name = '', $load_settings = true, $archive = false): View
+    public static function getView($viewClassName = '', $loadSettings = true, $archive = false): View
     {
-        if (!empty($view_class_name) && is_subclass_of("$view_class_name", 'GlpiPlugin\Iservice\Views\View')) {
-            \Html::header($view_class_name::getName());
-            return new $view_class_name($load_settings, $archive ? "a_" : "");
+        if (!empty($viewClassName) && is_subclass_of("GlpiPlugin\Iservice\Views\\$viewClassName", 'GlpiPlugin\Iservice\Views\View')) {
+            $fullClassName = "GlpiPlugin\Iservice\Views\\$viewClassName";
+            \Html::header($fullClassName::getName());
+            return new $fullClassName($loadSettings, $archive ? "a_" : "");
         } else {
             return new View();
         }
@@ -30,4 +31,4 @@ class Views
 
 }
 
-Views::$default_views_directory = PLUGIN_ISERVICE_DIR . '/inc/views';
+Views::$defaultViewsDirectory = PLUGIN_ISERVICE_DIR . '/inc/views';

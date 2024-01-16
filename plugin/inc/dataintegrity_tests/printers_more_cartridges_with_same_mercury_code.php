@@ -30,7 +30,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} printers with more then one cartridge with the same type and mercury code',
-            'iteration_text' => "Printer with serial <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0%5Bprinter_name%5D=[serial]' target='_blank'>[serial]</a> at partner [supplier] has the following [type_name] cartridges with mercury code [mercury_code]: [ids]",
+            'iteration_text' => "Printer with serial <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bprinter_name%5D=[serial]' target='_blank'>[serial]</a> at partner [supplier] has the following [type_name] cartridges with mercury code [mercury_code]: [ids]",
         ],
     ],
 ];

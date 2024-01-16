@@ -24,7 +24,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets with no counter that change a cartridge',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> with printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a> has no counter reading, but it changes a cartridge (the first installation was with ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[min_id]&mode=9999' target='_blank'>[min_id]</a>).",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> with printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a> has no counter reading, but it changes a cartridge (the first installation was with ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[min_id]&mode=9999' target='_blank'>[min_id]</a>).",
         ],
     ],
 ];

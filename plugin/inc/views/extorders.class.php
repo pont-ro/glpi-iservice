@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Extorders.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Views\View;
 use \Session;
@@ -29,7 +29,7 @@ class Extorders extends View
         }
 
         if (Session::haveRight('plugin_iservice_view_intorders', READ)) {
-            $order_buttons[] = "<a class='submit noprint' href='{$iservice_front}views.php?view=GlpiPlugin\Iservice\Specialviews\Intorders'>"
+            $order_buttons[] = "<a class='submit noprint' href='{$iservice_front}views.php?view=Intorders'>"
                 . _n('Internal order', 'Internal orders', Session::getPluralNumber(), 'iservice') . "</a>";
         }
 

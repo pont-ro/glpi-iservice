@@ -23,7 +23,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges at different partner as the printer they are installed on',
-            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a> is at partner [p1name] while the printer [pname] on which it is installed is at partner [p2name]. <a id='fix-supplier-[id]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=[id]&supplier_id=[p2id]&operation=force_supplier\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-supplier-[id]\").remove();}});'>»»» FIX «««</a>",
+            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a> is at partner [p1name] while the printer [pname] on which it is installed is at partner [p2name]. <a id='fix-supplier-[id]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=[id]&supplier_id=[p2id]&operation=force_supplier\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-supplier-[id]\").remove();}});'>»»» FIX «««</a>",
         ],
     ],
 ];
