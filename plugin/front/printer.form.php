@@ -1,9 +1,9 @@
 <?php
 // Import from iService2, needs refactoring.
 use Glpi\Event;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
-define('GLPI_ROOT', '../../..');
-require GLPI_ROOT . '/inc/includes.php';
+require "../inc/includes.php";
 
 Session::checkRight("plugin_iservice_printer", READ);
 
@@ -53,7 +53,7 @@ $contract_customfields = new PluginFieldsContractcontractcustomfield();
 if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer']['name'])) {
     $printer->check(-1, CREATE, $post_data['printer']);
     if (($id = $printer->add($post_data['printer'])) != false) {
-        if (!$printer_customfields->getFromDBByItemsId($id)) {
+        if (!PluginIserviceDB::populateByItemsId($printer_customfields, $id)) {
             $post['_customfields']['printer']['add']      = 'add';
             $post['_customfields']['printer']['items_id'] = $id;
             $printer_customfields->add($post['_customfields']['printer']);
@@ -68,7 +68,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
 } elseif (!empty($update) && $post_data['printer'] !== null && !empty($post_data['printer']['name'])) {
     $printer->check($id, UPDATE);
     $printer->update($post_data['printer']);
-    $printer_customfields->getFromDBByItemsId($id);
+    PluginIserviceDB::populateByItemsId($printer_customfields, $id);
     $post['_customfields']['printer'][$printer_customfields->getIndexName()] = $printer_customfields->getID();
     $printer_customfields->update($post['_customfields']['printer']);
     Event::log($id, "printers", 4, "inventory",    sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
@@ -77,16 +77,16 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
         Session::addMessageAfterRedirect('Introduceți un nume', true, ERROR);
     } else {
         $supplier->check(-1, CREATE, $post_data['supplier']);
-        if ($supplier->getFromDBByQuery("WHERE name = '{$post_data['supplier']['name']}' LIMIT 1")) {
+        if (PluginIserviceDB::populateByQuery($supplier, "WHERE name = '{$post_data['supplier']['name']}' LIMIT 1")) {
             Session::addMessageAfterRedirect("Partenerul cu numele {$post_data['supplier']['name']} există deja!", true, ERROR);
         } else {
             $fields_to_check = [
-                'part_cui' => 'Cod Fiscal',
-                'part_regcom' => 'Număr Registru Comerț',
-                'cod_hmarfa' => 'Cod Partener hMarfa',
+                'uic_field' => 'Cod Fiscal',
+                'crn_field' => 'Număr Registru Comerț',
+                'hmarfa_code_field' => 'Cod Partener hMarfa',
             ];
             foreach ($fields_to_check as $field_name_to_check => $field_to_check_label) {
-                if (!empty($post['_customfields']['supplier'][$field_name_to_check]) && $supplier_customfields->getFromDBByQuery("WHERE $field_name_to_check = '{$post['_customfields']['supplier'][$field_name_to_check]}' LIMIT 1")) {
+                if (!empty($post['_customfields']['supplier'][$field_name_to_check]) && PluginIserviceDB::populateByQuery($supplier_customfields, "WHERE $field_name_to_check = '{$post['_customfields']['supplier'][$field_name_to_check]}' LIMIT 1")) {
                     Session::addMessageAfterRedirect("Partenerul cu $field_to_check_label {$post['_customfields']['supplier'][$field_name_to_check]} există deja!", true, ERROR);
                     $error = true;
                 }
@@ -99,7 +99,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
                 }
 
                 if (($partner_id = $supplier->add($post_data['supplier'])) != false) {
-                    if (!$supplier_customfields->getFromDBByItemsId($partner_id)) {
+                    if (!PluginIserviceDB::populateByItemsId($supplier_customfields, $partner_id)) {
                         $post['_customfields']['supplier']['add']      = 'add';
                         $post['_customfields']['supplier']['items_id'] = $partner_id;
                         $supplier_customfields->add($post['_customfields']['supplier']);
@@ -132,7 +132,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
 } else if (!empty($update_supplier) && $post_data['supplier'] !== null && !empty($post_data['supplier']['name'])) {
     $supplier->check($post_data['supplier']['id'], UPDATE);
     $supplier->update($post_data['supplier']);
-    $supplier_customfields->getFromDBByItemsId($post_data['supplier']['id']);
+    PluginIserviceDB::populateByItemsId($supplier_customfields, $post_data['supplier']['id']);
     $post['_customfields']['supplier'][$supplier_customfields->getIndexName()] = $supplier_customfields->getID();
     $supplier_customfields->update($post['_customfields']['supplier']);
     Event::log($id, "suppliers", 4, "inventory", sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
@@ -146,7 +146,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
             'num' => 'numărul',
         ];
         foreach ($fields_to_check as $field_name_to_check => $field_to_check_label) {
-            if (!empty($post_data['contract'][$field_name_to_check]) && $contract->getFromDBByQuery("WHERE $field_name_to_check = '{$post_data['contract'][$field_name_to_check]}' LIMIT 1")) {
+            if (!empty($post_data['contract'][$field_name_to_check]) && PluginIserviceDB::populateByQuery($contract, "WHERE $field_name_to_check = '{$post_data['contract'][$field_name_to_check]}' LIMIT 1")) {
                 Session::addMessageAfterRedirect("Contractul cu $field_to_check_label {$post_data['contract'][$field_name_to_check]} există deja!", true, ERROR);
                 $error = true;
             }
@@ -159,7 +159,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
             }
 
             if (($contract_id = $contract->add($post_data['contract'])) != false) {
-                if (!$contract_customfields->getFromDBByItemsId($contract_id)) {
+                if (!PluginIserviceDB::populateByItemsId($contract_customfields, $contract_id)) {
                     $post['_customfields']['contract']['add']      = 'add';
                     $post['_customfields']['contract']['items_id'] = $contract_id;
                     $contract_customfields->add($post['_customfields']['contract']);
@@ -208,12 +208,12 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
 } elseif (!empty($update_contract) && $post_data['contract'] !== null) {
     $contract->check($post_data['contract']['id'], UPDATE);
     $contract->update($post_data['contract']);
-    $contract_customfields->getFromDBByItemsId($post_data['contract']['id']);
+    PluginIserviceDB::populateByItemsId($contract_customfields, $post_data['contract']['id']);
     $post['_customfields']['contract'][$contract_customfields->getIndexName()] = $contract_customfields->getID();
     $contract_customfields->update($post['_customfields']['contract']);
     Event::log($id, "contracts", 4, "inventory", sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
 }
 
-PluginIserviceHtml::header(PluginIservicePrinter::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], null, $popup);
+Html::header(PluginIservicePrinter::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], null, $popup);
 $iservice_printer->showForm($id, $partner_id, $contract_id);
-PluginIserviceHtml::footer();
+Html::footer();
