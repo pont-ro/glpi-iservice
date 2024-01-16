@@ -58,7 +58,7 @@ echo "<a href='#' onclick='$(\"#cartriges_link_{$printer_id}_$uid\").remove();$(
 
 echo "</td></tr></table>";
 
-$link  = "views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0[partner_name]=$supplier_name&cartridges0[filter_description]=$supplier_name";
+$link  = "views.php?view=Cartridges&cartridges0[partner_name]=$supplier_name&cartridges0[filter_description]=$supplier_name";
 $form  = "<form id='cartriges_link_{$printer_id}_$uid' action='$link' method='post'>";
 $form .= "<input type='hidden' name='cartridges0[date_use]' value='1980-01-01'/>";
 $form .= "<input type='hidden' name='cartridges0[date_out]' value='1980-01-01'/>";

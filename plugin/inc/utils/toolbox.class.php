@@ -177,7 +177,7 @@ class ToolBox
             }
         }
 
-        return "<a target='_blank' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Views\UnpaidInvoices&unpaidinvoices0[cod]=$supplier_code'>$sum</a>";
+        return "<a target='_blank' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=UnpaidInvoices&unpaidinvoices0[cod]=$supplier_code'>$sum</a>";
     }
 
     public static function clearAfterRedirectMessages($type = null)

@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Partners.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Views\View;
 
@@ -171,7 +171,7 @@ class Partners extends View
                     'title' => 'Partener',
                     'sort_default_dir' => 'DESC',
                     'link' => [
-                        'href' => 'views.php?view=GlpiPlugin\Iservice\Specialviews\ClientInvoices&clientinvoices0[partner_id]=[id]',
+                        'href' => 'views.php?view=ClientInvoices&clientinvoices0[partner_id]=[id]',
                         'target' => '_blank',
                     ],
                 ],

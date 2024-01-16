@@ -49,7 +49,7 @@ class PluginIserviceTicket extends Ticket
     {
         switch ($mode) {
         case self::MODE_READCOUNTER:
-            return "ticket.form.php?mode=$mode&_redirect_on_success=" . urlencode('views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets');
+            return "ticket.form.php?mode=$mode&_redirect_on_success=" . urlencode('views.php?view=Tickets');
         default:
             return "ticket.form.php?mode=$mode";
         }
@@ -59,7 +59,7 @@ class PluginIserviceTicket extends Ticket
     {
         switch ($mode) {
         case self::MODE_READCOUNTER:
-            return urlencode('views.php?view=GlpiPlugin\Iservice\Specialviews\Tickets');
+            return urlencode('views.php?view=Tickets');
         default:
             return '';
         }
@@ -801,7 +801,7 @@ class PluginIserviceTicket extends Ticket
             if ($supplier->isNewItem()) {
                 $suffix = "";
             } else {
-                $printers_href = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Printers&printers0[supplier_name]=" . $supplier->fields['name'];
+                $printers_href = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers&printers0[supplier_name]=" . $supplier->fields['name'];
                 $suffix        = sprintf("%s <a href='$printers_href'>%s</a>", ucfirst(__('see', 'iservice')), lcfirst(_n('Printer', 'Printers', 2, 'iservice')));
             }
             break;

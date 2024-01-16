@@ -188,7 +188,7 @@ class UnpaidInvoices extends View
                     'title' => 'Cod',
                     'format' => 'function:\GlpiPlugin\Iservice\Views\UnpaidInvoices::getCodDisplay($row);',
                     'link' => [
-                        'href' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Partners&partners0[partener]=[nume_client_glpi]',
+                        'href' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/views.php?view=Partners&partners0[partener]=[nume_client_glpi]',
                     ],
                 ],
                 'last_magic_link_access' => [

@@ -66,7 +66,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => "There are {count} negative counter differences beginning from $negative_counter_differences_since",
-            'iteration_text' => "Printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a> has negative counter difference (bk: -[black_difference], color: -[color_difference]) for tickets <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> from <i>[effective_date_field]</i> and <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[next_tid]&mode=9999' target='_blank'>[next_tid]</a> from <i>[next_data_luc]</i>",
+            'iteration_text' => "Printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a> has negative counter difference (bk: -[black_difference], color: -[color_difference]) for tickets <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> from <i>[effective_date_field]</i> and <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[next_tid]&mode=9999' target='_blank'>[next_tid]</a> from <i>[next_data_luc]</i>",
         ],
     ],
     'schedule' => [

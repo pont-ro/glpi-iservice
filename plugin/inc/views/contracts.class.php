@@ -1,6 +1,6 @@
 <?php
 
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Views\View;
 use Session;
@@ -157,7 +157,7 @@ class Contracts extends View
                     'align' => 'center',
                     'tooltip' => '[items]',
                     'link' => [
-                        'href' => $CFG_PLUGIN_ISERVICE['root_doc'] . '/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Printers&cid=[contract_id]&contract_name=[contract_name]',
+                        'href' => $CFG_PLUGIN_ISERVICE['root_doc'] . '/front/views.php?view=Printers&cid=[contract_id]&contract_name=[contract_name]',
                         'target' => '_blank',
                     ],
                 ],

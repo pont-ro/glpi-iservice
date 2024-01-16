@@ -1,7 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring. Original file: "Printers.php".
-namespace GlpiPlugin\Iservice\Specialviews;
+namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
@@ -51,7 +51,7 @@ class Printers extends View
                 'visible' => Session::haveRight('plugin_iservice_hmarfa', READ),
             ],
             'list_ticket' => [
-                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$operations_filter_description",
+                'link' => "views.php?view=Operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$operations_filter_description",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_detail.png',
                 'title' => __('Operations list', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
@@ -63,7 +63,7 @@ class Printers extends View
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
             ],
             'cartridges' => [
-                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=Cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
                 'title' => __('Installable cartridges', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
@@ -71,7 +71,7 @@ class Printers extends View
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_'></div>",
             ],
             'invoices' => [
-                'link' => "views.php?view=GlpiPlugin\Iservice\Specialviews\Partners&partners0[partener]=" . urlencode($row_data['supplier_name']) . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1&partners0[filter_description]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=Partners&partners0[partener]=" . urlencode($row_data['supplier_name']) . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1&partners0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/price_alert.png',
                 'title' => __('Unpaid invoices', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_partners', READ),
@@ -471,7 +471,7 @@ class Printers extends View
             'mass_actions' => [
                 'group_read' => [
                     'caption' => 'Citire globală',
-                    'action' => 'views.php?view=GlpiPlugin\\\Iservice\\\Specialviews\\\GlobalReadCounter',
+                    'action' => 'views.php?view=GlobalReadCounter',
                 ],
                 'mass_invoice' => [
                     'caption' => 'Facturează',
@@ -556,19 +556,19 @@ class Printers extends View
             'columns' => [
                 'ticket_status' => [
                     'title' => '',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketStatusDisplay($row);',
-                    'export_format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketStatusDisplayForExport($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Printers::getTicketStatusDisplay($row);',
+                    'export_format' => 'function:\GlpiPlugin\Iservice\Views\Printers::getTicketStatusDisplayForExport($row);',
                     'align' => 'center',
                     'class' => 'noprint no-wrap',
                     'style' => 'min-width: 4em;',
                 ],
                 'printer_name' => [
                     'title' => 'Nume',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getTicketPrinterDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Printers::getTicketPrinterDisplay($row, $this->import_data);',
                 ],
                 'supplier_name' => [
                     'title' => 'Partener',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getSupplierDisplay($row, $this->import_data);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Printers::getSupplierDisplay($row, $this->import_data);',
                     'link' => [
                         'href' => $CFG_GLPI['root_doc'] . '/front/supplier.form.php?id=[supplier_id]',
                         'target' => '_blank',
@@ -577,7 +577,7 @@ class Printers extends View
                 ],
                 'location_complete_name' => [
                     'title' => 'Locație',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getLocationDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Printers::getLocationDisplay($row);',
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'usage_address_field' => [
@@ -598,12 +598,12 @@ class Printers extends View
                 ],
                 'otherserial' => [
                     'title' => 'Număr inventar',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getOtherSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Printers::getOtherSerialDisplay($row);',
                     'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
                 ],
                 'serial' => [
                     'title' => 'Număr serie',
-                    'format' => 'function:\GlpiPlugin\Iservice\Specialviews\Printers::getSerialDisplay($row);',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Printers::getSerialDisplay($row);',
                 ],
                 'last_data_luc' => [
                     'title' => 'Data lucrare u.i.',
@@ -627,7 +627,7 @@ class Printers extends View
                 'invoice_expiry_date_field' => [
                     'title' => 'Data exp.<br>factură',
                     'style' => 'white-space: nowrap;',
-                    'format' => 'function:default',  // This will call \GlpiPlugin\Iservice\Specialviews\Printers::getInvoiceExpiryDateFieldDisplay($row).
+                    'format' => 'function:default',  // This will call \GlpiPlugin\Iservice\Views\Printers::getInvoiceExpiryDateFieldDisplay($row).
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'week_nr_field' => [

@@ -20,7 +20,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges installed by more then 1 ticket',
-            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> was installed by [ticket_count] tickets: [ticket_ids]. See operations list for printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=GlpiPlugin\Iservice\Specialviews\Operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a>",
+            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> was installed by [ticket_count] tickets: [ticket_ids]. See operations list for printer <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Operations&operations0%5Bprinter_id%5D=[pid]' target='_blank'>[pid]</a>",
         ],
     ],
 ];
