@@ -471,7 +471,7 @@ class PluginIservicePrinter extends Printer
             $selector_options['options']['on_change'] = "redirect_to('supplier');";
         }
 
-        $selector_options['prefix'] = $form->generateSubmit('modify_supplier', '&nbsp;', ['class' => 'submit printer-changer modify-supplier', 'title' => __('Modify', 'iservice') . ' ' . __('Supplier'), 'style' => 'display:none;']);
+        $selector_options['prefix'] = $form->generateSubmit('modify_supplier', '&nbsp;', ['class' => 'grear-icon modify-supplier', 'title' => __('Modify', 'iservice') . ' ' . __('Supplier'), 'style' => 'display:none;']);
         $output                    .= $form->generateFieldTableRow(__('Partener'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'supplier[id]', $supplier->getID(), $readonly, $selector_options), ['field_class' => 'nowrap'], $no_wrap_options);
 
         // Name.
@@ -570,7 +570,7 @@ class PluginIservicePrinter extends Printer
 
         $selector_options['options']['nochecklimit'] = true;
         $selector_options['options']['expired']      = true;
-        $selector_options['prefix']                  = $form->generateSubmit('modify_contract', '&nbsp;', ['class' => 'submit printer-changer modify-contract', 'title' => __('Modify', 'iservice') . ' ' . __('Contract'), 'style' => 'display:none;']);
+        $selector_options['prefix']                  = $form->generateSubmit('modify_contract', '&nbsp;', ['class' => 'grear-icon modify-contract', 'title' => __('Modify', 'iservice') . ' ' . __('Contract'), 'style' => 'display:none;']);
         $output                                     .= $form->generateFieldTableRow(__('Contract'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[id]', $contract_id, $readonly, $selector_options));
 
         // Name.
