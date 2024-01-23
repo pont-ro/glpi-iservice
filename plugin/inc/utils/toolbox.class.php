@@ -1,5 +1,6 @@
 <?php
 
+// Renamed from PluginIserviceCommon.
 namespace GlpiPlugin\Iservice\Utils;
 
 use DateTime;
@@ -15,6 +16,7 @@ class ToolBox
     const RESPONSE_OK    = 'OK';
     const RESPONSE_ERROR = 'ERROR';
 
+    protected static $codmatValues = [];
     protected static $exchangeRateService = null;
 
     public static $lastExchangeRateServiceError = null;
@@ -117,7 +119,7 @@ class ToolBox
         return null;
     }
 
-    public static function numberFormat(float $number, int $decimals = 2, ?string $decimal_separator = '.', ?string $thousands_separator = '')
+    public static function numberFormat(float $number, int $decimals = 2, ?string $decimal_separator = '.', ?string $thousands_separator = ''): string
     {
         return number_format($number, $decimals, $decimal_separator, $thousands_separator);
     }
@@ -293,6 +295,15 @@ class ToolBox
 
         return include_once GLPI_ROOT . "/plugins/iservice/config/menu.php" ?: [];
 
+    }
+
+    public static function getCodmatValue(string $codmat): string
+    {
+        if (!isset(self::$codmatValues[$codmat])) {
+            self::$codmatValues[$codmat] = PluginIserviceDB::getQueryResult("SELECT * FROM hmarfa_nommarfa WHERE cod = '$codmat'", 'codmat')[0] ?? [];
+        }
+
+        return self::$codmatValues[$codmat]['denum'] ?? '';
     }
 
 }
