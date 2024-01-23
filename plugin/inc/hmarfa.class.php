@@ -128,7 +128,7 @@ class PluginIserviceHmarfa
         $fixed3                    = filter_input(INPUT_POST, 'fixed3') ?: false;
 
         $location    = (!empty($_POST['location'])) ? "{$printer->customfields->fields["usage_address_field"]} - " : "";
-        $cost_center = (!empty($_POST['cost_center'])) ? "*{$printer->customfields->fields["cost_center_field"]}* - " : "";
+        $cost_center = (!empty($_POST['cost_center'])) ? "{$printer->customfields->fields["cost_center_field"]} - " : "";
 
         if ($invoice_expiry_date_field === false) {
             $invoice_expiry_date_field = strtotime(date("Y-m-t"));

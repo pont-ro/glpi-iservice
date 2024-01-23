@@ -168,3 +168,8 @@ div.actions-wrap {
     margin-right: 0.2em;
     border: none;
 }
+
+.char-count-number {
+    position: absolute;
+    padding: 2px;
+}

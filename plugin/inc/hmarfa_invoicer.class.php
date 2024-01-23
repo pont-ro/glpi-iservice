@@ -94,9 +94,6 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $itemLocationParent = new Location();
             $itemLocationParent->getFromDB($itemLocation->fields['locations_id'] ?? 0);
 
-            $itemManufacturer = new Manufacturer();
-            $itemManufacturer->getFromDB($item->fields['manufacturers_id']);
-
             $itemModel = new PrinterModel();
             $itemModel->getFromDB($item->fields['printermodels_id']);
 
@@ -145,7 +142,6 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $item->tableData['id']                        = $itemId;
             $item->tableData['name']                      = $item->fields['original_name'];
             $item->tableData['model_name']                = $itemModel->fields['name'] ?? '';
-            $item->tableData['manufacturer_name']         = $itemManufacturer->fields['name'] ?? '';
             $item->tableData['location']                  = $itemLocation->fields['completename'] ?? '';
             $item->tableData['location_parent']           = $itemLocationParent->fields['completename'] ?? '';
             $item->tableData['cost_center_field']         = $item->customfields->fields['cost_center_field'] ?? '';
@@ -285,7 +281,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $rows['location']     = $printerInputData['location'] ?? $printer->tableData['location'];
         $locationText         = empty($printerInputData['include_location']) ? '' : sprintf('%s - ', $rows['location']);
         $rows['cost_center']  = $printerInputData['cost_center'] ?? $printer->tableData['cost_center_field'];
-        $costCenterText       = empty($printerInputData['include_cost_center']) ? '' : sprintf('*%s* - ', $rows['cost_center']);
+        $costCenterText       = empty($printerInputData['include_cost_center']) ? '' : sprintf('%s - ', $rows['cost_center']);
         $rows['usageaddress'] = $printerInputData['usageaddress'] ?? $printer->tableData['usage_address_field'];
         $usageaddressText     = empty($printerInputData['include_usageaddress']) ? '' : sprintf('%s - ', $rows['usageaddress']);
         $statusText           = empty($printerInputData['include_status']) ? '' : " - {$printer->tableData['state_name']}";
@@ -349,8 +345,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $row2Subject = 'ml cereneala consumata';
             $row3Subject = 'mp suprafata printata';
         } else {
-            $row2Subject = 'copii a/n';
-            $row3Subject = 'copii color';
+            $row2Subject = 'cp a/n';
+            $row3Subject = 'cp color';
         }
 
         $untilPart = '';
@@ -377,7 +373,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
 
         if ($rows[1]['cant'] > 0) {
-            $descr1 = "{$printer->tableData["manufacturer_name"]} {$printer->tableData["model_name"]} ($costCenterText$locationText$usageaddressText{$printer->tableData["serial"]})$statusText";
+            $descr1 = "{$printer->tableData["model_name"]} ($costCenterText$locationText$usageaddressText{$printer->tableData["serial"]})$statusText";
             // The new default is to include the period, so if we don't have anything from the input we have to include it.
             if (!isset($printerInputData['include_period']) || $printerInputData['include_period']) {
                 $descr1 .= " / $period";
@@ -401,24 +397,25 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             } elseif ($printer->tableData['cop_bk_inclus'] > 0 || $printer->tableData['included_copies_col_field'] > 0) {
                 $rows[1]['to']   = 0;
                 $rows[1]['from'] = 0;
-                $descr1         .= ' de la ';
 
                 if ($printer->tableData['cop_bk_echiv'] || $printer->tableData['cop_bk_inclus']) {
-                    $descr1 .= "{$printer->tableData['contor_bk_uf']}";
                     if ($printer->tableData['cop_bk_inclus'] || $printer->tableData['cop_bk_echiv']) {
-                        $descr1 .= ' la ' . min($printer->tableData['contor_bk_ui'], $allowedCounterBlack);
+                        $descr1 .= " ({$printer->tableData['contor_bk_uf']}-" . min($printer->tableData['contor_bk_ui'], $allowedCounterBlack) . ')';
+                    } else {
+                        $descr1 .= " de la {$printer->tableData['contor_bk_uf']}";
                     }
 
                     $descr1 .= " $row2Subject";
                     if ($printer->tableData['cop_col_echiv'] || $printer->tableData['included_copies_col_field']) {
-                        $descr1 .= ", ";
+                        $descr1 .= "; ";
                     }
                 }
 
-                if ($printer->tableData['cop_col_echiv'] || $printer->tableData['included_copies_col_field']) {
-                    $descr1 .= "de la {$printer->tableData['contor_col_uf']}";
-                    if ($printer->tableData['included_copies_col_field'] || $printer->tableData['cop_col_echiv']) {
-                        $descr1 .= ' la ' . min($printer->tableData['contor_col_ui'], $allowedCounterColor);
+                if ($printer->tableData['cop_col_echiv'] || $printer->tableData['cop_col_inclus']) {
+                    if ($printer->tableData['cop_col_inclus'] || $printer->tableData['cop_col_echiv']) {
+                        $descr1 .= " ({$printer->tableData['contor_col_uf']}-" . min($printer->tableData['contor_col_ui'], $allowedCounterColor) . ')';
+                    } else {
+                        $descr1 .= "de la {$printer->tableData['contor_col_uf']}";
                     }
 
                     $descr1 .= " $row3Subject";
@@ -464,8 +461,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $row2Subject = 'ml cereneala consumata';
             $row3Subject = 'mp suprafata printata';
         } else {
-            $row2Subject = 'copii suplimentare a/n';
-            $row3Subject = 'copii suplimentare color';
+            $row2Subject = 'cp supl a/n';
+            $row3Subject = 'cp supl col';
         }
 
         // Row 2.
@@ -473,13 +470,13 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         if ($printer->tableData['included_copy_value_field'] > 0) {
             $val2            = ($usedValue - $printer->tableData['included_copy_value_field'] > 0) ? ($usedValue - $printer->tableData['included_copy_value_field']) * $printer->tableData['invoice_rate'] : 0;
             $cant2           = ($val2 > 0) ? 1 : 0;
-            $descr2          = "$descrPart valoare copii suplimentare pana la $untilPart";
+            $descr2          = "$descrPart valoare cp supl pana la $untilPart";
             $rows[2]['from'] = $printer->tableData['contor_bk_uf'];
         } else {
             $val2  = $printer->tableData['copy_price_bk_field'] * $printer->tableData['invoice_rate'] * $printer->tableData['divizor_copii'];
             $cant2 = (isset($printerInputData['row_2']['cant']) && ($printerInputData['row_2']['fixed'] ?? 0)) ? $printerInputData['row_2']['cant'] : (empty($codmat2) || empty($val2) ? 0 : $differenceCounterBlack / $printer->tableData['divizor_copii']);
             if ($printer->tableData['divizor_copii'] > 1) {
-                $divizorExplanation2 = " (" . ($cant2 * $printer->tableData['divizor_copii']) . "=$cant2*{$printer->tableData['divizor_copii']} copii)";
+                $divizorExplanation2 = " (" . ($cant2 * $printer->tableData['divizor_copii']) . "=$cant2*{$printer->tableData['divizor_copii']} cp)";
             } else {
                 $divizorExplanation2 = "";
             }
@@ -509,7 +506,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $val3    = (empty($codmat3)) ? 0 : $printer->tableData['tarif_cop_col'] * $printer->tableData['invoice_rate'] * $printer->tableData['divizor_copii'];
         $cant3   = (isset($printerInputData['row_3']['cant']) && ($printerInputData['row_3']['fixed'] ?? 0)) ? $printerInputData['row_3']['cant'] : (empty($codmat3) || $val3 == 0 ? 0 : ($differenceCounterColor / $printer->tableData['divizor_copii']));
         if ($printer->tableData['divizor_copii'] > 1) {
-            $divizorExplanation3 = " (" . ($cant3 * $printer->tableData['divizor_copii']) . "=$cant3*{$printer->tableData['divizor_copii']} copii)";
+            $divizorExplanation3 = " (" . ($cant3 * $printer->tableData['divizor_copii']) . "=$cant3*{$printer->tableData['divizor_copii']} cp)";
         } else {
             $divizorExplanation3 = "";
         }
@@ -532,6 +529,10 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             'total'  => self::numberFormat($val3 * $cant3),
             'descr'  => !empty($buttons['refresh']) || !isset($printerInputData['row_3']['descr']) ? $descr3 : $printerInputData['row_3']['descr']
         ];
+
+        for ($i = 1; $i < 4; $i++) {
+            $rows[$i]['codmat_value'] = IserviceToolBox::getCodmatValue($rows[$i]['codmat']);
+        }
 
         return $rows;
     }
@@ -748,7 +749,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             foreach ($items['routers'] ?? [] as $router) {
                 $usage_address_field = $invoiceData['general_include_usageaddress'] ? "{$router->tableData['usage_address_field']} - " : "";
-                $cost_center       = $invoiceData['general_include_cost_center'] ? "*{$router->tableData['cost_center_field']}* - " : "";
+                $cost_center         = $invoiceData['general_include_cost_center'] ? "{$router->tableData['costcenterfield']} - " : "";
 
                 $csvExportData[] = [
                     'DOC_TIP' => 'TFAC',
@@ -1370,7 +1371,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                         $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][cant]", $printerRow['cant'], false, ['style' => 'width:4em;text-align:right']),
                         $printer->tableData['no_invoice'] ? '' : $form->generateField(PluginIserviceHtml::FIELDTYPE_CHECKBOX, "item[printer][{$printer->tableData['id']}][row_$rowIndex][fixed]", $printerRow['fixed']),
                         $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][total]", $printerRow['total'], false, ['style' => 'width:5em;text-align:right']),
-                        $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][descr]", $printerRow['descr'], false, ['style' => "width:98%;$descrColor"]),
+                        $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, "item[printer][{$printer->tableData['id']}][row_$rowIndex][descr]", $printerRow['descr'], false, ['style' => "width:98%;$descrColor", 'class' => 'char-count', 'data-add' => strlen($printerRow['codmat_value']) + 1, 'data-code-value' => $printerRow['codmat_value']]),
                     ], [
                         'column_options' => [[], [], ['style' => 'text-align:center'], [], ['style' => 'text-align:center'], [], []]
                     ]
