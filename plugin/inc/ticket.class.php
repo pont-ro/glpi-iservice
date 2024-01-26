@@ -35,7 +35,7 @@ class PluginIserviceTicket extends Ticket
 
     public static $field_settings          = null;
     public static $field_settings_id       = 0;
-    protected static $itilCategories      = null;
+    protected static $itilCategories       = null;
     protected static $installed_cartridges = [];
 
     public static $customFieldsModelName = 'PluginFieldsTicketticketcustomfield';
@@ -77,7 +77,7 @@ class PluginIserviceTicket extends Ticket
     public static function refreshItilCategories(): void
     {
         global $DB;
-        self::$itilCategories = [];
+        self::$itilCategories   = [];
         $itil_categories_result = $DB->query("SELECT id, name FROM glpi_itilcategories") or die($DB->error());
         while (($itil_category_row = $DB->fetchAssoc($itil_categories_result)) !== null) {
             self::$itilCategories[strtolower($itil_category_row['name'])] = $itil_category_row['id'];
@@ -421,9 +421,9 @@ class PluginIserviceTicket extends Ticket
         $printerId                            = $this->getPrinterId();
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
         $location                             = $this->getLocation();
-        $this->setTicketUsersFields($ID);
+        $this->setTicketUsersFields($ID, $options);
         $this->setDefaultEffectiveDateField();
-        $canupdate                       = !$ID
+        $canUpdate                       = !$ID
             || (Session::getCurrentInterface() == "central"
                 && $this->canUpdateItem());
         $prepared_data['field_required'] = [];
@@ -448,7 +448,7 @@ class PluginIserviceTicket extends Ticket
             ) : null,
             'lastInvoiceAndCountersTable' => $this->getLastInvoiceAndCountersTable($this->printer),
             'followupsData'               => $this->getFollowups($ID),
-            'canupdate'                   => $canupdate,
+            'canUpdate'                   => $canUpdate,
             'alertOnStatusChange'         => $this->fields['status'] == self::SOLVED && $this->getID() > 0,
             'solvedStatusValue'           => self::SOLVED,
             'consumablesTableData'        => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']))),
@@ -498,7 +498,11 @@ class PluginIserviceTicket extends Ticket
             ];
         }
 
-        $templateParams['submitButtons'] = $this->getButtonsConfig($options);
+        $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
+
+        $templateParams['movementRelatedFields'] = $movementRelatedData['fields'];
+
+        $templateParams['submitButtons'] = $this->getButtonsConfig($options, $movementRelatedData['movement']);
 
         if ($options['mode'] == self::MODE_CLOSE) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
@@ -1194,17 +1198,13 @@ class PluginIserviceTicket extends Ticket
         return (new PluginIserviceTicketFollowup())->getTicketFollowupsData($ticketId);
     }
 
-    public function setTicketUsersFields($ticketId): void
+    public function setTicketUsersFields($ticketId, $options = []): void
     {
-        if ($ticketId < 1) {
-            return;
-        }
-
         $ticketUsers = (new Ticket_User())->getActors($ticketId);
 
-        $this->fields['_users_id_assign']    = $ticketUsers[CommonITILActor::ASSIGN][0]['users_id'] ?? '';
-        $this->fields['_users_id_observer']  = $ticketUsers[CommonITILActor::OBSERVER][0]['users_id'] ?? '';
-        $this->fields['_users_id_requester'] = $ticketUsers[CommonITILActor::REQUESTER][0]['users_id'] ?? '';
+        $this->fields['_users_id_assign']    = $options['_users_id_assign'] ?? $ticketUsers[CommonITILActor::ASSIGN][0]['users_id'] ?? '';
+        $this->fields['_users_id_observer']  = $options['_users_id_observer'] ?? $ticketUsers[CommonITILActor::OBSERVER][0]['users_id'] ?? '';
+        $this->fields['_users_id_requester'] = $optionsfields['_users_id_requester'] ?? $ticketUsers[CommonITILActor::REQUESTER][0]['users_id'] ?? '';
 
         if (empty($this->fields['_users_id_assign']) || $this->fields['_users_id_assign'] < 1) {
             $this->fields['_users_id_assign'] = empty($this->printer->fields['users_id_tech']) ? '' : $this->printer->fields['users_id_tech'];
@@ -1536,7 +1536,7 @@ class PluginIserviceTicket extends Ticket
         return !$this->hasConsumables() || (!empty($this->customfields->fields['delivered_field']) && !empty($this->customfields->fields['exported_field']));
     }
 
-    public function getButtonsConfig($options): array
+    public function getButtonsConfig($options, $movement = null): array
     {
         $close_confirm_message = '';
         $available_cartridges  = PluginIserviceCartridgeItem::getChangeablesForTicket($this);
@@ -1646,6 +1646,14 @@ class PluginIserviceTicket extends Ticket
             break;
         default:
             break;
+        }
+
+        // If it is a movement ticket, it cannot be closed until the services invoice is not created.
+        if (!empty($this->customfields->fields['movement_id_field']) || !empty($this->customfields->fields['movement2_id_field'])) {
+            unset($buttons['services_export']);
+            if (!empty($this->customfields->fields['movement_id_field']) && empty($movement->fields['invoice'])) {
+                unset($buttons['close']);
+            }
         }
 
         return $buttons;
@@ -1781,6 +1789,95 @@ class PluginIserviceTicket extends Ticket
                 'no_travel_field'     => 1,
             ]
         );
+    }
+
+    public function prepareDataForMovement($values)
+    {
+        $this->originalFields = $this->fields;
+
+        $this->fields['movement_id_field']                          = $values['_movement_id'];
+        $this->fields['movement2_id_field']                         = $values['_movement2_id'];
+        $this->fields['plugin_fields_ticketexporttypedropdowns_id'] = $values['_export_type'];
+
+        foreach ($values as $key => $val) {
+            if (!isset($this->fields[$key])) {
+                $this->fields[$key] = $val;
+            }
+        }
+
+    }
+
+    private function getMovementRelatedData($id, $printerId, $canEdit): ?array
+    {
+        $fields = [
+            '_movement_id' => [
+                'render' => false,
+                'type' => 'hidden',
+                'name' => 'movement_id_field',
+                'options' => [
+                    'no_label' => true,
+                ],
+            ],
+            '_movement2_id' => [
+                'render' => false,
+                'type' => 'hidden',
+                'name' => 'movement2_id_field',
+                'options' => [
+                    'no_label' => true,
+                ],
+            ],
+            '_services_invoiced' => [
+                'render' => false,
+                'type' => 'checkboxExtended' ,
+                'label' => __('Services invoice', 'iservice'),
+                'name' => '_services_invoiced',
+                'disabled' => !$canEdit,
+            ],
+        ];
+
+        $movement_id  = $this->customfields->fields['movement_id_field'] ?? IserviceToolBox::getInputVariable('_movement_id', -2);
+        $movement2_id = $this->customfields->fields['movement2_id_field'] ?? IserviceToolBox::getInputVariable('_movement2_id', -2);
+
+        if (empty($movement_id) && empty($movement2_id)) {
+            return [];
+        }
+
+        if (empty($id) && ($movement = PluginIserviceMovement::getOpenFor('Printer', $printerId)) !== false && empty($movement_id) && empty($movement2_id)) {
+            Html::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>" . sprintf(__('There is an unfinished movement for this printer, please finish movement %s first!', 'iservice'), $movement) . "</a>");
+        } else {
+            $movement = new PluginIserviceMovement();
+            $movement->getFromDB($movement_id ?: $movement2_id ?: -1);
+        }
+
+        $customFields = new PluginFieldsTicketticketcustomfield();
+        if (PluginIserviceDB::populateByQuery($customFields, "WHERE movement_id_field = " . IserviceToolBox::getInputVariable('_movement_id', -2) . " LIMIT 1")) {
+            Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('_movement_id')));
+        }
+
+        if (PluginIserviceDB::populateByQuery($customFields, "WHERE movement2_id_field = " . IserviceToolBox::getInputVariable('_movement2_id', -2) . " LIMIT 1")) {
+            Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('_movement2_id')));
+        }
+
+        $fields['_movement_id']['value']   = $movement_id;
+        $fields['_movement_id']['render']  = true;
+        $fields['_movement2_id']['value']  = $movement2_id;
+        $fields['_movement2_id']['render'] = true;
+
+        // Services invoiced.
+        global $CFG_PLUGIN_ISERVICE;
+        $fields['_services_invoiced']['render'] = true;
+        $fields['_services_invoiced']['value']  = $movement->fields['invoice'] ?? false;
+
+        if (!$fields['_services_invoiced']['value']) {
+            $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!') . "</span> " . __('To create an invoice, press the link') . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?id={$printerId}' target='_blank'>" . __("hMarfa export", "iservice") . "</a></div>";
+        }
+
+        $fields['_services_invoiced']['disabled'] = !$canEdit || $fields['_services_invoiced']['value'];
+
+        return [
+            'fields' => $fields,
+            'movement' => $movement ?? null,
+        ];
     }
 
 }

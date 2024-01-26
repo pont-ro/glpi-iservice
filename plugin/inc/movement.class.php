@@ -13,7 +13,7 @@ class PluginIserviceMovement extends CommonDBTM
     const TYPE_MOVE = 'move';
 
     public static $rightname      = 'plugin_iservice_movement';
-    public static $expert_line_id = 525;
+    public static $expert_line_id = 506; // TODO: confirm with hupu!
 
     public static function dummy(): array
     {
@@ -184,16 +184,15 @@ class PluginIserviceMovement extends CommonDBTM
             } else {
                 $ticket_in_exists                         = false;
                 $ticket_in_closed                         = false;
-                $params                                   = "mode=" . PluginIserviceTicket::MODE_CREATENORMAL;
+                $params                                   = "mode=" . PluginIserviceTicket::MODE_CLOSE;
                 $params                                  .= "&items_id[Printer][0]=" . $this->fields['items_id'];
                 $params                                  .= "&suppliers_id_old=" . $this->fields['suppliers_id_old'];
                 $params                                  .= "&_movement_id=$id";
                 $params                                  .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('preluare echipament');
                 $params                                  .= "&name=preluare echipament";
                 $params                                  .= "&content=preluare echipament";
-                $params                                  .= "&followup_content=preluare echipament";
                 $params                                  .= "&_users_id_assign=" . ($printer->fields['users_id_tech'] ?? '');
-                $params                                  .= "&_export_type=aviz";
+                $params                                  .= "&_export_type=" . PluginIserviceTicket::EXPORT_TYPE_NOTICE_ID;
                 $params                                  .= "&_close_on_success=1";
                 $params                                  .= "&add_cartridges_as_negative_consumables=1";
                 $ticket                                   = new PluginIserviceTicket();
@@ -381,18 +380,17 @@ class PluginIserviceMovement extends CommonDBTM
             $ticket_out_closed = $ticket_out->fields['status'] == Ticket::CLOSED;
             $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? __("View", "iservice") : __("Close", "iservice")) . "</a>";
             if (!$ticket_out_closed) {
-                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_MODIFY . "' class='vsubmit' target='_blank'>" . __("Modify", "iservice") . "</a>";
+                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . __("Modify", "iservice") . "</a>";
             }
         } else {
             $ticket_out_exists = false;
             $ticket_out_closed = false;
-            $params            = "mode=" . PluginIserviceTicket::MODE_CREATENORMAL;
+            $params            = "mode=" . PluginIserviceTicket::MODE_CLOSE;
             $params           .= "&items_id[Printer][0]=" . $this->fields['items_id'];
-            $params           .= "&movement2_id_field=$id";
+            $params           .= "&_movement2_id=$id";
             $params           .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('livrare echipament');
             $params           .= "&name=livrare echipament";
             $params           .= "&content=livrare echipament";
-            $params           .= "&followup_content=livrare echipament";
             $params           .= "&_users_id_assign=" . ($printer->fields['users_id_tech'] ?? '');
             $params           .= "&_close_on_success=1";
             $ticket_actions    = "<a href='ticket.form.php?$params' class='vsubmit' target='_blank'>" . __("Create ticket") . "</a>";

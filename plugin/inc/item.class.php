@@ -64,7 +64,7 @@ trait PluginIserviceItem
                 );
             }
 
-            return false;
+            return [];
         }
 
         return $this->get($db->fetchAssoc($result)['id']);

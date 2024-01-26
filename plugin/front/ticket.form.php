@@ -24,7 +24,8 @@ if (($addConsumable = IserviceToolBox::getInputVariable('add_consumable'))
     $noRedirectAfterTicketUpdate = true;
 }
 
-$global_readcounter = IserviceToolBox::getInputVariable('global_readcounter');
+$global_readcounter                     = IserviceToolBox::getInputVariable('global_readcounter');
+$add_cartridges_as_negative_consumables = IserviceToolBox::getInputVariable('add_cartridges_as_negative_consumables');
 
 $post                 = filter_input_array(INPUT_POST);
 $get                  = filter_input_array(INPUT_GET);
@@ -86,6 +87,10 @@ if (!empty($addConsumable) && !empty($id)) {
     $ticket->updateCartridge($id, array_merge($post, $partnerPrinterIds));
 } elseif (!empty($export)) {
     Html::redirect($CFG_PLUGIN_ISERVICE['root_doc'] . "/front/hmarfaexport.form.php?id=$id&mode=" . PluginIserviceHmarfa::EXPORT_MODE_TICKET);
+} elseif (!empty($add_cartridges_as_negative_consumables)) {
+    add_cartridges_as_negative_consumables();
+} else {
+    $options = array_merge($options, $get ?? [], $post ?? [], $partnerPrinterIds);
 }
 
 if (!empty($global_readcounter) && ($globalreadcounter0 = IserviceToolBox::getArrayInputVariable('globalreadcounter0', []))) {
@@ -101,3 +106,68 @@ if ($global_readcounter) {
 }
 
 Html::footer();
+
+function add_cartridges_as_negative_consumables(): void
+{
+    $track = new PluginIserviceTicket();
+    $track->prepareDataForMovement(Html::cleanPostForTextArea(filter_input_array(INPUT_GET)));
+    $track->processFieldsByInput();
+    $track->fields['add']    = 'add';
+    $track->fields['status'] = Ticket::WAITING;
+    if (($newTicketId = $track->add($track->fields)) !== false) {
+        $printer = new PluginIservicePrinter();
+        $printer->getFromDB(filter_input(INPUT_GET, 'items_id'));
+        $plugin_iservice_consumable_ticket = new PluginIserviceConsumable_Ticket();
+        $cartridge_counts                  = filter_input(INPUT_GET, 'cartridge-count', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $cartridgeitem                     = new PluginIserviceCartridgeItem();
+        $added_cartridges                  = [];
+        foreach ($cartridge_counts as $location_id => $location_data) {
+            foreach ($location_data as $cartridge_item_ref => $amount) {
+                if (array_key_exists($cartridge_item_ref, $added_cartridges)) {
+                    global $DB;
+                    $DB->update(
+                        'glpi_plugin_fields_cartridgecartridgecustomfields',
+                        ['locations_id_field' => empty($added_cartridges[$cartridge_item_ref]['location']) ? '0' : $added_cartridges[$cartridge_item_ref]['location']],
+                        ['locations_id_field ' => $location_id, 'printers_id' => 0,  'c.date_use' => null, 'c.date_out' => null, 'suppliers_id_field' => filter_input(INPUT_GET, 'suppliers_id_old')],
+                        [
+                            'JOIN' => [
+                                'glpi_cartridges as c' => [
+                                    'ON' => [
+                                        'glpi_plugin_fields_cartridgecartridgecustomfields.items_id' => 'glpi_cartridges.id',
+                                    ]
+                                ],
+                            ]
+                        ],
+                    );
+                    $added_cartridges[$cartridge_item_ref]['amount'] -= $amount;
+                    $plugin_iservice_consumable_ticket->update(
+                        [
+                            'id' => $added_cartridges[$cartridge_item_ref]['ct_id'],
+                            'amount' => $added_cartridges[$cartridge_item_ref]['amount'],
+                        ]
+                    );
+                } else {
+                    $cartridgeitem->getFromDBByRef($cartridge_item_ref);
+                    $ct_id                                 = $plugin_iservice_consumable_ticket->add(
+                        [
+                            'add'                                 => 'add',
+                            'tickets_id'                          => $track->getID(),
+                            'locations_id'                        => $location_id,
+                            'plugin_iservice_consumables_id'      => $cartridge_item_ref,
+                            'plugin_fields_typefielddropdowns_id' => $cartridgeitem->getSupportedTypes()[0],
+                            'create_cartridge'                    => 1,
+                            'amount'                              => -$amount,
+                        ], ['printer' => $printer]
+                    );
+                    $added_cartridges[$cartridge_item_ref] = [
+                        'ct_id' => $ct_id,
+                        'location' => $location_id,
+                        'amount' => -$amount,
+                    ];
+                }
+            }
+        }
+
+        Html::redirect($track->getFormURL() . "?_allow_buttons=1&id={$newTicketId}&mode=" . PluginIserviceTicket::MODE_CLOSE);
+    }
+}
