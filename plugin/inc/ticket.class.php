@@ -500,9 +500,9 @@ class PluginIserviceTicket extends Ticket
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
 
-        $templateParams['movementRelatedFields'] = $movementRelatedData['fields'];
+        $templateParams['movementRelatedFields'] = $movementRelatedData['fields'] ?? null;
 
-        $templateParams['submitButtons'] = $this->getButtonsConfig($options, $movementRelatedData['movement']);
+        $templateParams['submitButtons'] = $this->getButtonsConfig($options, $movementRelatedData['movement'] ?? null);
 
         if ($options['mode'] == self::MODE_CLOSE) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
@@ -1835,8 +1835,8 @@ class PluginIserviceTicket extends Ticket
             ],
         ];
 
-        $movement_id  = $this->customfields->fields['movement_id_field'] ?? IserviceToolBox::getInputVariable('_movement_id', -2);
-        $movement2_id = $this->customfields->fields['movement2_id_field'] ?? IserviceToolBox::getInputVariable('_movement2_id', -2);
+        $movement_id  = $this->customfields->fields['movement_id_field'] ?? IserviceToolBox::getInputVariable('_movement_id');
+        $movement2_id = $this->customfields->fields['movement2_id_field'] ?? IserviceToolBox::getInputVariable('_movement2_id');
 
         if (empty($movement_id) && empty($movement2_id)) {
             return [];
