@@ -66,7 +66,7 @@ function plugin_iservice_redefine_menus($menus): array
     return RedefineMenus::redefine($menus);
 }
 
-function plugin_iservice_ticket_add(Ticket $item)
+function plugin_iservice_Ticket_add(Ticket $item)
 {
     plugin_iservice_ticket_update_related_movement($item);
 }

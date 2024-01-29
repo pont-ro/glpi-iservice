@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceMovement extends CommonDBTM
 {
 
@@ -13,7 +15,7 @@ class PluginIserviceMovement extends CommonDBTM
     const TYPE_MOVE = 'move';
 
     public static $rightname      = 'plugin_iservice_movement';
-    public static $expert_line_id = 506; // TODO: confirm with hupu!
+    public static $expert_line_id = null;
 
     public static function dummy(): array
     {
@@ -21,6 +23,15 @@ class PluginIserviceMovement extends CommonDBTM
         return [
             __('Printer', 'iservice'),
         ];
+    }
+
+    public static function getExpertLineId(): int
+    {
+        if (empty(self::$expert_line_id)) {
+            self::$expert_line_id = IserviceToolBox::getIdentifierAttributeByAttribute('Supplier', 'Expert Line srl');
+        }
+
+        return self::$expert_line_id;
     }
 
     public function __construct($itemtype = '')
@@ -134,7 +145,7 @@ class PluginIserviceMovement extends CommonDBTM
 
             $table_rows[] = "<tr><td colspan=2><input type='hidden' name='ticket_id' value='{$this->fields['ticket_id']}'/>$text_to_display</td></tr>";
             if (stripos($itilcategory->fields['name'], 'preluare') === 0) {
-                $this->fields['suppliers_id'] = self::$expert_line_id;
+                $this->fields['suppliers_id'] = self::getExpertLineId();
             }
         }
 
@@ -436,9 +447,9 @@ class PluginIserviceMovement extends CommonDBTM
 
     public static function getTypeFromSuppliers($old_supplier_id, $new_supplier_id)
     {
-        if ($old_supplier_id == self::$expert_line_id) {
+        if ($old_supplier_id == self::getExpertLineId()) {
             return self::TYPE_OUT;
-        } elseif ($new_supplier_id == self::$expert_line_id) {
+        } elseif ($new_supplier_id == self::getExpertLineId()) {
             return self::TYPE_IN;
         } else {
             return self::TYPE_MOVE;
