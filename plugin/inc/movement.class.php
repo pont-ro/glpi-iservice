@@ -28,7 +28,7 @@ class PluginIserviceMovement extends CommonDBTM
     public static function getExpertLineId(): int
     {
         if (empty(self::$expert_line_id)) {
-            self::$expert_line_id = IserviceToolBox::getIdentifierAttributeByAttribute('Supplier', 'Expert Line srl');
+            self::$expert_line_id = IserviceToolBox::getIdentifierByAttribute('Supplier', 'Expert Line srl');
         }
 
         return self::$expert_line_id;

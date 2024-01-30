@@ -306,7 +306,7 @@ class ToolBox
         return self::$codmatValues[$codmat]['denum'] ?? '';
     }
 
-    public static function getIdentifierAttributeByAttribute(string $modelName, string $attributeValue, string $attributeToSearchFor = null, string $attributeToReturn = 'id'): mixed
+    public static function getIdentifierByAttribute(string $modelName, string $attributeValue, string $attributeToSearchFor = null, string $attributeToReturn = 'id'): mixed
     {
         if (!($table = getTableForItemType($modelName))) {
             return null;
@@ -316,13 +316,13 @@ class ToolBox
             $attributeToSearchFor = $modelName::getNameField();
         }
 
-        $queryResult = PluginIserviceDB::getQueryResult("SELECT $attributeToReturn FROM $table WHERE $attributeToSearchFor = '$attributeValue'");
+        $model = new $modelName();
 
-        if (count($queryResult) > 1) {
+        if (!$model->getFromDBByCrit([$attributeToSearchFor => $attributeValue])) {
             return null;
         }
 
-        return array_column($queryResult, $attributeToReturn)[0] ?? null;
+        return $model->fields[$attributeToReturn] ?? null;
     }
 
 }
