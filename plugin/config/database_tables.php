@@ -752,7 +752,7 @@ return [
             'disableem' => 'tinyint(1) not null default \'0\'',
             'snoozereadcheck' => 'date null default null',
             'moved' => 'int(1) not null default \'0\'',
-            'type' => 'varchar(20) not null',
+            'type' => 'varchar(20) null default null',
         ],
         'indexes' => [
             [

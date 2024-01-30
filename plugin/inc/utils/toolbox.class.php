@@ -16,7 +16,7 @@ class ToolBox
     const RESPONSE_OK    = 'OK';
     const RESPONSE_ERROR = 'ERROR';
 
-    protected static $codmatValues = [];
+    protected static $codmatValues        = [];
     protected static $exchangeRateService = null;
 
     public static $lastExchangeRateServiceError = null;
@@ -304,6 +304,25 @@ class ToolBox
         }
 
         return self::$codmatValues[$codmat]['denum'] ?? '';
+    }
+
+    public static function getIdentifierByAttribute(string $modelName, string $attributeValue, string $attributeToSearchFor = null, string $attributeToReturn = 'id'): mixed
+    {
+        if (!($table = getTableForItemType($modelName))) {
+            return null;
+        }
+
+        if (empty($attributeToSearchFor)) {
+            $attributeToSearchFor = $modelName::getNameField();
+        }
+
+        $model = new $modelName();
+
+        if (!$model->getFromDBByCrit([$attributeToSearchFor => $attributeValue])) {
+            return null;
+        }
+
+        return $model->fields[$attributeToReturn] ?? null;
     }
 
 }

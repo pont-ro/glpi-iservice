@@ -974,6 +974,15 @@ msgstr "'Sigur vreți să redeschideți tichetul?'"
 msgid " closed tickets will be reopened. Are you sure you want to continue?"
 msgstr  " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"
 
+msgid "There is an unfinished movement for this printer, please finish movement %s first!"
+msgstr "O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea %s întâi!"
+
+msgid "Do not check before invoice is issued, operation can not be undone!"
+msgstr "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi revocată!"
+
+msgid "To create an invoice, press the link"
+msgstr "Pentru a crea factura, apăsați linkul"
+
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
 

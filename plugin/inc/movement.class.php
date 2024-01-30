@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceMovement extends CommonDBTM
 {
 
@@ -13,7 +15,7 @@ class PluginIserviceMovement extends CommonDBTM
     const TYPE_MOVE = 'move';
 
     public static $rightname      = 'plugin_iservice_movement';
-    public static $expert_line_id = 525;
+    public static $expert_line_id = null;
 
     public static function dummy(): array
     {
@@ -21,6 +23,15 @@ class PluginIserviceMovement extends CommonDBTM
         return [
             __('Printer', 'iservice'),
         ];
+    }
+
+    public static function getExpertLineId(): int
+    {
+        if (empty(self::$expert_line_id)) {
+            self::$expert_line_id = IserviceToolBox::getIdentifierByAttribute('Supplier', 'Expert Line srl');
+        }
+
+        return self::$expert_line_id;
     }
 
     public function __construct($itemtype = '')
@@ -134,7 +145,7 @@ class PluginIserviceMovement extends CommonDBTM
 
             $table_rows[] = "<tr><td colspan=2><input type='hidden' name='ticket_id' value='{$this->fields['ticket_id']}'/>$text_to_display</td></tr>";
             if (stripos($itilcategory->fields['name'], 'preluare') === 0) {
-                $this->fields['suppliers_id'] = self::$expert_line_id;
+                $this->fields['suppliers_id'] = self::getExpertLineId();
             }
         }
 
@@ -184,16 +195,15 @@ class PluginIserviceMovement extends CommonDBTM
             } else {
                 $ticket_in_exists                         = false;
                 $ticket_in_closed                         = false;
-                $params                                   = "mode=" . PluginIserviceTicket::MODE_CREATENORMAL;
+                $params                                   = "mode=" . PluginIserviceTicket::MODE_CLOSE;
                 $params                                  .= "&items_id[Printer][0]=" . $this->fields['items_id'];
                 $params                                  .= "&suppliers_id_old=" . $this->fields['suppliers_id_old'];
                 $params                                  .= "&_movement_id=$id";
                 $params                                  .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('preluare echipament');
                 $params                                  .= "&name=preluare echipament";
                 $params                                  .= "&content=preluare echipament";
-                $params                                  .= "&followup_content=preluare echipament";
                 $params                                  .= "&_users_id_assign=" . ($printer->fields['users_id_tech'] ?? '');
-                $params                                  .= "&_export_type=aviz";
+                $params                                  .= "&_export_type=" . PluginIserviceTicket::EXPORT_TYPE_NOTICE_ID;
                 $params                                  .= "&_close_on_success=1";
                 $params                                  .= "&add_cartridges_as_negative_consumables=1";
                 $ticket                                   = new PluginIserviceTicket();
@@ -381,18 +391,17 @@ class PluginIserviceMovement extends CommonDBTM
             $ticket_out_closed = $ticket_out->fields['status'] == Ticket::CLOSED;
             $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? __("View", "iservice") : __("Close", "iservice")) . "</a>";
             if (!$ticket_out_closed) {
-                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_MODIFY . "' class='vsubmit' target='_blank'>" . __("Modify", "iservice") . "</a>";
+                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . __("Modify", "iservice") . "</a>";
             }
         } else {
             $ticket_out_exists = false;
             $ticket_out_closed = false;
-            $params            = "mode=" . PluginIserviceTicket::MODE_CREATENORMAL;
+            $params            = "mode=" . PluginIserviceTicket::MODE_CLOSE;
             $params           .= "&items_id[Printer][0]=" . $this->fields['items_id'];
-            $params           .= "&movement2_id_field=$id";
+            $params           .= "&_movement2_id=$id";
             $params           .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('livrare echipament');
             $params           .= "&name=livrare echipament";
             $params           .= "&content=livrare echipament";
-            $params           .= "&followup_content=livrare echipament";
             $params           .= "&_users_id_assign=" . ($printer->fields['users_id_tech'] ?? '');
             $params           .= "&_close_on_success=1";
             $ticket_actions    = "<a href='ticket.form.php?$params' class='vsubmit' target='_blank'>" . __("Create ticket") . "</a>";
@@ -438,9 +447,9 @@ class PluginIserviceMovement extends CommonDBTM
 
     public static function getTypeFromSuppliers($old_supplier_id, $new_supplier_id)
     {
-        if ($old_supplier_id == self::$expert_line_id) {
+        if ($old_supplier_id == self::getExpertLineId()) {
             return self::TYPE_OUT;
-        } elseif ($new_supplier_id == self::$expert_line_id) {
+        } elseif ($new_supplier_id == self::getExpertLineId()) {
             return self::TYPE_IN;
         } else {
             return self::TYPE_MOVE;

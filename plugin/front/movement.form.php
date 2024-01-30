@@ -136,19 +136,17 @@ if (!empty($add)) {
 
         if (!$post['ticket_out_exists'] && in_array($post['type'], [PluginIserviceMovement::TYPE_OUT, PluginIserviceMovement::TYPE_MOVE])) {
             $ticket = new PluginIserviceTicket();
-            $ticket->prepareForShow(
+            $ticket->prepareDataForMovement(
                 [
-                    'mode' => PluginIserviceTicket::MODE_CREATEQUICK,
-                    'get' => [
-                        'items_id' => ['Printer' => [$post['items_id']]],
-                        'locations_id' => $post['locations_id'],
-                        '_suppliers_id_assign' => $post['suppliers_id'],
-                        '_users_id_assign' => $post['users_id_tech'],
-                        'itilcategories_id' => PluginIserviceTicket::getItilCategoryId('livrare echipament'),
-                        'name' => 'livrare echipament',
-                        'content' => 'livrare echipament',
-                        'followup_content' => 'livrare echipament'
-                    ]
+                    'items_id' => ['Printer' => [$post['items_id']]],
+                    'locations_id' => $post['locations_id'],
+                    '_suppliers_id_assign' => $post['suppliers_id'],
+                    '_users_id_assign' => $post['users_id_tech'],
+                    'itilcategories_id' => PluginIserviceTicket::getItilCategoryId('livrare echipament'),
+                    'name' => 'livrare echipament',
+                    'content' => 'livrare echipament',
+                    'followup_content' => 'livrare echipament',
+                    '_movement2_id' => $id,
                 ]
             );
             foreach ($ticket->fields as $field_name => $field_value) {
@@ -160,7 +158,6 @@ if (!empty($add)) {
 
             $ticket->fields['items_id']             = ['Printer' => [$post['items_id']]];
             $ticket->fields['_suppliers_id_assign'] = $post['suppliers_id'];
-            $ticket->fields['_movement2_id']        = $id;
             $ticket->fields['status']               = Ticket::WAITING;
             $ticket->fields['add']                  = 'add';
             $ticket->fields['mode']                 = PluginIserviceTicket::MODE_CREATEQUICK;

@@ -1,0 +1,15 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{% for input in movementRelatedFields %}
+    {% if input.render %}
+        {{ fieldsIservice.marcoCallHelper(
+            input.type,
+            input.name,
+            input.value,
+            input.label,
+            field_options|merge(input.options ?? []),
+            input.itemType
+        ) }}
+    {% endif %}
+{% endfor %}

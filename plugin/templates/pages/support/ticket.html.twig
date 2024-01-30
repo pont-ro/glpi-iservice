@@ -160,6 +160,10 @@
                                 ) }}
                             {% endif %}
 
+                            {% if movementRelatedFields %}
+                                {{ include('@iservice/pages/support/components/movement_related_fields.html.twig') }}
+                            {% endif %}
+
                         {% endblock %}
                     </div>
                 </div>

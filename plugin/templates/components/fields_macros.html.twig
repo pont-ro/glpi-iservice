@@ -133,6 +133,9 @@
       {% if options.label2 %}
          <span class="form-check-label"> {{ options.label2 }}</span>
       {% endif %}
+      {% if options.label2raw %}
+         {{ options.label2raw|raw }}
+      {% endif %}
    {% endset %}
 
    {{ fieldsOriginal.field(name, field, label, options) }}
