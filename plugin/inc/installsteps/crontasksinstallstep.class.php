@@ -43,10 +43,21 @@ class CronTasksInstallStep
             'mode'      => CronTask::MODE_EXTERNAL,
             'frequency' => 86400,
             'param'     => 0,
+            'state'     => 0,
             'hourmin'   => 5,
             'hourmax'   => 8,
             'comment'   => '',
-        ]
+        ], [
+            'itemtype' => 'PluginIservicePrinterDailyAverageCalculator',
+            'name' => 'PrinterDailyAverageCalculator',
+            'mode' => CronTask::MODE_EXTERNAL,
+            'frequency' => 86400,
+            'param' => 0,
+            'state' => 1,
+            'hourmin' => 0,
+            'hourmax' => 24,
+            'comment' => 'emaintenance@expertline.ro',
+        ],
     ];
 
     public static function do(): bool

@@ -105,8 +105,7 @@ class Tickets extends View
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'counters' => [
-                'link' => "#",
-            // 'link' => "view.php?view=printercounters2" . ($row_data['supplier_id'] ? "&printercounters20[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
+                'link' => "views.php?view=printercounters" . ($row_data['supplier_id'] ? "&printercounters0[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
                 'title' => __('Printer counters', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),

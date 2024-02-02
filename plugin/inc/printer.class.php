@@ -744,9 +744,11 @@ class PluginIservicePrinter extends Printer
 
     public static function getCMCondition($cartridge_management_field, $type_field, $state_field): string
     {
+        $blackWhitePrinterType = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'alb-negru');
+        $colorPrinterType      = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'color');
         return "
             (    $cartridge_management_field = 1
-             AND $type_field in (3, 4)
+             AND $type_field in ($blackWhitePrinterType, $colorPrinterType)
              AND $state_field in (SELECT id FROM glpi_states WHERE name like 'CO%' OR name like 'Gar%' OR name like 'Pro%')
             )";
     }

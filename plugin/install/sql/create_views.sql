@@ -449,4 +449,20 @@ where c2.date_use is null and c2.date_out is null
     and (c2.locations_id_field = c1.locations_id_field or coalesce(l1.locations_id, 0) = coalesce(l2.locations_id, 0))
 group by c1.id;
 
+create or replace view glpi_plugin_iservice_printer_usage_coefficients as
+select
+    c.printers_id printers_id
+     , ccf.plugin_fields_cartridgeitemtypedropdowns_id
+     , round(avg(if(ccf.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), ccf.printed_pages_color_field, ccf.printed_pages_color_field + ccf.printed_pages_field)) / avg(cicf.atc_field), 2) uc
+     , cicf.atc_field
+     , group_concat(concat('- între ', c.date_use, ' și ', c.date_out, ' au fost printate ', if(`ccf`.`plugin_fields_cartridgeitemtypedropdowns_id` in (2, 3, 4), `ccf`.`printed_pages_color_field`, `ccf`.`printed_pages_color_field` + `ccf`.`printed_pages_field`), ' pagini cu cartușul ', c.id) separator '\n') as `explanation`
+from glpi_cartridges c
+    join glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id and (ci.ref like '%cton%' or ci.ref like '%ccat%')
+    join glpi_plugin_fields_cartridgecartridgecustomfields ccf on ccf.items_id = c.cartridgeitems_id and ccf.itemtype = 'Cartridge'
+    join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cicf on cicf.items_id = c.cartridgeitems_id and cicf.itemtype = 'CartridgeItem'
+where c.date_in is not null
+  and c.date_use is not null
+  and c.date_out is not null
+  and if(ccf.plugin_fields_cartridgeitemtypedropdowns_id in (2,3,4), ccf.printed_pages_color_field, ccf.printed_pages_color_field + ccf.printed_pages_field) > 0
+group by c.printers_id, ccf.plugin_fields_cartridgeitemtypedropdowns_id;
 
