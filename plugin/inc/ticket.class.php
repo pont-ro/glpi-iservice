@@ -488,7 +488,7 @@ class PluginIserviceTicket extends Ticket
             );
 
             if (!empty($this->printer->fields['printermodels_id'])) {
-                $templateParams['changeablesTableData']['cartridgeLink'] = "views.php?view=cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}";
+                $templateParams['changeablesTableData']['cartridgeLink'] = "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}";
             }
 
             $templateParams['exportTypeOptions'] = [

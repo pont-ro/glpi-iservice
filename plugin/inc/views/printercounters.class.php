@@ -170,7 +170,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $settings['mass_actions']              = [
             'update_daily_averages' => [
                 'caption' => 'Modifică mediile zilnice + reîmprospătează',
-                'action' => 'views.php?view=printercounters',
+                'action' => 'views.php?view=PrinterCounters',
             ],
         ];
         foreach (array_keys($settings['filters']) as $filter_id) {
@@ -189,7 +189,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $last_order_by = [
             'days_to_visits' => 'days_to_visit',
             'estimate_percentages' => 'available_percentage_estimate'
-        ][$order_by] ?? 'cfc.plugin_fields_cartridgeitemtypedropdowns_id';
+        ][$order_by] ?? 'cfci.plugin_fields_cartridgeitemtypedropdowns_id';
 
         $settings['query']               = "
             select
@@ -280,7 +280,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , c.id cid
                   , ci.id ciid
                   , ci.ref consumable_code
-                  , cfc.plugin_fields_cartridgeitemtypedropdowns_id
+                  , cfci.plugin_fields_cartridgeitemtypedropdowns_id
                   , t2.codbenef
                   , t2.numar_facturi_neplatite
                   , @consumableType := if (ci.ref like 'CTON%' or ci.ref like 'CCA%', 'cartridge', 'consumable') consumable_type
@@ -290,7 +290,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , @ucm := if (coalesce(cfp.uc_magenta_field, 0) = 0, 0.75, cfp.uc_magenta_field) uc_magenta_field
                   , @ucy := if (coalesce(cfp.uc_yellow_field, 0) = 0, 0.75, cfp.uc_yellow_field) uc_yellow_field
                   , @ucbk := if (coalesce(cfp.uc_bk_field, 0) = 0, 0.75, cfp.uc_bk_field) uc_bk_field
-                  , @uc := if(@consumableType = 'consumable', 1, case cfc.plugin_fields_cartridgeitemtypedropdowns_id
+                  , @uc := if(@consumableType = 'consumable', 1, case cfci.plugin_fields_cartridgeitemtypedropdowns_id
                                                                     when 2 then @ucc
                                                                     when 3 then @ucm
                                                                     when 4 then @ucy
@@ -298,13 +298,13 @@ class PrinterCounters extends PluginIserviceViewPrinter
                                                                  end) usage_coefficient
                   , @dba := coalesce(cfp.daily_bk_average_field, 0) dba
                   , @dca := coalesce(cfp.daily_color_average_field, 0) dca
-                  , @da := if(cfc.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), if(@dca = 0, 100, @dca), if(@dba + @dca = 0, 100, @dba + @dca)) daily_average_counter
+                  , @da := if(cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), if(@dca = 0, 100, @dca), if(@dba + @dca = 0, 100, @dba + @dca)) daily_average_counter
                   , @atl := " . self::AVALIABLE_LIMIT . " avaliable_limit
                   , @changeable_count := coalesce(ccc.count, 0) changeable_count
                   , @compatible_printer_count := coalesce(ccpc.count, 0) compatible_printer_count
-                  , @installedCounter := if (cfc.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), cft.total2_color_field, cft.total2_black_field + cft.total2_color_field) installed_counter
+                  , @installedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), cft.total2_color_field, cft.total2_black_field + cft.total2_color_field) installed_counter
                   , @installedDate := cft.effective_date_field installed_date
-                  , @lastClosedCounter := if (cfc.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, plct.total2_black_field + plct.total2_color_field) last_closed_counter
+                  , @lastClosedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, plct.total2_black_field + plct.total2_color_field) last_closed_counter
                   , @lastClosedDate := plct.effective_date_field last_closed_date
                   , @estimateCounter := @lastClosedCounter + datediff(NOW(), @lastClosedDate) * @da estimate_counter
                   , @availableEstimate := 1 - round((@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 2) available_percentage_estimate
