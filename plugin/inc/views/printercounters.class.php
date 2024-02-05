@@ -18,7 +18,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         return 4;
     }
 
-    static function getDailyAverageDisplay($column, $row_data)
+    public static function getDailyAverageDisplay($column, $row_data): string
     {
         if ($column === 'dca' && $row_data['printer_types_id'] != PluginIservicePrinter::ID_COLOR_TYPE) {
             return '';
@@ -68,7 +68,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         return $result;
     }
 
-    static function getUsageCoefficientDisplay($column, $row_data)
+    public static function getUsageCoefficientDisplay($column, $row_data): string
     {
         if ($column !== 'bk' && $row_data['printer_types_id'] != PluginIservicePrinter::ID_COLOR_TYPE) {
             return '';
@@ -113,7 +113,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         return $result;
     }
 
-    static function getMinDaysToVisitDisplay($row_data)
+    public static function getMinDaysToVisitDisplay($row_data): string
     {
         $min_days_to_visit = intval($row_data['min_days_to_visit']);
         $title             = "title='$row_data[changeable_count] rezerve pentru $row_data[compatible_printer_count] aparate compatibile'";
@@ -324,7 +324,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                 left join glpi_users ue on ue.id = p.users_id
                 left join glpi_cartridges c on c.printers_id = p.id and c.date_use is not null and c.date_out is null
                 left join glpi_cartridgeitems  ci on ci.id = c.cartridgeitems_id
-                left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = ci.id and cfc.itemtype = 'CartridgeItem'
+                left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
                 left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = ci.id and cfci.itemtype = 'CartridgeItem'
                 left join glpi_plugin_iservice_consumable_compatible_printers_counts ccpc on ccpc.id = c.id
                 left join glpi_plugin_iservice_consumable_changeable_counts ccc on ccc.id = c.id

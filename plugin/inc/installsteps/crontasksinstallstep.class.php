@@ -54,8 +54,8 @@ class CronTasksInstallStep
             'frequency' => 86400,
             'param' => 0,
             'state' => 1,
-            'hourmin' => 0,
-            'hourmax' => 24,
+            'hourmin' => 4,
+            'hourmax' => 7,
             'comment' => 'emaintenance@expertline.ro',
         ],
     ];
