@@ -6,11 +6,12 @@ if (!defined('GLPI_ROOT')) {
 }
 
 use GlpiPlugin\Iservice\Views\Views;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 class PluginIserviceCartridgeVerifier extends CommonDBTM
 {
 
-    static function getTable($classname = null)
+    public static function getTable($classname = null): string
     {
         if (empty($classname)) {
             $classname = 'CartridgeVerifier';
@@ -19,14 +20,13 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         return parent::getTable($classname);
     }
 
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0): string
     {
         return _n('Cartridge verifier', 'Cartridge verifiers', $nb, 'iservice');
     }
 
-    static function cronInfo($name)
+    public static function cronInfo($name): ?array
     {
-
         switch ($name) {
         case 'mailCartridgeVerify' :
             return [
@@ -34,6 +34,8 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
                 'parameter'   => __('Number of emails to retrieve')
             ];
         }
+
+        return null;
     }
 
     /**
@@ -43,27 +45,30 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
      *
      * @return 1 : done with success
      * */
-    static function cronMailCartridgeVerify($task)
+    public static function cronMailCartridgeVerify($task): int
     {
-        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
-
-        if (empty($CFG_PLUGIN_ISERVICE['enabled_crons']['mailCartridgeVerify'])) {
-            $task->log("Cartridge verification is disabled by configuration.\n");
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.mailCartridgeVerify'))) {
+            $task->log("mailCartridgeVerify is disabled by configuration.\n");
             return -2;
         }
 
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
+
         Views::getView('PrinterCounters')->refreshCachedData();
 
-        $task->log("Virify cartridges\n");
+        $task->log("Verify cartridges\n");
+
+        $blackWhitePrinterType = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'alb-negru');
+        $colorPrinterType      = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'color');
 
         $cartridges = PluginIserviceDB::getQueryResult(
             "
-        SELECT cpc.*, ue.email as tech_email, pm.name as printer_model_name FROM glpi_plugin_iservice_cachetable_printercounters2 cpc
+        SELECT cpc.*, ue.email as tech_email, pm.name as printer_model_name FROM glpi_plugin_iservice_cachetable_printercounters cpc
         JOIN glpi_printers p ON p.id = cpc.printer_id
         JOIN glpi_printermodels pm ON pm.id = p.printermodels_id
         JOIN glpi_useremails ue ON ue.users_id = cpc.tech_id
-        WHERE cpc.cartridge_management = 1
-          AND cpc.printer_types_id in (3, 4)
+        WHERE cpc.cm_field = 1
+          AND cpc.printer_types_id in ($blackWhitePrinterType, $colorPrinterType)
           AND cpc.printer_states_id in (SELECT id FROM glpi_states WHERE name like 'COI%' OR name like 'COF%' OR name like 'Pro%')
           AND cpc.min_estimate_percentage <= 0
          ORDER BY cpc.tech_name, cpc.min_estimate_percentage ASC
@@ -117,10 +122,10 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
             }
         }
 
-        return 1; // Done
+        return 1; // Done.
     }
 
-    static function getEmailMessageFirstLines($tech_id = null)
+    public static function getEmailMessageFirstLines($tech_id = null): string
     {
         if (!empty($tech_id)) {
             $tech_id = "&printercounters20[tech_id]=" . $tech_id;
@@ -133,7 +138,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
                 <br><br>Următoarele aparate au consumabile goale:<br><ul>";
     }
 
-    static function getEmailMessageItemForCartridge($cartridge)
+    public static function getEmailMessageItemForCartridge($cartridge): string
     {
         return "<li>
                     Aparat: $cartridge[printer_name] - $cartridge[printer_model_name] - <a href='http://iservice2.expertline-magazin.ro/plugins/iservice/front/ticket.form.php?mode=1&items_id[Printer][0]=$cartridge[printer_id]&_suppliers_id_assign=$cartridge[supplier_id]&_users_id_assign=$cartridge[tech_id]'>crează tichet nou</a><br>

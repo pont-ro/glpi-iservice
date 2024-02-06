@@ -25,6 +25,11 @@ class PluginIservicePrinterDailyAverageCalculator
      * */
     public static function cronPrinterDailyAverageCalculator($task)
     {
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.printerDailyAverageCalculator'))) {
+            $task->log("printerDailyAverageCalculator is disabled by configuration.\n");
+            return -2;
+        }
+
         global $DB;
         $blackWhitePrinterType = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'alb-negru');
         $colorPrinterType      = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'color');

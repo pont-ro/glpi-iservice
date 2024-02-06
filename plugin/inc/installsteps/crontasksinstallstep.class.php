@@ -49,7 +49,7 @@ class CronTasksInstallStep
             'comment'   => '',
         ], [
             'itemtype' => 'PluginIservicePrinterDailyAverageCalculator',
-            'name' => 'PrinterDailyAverageCalculator',
+            'name' => 'printerDailyAverageCalculator',
             'mode' => CronTask::MODE_EXTERNAL,
             'frequency' => 86400,
             'param' => 0,
@@ -57,6 +57,26 @@ class CronTasksInstallStep
             'hourmin' => 4,
             'hourmax' => 7,
             'comment' => 'emaintenance@expertline.ro',
+        ], [
+            'itemtype' => 'PluginIserviceStockVerifier',
+            'name' => 'mailStockVerify',
+            'mode' => CronTask::MODE_EXTERNAL,
+            'frequency' => 86400,
+            'param' => 0,
+            'state' => 1,
+            'hourmin' => 5,
+            'hourmax' => 8,
+            'comment' => 'zoltan.szegedi@expertline.ro',
+        ], [
+            'itemtype' => 'PluginIserviceCartridgeVerifier',
+            'name' => 'mailCartridgeVerify',
+            'mode' => CronTask::MODE_EXTERNAL,
+            'frequency' => 86400,
+            'param' => 0,
+            'state' => 1,
+            'hourmin' => 5,
+            'hourmax' => 8,
+            'comment' => 'service@expertline.ro',
         ],
     ];
 

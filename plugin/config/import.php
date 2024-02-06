@@ -250,6 +250,10 @@ return [
                 'itemtype' => 'PluginIserviceDownload',
                 'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
             ],
+            'minimumStocks' => [
+                'itemtype' => 'PluginIserviceMinimumStock',
+                'label' => _n('Minimum Stock', 'Minimum Stocks', Session::getPluralNumber()),
+            ],
 //            'log' => [
 //                'itemtype' => 'Log',
 //                'label' => _n('Log', 'Logs', Session::getPluralNumber()),

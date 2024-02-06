@@ -8,7 +8,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginIserviceStockVerifier extends CommonDBTM
 {
 
-    static function getTable($classname = null)
+    public static function getTable($classname = null): string
     {
         if (empty($classname)) {
             $classname = 'StockVerifier';
@@ -17,12 +17,12 @@ class PluginIserviceStockVerifier extends CommonDBTM
         return parent::getTable($classname);
     }
 
-    static function getTypeName($nb = 0)
+    public static function getTypeName($nb = 0): string
     {
         return _n('Stock verifier', 'Stock verifiers', $nb, 'iservice');
     }
 
-    static function cronInfo($name)
+    public static function cronInfo($name): ?array
     {
 
         switch ($name) {
@@ -32,6 +32,8 @@ class PluginIserviceStockVerifier extends CommonDBTM
                 'parameter'   => __('Number of emails to retrieve')
             ];
         }
+
+        return null;
     }
 
     /**
@@ -41,14 +43,14 @@ class PluginIserviceStockVerifier extends CommonDBTM
      *
      * @return -1 : done but not finish 1 : done with success
      * */
-    static function cronMailStockVerify($task)
+    public static function cronMailStockVerify($task): int
     {
-        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
-
-        if (empty($CFG_PLUGIN_ISERVICE['enabled_crons']['mailStockVerify'])) {
-            $task->log("Stock verification is disabled by configuration.\n");
+        if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.mailStockVerify'))) {
+            $task->log("mailStockVerify is disabled by configuration.\n");
             return -2;
         }
+
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
         $comment_parts = explode("\n", $task->fields['comment'], 2);
         $target_email  = $comment_parts[0];
@@ -58,7 +60,7 @@ class PluginIserviceStockVerifier extends CommonDBTM
             return -1;
         }
 
-        $task->log("Virify stocks\n");
+        $task->log("Verify stocks\n");
 
         $consumables = PluginIserviceDB::getQueryResult(
             "
