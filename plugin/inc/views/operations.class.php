@@ -151,7 +151,7 @@ class Operations extends View
                 ",
             'default_limit' => 30,
             'filters' => [
-                'filter_buttons_prefix' => " <input type='submit' class='submit noprint' name='filter' value='Toate' onclick=\"$('form').attr('action', 'http://$_SERVER[HTTP_HOST]$_SERVER[SCRIPT_NAME]?view=operations');\"/>",
+                'filter_buttons_prefix' => " <input type='submit' class='submit noprint' name='filter' value='Toate' onclick=\"$('form').attr('action', 'http://$_SERVER[HTTP_HOST]$_SERVER[SCRIPT_NAME]?view=Operations');\"/>",
                 'printer_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => "AND p.id = %d",

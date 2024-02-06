@@ -6,7 +6,7 @@ use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
-define('ISERVICE_VERSION', '0.0.1');
+define('ISERVICE_VERSION', '0.0.2');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
@@ -94,7 +94,7 @@ function plugin_init_iservice(): void
 
     $PLUGIN_HOOKS['pre_item_update']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_update';
 
-    $PLUGIN_HOOKS['item_add']['iservice']['Ticket'] = 'plugin_iservice_Ticket_add';
+    $PLUGIN_HOOKS['item_add']['iservice']['Ticket']    = 'plugin_iservice_Ticket_add';
     $PLUGIN_HOOKS['item_update']['iservice']['Ticket'] = 'plugin_iservice_Ticket_update';
 
     $PLUGIN_HOOKS['item_update']['iservice']['PluginFieldsTicketticketcustomfield'] = 'plugin_iservice_PluginFieldsTicketticketcustomfield_update';

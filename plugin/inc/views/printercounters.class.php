@@ -11,8 +11,14 @@ use PluginFieldsPrinterprintercustomfield;
 
 class PrinterCounters extends PluginIserviceViewPrinter
 {
+    const AVALIABLE_LIMIT = 0.4;
 
-    static function getDailyAverageDisplay($column, $row_data)
+    public function getHeadingLevel()
+    {
+        return 4;
+    }
+
+    public static function getDailyAverageDisplay($column, $row_data): string
     {
         if ($column === 'dca' && $row_data['printer_types_id'] != PluginIservicePrinter::ID_COLOR_TYPE) {
             return '';
@@ -39,36 +45,30 @@ class PrinterCounters extends PluginIserviceViewPrinter
             $title                = "Nu există tickete suficiente pentru calcul";
             $data['dailyAverage'] = 100;
             $row_data["c$column"] = '?';
-            $color                = 'blue';
         } elseif (abs($row_data[$column] - $data['dailyAverage']) > $row_data[$column] * 0.25) {
-            $color  = "red";
             $class .= " average-alert";
         } elseif (abs($row_data[$column] - $data['dailyAverage']) > $row_data[$column] * 0.12) {
-            $color  = "orange";
             $class .= " average-alert";
-        } else {
-            $color = "green";
         }
 
         $class .= " {$column}_link_$row_data[printer_id]";
 
         global $CFG_PLUGIN_ISERVICE;
         if (self::inProfileArray('tehnician', 'admin', 'super-admin')) {
-            $result  = "<a id='{$column}_link_$row_data[printer_id]_$row_data[consumable_type]' class='$class' onclick='$(\"#{$column}_span_$row_data[printer_id]_$row_data[consumable_type]\").show();$(this).hide();' style='color:$color;' title='$title'>{$row_data[$column]}</a>";
+            $result  = "<a id='{$column}_link_$row_data[printer_id]_$row_data[consumable_type]' class='$class' onclick='$(\"#{$column}_span_$row_data[printer_id]_$row_data[consumable_type]\").show();$(this).hide();' title='$title'>{$row_data[$column]}</a>";
             $result .= "<span id='{$column}_span_$row_data[printer_id]_$row_data[consumable_type]' style='display:none; white-space: nowrap;'>";
             $result .= "<input id='{$column}_edit_$row_data[printer_id]_$row_data[consumable_type]' class='{$column}_edit_$row_data[printer_id]' style='width:2em;' type='text' value='$data[dailyAverage]' />&nbsp;";
             $result .= "<i class='fa fa-check-circle' onclick='setDailyAverage(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/managePrinter.php?operation=set_$column\", $row_data[printer_id], $(\"#{$column}_edit_$row_data[printer_id]_$row_data[consumable_type]\").val(), \"{$column}\", \"_$row_data[consumable_type]\");' style='color:green'></i>&nbsp;";
             $result .= "<i class='fa fa-times' onclick='$(\"#{$column}_link_$row_data[printer_id]_$row_data[consumable_type]\").show();$(\"#{$column}_span_$row_data[printer_id]_$row_data[consumable_type]\").hide();'></i>";
             $result .= "</span><br/>";
-            $result .= "({$row_data["c$column"]})";
         } else {
-            $result = "<a id='{$column}_link_$row_data[printer_id]_$row_data[consumable_type]' class='$class' onclick='return false;' style='color:$color;' title='$title'>{$row_data[$column]}</a>";
+            $result = "<a id='{$column}_link_$row_data[printer_id]_$row_data[consumable_type]' class='$class' onclick='return false;' title='$title'>{$row_data[$column]}</a>";
         }
 
         return $result;
     }
 
-    static function getUsageCoefficientDisplay($column, $row_data)
+    public static function getUsageCoefficientDisplay($column, $row_data): string
     {
         if ($column !== 'bk' && $row_data['printer_types_id'] != PluginIservicePrinter::ID_COLOR_TYPE) {
             return '';
@@ -113,7 +113,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         return $result;
     }
 
-    static function getMinDaysToVisitDisplay($row_data)
+    public static function getMinDaysToVisitDisplay($row_data): string
     {
         $min_days_to_visit = intval($row_data['min_days_to_visit']);
         $title             = "title='$row_data[changeable_count] rezerve pentru $row_data[compatible_printer_count] aparate compatibile'";
@@ -170,7 +170,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $settings['mass_actions']              = [
             'update_daily_averages' => [
                 'caption' => 'Modifică mediile zilnice + reîmprospătează',
-                'action' => 'view.php?view=printerCounters2',
+                'action' => 'views.php?view=PrinterCounters',
             ],
         ];
         foreach (array_keys($settings['filters']) as $filter_id) {
@@ -189,7 +189,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $last_order_by = [
             'days_to_visits' => 'days_to_visit',
             'estimate_percentages' => 'available_percentage_estimate'
-        ][$order_by] ?? 'cfc.plugin_fields_cartridgeitemtypedropdowns_id';
+        ][$order_by] ?? 'cfci.plugin_fields_cartridgeitemtypedropdowns_id';
 
         $settings['query']               = "
             select
@@ -223,7 +223,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                       '\\nTotal mediu printabil: ', round(t.average_total_counter * t.life_coefficient * t.usage_coefficient), ' (', t.average_total_counter, ' * ' , t.life_coefficient, ' * ', t.usage_coefficient, ')', 
                       '\\nMediu zilnic: ', t.daily_average_counter,
                       '\\nGolire de la plin in: ', round(t.average_total_counter * t.life_coefficient * t.usage_coefficient / t.daily_average_counter), ' zile',
-                      '\\nCartușe rezervă: ', t.changeable_count,
+                      '\\nCartuse rezerva: ', t.changeable_count,
                       '\\nAparate compatibile: ', t.compatible_printer_count,
                       '\\n\\nCalculatie: (', round(t.average_total_counter * t.life_coefficient * t.usage_coefficient), ' - ', t.last_closed_counter - t.installed_counter , ') / ' , t.daily_average_counter, ' - ', datediff(NOW(), t.last_closed_date), ' + ' , round(t.average_total_counter * t.life_coefficient * t.usage_coefficient / t.daily_average_counter), ' * ', t.changeable_count ,' / ', t.compatible_printer_count, 
                       '\">', t.days_to_visit, ' zile</span>') separator '<br>') 
@@ -243,7 +243,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , " . PluginIservicePrinter::getSerialFieldForEM('p') . " spaceless_serial
                   , p.printertypes_id printer_types_id
                   , p.contact_num
-                  , p.contact_name_field
+                  , p.contact
                   , p.comment
                   , p.users_id printer_users_id
                   , p.users_id_tech printer_users_id_tech
@@ -253,7 +253,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , cfp.week_nr_field
                   , cfp.em_field emaintenance
                   , cfp.disable_em_field disableem
-                  , cfp.contact_name_field
+                  , cfp.contact_gps_field
                   , cfp.usage_address_field
                   , cfp.no_invoice_field
                   , cfp.cost_center_field costcenter
@@ -280,17 +280,17 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , c.id cid
                   , ci.id ciid
                   , ci.ref consumable_code
-                  , cfc.plugin_fields_cartridgeitemtypedropdowns_id
+                  , cfci.plugin_fields_cartridgeitemtypedropdowns_id
                   , t2.codbenef
                   , t2.numar_facturi_neplatite
                   , @consumableType := if (ci.ref like 'CTON%' or ci.ref like 'CCA%', 'cartridge', 'consumable') consumable_type
-                  , @atc := if(coalesce(cfc.atc_field, 0) = 0, 1000, cfc.atc_field) average_total_counter
-                  , @lc := if(coalesce(cfc.life_coefficient_field, 0) = 0, 1, cfc.life_coefficient_field) life_coefficient
+                  , @atc := if(coalesce(cfci.atc_field, 0) = 0, 1000, cfci.atc_field) average_total_counter
+                  , @lc := if(coalesce(cfci.life_coefficient_field, 0) = 0, 1, cfci.life_coefficient_field) life_coefficient
                   , @ucc := if (coalesce(cfp.uc_cyan_field, 0) = 0, 0.75, cfp.uc_cyan_field) uc_cyan_field
                   , @ucm := if (coalesce(cfp.uc_magenta_field, 0) = 0, 0.75, cfp.uc_magenta_field) uc_magenta_field
                   , @ucy := if (coalesce(cfp.uc_yellow_field, 0) = 0, 0.75, cfp.uc_yellow_field) uc_yellow_field
                   , @ucbk := if (coalesce(cfp.uc_bk_field, 0) = 0, 0.75, cfp.uc_bk_field) uc_bk_field
-                  , @uc := if(@consumableType = 'consumable', 1, case cfc.plugin_fields_cartridgeitemtypedropdowns_id
+                  , @uc := if(@consumableType = 'consumable', 1, case cfci.plugin_fields_cartridgeitemtypedropdowns_id
                                                                     when 2 then @ucc
                                                                     when 3 then @ucm
                                                                     when 4 then @ucy
@@ -298,13 +298,13 @@ class PrinterCounters extends PluginIserviceViewPrinter
                                                                  end) usage_coefficient
                   , @dba := coalesce(cfp.daily_bk_average_field, 0) dba
                   , @dca := coalesce(cfp.daily_color_average_field, 0) dca
-                  , @da := if(cfc.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), if(@dca = 0, 100, @dca), if(@dba + @dca = 0, 100, @dba + @dca)) daily_average_counter
-                  , @atl := coalesce(cfs.atlfield, 0.4) avaliable_limit
+                  , @da := if(cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), if(@dca = 0, 100, @dca), if(@dba + @dca = 0, 100, @dba + @dca)) daily_average_counter
+                  , @atl := " . self::AVALIABLE_LIMIT . " avaliable_limit
                   , @changeable_count := coalesce(ccc.count, 0) changeable_count
                   , @compatible_printer_count := coalesce(ccpc.count, 0) compatible_printer_count
-                  , @installedCounter := if (cfc.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), it.total2_color_field, it.total2_black_field + it.total2_color_field) installed_counter
-                  , @installedDate := it.effective_date_field installed_date
-                  , @lastClosedCounter := if (cfc.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, plct.total2_black_field + plct.total2_color_field) last_closed_counter
+                  , @installedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), cft.total2_color_field, cft.total2_black_field + cft.total2_color_field) installed_counter
+                  , @installedDate := cft.effective_date_field installed_date
+                  , @lastClosedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, plct.total2_black_field + plct.total2_color_field) last_closed_counter
                   , @lastClosedDate := plct.effective_date_field last_closed_date
                   , @estimateCounter := @lastClosedCounter + datediff(NOW(), @lastClosedDate) * @da estimate_counter
                   , @availableEstimate := 1 - round((@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 2) available_percentage_estimate
@@ -314,20 +314,22 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , getPrinterDailyAverage(p.id, 0) cdba
                   , getPrinterDailyAverage(p.id, 1) cdca
                 from glpi_plugin_iservice_printers p
-                left join glpi_plugin_fields_printercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
+                left join glpi_plugin_fields_printerprintercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
                 left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id
                 left join glpi_locations l on l.id = p.locations_id
                 left join glpi_infocoms i on i.items_id = p.id and i.itemtype = 'Printer'
                 left join glpi_suppliers s on s.id = i.suppliers_id
-                left join glpi_plugin_fields_suppliercustomfields cfs on cfs.items_id = s.id and cfs.itemtype = 'Supplier'
+                left join glpi_plugin_fields_suppliersuppliercustomfields cfs on cfs.items_id = s.id and cfs.itemtype = 'Supplier'
                 left join glpi_users u on u.id = p.users_id_tech
                 left join glpi_users ue on ue.id = p.users_id
                 left join glpi_cartridges c on c.printers_id = p.id and c.date_use is not null and c.date_out is null
                 left join glpi_cartridgeitems  ci on ci.id = c.cartridgeitems_id
-                left join glpi_plugin_fields_cartridgeitemcartridgecustomfields cfc on cfc.items_id = ci.id and cfc.itemtype = 'CartridgeItem'
+                left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
+                left join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = ci.id and cfci.itemtype = 'CartridgeItem'
                 left join glpi_plugin_iservice_consumable_compatible_printers_counts ccpc on ccpc.id = c.id
                 left join glpi_plugin_iservice_consumable_changeable_counts ccc on ccc.id = c.id
-                left join glpi_tickets it on it.id = c.tickets_id_use_field
+                left join glpi_tickets it on it.id = cfc.tickets_id_use_field
+                left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = it.id and cft.itemtype = 'Ticket'
                 left join glpi_plugin_iservice_printer_usage_coefficients pbuc on pbuc.printers_id = p.id and pbuc.plugin_fields_cartridgeitemtypedropdowns_id = 1 
                 left join glpi_plugin_iservice_printer_usage_coefficients pcuc on pcuc.printers_id = p.id and pcuc.plugin_fields_cartridgeitemtypedropdowns_id = 2 
                 left join glpi_plugin_iservice_printer_usage_coefficients pmuc on pmuc.printers_id = p.id and pmuc.plugin_fields_cartridgeitemtypedropdowns_id = 3 
@@ -405,7 +407,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $settings['columns']['min_days_to_visit']      = [
             'title' => 'Urm. livrare în',
             'align' => 'right',
-            'format' => 'function:PluginIserviceView_PrinterCounters2::getMinDaysToVisitDisplay($row);',
+            'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCounters::getMinDaysToVisitDisplay($row);',
         ];
         $settings['columns']['consumable_codes']       = [
             'title' => 'Cod hMarfa',
@@ -427,12 +429,12 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $settings['columns']['dba'] = [
             'title' => 'Nr. mediu bk',
             'align' => 'center',
-            'format' => 'function:PluginIserviceView_PrinterCounters2::getDailyAverageDisplay("dba", $row);',
+            'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCounters::getDailyAverageDisplay("dba", $row);',
         ];
         $settings['columns']['dca'] = [
             'title' => 'Nr. mediu color',
             'align' => 'center',
-            'format' => 'function:PluginIserviceView_PrinterCounters2::getDailyAverageDisplay("dca", $row);',
+            'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCounters::getDailyAverageDisplay("dca", $row);',
         ];
 
         return $settings;
