@@ -15,7 +15,7 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceConsumable_Model extends CommonDBRelation {
 
     // From CommonDBRelation
-    static public $itemtype_1 = 'Printermodel';
+    static public $itemtype_1 = 'PrinterModel';
     static public $items_id_1 = 'printermodels_id';
     static public $itemtype_2 = 'PluginIserviceConsumable';
     static public $items_id_2 = 'plugin_iservice_consumables_id';
