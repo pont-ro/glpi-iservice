@@ -214,6 +214,14 @@ return [
                 'itemtype' => 'PluginIserviceCartridge_Ticket',
                 'label' => _n('Cartridge Ticket', 'Cartridge Tickets', Session::getPluralNumber()),
             ],
+            'consumableModel' => [
+                'itemtype' => 'PluginIserviceConsumable_Model',
+                'label' => _n('Consumable Model', 'Consumable Models', Session::getPluralNumber()),
+            ],
+            'minimumStocks' => [
+                'itemtype' => 'PluginIserviceMinimumStock',
+                'label' => _n('Minimum Stock', 'Minimum Stocks', Session::getPluralNumber()),
+            ],
         ]
     ],
     'orders' => [
@@ -249,10 +257,6 @@ return [
             'download' => [
                 'itemtype' => 'PluginIserviceDownload',
                 'label' => _n('Download', 'Downloads', Session::getPluralNumber()),
-            ],
-            'minimumStocks' => [
-                'itemtype' => 'PluginIserviceMinimumStock',
-                'label' => _n('Minimum Stock', 'Minimum Stocks', Session::getPluralNumber()),
             ],
 //            'log' => [
 //                'itemtype' => 'Log',
