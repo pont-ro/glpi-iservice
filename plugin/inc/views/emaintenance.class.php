@@ -155,7 +155,7 @@ class Emaintenance extends View
         } else {
             $name          = self::getSubjectForDisplay($row_data);
             $content       = urlencode(self::getContentForTicket($row_data));
-            $ticket_button = "<a href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
+            $ticket_button = "<a href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
         }
 
         return $ticket_button;
@@ -205,7 +205,7 @@ class Emaintenance extends View
         );
         $html->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'id', $mailcollector_id);
         echo __('Number of emails to retrieve'), " ";
-        $html->displayField(PluginIserviceHtml::FIELDTYPE_TEXT, 'max_emails', $max_emails, false, ['style' => 'width:20px;']);
+        $html->displayField(PluginIserviceHtml::FIELDTYPE_TEXT, 'max_emails', $max_emails, false, ['style' => 'width:40px;']);
         echo ' ';
         $html->displaySubmit('get_mails', __('Get E-maintenance emails', 'iservice'));
         echo " <a href='javascript:none' onclick='$(\"#auto-process-rules\").toggle();'>Reguli de procesare ▼</a>";
@@ -318,7 +318,7 @@ class Emaintenance extends View
                 'id' => [
                     'title' => 'ID',
                     'format' => 'function:default',
-                    'style' => 'white-space: nowrap;',
+                    'style' => 'white-space: nowrap; width: 8em;',
                     'default_sort' => 'desc',
                     'align' => 'center',
                 ],

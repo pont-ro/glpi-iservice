@@ -7,11 +7,6 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginIserviceEmaintenance extends MailCollector
 {
-
-    const DEFAULT_EMAIL = 'emaintenance@expertline.ro';
-
-    const ACCEPTED_SENDERS = ['exlemservice@gmail.com', 'sendonly@rcm.ec1.srv.ygles.com'];
-
     protected $protectedStorage;
 
     public static function getTable($classname = null): string
@@ -71,7 +66,7 @@ class PluginIserviceEmaintenance extends MailCollector
     public static function getMailCollector($email = ''): array
     {
         if (empty($email)) {
-            $email = self::DEFAULT_EMAIL;
+            $email = PluginIserviceConfig::getConfigValue('emaintenance.default_email');
         }
 
         return PluginIserviceDB::getQueryResult("SELECT * FROM `glpi_mailcollectors` WHERE `name` = '$email'", false)[0] ?? [];
@@ -339,7 +334,7 @@ class PluginIserviceEmaintenance extends MailCollector
                     continue;
                 } elseif ($date_out < $date_use) {
                     $result[$id]['effective_date_field'] = '#empty#import#data#';
-                    $result[$id]['error']    = "Aparatul a fost predat înainte să fie instalat!";
+                    $result[$id]['error']                = "Aparatul a fost predat înainte să fie instalat!";
                     continue;
                 }
 
@@ -347,7 +342,7 @@ class PluginIserviceEmaintenance extends MailCollector
                 if (!$supplier->getFromDB($data[$csv_config['columns']['partner_id'] ?? -1] ?? $printer->fields['supplier_id'])) {
                     // Change this to get the supplier from infocom.
                         $result[$id]['effective_date_field'] = '#empty#import#data#';
-                        $result[$id]['error']    = "Partenerul nu poate fi identificat";
+                        $result[$id]['error']                = "Partenerul nu poate fi identificat";
                         continue;
                 }
 
@@ -366,7 +361,7 @@ class PluginIserviceEmaintenance extends MailCollector
                 );
                 if (count($printer_movements) < 1) {
                     $result[$id]['effective_date_field'] = '#empty#import#data#';
-                    $result[$id]['error']    = "Nu există mutare cu tichet retragere creat mai recent de $date_use,\ncare retrage aparatul {$printer->fields['name']} de la {$supplier->fields['name']},\ndeși acesta a fost predat la data de $date_out!";
+                    $result[$id]['error']                = "Nu există mutare cu tichet retragere creat mai recent de $date_use,\ncare retrage aparatul {$printer->fields['name']} de la {$supplier->fields['name']},\ndeși acesta a fost predat la data de $date_out!";
                     continue;
                 }
             }
@@ -530,6 +525,11 @@ class PluginIserviceEmaintenance extends MailCollector
         return $mail_data;
     }
 
+    public function getTotalMails()
+    {
+        return $this->protectedStorage->countMessages();
+    }
+
     /**
      * Collects and processes the E-maintenance emails from the account given by the mailcollector.
      *
@@ -673,9 +673,9 @@ class PluginIserviceEmaintenance extends MailCollector
         ];
     }
 
-    protected function refuseMailData($mail_data): string
+    protected function refuseMailData($mail_data): bool|string
     {
-        if (empty($mail_data['from']) || !in_array($mail_data['from'], self::ACCEPTED_SENDERS)) {
+        if (empty($mail_data['from']) || !strpos(PluginIserviceConfig::getConfigValue('emaintenance.accepted_senders'), $mail_data['from'])) {
             return sprintf(__('Email rejected from %s', 'iservice'), $mail_data['from']);
         }
 
@@ -872,17 +872,16 @@ class PluginIserviceEmaintenance extends MailCollector
         }
 
         // Prepare ticket data.
-        $ticket->prepareForShow(['mode' => PluginIserviceTicket::MODE_CREATENORMAL]);
         $ticket->explodeArrayFields();
-        $effective_date_field    = self::getDateTimeFromString($extended_data['body_lines']['occurred']['ending'] ?? '') ?: self::getDateTimeFromString($extended_data['date']);
-        $ticket_data = [
+        $effective_date_field = self::getDateTimeFromString($extended_data['body_lines']['occurred']['ending'] ?? '') ?: self::getDateTimeFromString($extended_data['date']);
+        $ticket_data          = [
             // This field value will be needed to get the changeable cartridges.
             'items_id' => ['Printer' => [$extended_data['printers_id']]],
             'locations_id' => $extended_data['printer']->fields['locations_id'],
             '_users_id_assign' => $extended_data['users_id_tech'],
             'name' => $extended_data['subject_parts'][0],
             'content' => self::getContentForTicket($extended_data, false),
-            '_idemmailfield' => $ememail_id,
+            'em_mail_id_field' => $ememail_id,
             '_without_moving' => 1,
             '_without_papers' => 1,
             'effective_date_field' => $effective_date_field->format('Y-m-d H:i:s'),
@@ -1020,6 +1019,36 @@ class PluginIserviceEmaintenance extends MailCollector
             // Any errors will cause an Exception.
             throw $e;
         }
+    }
+
+    public function deleteMails($uid, $folder = '')
+    {
+
+        // Disable move support, POP protocol only has the INBOX folder.
+        if (strstr($this->fields['host'], "/pop")) {
+            $folder = '';
+        }
+
+        if (!empty($folder) && isset($this->fields[$folder]) && !empty($this->fields[$folder])) {
+            $name = mb_convert_encoding($this->fields[$folder], "UTF7-IMAP", "UTF-8");
+            try {
+                $this->protectedStorage->moveMessage($this->protectedStorage->getNumberByUniqueId($uid), $name);
+                return true;
+            } catch (\Exception $e) {
+                // Raise an error and fallback to delete.
+                trigger_error(
+                    sprintf(
+                    // TRANS: %1$s is the name of the folder, %2$s is the name of the receiver.
+                        __('Invalid configuration for %1$s folder in receiver %2$s'),
+                        $folder,
+                        $this->getName()
+                    )
+                );
+            }
+        }
+
+        $this->protectedStorage->removeMessage($this->protectedStorage->getNumberByUniqueId($uid));
+        return true;
     }
 
 }

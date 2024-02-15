@@ -16,6 +16,8 @@ return [
     'hmarfa.export.default_path' => '/var/sambadir/2x/CSV_HAMOR_3', // Without trailing slash!
     'emaintenance.import_default_path' => '/var/sambadir/2x/CSV_EM', // Without trailing slash!
     'emaintenance.csv_last_check_date_file' => PLUGIN_ISERVICE_CACHE_DIR . "/csvLastCheckDate",
+    'emaintenance.default_email' => "emaintenance@expertline.ro",
+    'emaintenance.accepted_senders' => "exlemservice@gmail.com,sendonly@rcm.ec1.srv.ygles.com",
     'dataintegritytests.folder' => PLUGIN_ISERVICE_DIR . "/inc/dataintegrity_tests",
     'dataintegritytests.cache_timeout' => 3600, // 60 minutes
     'folder_integrity.report_file' => PLUGIN_ISERVICE_CACHE_DIR . "/unknown_directory_entries",
