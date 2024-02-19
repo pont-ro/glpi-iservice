@@ -137,7 +137,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
     {
         if (IserviceToolBox::getInputVariable('mass_action_update_daily_averages')) {
             $printer_customfields = new PluginFieldsPrinterprintercustomfield();
-            foreach (IserviceToolBox::getArrayInputVariable('item')['printer'] as $printer_id => $update) {
+            foreach (IserviceToolBox::getArrayInputVariable('item')['printer'] ?? [] as $printer_id => $update) {
                 if (!$update || !PluginIserviceDB::populateByItemsId($printer_customfields, $printer_id)) {
                     continue;
                 }
