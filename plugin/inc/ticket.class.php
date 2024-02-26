@@ -456,6 +456,7 @@ class PluginIserviceTicket extends Ticket
             'effectiveDate'                => $this->fields['status'] == self::SOLVED || $this->fields['status'] == self::CLOSED ? $this->customfields->fields['effective_date_field'] : date('Y-m-d H:i:s'),
             'effectiveDateFieldReadonly'   => $this->fields['status'] == self::CLOSED,
             'cartridgeInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
+            'emMailIdField'             => $options['em_mail_id_field'] ?? null,
         ];
 
         if ($options['mode'] == self::MODE_CLOSE) {
@@ -1878,6 +1879,6 @@ class PluginIserviceTicket extends Ticket
             'fields' => $fields,
             'movement' => $movement ?? null,
         ];
-    }
 
+    }
 }

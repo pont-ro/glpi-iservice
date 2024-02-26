@@ -721,10 +721,13 @@ jQuery(document).ready(
                 above_actions_menu = true;
                 $(this).closest("td").find(".actions.collapsible").show();
             }, function () {
-                if (!above_actions) {
-                    $(this).closest("td").find(".actions.collapsible").hide();
-                }
-
+                setTimeout(
+                    function () {
+                        if (!above_actions) {
+                            $(this).closest("td").find(".actions.collapsible").hide();
+                        }
+                    }.bind(this), 200
+                );
                 above_actions_menu = false;
             }
         );

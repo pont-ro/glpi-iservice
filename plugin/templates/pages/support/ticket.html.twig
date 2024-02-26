@@ -164,6 +164,17 @@
                                 {{ include('@iservice/pages/support/components/movement_related_fields.html.twig') }}
                             {% endif %}
 
+                            {% if emMailIdField %}
+                                {{ fields.hiddenField(
+                                    'em_mail_id_field',
+                                    emMailIdField,
+                                    '',
+                                    field_options|merge({
+                                        'no_label': true,
+                                    })
+                                ) }}
+                            {% endif %}
+
                         {% endblock %}
                     </div>
                 </div>

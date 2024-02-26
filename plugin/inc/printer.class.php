@@ -706,14 +706,14 @@ class PluginIservicePrinter extends Printer
         $spaceless_serial = str_replace(" ", "", $serial);
 
         if ($use_cm_condition) {
-            $join         = "JOIN glpi_infocoms i ON i.items_id = $printer_table.id and i.itemtype = 'Printer' JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON cfs.items_id = i.suppliers_id and cfs.itemtype = 'Supplier'";
-            $cm_condition = "AND " . self::getCMCondition('cfs.cm_field', "$printer_table.printertypes_id", "$printer_table.states_id");
+            $join         = "JOIN glpi_infocoms i ON i.items_id = p.id and i.itemtype = 'Printer' JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON cfs.items_id = i.suppliers_id and cfs.itemtype = 'Supplier'";
+            $cm_condition = "AND " . self::getCMCondition('cfs.cm_field', "p.printertypes_id", "p.states_id");
         } else {
             $join         = "";
             $cm_condition = "";
         }
 
-        $result = PluginIserviceDB::getQueryResult("SELECT `id` from $printer_table $join WHERE " . self::getSerialFieldForEM() . " = '$spaceless_serial' AND is_deleted = 0 $cm_condition LIMIT 1");
+        $result = PluginIserviceDB::getQueryResult("SELECT `p`.`id` from $printer_table p $join WHERE " . self::getSerialFieldForEM('p') . " = '$spaceless_serial' AND is_deleted = 0 $cm_condition LIMIT 1");
 
         if (!$result) {
             return false;
