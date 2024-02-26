@@ -21,7 +21,7 @@ class HandleProfileRightsInstallStep
             return false;
         }
 
-        foreach ($rightsValues as $rightName => $rightValue) {
+        foreach ($rightsValues['onInstallStep'] ?? [] as $rightName => $rightValue) {
             if (!$DB->update(
                 $table,
                 [

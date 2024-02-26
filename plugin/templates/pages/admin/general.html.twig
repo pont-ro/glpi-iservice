@@ -1,0 +1,10 @@
+<div class="container">
+    <div class="center my-3">
+        <a class="btn btn-primary me-2" href="#" id="import-button">
+            <span onclick="ajaxCall('{{ url_base }}/ajax/setDefaulProfileRights.php',
+                    '{{ __('Are you sure you want to reset profile rights to default settings?') }}',
+                    function(message) { alert(message);})
+                    ">{{ __('(Re)Set default profile rights', 'iservice') }}</span>
+        </a>
+    </div>
+</div>

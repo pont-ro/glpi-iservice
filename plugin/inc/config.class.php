@@ -40,7 +40,14 @@ class PluginIserviceConfig extends CommonDBTM
 
     public function showFormGeneral(CommonGLPI $item): bool
     {
-        echo "General";
+        global $CFG_PLUGIN_ISERVICE;
+
+        echo TemplateRenderer::getInstance()->render(
+            '@iservice/pages/admin/general.html.twig',
+            [
+                'url_base' => $CFG_PLUGIN_ISERVICE['root_doc'],
+            ]
+        );
 
         return true;
     }
