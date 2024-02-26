@@ -675,7 +675,7 @@ class PluginIserviceEmaintenance extends MailCollector
 
     protected function refuseMailData($mail_data): bool|string
     {
-        if (empty($mail_data['from']) || !strpos(PluginIserviceConfig::getConfigValue('emaintenance.accepted_senders'), $mail_data['from'])) {
+        if (empty($mail_data['from']) || !strstr(PluginIserviceConfig::getConfigValue('emaintenance.accepted_senders'), $mail_data['from'])) {
             return sprintf(__('Email rejected from %s', 'iservice'), $mail_data['from']);
         }
 

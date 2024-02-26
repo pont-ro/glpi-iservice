@@ -726,7 +726,7 @@ jQuery(document).ready(
                         if (!above_actions) {
                             $(this).closest("td").find(".actions.collapsible").hide();
                         }
-                    }.bind(this), 500
+                    }.bind(this), 200
                 );
                 above_actions_menu = false;
             }
