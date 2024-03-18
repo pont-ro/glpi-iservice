@@ -221,6 +221,12 @@ msgstr "Cantitate"
 msgid "Select"
 msgstr "Selectează"
 
+msgid "All"
+msgstr "Toate"
+
+msgid "Visible"
+msgstr "Vizibile"
+
 #: inc/cartridge_ticket.class.php:317
 msgid "Empties"
 msgstr "Golește"

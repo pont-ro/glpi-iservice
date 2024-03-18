@@ -83,7 +83,7 @@ if (!empty($mass_action_change_status)) {
 
     if (($newID = $intOrder->add($post)) !== false) {
         Event::log($newID, "intorders", 4, "plugin_iservice_order", sprintf(__('%1$s adds the item %2$s'), $_SESSION["glpiname"], $post["name"]));
-        Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/view.php?view=intorders");
+        Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Intorders");
     }
 
     Html::back();
