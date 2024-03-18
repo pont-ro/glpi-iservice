@@ -221,9 +221,6 @@ msgstr "Cantitate"
 msgid "Select"
 msgstr "Selectează"
 
-msgid "All"
-msgstr "Toate"
-
 msgid "Visible"
 msgstr "Vizibile"
 
