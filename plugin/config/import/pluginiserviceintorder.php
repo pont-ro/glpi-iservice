@@ -5,5 +5,9 @@ return [
     'foreignKeys'   => [
         'tickets_id'                       => 'Ticket',
         'plugin_iservice_orderstatuses_id' => 'PluginIserviceOrderstatus',
-    ]
+        'users_id'               => 'User',
+    ],
+    'handleMissingForeignKeys' => [
+        'tickets_id' => ['add' => 100000000],
+    ],
 ];

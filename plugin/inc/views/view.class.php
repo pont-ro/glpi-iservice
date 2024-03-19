@@ -707,10 +707,12 @@ class View extends \CommonGLPI
             }
 
             $to_print = sprintf($column['format'], $data_to_print);
-            if (strpos($to_print, 'function:default') === 0) {
+            if (strpos($to_print, 'function:default') === 0 && !$this->exporting) {
                 $to_print = eval('return ' . get_called_class() . '::get' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $field_name))) . 'Display($row);');
-            } elseif (strpos($to_print, 'function:') === 0) {
+            } elseif (strpos($to_print, 'function:') === 0 && !$this->exporting) {
                 $to_print = eval('return ' . substr($to_print, strlen('function:')));
+            } elseif ($this->exporting) {
+                $to_print = str_replace('<br>', ', ', $data_to_print);
             }
 
             if ($this->exporting) {
@@ -880,6 +882,19 @@ class View extends \CommonGLPI
 
                 $style = empty($this->filter_buttons_align) || $this->filter_buttons_align === 'left' ? '' : "style='float:$this->filter_buttons_align;'";
                 echo "<div class='view-filter-buttons'$style>";
+
+                if ($this->show_export) {
+                    echo " <input type='submit' class='submit noprint' name='export' value='" . __('Export', 'views') . "'/> ";
+                    echo "<select name='" . $this->getRequestArrayName() . "[export_type]'>";
+                    echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") .">" . __('Visible', 'iservice') . "</option> ";
+                    echo "<option value='full'" . ($this->export_type == 'full' ? " selected" : "") . ">" .  __('All') . "</option>";
+                    echo "</select>";
+                }
+
+                if ($this->show_limit === true) {
+                    echo " " . __("Show", "iservice") . " <input type='text' name='{$this->getRequestArrayName()}[limit]' value='$this->limit' style='text-align:right;width:40px'/> din $this->query_count";
+                }
+
                 if ($this->show_filter_buttons) {
                     echo " <input type='submit' class='submit noprint' name='filter' value='" . __('Filter', 'views') . "'/>";
                     echo " <input type='submit' class='submit noprint' name='{$this->getRequestArrayName()}[reset]' value='" . __('Reset filters', 'views') . "'/>";
@@ -889,17 +904,6 @@ class View extends \CommonGLPI
                     echo "<span class='filter-buttons-prefix'>" . $this->filters['filter_buttons_postfix'] . "</span>";
                 }
 
-                if ($this->show_limit === true) {
-                    echo " " . __("Show", "iservice") . " <input type='text' name='{$this->getRequestArrayName()}[limit]' value='$this->limit' style='text-align:right;width:40px'/> din $this->query_count";
-                }
-
-                if ($this->show_export) {
-                    echo " <input type='submit' class='submit noprint' name='export' value='" . __('Export', 'views') . "'/> ";
-                    echo "<select name='export_type'>";
-                    echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") . ">vizibile</option>";
-                    echo "<option value='full'" . ($this->export_type == 'full' ? " selected" : "") . ">toate</option>";
-                    echo "</select>";
-                }
 
                 echo "</div>";
                 echo "<div class='mass-action'>";

@@ -76,9 +76,9 @@ class Intorders extends View
             $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}extorder.form.php'>" . __('Add') . " " . _n('External order', 'External orders', 1, 'iservice') . "</a>";
         }
 
-        if (Session::haveRight('plugin_iservice_view_extorders', READ)) {
-            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}views.php?view=Extorders'>" . _n('External order', 'External orders', Session::getPluralNumber(), 'iservice') . "</a>";
-        }
+//        if (Session::haveRight('plugin_iservice_view_extorders', READ)) {
+//            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}views.php?view=Extorders'>" . _n('External order', 'External orders', Session::getPluralNumber(), 'iservice') . "</a>";
+//        }
 
         $order_status_options                            = PluginIserviceOrderStatus::getAllForDropdown();
         $order_status_all_options                        = implode(',', array_keys($order_status_options));

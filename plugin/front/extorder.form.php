@@ -62,6 +62,7 @@ if (!empty($mass_action_change_status)) {
         '_no_message' => true,
         'users_id' => $_SESSION['glpiID'],
         'plugin_iservice_orderstatuses_id' => PluginIserviceOrderStatus::getIdProcessed(),
+        'suppliers_id' => 0,
     ];
     if (($newID = $extOrder->add($input)) === false) {
         Session::addMessageAfterRedirect('Eroare la crearea comenzii externe');
