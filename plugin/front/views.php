@@ -14,7 +14,7 @@ if ($export) {
 
 $view = Views::getView($view_id, true, $view_archive);
 
-if (empty($_POST['export'])) {
+if (empty(IserviceToolBox::getInputVariable('export'))) {
     Html::header(__("iService", "iservice"), $_SERVER['PHP_SELF'], "plugin_iservice_views", $view_id, "views");
 }
 
@@ -24,6 +24,6 @@ Session::checkRight($view::$rightname, READ);
 
 $view->display(false, $export);
 
-if (empty($_POST['export'])) {
+if (empty(IserviceToolBox::getInputVariable('export'))) {
     Html::footer();
 }
