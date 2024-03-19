@@ -155,7 +155,7 @@ class PluginIserviceIntOrder extends CommonDBTM
             );
             $other_orders_sum       = !empty($other_orders[0]['sum']) ? $other_orders[0]['sum'] : 0;
             $other_orders_sum_style = $other_orders_sum ? "" : "style='color:red;'";
-            $stock_and_other_orders = "<br><br>Stoc curent: <b>{$consumable->fields['Stoc']}</b>, alte comenzi nefinalizate: <b $other_orders_sum_style>$other_orders_sum</b>";
+            $stock_and_other_orders = "<br><br>Stoc curent: <b>{$consumable->fields['stoc']}</b>, alte comenzi nefinalizate: <b $other_orders_sum_style>$other_orders_sum</b>";
         }
 
         $consumables_dropdown_options = [

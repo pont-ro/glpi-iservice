@@ -2,6 +2,9 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+;
+
 // Imported from iService2, needs refactoring.
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -22,7 +25,11 @@ class Views
     {
         if (!empty($viewClassName) && is_subclass_of("GlpiPlugin\Iservice\Views\\$viewClassName", 'GlpiPlugin\Iservice\Views\View')) {
             $fullClassName = "GlpiPlugin\Iservice\Views\\$viewClassName";
-            \Html::header($fullClassName::getName());
+
+            if (empty(IserviceToolBox::getInputVariable('export'))) {
+                \Html::header($fullClassName::getName());
+            }
+
             return new $fullClassName($loadSettings, $archive ? "a_" : "");
         } else {
             return new View();

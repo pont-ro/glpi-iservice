@@ -31,7 +31,7 @@ switch ($operations[$operation]) {
 case 'get_dropdown':
     global $CFG_PLUGIN_ISERVICE;
     $consumable_model  = new PluginIserviceConsumable_Model();
-    $consumable_models = $consumable_model->find("plugin_iservice_consumables_id = '$id'");
+    $consumable_models = $consumable_model->find(['plugin_iservice_consumables_id' => $id]);
     $sanitized_id      = IserviceToolBox::getHtmlSanitizedValue($id);
     $url_encoded_id    = urlencode($id);
     echo Dropdown::show('PrinterModel', ['display' => false, 'used' => array_column($consumable_models, 'printermodels_id')]);

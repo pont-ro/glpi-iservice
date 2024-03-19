@@ -20,6 +20,7 @@ return [
         'suppliers_id'     => ['add' => 100000000],
         'contracts_id'     => ['add' => 100000000],
         'states_id'        => ['add' => 100000000],
+        'locations_id'        => ['force' => 0],
     ],
     'fieldMap'                 => [
         [

@@ -110,6 +110,10 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_admintask_Backup' => right_array(ALLSTANDARDRIGHT, ['super-admin']),
 
             'plugin_iservice_emaintenance' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+
+            'plugin_iservice_intorder' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_extorder' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_orderstatus' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
         ];
 
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);

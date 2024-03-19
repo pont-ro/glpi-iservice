@@ -235,6 +235,11 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
     function post_addItem()
     {
         parent::post_addItem();
+
+        if ($_SESSION['plugin']['iservice']['importInProgress'] ?? false) {
+            return;
+        }
+
         $extorder = new PluginIserviceExtOrder();
         $extorder->getFromDB($this->input['plugin_iservice_extorders_id']);
         $intorder = new PluginIserviceIntOrder();
