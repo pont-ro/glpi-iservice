@@ -8,9 +8,6 @@ use GlpiPlugin\Iservice\Views\Views;
 $view_id      = IserviceToolBox::getInputVariable('view', 'Unpaid_Invoices');
 $view_archive = IserviceToolBox::getInputVariable('view_archive', false);
 $export       = filter_input(INPUT_POST, 'export') || filter_input(INPUT_GET, 'export');
-if ($export) {
-    define('GLPI_KEEP_CSRF_TOKEN', true);
-}
 
 $view = Views::getView($view_id, true, $view_archive);
 
@@ -24,6 +21,4 @@ Session::checkRight($view::$rightname, READ);
 
 $view->display(false, $export);
 
-if (empty(IserviceToolBox::getInputVariable('export'))) {
-    Html::footer();
-}
+Html::footer();

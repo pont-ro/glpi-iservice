@@ -1,6 +1,7 @@
 <?php
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use Glpi\Application\View\TemplateRenderer;
 
 // Imported from iService2, needs refactoring.
 if (!defined('GLPI_ROOT')) {
@@ -222,4 +223,30 @@ class PluginIserviceIntOrder extends CommonDBTM
         return $actions;
     }
 
+    public function showFormButtons($options = [])
+    {
+        $params = [
+            'colspan'      => 2,
+            'withtemplate' => '',
+            'candel'       => true,
+            'canedit'      => true,
+            'addbuttons'   => [],
+            'formfooter'   => null,
+        ];
+
+        if (is_array($options) && count($options)) {
+            foreach ($options as $key => $val) {
+                $params[$key] = $val;
+            }
+        }
+
+        echo "</table>";
+
+        TemplateRenderer::getInstance()->display('@iservice/pages/support/components/buttons.html.twig', [
+            'item'   => $this,
+            'params' => $params,
+        ]);
+
+        echo "</div>"; //.asset
+    }
 }

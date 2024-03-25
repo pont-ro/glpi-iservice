@@ -22,6 +22,11 @@ class Intorders extends View
         return _n('Internal order', 'Internal orders', SESSION::getPluralNumber(), 'iservice');
     }
 
+    public function getHeadingLevel()
+    {
+        return 4;
+    }
+
     public static function getModelNamesDisplay($row_data): string
     {
         $model_names     = explode('<br>', $row_data['model_names']);
@@ -99,9 +104,10 @@ class Intorders extends View
         return [
             'name' => _n('Internal order', 'Internal orders', Session::getPluralNumber(), 'iservice'),
             'prefix' => implode('&nbsp;&nbsp;&nbsp;', $order_buttons),
+            'use_cache' => true,
+            'cache_timeout' => 14400, // 4 hours
+            'ignore_control_hash' => true,
             'query' => "
-                SELECT * FROM
-                (
                 SELECT
                       ic.id order_id
                     , ic.tickets_id ticket_id
@@ -151,7 +157,9 @@ class Intorders extends View
                     ) mn ON mn.plugin_iservice_consumables_id = c.id
                 LEFT JOIN glpi_plugin_iservice_minimum_stocks m on m.plugin_iservice_consumables_id = c.id
                 GROUP BY ic.id
-                ) o
+                ",
+            'cache_query' => "
+                SELECT * FROM {table_name}
                 WHERE order_id LIKE '[order_id]'
                     AND ((ticket_id IS NULL AND '[ticket_id]' = '%%') OR ticket_id LIKE '[ticket_id]')
                     AND order_status_id in ([order_status])
@@ -168,7 +176,7 @@ class Intorders extends View
                     AND (minimum_stock is null and 0 > [minimum_stock] OR minimum_stock > [minimum_stock])
                     [amount]
                     [order_placer]
-                ",
+            ",
             'id_field' => 'order_id',
             'itemtype' => 'intorder',
             'default_limit' => 50,
