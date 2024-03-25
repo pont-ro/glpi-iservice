@@ -58,4 +58,27 @@ return [
             ],
         ],
     ],
+    'glpi_plugin_iservice_consumables_models' => [
+        'indexes' => [
+            [
+                'name' => 'plugin_iservice_consumables_id',
+                'type' => 'index',
+                'columns' => "(`plugin_iservice_consumables_id`)",
+            ],
+            [
+                'name' => 'printermodels_id',
+                'type' => 'index',
+                'columns' => "(`printermodels_id`)",
+            ],
+        ],
+    ],
+    'glpi_plugin_iservice_minimum_stocks' => [
+        'indexes' => [
+            [
+                'name' => 'plugin_iservice_consumables_id',
+                'type' => 'index',
+                'columns' => "(`plugin_iservice_consumables_id`)",
+            ],
+        ],
+    ],
 ];
