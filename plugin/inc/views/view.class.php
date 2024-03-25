@@ -137,8 +137,8 @@ class View extends \CommonGLPI
 
     public function __construct($load_settings = true, $table_prefix = '', $table_suffix = '')
     {
-        $this->table_prefix = $table_prefix;
-        $this->table_suffix = $table_suffix;
+        $this->table_prefix                    = $table_prefix;
+        $this->table_suffix                    = $table_suffix;
         $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false') && self::inProfileArray('super-admin', 'admin');
 
         if ($load_settings) {
@@ -308,7 +308,7 @@ class View extends \CommonGLPI
     protected function getQueryCount(): ?int
     {
         global $DB;
-        if (($count_result = $DB->query("select count(*) as count from ($this->query) t")) === false) {
+        if (($count_result = $DB->query("select found_rows() as count")) === false) {
             echo $DB->error();
             return null;
         }
@@ -886,8 +886,8 @@ class View extends \CommonGLPI
                 if ($this->show_export) {
                     echo " <input type='submit' class='submit noprint' name='export' value='" . __('Export', 'views') . "'/> ";
                     echo "<select name='" . $this->getRequestArrayName() . "[export_type]'>";
-                    echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") .">" . __('Visible', 'iservice') . "</option> ";
-                    echo "<option value='full'" . ($this->export_type == 'full' ? " selected" : "") . ">" .  __('All') . "</option>";
+                    echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") . ">" . __('Visible', 'iservice') . "</option> ";
+                    echo "<option value='full'" . ($this->export_type == 'full' ? " selected" : "") . ">" . __('All') . "</option>";
                     echo "</select>";
                 }
 
@@ -903,7 +903,6 @@ class View extends \CommonGLPI
                 if (isset($this->filters['filter_buttons_postfix'])) {
                     echo "<span class='filter-buttons-prefix'>" . $this->filters['filter_buttons_postfix'] . "</span>";
                 }
-
 
                 echo "</div>";
                 echo "<div class='mass-action'>";
@@ -1093,7 +1092,7 @@ class View extends \CommonGLPI
         if (!$this->exporting) {
             // Keep this before the form opening to be able to put a separate form in the prefix.
             echo empty($this->prefix) ? "" : $this->prefix;
-            echo "<h{$this->getHeadingLevel()} id='view-query-{$this->getRequestArrayName()}'>$this->name" . (empty($this->filter_description) ? "" : " - $this->filter_description") . "</h{$this->getHeadingLevel()}>";
+            echo "<h{$this->getHeadingLevel()} id='view-query-{$this->getRequestArrayName()}' class='mt-2'>$this->name" . (empty($this->filter_description) ? "" : " - $this->filter_description") . "</h{$this->getHeadingLevel()}>";
             echo empty($this->description) ? "" : "<div class='filter-description'>$this->description</div>";
             if ($generate_form) {
                 $html->openForm(['method' => 'post', 'class' => 'iservice-form refresh-target', 'enctype' => 'multipart/form-data']);
@@ -1102,6 +1101,7 @@ class View extends \CommonGLPI
             }
 
             echo "<input type='hidden' name='filtering' value='filtering' />";
+            echo "<input type='hidden' name='kcsrft' value='1' />";
             echo "<input id='cache-refresh' type='hidden' name='cache_refresh' value='' />";
         }
 
@@ -1111,7 +1111,10 @@ class View extends \CommonGLPI
 
         $data = [];
         if ($this->instant_display || IserviceToolBox::getInputVariable('filtering')) {
-            $this->query_count = $this->show_limit ? $this->getQueryCount() : '';
+            if ($this->show_limit) {
+                $this->query = preg_replace('/SELECT\s/i', 'SELECT SQL_CALC_FOUND_ROWS ', $this->query, 1);
+            }
+
             $this->adjustQueryLimit();
 
             global $DB;
@@ -1121,6 +1124,8 @@ class View extends \CommonGLPI
                 return;
             }
 
+            $this->query_count = $this->show_limit ? $this->getQueryCount() : '';
+
             while (($row = $DB->fetchAssoc($result)) !== null) {
                 $data[] = $row;
             }
@@ -1129,7 +1134,7 @@ class View extends \CommonGLPI
         $this->displayResultsTable($data, $readonly);
 
         if ($this->exporting) {
-            header("Cache-Control: public"); // needed for i.e.
+            header("Cache-Control: public"); // Needed for i.e.
             header("Content-Transfer-Encoding: Binary");
             header("Content-Disposition: attachment; filename=export.$this->export_format");
             header("Pragma: no-cache");
@@ -1205,7 +1210,7 @@ class View extends \CommonGLPI
     {
         global $DB;
         $table_name = 'glpi_plugin_iservice_cachetable_' . $this->getMachineName();
-        $DB->query("DROP TABLE $table_name");
+        $DB->query("DROP TABLE IF EXISTS $table_name");
         if (!$DB->query("CREATE TABLE $table_name AS {$this->getFilterlessQuery()}")) {
             echo $DB->error(), "<br>CREATE TABLE $table_name AS {$this->getFilterlessQuery()}";
             return null;
