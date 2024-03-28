@@ -211,6 +211,10 @@ class PluginIservicePrinter extends Printer
             $contract_customfields->getEmpty();
         }
 
+        if (!$printer->isNewItem()) {
+            $this->showButtons($printer_id, $printer, $printer_customfields, $supplier);
+        }
+
         echo '<script>
 		function adjustPrinterChangeButtons(same_value, selector1, selector2) {
 			if (same_value) {
@@ -267,36 +271,39 @@ class PluginIservicePrinter extends Printer
 
         Html::closeForm();
 
-        if (!$printer->isNewItem()) {
-            echo "<br>";
-            echo "<div style='text-align: center;'>";
-            $buttons = [];
-            if (Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, CREATE)) {
-                $buttons[] = "<a class='vsubmit' href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATENORMAL . "&items_id[Printer][0]=$printer_id&_users_id_assign={$printer->fields['users_id_tech']}'>" . __('New ticket') . "</a>";
-            }
+        return true;
+    }
 
-            if (Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, CREATE)) {
-                $buttons[] = "<a class='vsubmit' href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$printer_id&_users_id_assign={$printer->fields['users_id_tech']}'>" . __('New quick ticket', 'iservice') . "</a>";
-            }
+    private function showButtons($printer_id, $printer, $printer_customfields, $supplier)
+    {
+        global $CFG_GLPI;
 
-            if (Session::haveRight('plugin_iservice_hmarfa', READ)) {
-                $buttons[] = "<a class='vsubmit' href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/hmarfaexport.form.php?id=$printer_id'>" . __('hMarfa export', 'iservice') . "</a>";
-            }
-
-            if (Session::haveRight('plugin_iservice_view_operations', READ)) {
-                $filter_description = urlencode("{$printer->fields['name']} ({$printer->fields['serial']}) - {$printer_customfields->fields['usage_address_field']} - {$supplier->fields['name']}");
-                $buttons[]          = "<a class='vsubmit' href='views.php?view=Operations&operations0[printer_id]=$printer_id&operations0[filter_description]=$filter_description'>" . __('Operations list', 'iservice') . "</a>";
-            }
-
-            if (Session::haveRight('plugin_iservice_movement', CREATE)) {
-                $buttons[] = "<a class='vsubmit' href='movement.form.php?itemtype=Printer&items_id=$printer_id'>" . __('Move', 'iservice') . " " . __("Printer", "iservice") . "</a>";
-            }
-
-            echo implode('&nbsp;&nbsp;', $buttons);
-            echo "</div>";
+        echo "<div style='text-align: left;'>";
+        $buttons = [];
+        if (Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, CREATE)) {
+            $buttons[] = "<a class='vsubmit' href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATENORMAL . "&items_id[Printer][0]=$printer_id&_users_id_assign={$printer->fields['users_id_tech']}'>" . __('New ticket') . "</a>";
         }
 
-        return true;
+        if (Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, CREATE)) {
+            $buttons[] = "<a class='vsubmit' href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$printer_id&_users_id_assign={$printer->fields['users_id_tech']}'>" . __('New quick ticket', 'iservice') . "</a>";
+        }
+
+        if (Session::haveRight('plugin_iservice_hmarfa', READ)) {
+            $buttons[] = "<a class='vsubmit' href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/hmarfaexport.form.php?id=$printer_id'>" . __('hMarfa export', 'iservice') . "</a>";
+        }
+
+        if (Session::haveRight('plugin_iservice_view_operations', READ)) {
+            $filter_description = urlencode("{$printer->fields['name']} ({$printer->fields['serial']}) - {$printer_customfields->fields['usage_address_field']} - {$supplier->fields['name']}");
+            $buttons[]          = "<a class='vsubmit' href='views.php?view=Operations&operations0[printer_id]=$printer_id&operations0[filter_description]=$filter_description'>" . __('Operations list', 'iservice') . "</a>";
+        }
+
+        if (Session::haveRight('plugin_iservice_movement', CREATE)) {
+            $buttons[] = "<a class='vsubmit' href='movement.form.php?itemtype=Printer&items_id=$printer_id'>" . __('Move', 'iservice') . " " . __("Printer", "iservice") . "</a>";
+        }
+
+        echo implode('&nbsp;&nbsp;', $buttons);
+        echo "</div>";
+        echo "<br>";
     }
 
     public function generatePrinterData($printer, $accessible_printer_ids, $readonly)

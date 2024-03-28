@@ -31,6 +31,13 @@ class Printers extends View
         return __('Printers', 'iservice');
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 40,
+        ];
+    }
+
     public static function getTicketStatusDisplay($row_data): string
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;

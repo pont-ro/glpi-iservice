@@ -20,6 +20,13 @@ class Cartridges extends View
         return _n('Cartridge', 'Cartridges', Session::getPluralNumber());
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 90,
+        ];
+    }
+
     public static function getRowBackgroundClass($row_data): string
     {
         if (!empty($row_data['date_out'])) {

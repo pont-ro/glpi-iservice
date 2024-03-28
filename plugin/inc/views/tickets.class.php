@@ -29,6 +29,13 @@ class Tickets extends View
         return _n('Ticket', 'Tickets', Session::getPluralNumber());
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 20,
+        ];
+    }
+
     public static function getTicketStatusDisplay($row_data): string
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;

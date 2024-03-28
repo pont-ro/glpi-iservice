@@ -22,6 +22,13 @@ class Reminders extends View
         return _n('Reminder', 'Reminders', Session::getPluralNumber());
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 100,
+        ];
+    }
+
     public static function getRowBackgroundClass($row_data): string
     {
         return $row_data['state'] == Planning::TODO ? "tab_bg_3" : "tab_bg_1";

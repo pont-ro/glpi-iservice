@@ -2,6 +2,7 @@ $(document).ready(
     function () {
         moveIconsToHeader();
         registerHMarfaImportClick();
+        moveIServiceMenuContent();
     }
 );
 
@@ -26,6 +27,32 @@ function moveIconsToHeader()
     );
 
     dropDown.remove();
+}
+
+function moveIServiceMenuContent()
+{
+    let dropDown      = $('li[title="iService"]');
+    let menuList      = $('#navbar-menu .navbar-nav').last();
+    jQuery.fn.reverse = [].reverse;
+
+    dropDown.find('div.dropdown-menu-columns a').reverse().each(
+        function () {
+            $(this).removeClass('dropdown-item');
+            let li = document.createElement("li");
+            li.classList.add('nav-item');
+            var anchorText  = $(this).text();
+            var iconHTML    = $(this).find('i').prop('outerHTML');
+            var spanElement = $('<span>').text(anchorText).addClass('menu-label');
+            $(this).empty().append(iconHTML).append(spanElement);
+            li.appendChild(this);
+            this.classList.add('nav-link');
+            this.setAttribute('role', 'button');
+            $(li).prependTo(menuList);
+        }
+    );
+
+    dropDown.remove();
+
 }
 
 function registerHMarfaImportClick()
