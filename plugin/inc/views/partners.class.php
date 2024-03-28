@@ -70,7 +70,7 @@ class Partners extends View
 							  AND valinc-valpla > 0 AND dscad < NOW()
 							GROUP BY codbenef) t3 ON t1.partener = t3.codbenef
 				LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields sc ON sc.hmarfa_code_field = t.codbenef and sc.itemtype = 'Supplier'
-				LEFT JOIN glpi_suppliers s ON s.id = sc.items_id
+				LEFT JOIN glpi_suppliers s ON s.id = sc.items_id and s.is_deleted = 0
 				LEFT JOIN (SELECT items_id id, MAX(date) date
 				      FROM glpi_plugin_iservice_downloads
 							WHERE downloadtype = 'partner_contacted'
