@@ -146,13 +146,12 @@ class RedefineMenus
             return;
         }
 
-//        $menus['assets']['content']['cartridgeitem']['page']   = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges";
-//        $menus['assets']['content']['printer']['page']         = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers";
-//        $menus['management']['content']['contract']['page']    = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Contracts";
-//        $menus['tools']['content']['reminder']['page']         = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Reminders";
-//        $menus['helpdesk']['content']['ticket']['page']        = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets";
-//        $menus['helpdesk']['content']['create_ticket']['page'] = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php";
-
+        // $menus['assets']['content']['cartridgeitem']['page']   = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges";
+        // $menus['assets']['content']['printer']['page']         = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers";
+        // $menus['management']['content']['contract']['page']    = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Contracts";
+        // $menus['tools']['content']['reminder']['page']         = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Reminders";
+        // $menus['helpdesk']['content']['ticket']['page']        = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets";
+        // $menus['helpdesk']['content']['create_ticket']['page'] = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php";
         $menus['admin']['content']['backups'] = [
             'title' => __('Backup/restore', 'iservice'),
             'icon'  => 'fa fa-database',
@@ -166,7 +165,16 @@ class RedefineMenus
             return;
         }
 
-        $menus['iService']['content'] = array_merge($menus['iService']['content'] ?? [], IserviceMenu::getMenuUrls($activeProfileName));
+        $content = array_merge($menus['iService']['content'] ?? [], IserviceMenu::getMenuUrls($activeProfileName));
+
+        usort(
+            $content, function ($a, $b) {
+                return (int) ($a['options']['sortOrder'] ?? 0) <=> (int) ($b['options']['sortOrder'] ?? 0);
+            }
+        );
+
+        $menus['iService']['content'] = $content;
+
     }
 
 }

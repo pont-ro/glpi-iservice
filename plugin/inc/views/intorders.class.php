@@ -41,6 +41,13 @@ class Intorders extends View
         return PluginIserviceConsumable_Model::showForConsumable($row_data['consumable_code'], $consumable_data, true);
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 80,
+        ];
+    }
+
     public static function getOpenedOrdersDisplay($row_data): string
     {
         if ($row_data['opened_orders'] > $row_data['amount']) {

@@ -18,6 +18,13 @@ class Movements extends View
         return _n('Movement', 'Movements', \Session::getPluralNumber(), 'iservice');
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 50,
+        ];
+    }
+
     protected function getSettings(): array
     {
         return [
