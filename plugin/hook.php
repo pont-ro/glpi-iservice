@@ -85,13 +85,6 @@ function plugin_iservice_PluginFieldsTicketticketcustomfield_update(PluginFields
     PluginIserviceTicket::handleDeliveredStatusChange($item);
 }
 
-function redirect_from_central()
-{
-    global $CFG_PLUGIN_ISERVICE;
-
-    Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets");
-}
-
 function plugin_iservice_pre_Ticket_update(Ticket $item)
 {
     // plugin_iservice_ticket_adjust_data_luc($item);
