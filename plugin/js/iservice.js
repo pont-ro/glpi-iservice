@@ -2,12 +2,20 @@ $(document).ready(
     function () {
         moveIconsToHeader();
         registerHMarfaImportClick();
+        changeLogoUrl();
     }
 );
 
+function changeLogoUrl() {
+    let logo = $('a.navbar-brand');
+    if (logo.length) {
+        console.log(logo.attr('href'));
+        logo.attr('href', '/plugins/iservice/front/views.php?view=Tickets');
+    }
+}
+
 function moveIconsToHeader()
 {
-    console.log('moveIconsToHeader');
     let dropDown       = $('li[title="Header Icons"]');
     let searchFormDiv  = $('form[role="search"]').parent();
     let headerIconsDiv = $('<div class="header-icons my-2 my-lg-0 ms-0 ms-lg-3 flex-grow-1 flex-lg-grow-0"></div>').insertAfter(searchFormDiv);
@@ -27,6 +35,8 @@ function moveIconsToHeader()
 
     dropDown.remove();
 }
+
+
 
 function registerHMarfaImportClick()
 {
