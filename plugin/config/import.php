@@ -28,6 +28,10 @@ return [
                 'itemtype' => 'Profile_User',
                 'label' => _n('Profile User', 'Profiles Users', Session::getPluralNumber()),
             ],
+            'profileright' => [
+                'itemtype' => 'ProfileRight',
+                'label' => _n('Profile Right', 'Profiles Rights', Session::getPluralNumber()),
+            ],
             'reminder' => [
                 'itemtype' => 'Reminder',
                 'label' => _n('Reminder', 'Reminders', Session::getPluralNumber()),

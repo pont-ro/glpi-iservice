@@ -3,7 +3,7 @@
 /* Array keys must use dot notation, e.g. 'config_override.core.palette' => 'auror'. */
 
 return [
-    'version' => '0.0.2',
+    'version' => '0.0.4',
     'enabled_crons.h_marfa_import' => true,
     'enabled_crons.em_mailgate' => true,
     'enabled_crons.data_integrity_test' => false,
