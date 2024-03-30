@@ -14,6 +14,13 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
         return __('Monthly plan', 'iservice');
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 110,
+        ];
+    }
+
     public static function getMenuContent(): array
     {
         if (!Session::haveRight(self::$rightname, READ)) {
@@ -26,6 +33,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
             'title' => self::getMenuName(),
             'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/monthlyplan.php",
             'icon'  => 'ti ti-calendar-event',
+            'options' => static::getAdditionalMenuOptions(),
         ];
     }
 

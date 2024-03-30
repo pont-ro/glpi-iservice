@@ -17,6 +17,13 @@ class Partners extends View
         return __('Due partners', 'iservice');
     }
 
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 60,
+        ];
+    }
+
     protected function getSettings(): array
     {
         return [

@@ -12,7 +12,7 @@ class Contracts extends View
 
     public static $icon = 'fa-fw ti ti-writing-sign';
 
-    static function getDocumentCountDisplay($row_data)
+    public static function getDocumentCountDisplay($row_data)
     {
         global $CFG_GLPI;
         $title = "";
@@ -31,6 +31,13 @@ class Contracts extends View
     public static function getName(): string
     {
         return _n('Contract', 'Contracts', Session::getPluralNumber());
+    }
+
+    public static function getAdditionalMenuOptions()
+    {
+        return [
+            'sortOrder' => 70,
+        ];
     }
 
     protected function getSettings(): array
