@@ -102,7 +102,15 @@ table.no-border td {
 
 .view-table a .fa-sort-up,
 .view-table a .fa-sort-down {
-    float: right;
+    /*float: right;*/
+    vertical-align: baseline;
+}
+
+.view-table a .fa-sort-up {
+    vertical-align: bottom;
+}
+.view-table a .fa-sort-down {
+    vertical-align: top;
 }
 
 .view-table a .fa-sort-up {

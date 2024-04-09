@@ -833,4 +833,13 @@ return [
             ],
         ],
     ],
+    'glpi_cartridgeitems' => [
+        'indexes' => [
+            [
+                'name' => 'ref',
+                'type' => 'index',
+                'columns' => "(`ref`)",
+            ],
+        ],
+    ],
 ];

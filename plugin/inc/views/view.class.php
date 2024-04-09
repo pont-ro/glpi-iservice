@@ -976,9 +976,9 @@ class View extends \CommonGLPI
             } else {
                 echo "<th$class$style>";
                 if ($readonly || !$column['sortable']) {
-                    echo "$order_sign $column[title]";
+                    echo "$column[title] $order_sign";
                 } else {
-                    echo "<a href='#' onclick='orderSubmit($(this), \"{$this->getRequestArrayName()}\", \"$field_name\", \"$new_order_dir\");'>$order_sign $column[title]</a>";
+                    echo "<a href='#' onclick='orderSubmit($(this), \"{$this->getRequestArrayName()}\", \"$field_name\", \"$new_order_dir\");'>$column[title] $order_sign</a>";
                 }
 
                 echo "$filter</th>";

@@ -6,7 +6,7 @@ use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
-define('ISERVICE_VERSION', '0.0.3');
+define('ISERVICE_VERSION', '0.0.4');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
