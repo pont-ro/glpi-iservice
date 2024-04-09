@@ -100,11 +100,6 @@ table.no-border td {
     width: calc(100% - 1em);
 }
 
-.view-table a .fa-sort-up,
-.view-table a .fa-sort-down {
-    vertical-align: baseline;
-}
-
 .view-table a .fa-sort-up {
     vertical-align: bottom;
 }
