@@ -138,7 +138,7 @@ return [
             [
                 'name' => 'primary key',
                 'type' => '',
-                'columns' => "(`nrfac`)",
+                'columns' => "(`nrjur`, `nrfac`)",
             ],
             [
                 'name' => 'nrfac',

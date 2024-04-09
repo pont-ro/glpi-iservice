@@ -30,12 +30,10 @@ class HtaccessChecker
             // Append the rule to the file.
             $fileContent .= PHP_EOL . PHP_EOL . $rule;
 
-            file_put_contents($htaccessFile, $fileContent);
-
-            // Reload the page.
-            header('Location: ' . $_SERVER['REQUEST_URI']);
+            if (file_put_contents($htaccessFile, $fileContent)) {
+                // Reload the page.
+                header('Location: ' . $_SERVER['REQUEST_URI']);
+            }
         }
-
     }
-
 }

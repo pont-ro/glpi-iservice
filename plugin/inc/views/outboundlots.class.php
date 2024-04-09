@@ -27,7 +27,6 @@ class OutboundLots extends View
                     , fi.initiale AS Denumire_Client
                     , fr.codmat As Cod
                     , n.denum AS Denumire_Articol
-                    , p.serial AS printer_serial
                     , fr.descr AS Descriere
                     , ROUND((fr.puliv / NULLIF(fr.puini, 0)), 2) AS Proc
                     , fr.cant AS Cant
@@ -37,9 +36,6 @@ class OutboundLots extends View
                 LEFT JOIN {$this->table_prefix}hmarfa_facturi fa ON fa.nrfac = fr.nrfac
                 LEFT JOIN {$this->table_prefix}hmarfa_firme fi ON fi.cod = fa.codbenef
                 LEFT JOIN {$this->table_prefix}hmarfa_nommarfa n ON fr.codmat = n.cod
-                LEFT JOIN glpi_tickets t ON t.id = SUBSTR(fa.nrcmd FROM 1 FOR 5)
-                LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id and it.itemtype = 'Printer'
-                LEFT JOIN glpi_printers p ON p.id = it.items_id
                 WHERE fr.tip IN ('TFAC','AIMFS','TFACR','TAIM')
                     AND fa.datafac >= '[start_date]'
                     AND fa.datafac <= '[end_date]'
@@ -49,7 +45,6 @@ class OutboundLots extends View
                     AND n.denum LIKE '[denum_art]'
                     AND fa.nrcmd LIKE '[tehnician]'
                     AND fr.descr LIKE '[descr]'
-                    AND ((p.serial IS NULL AND '[printer_serial]' = '%%') or p.serial LIKE '[printer_serial]')
                 ",
             'default_limit' => 25,
             'filters' => [
@@ -101,12 +96,6 @@ class OutboundLots extends View
                     'format' => '%%%s%%',
                     'header' => 'Descriere',
                 ],
-                'printer_serial' => [
-                    'type' => 'text',
-                    'caption' => 'Serie aparat',
-                    'format' => '%%%s%%',
-                    'header' => 'printer_serial',
-                ],
             ],
             'columns' => [
                 'nrfac' => [
@@ -128,9 +117,6 @@ class OutboundLots extends View
                 ],
                 'Denumire_Articol' => [
                     'title' => 'Denumire articol',
-                ],
-                'printer_serial' => [
-                    'title' => 'Serie aparat',
                 ],
                 'Descriere' => [
                     'title' => 'Descriere',
