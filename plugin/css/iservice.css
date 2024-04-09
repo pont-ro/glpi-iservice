@@ -102,13 +102,11 @@ table.no-border td {
 
 .view-table a .fa-sort-up {
     vertical-align: bottom;
-}
-.view-table a .fa-sort-down {
-    vertical-align: top;
+    margin-top: .5em;
 }
 
-.view-table a .fa-sort-up {
-    margin-top: .5em;
+.view-table a .fa-sort-down {
+    vertical-align: top;
 }
 
 .view-table th.view-header {
