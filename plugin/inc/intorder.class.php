@@ -242,11 +242,14 @@ class PluginIserviceIntOrder extends CommonDBTM
 
         echo "</table>";
 
-        TemplateRenderer::getInstance()->display('@iservice/pages/support/components/buttons.html.twig', [
-            'item'   => $this,
-            'params' => $params,
-        ]);
+        TemplateRenderer::getInstance()->display(
+            '@iservice/pages/support/components/buttons.html.twig', [
+                'item'   => $this,
+                'params' => $params,
+            ]
+        );
 
-        echo "</div>"; //.asset
+        echo "</div>"; // .asset
     }
+
 }

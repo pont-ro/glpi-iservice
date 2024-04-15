@@ -286,6 +286,8 @@ class Intorders extends View
                     'type' => self::FILTERTYPE_USER,
                     'format' => 'AND order_placer_id = %d',
                     'header' => 'order_placer',
+                    'glpi_class_params' => ['right' => 'own_ticket'],
+                    'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
                 ],
                 'order_status' => [
                     'type' => self::FILTERTYPE_SELECT,
