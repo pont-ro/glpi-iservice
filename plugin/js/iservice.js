@@ -1,13 +1,12 @@
 $(document).ready(
     function () {
-        moveIconsToHeader();
         registerHMarfaImportClick();
-        moveIServiceMenuContent();
         changeLogoUrl();
     }
 );
 
-function changeLogoUrl() {
+function changeLogoUrl()
+{
     let logo = $('a.navbar-brand');
     if (logo.length) {
         console.log(logo.attr('href'));
@@ -15,8 +14,8 @@ function changeLogoUrl() {
     }
 }
 
-function moveIconsToHeader()
-{
+
+window.moveIconsToHeader = function () {
     let dropDown       = $('li[title="Header Icons"]');
     let searchFormDiv  = $('form[role="search"]').parent();
     let headerIconsDiv = $('<div class="header-icons my-2 my-lg-0 ms-0 ms-lg-3 flex-grow-1 flex-lg-grow-0"></div>').insertAfter(searchFormDiv);
@@ -37,9 +36,9 @@ function moveIconsToHeader()
     dropDown.remove();
 }
 
-function moveIServiceMenuContent()
-{
-    let dropDown      = $('li[title="iService"]');
+window.moveMenuContent = function (dropDownTitle, append = false) {
+    let dropDown = $('li[title=' + dropDownTitle + ']');
+    console.log('moveMenuContent', dropDown);
     let menuList      = $('#navbar-menu .navbar-nav').last();
     jQuery.fn.reverse = [].reverse;
 
@@ -55,7 +54,12 @@ function moveIServiceMenuContent()
             li.appendChild(this);
             this.classList.add('nav-link');
             this.setAttribute('role', 'button');
-            $(li).prependTo(menuList);
+            if (append === true) {
+                $(li).appendTo(menuList);
+            } else {
+                $(li).prependTo(menuList);
+            }
+
         }
     );
 
@@ -63,6 +67,15 @@ function moveIServiceMenuContent()
 
 }
 
+window.removeMenuItems = function (dropDownTitles) {
+    dropDownTitles.forEach(
+        function (dropDownTitle) {
+            console.log('removeMenuItems', dropDownTitle);
+            $('li.dropdown[title=' + dropDownTitle + ']').remove();
+            $('a.dropdown-item[title=' + dropDownTitle + ']').remove();
+        }
+    );
+}
 
 function registerHMarfaImportClick()
 {

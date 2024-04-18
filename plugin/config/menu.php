@@ -39,7 +39,7 @@ return [
                 'title' => __('Inquiry', 'iservice'),
                 'icon'  => 'fa-fw ti ti-plus',
                 'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php",
-                'roles' => ['super-admin','admin'],
+                'roles' => ['super-admin','admin', 'tehnician', 'subtehnician'],
                 'options' => [
                     'sortOrder' => 10,
                 ],
