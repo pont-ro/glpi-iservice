@@ -205,7 +205,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $data;
     }
 
-    public static function getDataForTicketChangeableSection(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false): array
+    public static function getDataForTicketChangeableSection(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false): array|bool
     {
         global $DB;
 
@@ -320,7 +320,6 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                                         $("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]")
                                             .append(\'<input type=\"hidden\" name=\"add_cartridge\" value=\"1\">\')
                                             .closest("form").submit();
-                                        console.log("here");
                                         return true;
                                     }
                                     return false;

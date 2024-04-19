@@ -9,7 +9,6 @@ function changeLogoUrl()
 {
     let logo = $('a.navbar-brand');
     if (logo.length) {
-        console.log(logo.attr('href'));
         logo.attr('href', '/plugins/iservice/front/views.php?view=Tickets');
     }
 }
@@ -37,8 +36,7 @@ window.moveIconsToHeader = function () {
 }
 
 window.moveMenuContent = function (dropDownTitle, append = false) {
-    let dropDown = $('li[title=' + dropDownTitle + ']');
-    console.log('moveMenuContent', dropDown);
+    let dropDown      = $('li[title=' + dropDownTitle + ']');
     let menuList      = $('#navbar-menu .navbar-nav').last();
     jQuery.fn.reverse = [].reverse;
 
@@ -70,7 +68,6 @@ window.moveMenuContent = function (dropDownTitle, append = false) {
 window.removeMenuItems = function (dropDownTitles) {
     dropDownTitles.forEach(
         function (dropDownTitle) {
-            console.log('removeMenuItems', dropDownTitle);
             $('li.dropdown[title=' + dropDownTitle + ']').remove();
             $('a.dropdown-item[title=' + dropDownTitle + ']').remove();
         }
