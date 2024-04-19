@@ -503,6 +503,7 @@ class PluginIserviceTicket extends Ticket
 
         $templateParams['movementRelatedFields'] = $movementRelatedData['fields'] ?? null;
 
+        $options['ticketHasConsumables'] = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
         $templateParams['submitButtons'] = $this->getButtonsConfig($options, $movementRelatedData['movement'] ?? null);
 
         if ($options['mode'] == self::MODE_CLOSE) {
@@ -1629,12 +1630,14 @@ class PluginIserviceTicket extends Ticket
                 $exportButtonOptions['title']       = 'Ticketul nu poate fi exportat până livrarea nu este finalizată';
             }
 
-            $buttons['export'] = [
-                'type' => 'submit',
-                'name' => 'export',
-                'value' => __('Save') . ' + ' . __('hMarfa export', 'iservice'),
-                'options' => $exportButtonOptions,
-            ];
+            if (!empty($options['ticketHasConsumables'])) {
+                $buttons['export'] = [
+                    'type' => 'submit',
+                    'name' => 'export',
+                    'value' => __('Save') . ' + ' . __('hMarfa export', 'iservice'),
+                    'options' => $exportButtonOptions,
+                ];
+            }
             break;
         default:
             break;
@@ -1872,4 +1875,5 @@ class PluginIserviceTicket extends Ticket
         ];
 
     }
+
 }
