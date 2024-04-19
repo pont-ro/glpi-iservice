@@ -27,19 +27,22 @@
                         {% block form_fields %}
                             {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
 
-                            {{ fields.numberField(
-                                'total2_black_field',
-                                item.customfields.fields['total2_black_field'],
-                                __('Black counter reading', 'iservice'),
-                                field_options|merge({
-                                    'min': total2BlackRequiredMinimum,
-                                    'disabled': total2BlackDisabled,
-                                    'add_field_attribs': {
-                                        'data-toggle': 'tooltip',
-                                        'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
-                                    },
-                                })
-                            ) }}
+                            {% if printer %}
+                                {{ fields.numberField(
+                                    'total2_black_field',
+                                    item.customfields.fields['total2_black_field'],
+                                    __('Black counter reading', 'iservice'),
+                                    field_options|merge({
+                                        'min': total2BlackRequiredMinimum,
+                                        'disabled': total2BlackDisabled,
+                                        'add_field_attribs': {
+                                            'data-toggle': 'tooltip',
+                                            'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
+                                        },
+                                    })
+                                ) }}
+                            {% endif %}
+
 
                             {% if printer.isColor() %}
                                 {{ fields.numberField(
@@ -69,7 +72,9 @@
 
                             {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
 
-                            {{ include('@iservice/pages/support/components/changeables_table.html.twig') }}
+                            {% if printer %}
+                                {{ include('@iservice/pages/support/components/changeables_table.html.twig') }}
+                            {% endif %}
 
                             {% set canUpdateInitalValue = canupdate %}
                             {% set canupdate = false %}
@@ -97,17 +102,19 @@
                                 field_options
                             ) }}
 
-                            {{ fields.dropdownArrayField(
-                                '_export_type',
-                                item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
-                                exportTypeOptions,
-                                __('Export type', 'iservice'),
-                                field_options|merge({
-                                    'required': item.hasConsumables(),
-                                })
-                            ) }}
+                            {% if partnerId > 0 %}
+                                {{ fields.dropdownArrayField(
+                                    '_export_type',
+                                    item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
+                                    exportTypeOptions,
+                                    __('Export type', 'iservice'),
+                                    field_options|merge({
+                                        'required': item.hasConsumables(),
+                                    })
+                                ) }}
+                            {% endif %}
 
-                            {% if consumablesTableData %}
+                            {% if consumablesTableData and printer %}
                                 {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
                             {% endif %}
 
@@ -131,33 +138,35 @@
                                 ) }}
                             {%  endif %}
 
-                            {{ fields.datetimeField(
-                                'effective_date_field',
-                                effectiveDate,
-                                __('Effective date', 'iservice'),
-                                field_options|merge({
-                                    'min': "now"|date("Y-m-d H:i:s"),
-                                    'readonly': effectiveDateFieldReadonly,
-                                })
-                            ) }}
-
-                            <script>
-                                $(document).ready(function(){
-                                    $('[name="effective_date_field"]').on('change', function(){
-                                        $('[name="effective_date_manually_changed"]').val(1);
-                                    });
-                                });
-                            </script>
-
-                            {% if not effectiveDateFieldReadonly %}
-                                {{ fields.hiddenField(
-                                    'effective_date_manually_changed',
-                                    0,
-                                    '',
+                            {% if printer %}
+                                {{ fields.datetimeField(
+                                    'effective_date_field',
+                                    effectiveDate,
+                                    __('Effective date', 'iservice'),
                                     field_options|merge({
-                                        'no_label': true,
+                                        'min': "now"|date("Y-m-d H:i:s"),
+                                        'readonly': effectiveDateFieldReadonly,
                                     })
                                 ) }}
+
+                                <script>
+                                    $(document).ready(function(){
+                                        $('[name="effective_date_field"]').on('change', function(){
+                                            $('[name="effective_date_manually_changed"]').val(1);
+                                        });
+                                    });
+                                </script>
+
+                                {% if not effectiveDateFieldReadonly %}
+                                    {{ fields.hiddenField(
+                                        'effective_date_manually_changed',
+                                        0,
+                                        '',
+                                        field_options|merge({
+                                            'no_label': true,
+                                        })
+                                    ) }}
+                                {% endif %}
                             {% endif %}
 
                             {% if movementRelatedFields %}
