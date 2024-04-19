@@ -192,7 +192,7 @@ class Tickets extends View
             $color = '';
         }
 
-        $title = "Tehnician alocat: $row_data[tech_assign_name]";
+        $title = !empty($row_data['tech_assign_name']) ? "Tehnician alocat: $row_data[tech_assign_name]" : '';
         if (!empty($row_data['tech_park_name'])) {
             $title .= "\nTehnician park: $row_data[tech_park_name]";
         }
@@ -322,7 +322,7 @@ class Tickets extends View
                             , u.id tech_park_id
                             , CONCAT(IFNULL(CONCAT(u.realname, ' '),''), IFNULL(u.firstname, '')) tech_park_name
                             , a.id tech_assign_id
-                            , CONCAT(IFNULL(CONCAT(a.realname, ' '),''), IFNULL(a.firstname, '')) tech_assign_name
+                            , CONCAT(IFNULL(CONCAT(a.realname, ' '),''), IFNULL(a.firstname, ''), '-') tech_assign_name
                             , o.id observer_id
                             , CASE WHEN o.name IS NULL THEN NULL ELSE CONCAT(IFNULL(CONCAT(o.realname, ' '),''), IFNULL(o.firstname, '')) END observer_name
                             , p.serial printer_serial

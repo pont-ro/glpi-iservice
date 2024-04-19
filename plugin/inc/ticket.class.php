@@ -45,6 +45,17 @@ class PluginIserviceTicket extends Ticket
 
     const EXPORT_TYPE_INVOICE_ID = 2;
 
+    public function canViewItem(): bool
+    {
+        return parent::canViewItem() || $this->isUserTechPark();
+    }
+
+    public function isUserTechPark(): bool
+    {
+        $printer = $this->getFirstPrinter();
+        return !empty($printer->fields['users_id_tech']) && $printer->fields['users_id_tech'] === Session::getLoginUserID();
+    }
+
     public static function getFormModeUrl($mode): string
     {
         switch ($mode) {
