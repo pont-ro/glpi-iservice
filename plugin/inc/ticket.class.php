@@ -1592,15 +1592,6 @@ class PluginIserviceTicket extends Ticket
                 ];
             }
 
-            $buttons['services_export'] = [
-                'type' => 'submit',
-                'name' => 'services_export',
-                'value' => __('Generate services invoice', 'iservice'),
-                'options' => [
-                    'data-confirm-message' => $close_confirm_message,
-                ],
-            ];
-
             $button_statuses = [Ticket::SOLVED, Ticket::WAITING, Ticket::PLANNED, Ticket::ASSIGNED];
             if (in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin'])) {
                 $button_statuses[] = Ticket::INCOMING;
