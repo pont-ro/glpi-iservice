@@ -731,7 +731,7 @@ class PluginIserviceHmarfa
         echo "      <input type='submit' class='submit' name='hard_refresh' value='Refresh'/>\n";
         echo "    </td>\n";
         echo "    <td align='center'>\n";
-        echo "      <a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&id={$printer->lastTicket()->getID()}'>Înapoi la ultimul tichet</a>\n";
+        echo "      <a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}'>Înapoi la ultimul tichet</a>\n";
         echo "    </td>\n";
         echo "  </tr>";
         echo "  <tr><td colspan=2>&nbsp;</td>\n";
@@ -876,7 +876,7 @@ class PluginIserviceHmarfa
         }
 
         if (IserviceToolBox::getInputVariable('to_ticket', null)) {
-            Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$id&mode=" . PluginIserviceTicket::MODE_CLOSE);
+            Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$id");
         }
 
         $add                    = IserviceToolBox::getInputVariable('add');

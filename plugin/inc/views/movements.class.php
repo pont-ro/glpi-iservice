@@ -107,7 +107,7 @@ class Movements extends View
                     'title' => 'Tichet preluare',
                     'link' => [
                         'type' => 'normal',
-                        'href' => 'ticket.form.php?id=[ticket1_id]&mode=' . PluginIserviceTicket::MODE_CLOSE,
+                        'href' => 'ticket.form.php?id=[ticket1_id]',
                         'title' => 'Vezi tichet preluare',
                         'target' => '_blank',
                     ],
@@ -117,7 +117,7 @@ class Movements extends View
                     'title' => 'Tichet livrare',
                     'link' => [
                         'type' => 'normal',
-                        'href' => 'ticket.form.php?id=[ticket2_id]&mode=' . PluginIserviceTicket::MODE_CLOSE,
+                        'href' => 'ticket.form.php?id=[ticket2_id]',
                         'title' => 'Vezi tichet livrare',
                         'target' => '_blank',
                     ],

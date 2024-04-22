@@ -58,12 +58,12 @@ if (!empty($add)) {
 
     $ticket->updateItem($ticketId, $post, true);
 
-    Html::redirect($ticket->getFormURL() . '?mode=' . PluginIserviceTicket::MODE_CLOSE . '&id=' . $ticketId);
+    Html::redirect($ticket->getFormURL() . '?id=' . $ticketId);
 } elseif (!empty($update)) {
     $ticket->updateItem($id, $post);
 
     if (empty($noRedirectAfterTicketUpdate)) {
-        Html::redirect($ticket->getFormURL() . '?mode=' . PluginIserviceTicket::MODE_CLOSE . '&id=' . $id);
+        Html::redirect($ticket->getFormURL() . '?id=' . $id);
     }
 }
 
@@ -168,6 +168,6 @@ function add_cartridges_as_negative_consumables(): void
             }
         }
 
-        Html::redirect($track->getFormURL() . "?_allow_buttons=1&id={$newTicketId}&mode=" . PluginIserviceTicket::MODE_CLOSE);
+        Html::redirect($track->getFormURL() . "?_allow_buttons=1&id=$newTicketId");
     }
 }

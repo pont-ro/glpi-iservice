@@ -1438,7 +1438,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             $form->displayTableRow(
                 [
-                    'Contor bk ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&id={$printer->lastTicket()->getID()}"),
+                    'Contor bk ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_bk_ui'], true),
                     'Nr copii col incluse',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['included_copies_col_field'] . $additionalColorCopies, true)
@@ -1454,7 +1454,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             );
             $form->displayTableRow(
                 [
-                    'Contor col ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&id={$printer->lastTicket()->getID()}"),
+                    'Contor col ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_col_ui'], true),
                     'Valoare contract',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['monthly_fee_field'], true)
@@ -1470,7 +1470,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             $form->displayTableRow(
                 [
-                    "Data " . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&id={$printer->lastTicket()->getID()}"),
+                    "Data " . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['data_ui'], true, ['style' => $lastInterventionColor]),
                     'Tarif copie bk',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['copy_price_bk_field'], true)

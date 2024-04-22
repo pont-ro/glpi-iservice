@@ -163,7 +163,7 @@ if (!empty($add)) {
             $ticket->fields['mode']                 = PluginIserviceTicket::MODE_CREATEQUICK;
             $ticket->fields['_no_message']          = 1;
             $ticket_id                              = $ticket->add($ticket->fields);
-            Html::redirect("ticket.form.php?id=$ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "&_redirect_on_success=" . urlencode("movement.form.php?id=$id"));
+            Html::redirect("ticket.form.php?id=$ticket_id&_redirect_on_success=" . urlencode("movement.form.php?id=$id"));
         }
     }
 } elseif (!empty($delete)) {

@@ -459,7 +459,7 @@ class PluginIserviceTicket extends Ticket
             'emMailIdField'             => $options['em_mail_id_field'] ?? null,
         ];
 
-        if ($options['mode'] == self::MODE_CLOSE) {
+        if ($ID > 0) {
             $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $printerId, false);
 
             $templateParams['printer']                    = $this->printer;
@@ -506,7 +506,7 @@ class PluginIserviceTicket extends Ticket
         $options['ticketHasConsumables'] = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
         $templateParams['submitButtons'] = $this->getButtonsConfig($options, $movementRelatedData['movement'] ?? null);
 
-        if ($options['mode'] == self::MODE_CLOSE) {
+        if ($ID > 0) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
         } else {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/inquiry.html.twig", $templateParams);
