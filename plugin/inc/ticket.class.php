@@ -504,7 +504,7 @@ class PluginIserviceTicket extends Ticket
         $templateParams['movementRelatedFields'] = $movementRelatedData['fields'] ?? null;
 
         $options['ticketHasConsumables'] = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
-        $templateParams['submitButtons'] = $this->getButtonsConfig($options, $movementRelatedData['movement'] ?? null);
+        $templateParams['submitButtons'] = $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
 
         if ($ID > 0) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
@@ -1538,7 +1538,7 @@ class PluginIserviceTicket extends Ticket
         return !$this->hasConsumables() || (!empty($this->customfields->fields['delivered_field']) && !empty($this->customfields->fields['exported_field']));
     }
 
-    public function getButtonsConfig($options, $movement = null): array
+    public function getButtonsConfig($ID, $options, $movement = null): array
     {
         $close_confirm_message = '';
         $available_cartridges  = PluginIserviceCartridgeItem::getChangeablesForTicket($this);
@@ -1555,8 +1555,7 @@ class PluginIserviceTicket extends Ticket
 
         $buttons = [];
         $closed  = $this->isClosed();
-        switch ($options['mode']) {
-        case self::MODE_CLOSE:
+        if ($ID > 0) {
             if ($closed && IserviceToolBox::inProfileArray(['super-admin'])) {
                 $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->customfields->fields['effective_date_field'], $this->getPartnerId(), $this->getPrinterId());
                 if (count($newer_closed_ticket_ids)) {
@@ -1576,71 +1575,66 @@ class PluginIserviceTicket extends Ticket
                             } else {this.stopPropagation()}'
                     ],
                 ];
+            } else {
+                if ($this->isCloseable()) {
+                    $buttons['close'] = [
+                        'type'    => 'submit',
+                        'name'    => 'update',
+                        'label'   => __('Close', 'iservice'),
+                        'value'   => 1,
+                        'options' => [
+                            'data-confirm-message' => $close_confirm_message,
+                            'on_click'             => '$("[name=status]").val(' . Ticket::CLOSED . ');'
+                        ],
+                    ];
+                }
 
-                break;
-            }
+                $button_statuses = [Ticket::SOLVED, Ticket::WAITING, Ticket::PLANNED, Ticket::ASSIGNED];
+                if (in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin'])) {
+                    $button_statuses[] = Ticket::INCOMING;
+                }
 
-            if ($this->isCloseable()) {
-                $buttons['close'] = [
-                    'type' => 'submit',
-                    'name' => 'update',
-                    'label' => __('Close', 'iservice'),
-                    'value' => 1,
-                    'options' => [
-                        'data-confirm-message' => $close_confirm_message,
-                        'on_click' => '$("[name=status]").val(' . Ticket::CLOSED . ');'
-                    ],
+                $statusClassMap = [
+                    Ticket::SOLVED   => 'far fa-circle solved',
+                    Ticket::WAITING  => 'fas fa-circle waiting',
+                    Ticket::PLANNED  => 'far fa-calendar planned',
+                    Ticket::ASSIGNED => 'far fa-circle assigned',
+                    Ticket::INCOMING => 'fas fa-circle new',
                 ];
-            }
 
-            $button_statuses = [Ticket::SOLVED, Ticket::WAITING, Ticket::PLANNED, Ticket::ASSIGNED];
-            if (in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin'])) {
-                $button_statuses[] = Ticket::INCOMING;
-            }
+                foreach ($button_statuses as $status) {
+                    $confirm_alert    = ($status === Ticket::SOLVED || $this->fields['status'] != Ticket::SOLVED) ? '' : "if (!confirm(\"ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de {$this->customfields->fields['effective_date_field']}!\")) return false;";
+                    $buttons[$status] = [
+                        'type'    => 'submit',
+                        'name'    => 'update',
+                        'label'   => '',
+                        'value'   => 1,
+                        'options' => [
+                            'buttonClass' => "itilstatus  $statusClassMap[$status]",
+                            'title'       => Ticket::getStatus($status),
+                            'on_click'    => "$confirm_alert$(\"[name=status]\").val($status);"
+                        ],
+                    ];
+                }
 
-            $statusClassMap = [
-                Ticket::SOLVED => 'far fa-circle solved',
-                Ticket::WAITING => 'fas fa-circle waiting',
-                Ticket::PLANNED => 'far fa-calendar planned',
-                Ticket::ASSIGNED => 'far fa-circle assigned',
-                Ticket::INCOMING => 'fas fa-circle new',
-            ];
-
-            foreach ($button_statuses as $status) {
-                $confirm_alert    = ($status === Ticket::SOLVED || $this->fields['status'] != Ticket::SOLVED) ? '' : "if (!confirm(\"ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de {$this->customfields->fields['effective_date_field']}!\")) return false;";
-                $buttons[$status] = [
-                    'type' => 'submit',
-                    'name' => 'update',
-                    'label' => '',
-                    'value' => 1,
-                    'options' => [
-                        'buttonClass' => "itilstatus  $statusClassMap[$status]",
-                        'title' => Ticket::getStatus($status),
-                        'on_click' => "$confirm_alert$(\"[name=status]\").val($status);"
-                    ],
+                $exportButtonOptions = [
+                    'onclick'    => 'if ($(this).hasClass("disabled")) { return false; }',
+                    'data-title' => 'Ticketul nu poate fi exportat până livrarea nu este finalizată',
                 ];
-            }
+                if (empty($this->customfields->fields['delivered_field'])) {
+                    $exportButtonOptions['buttonClass'] = 'submit disabled';
+                    $exportButtonOptions['title']       = 'Ticketul nu poate fi exportat până livrarea nu este finalizată';
+                }
 
-            $exportButtonOptions = [
-                'onclick' => 'if ($(this).hasClass("disabled")) { return false; }',
-                'data-title' => 'Ticketul nu poate fi exportat până livrarea nu este finalizată',
-            ];
-            if (empty($this->customfields->fields['delivered_field'])) {
-                $exportButtonOptions['buttonClass'] = 'submit disabled';
-                $exportButtonOptions['title']       = 'Ticketul nu poate fi exportat până livrarea nu este finalizată';
+                if (!empty($options['ticketHasConsumables'])) {
+                    $buttons['export'] = [
+                        'type'    => 'submit',
+                        'name'    => 'export',
+                        'value'   => __('Save') . ' + ' . __('hMarfa export', 'iservice'),
+                        'options' => $exportButtonOptions,
+                    ];
+                }
             }
-
-            if (!empty($options['ticketHasConsumables'])) {
-                $buttons['export'] = [
-                    'type' => 'submit',
-                    'name' => 'export',
-                    'value' => __('Save') . ' + ' . __('hMarfa export', 'iservice'),
-                    'options' => $exportButtonOptions,
-                ];
-            }
-            break;
-        default:
-            break;
         }
 
         // If it is a movement ticket, it cannot be closed until the services invoice is not created.
