@@ -110,13 +110,16 @@
                                     __('Export type', 'iservice'),
                                     field_options|merge({
                                         'required': item.hasConsumables(),
+                                        'on_change': 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}',
                                     })
                                 ) }}
                             {% endif %}
 
-                            {% if consumablesTableData and printer %}
-                                {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
-                            {% endif %}
+                            <div class="add-consumable-div">
+                                {% if consumablesTableData and printer %}
+                                    {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
+                                {% endif %}
+                            </div>
 
                             {% if item.hasConsumables() %}
                                 {{ fieldsIservice.checkboxFieldExtended(
