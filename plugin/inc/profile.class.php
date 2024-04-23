@@ -53,7 +53,6 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_monthly_plan' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_hmarfa' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_ticket_hmarfa_export_close' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
-            'plugin_iservice_views' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_stock' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_unpaid_invoices' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_stock_lots' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
