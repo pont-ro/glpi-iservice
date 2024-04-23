@@ -283,10 +283,10 @@ class Intorders extends View
                     'header' => 'order_comment',
                 ],
                 'order_placer' => [
-                    'type' => self::FILTERTYPE_USER,
+                    'type' => self::FILTERTYPE_SELECT,
                     'format' => 'AND order_placer_id = %d',
                     'header' => 'order_placer',
-                    'glpi_class_params' => ['right' => 'own_ticket'],
+                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
                     'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
                 ],
                 'order_status' => [

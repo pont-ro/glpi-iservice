@@ -514,15 +514,12 @@ class Printers extends View
                     'header' => 'supplier_name',
                 ],
                 'tech_id' => [
-                    'type' => self::FILTERTYPE_USER,
+                    'type' => self::FILTERTYPE_SELECT,
                     'caption' => 'Responsabil',
                     'format' => 'AND u.id = %d',
                     'header' => 'tech_name',
-                    'glpi_class_params' => ['right' => 'own_ticket'],
                     'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
-                    'cache_override' => [
-                        'format' => "AND tech_id = %d",
-                    ],
+                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
                 ],
                 'otherserial' => [
                     'type' => self::FILTERTYPE_TEXT,

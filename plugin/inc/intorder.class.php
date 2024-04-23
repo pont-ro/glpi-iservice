@@ -175,13 +175,10 @@ class PluginIserviceIntOrder extends CommonDBTM
 
         // User
         $user_dropdown_options = [
-            'type' => 'User',
+            'type' => 'Dropdown',
             'class' => 'full',
-            'options' => [
-                'comments' => false,
-                'addicon' => false,
-                'right' => 'own_ticket',
-            ],
+            'method' => 'showFromArray',
+            'values' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
         ];
         $form->displayFieldTableRow('Solicitant', $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id', $this->fields['users_id'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_STARTED, $user_dropdown_options));
 

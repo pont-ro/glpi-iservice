@@ -295,11 +295,11 @@ class Emaintenance extends View
                     'header' => 'costcenter'
                 ],
                 'tech_id' => [
-                    'type' => self::FILTERTYPE_USER,
+                    'type' => self::FILTERTYPE_SELECT,
                     'caption' => 'Responsabil',
                     'format' => 'AND u.id = %d',
                     'header' => 'tech_name',
-                    'glpi_class_params' => ['right' => 'own_ticket'],
+                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
                 ],
                 'subject' => [
                     'type' => self::FILTERTYPE_TEXT,

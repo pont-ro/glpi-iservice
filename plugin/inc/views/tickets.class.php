@@ -3,15 +3,16 @@
 // Imported from iService2, needs refactoring. Original file: "Tickets.php".
 namespace GlpiPlugin\Iservice\Views;
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
 use PluginIserviceHmarfa;
 use PluginIserviceMovement;
-use \Session;
-use \PluginIserviceTicket;
-use \PluginIserviceDB;
-use \CommonITILActor;
-use \PluginIserviceOrderStatus;
 use Ticket;
+use \CommonITILActor;
+use \PluginIserviceDB;
+use \PluginIserviceOrderStatus;
+use \PluginIserviceTicket;
+use \Session;
 
 class Tickets extends View
 {
@@ -464,12 +465,12 @@ class Tickets extends View
                     'header' => 'usage_address_field',
                 ],
                 'tech_id' => [
-                    'type' => self::FILTERTYPE_USER,
+                    'type' => self::FILTERTYPE_SELECT,
                     'caption' => 'Tehnician alocat',
                     'format' => 'AND (a.id = %d OR a.id IS NULL)',
                     'header' => 'tech_assign_name',
-                    'glpi_class_params' => ['right' => 'own_ticket'],
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
+                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
                 ],
                 'assigned_only' => [
                     'type' => self::FILTERTYPE_CHECKBOX,

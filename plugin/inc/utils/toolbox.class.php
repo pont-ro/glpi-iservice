@@ -4,6 +4,7 @@
 namespace GlpiPlugin\Iservice\Utils;
 
 use DateTime;
+use Dropdown;
 use PluginIserviceDB;
 use TValuta;
 
@@ -15,6 +16,10 @@ class ToolBox
 {
     const RESPONSE_OK    = 'OK';
     const RESPONSE_ERROR = 'ERROR';
+
+    public static array $technicians = [
+        0 => Dropdown::EMPTY_VALUE
+    ];
 
     protected static $codmatValues        = [];
     protected static $exchangeRateService = null;
@@ -323,6 +328,47 @@ class ToolBox
         }
 
         return $model->fields[$attributeToReturn] ?? null;
+    }
+
+    public static function getUsersBasedOnProfile(array $profiles): array
+    {
+        global $DB;
+
+        if (count(self::$technicians) > 1) {
+            return self::$technicians;
+        }
+
+        $criteria = [
+            'SELECT'         => ['glpi_users.id', 'glpi_users.realname', 'glpi_users.firstname'],
+            'FROM'            => 'glpi_users',
+            'LEFT JOIN'       => [
+                'glpi_profiles_users'   => [
+                    'ON' => [
+                        'glpi_profiles_users'   => 'users_id',
+                        'glpi_users'            => 'id'
+                    ]
+                ],
+                'glpi_profiles' => [
+                    'ON' => [
+                        'glpi_profiles_users'   => 'profiles_id',
+                        'glpi_profiles'         => 'id'
+                    ]
+                ],
+            ],
+            'WHERE'           => [
+                'glpi_users.is_deleted' => 0,
+                'glpi_profiles.name' => $profiles
+            ],
+            'ORDER'           => ['glpi_users.realname', 'glpi_users.firstname']
+        ];
+
+        $result = $DB->request($criteria);
+
+        foreach ($result as $user) {
+            self::$technicians[$user['id']] = $user['realname'] . ' ' . $user['firstname'];
+        }
+
+        return self::$technicians;
     }
 
 }
