@@ -138,35 +138,33 @@
                                 ) }}
                             {%  endif %}
 
-                            {% if printer %}
-                                {{ fields.datetimeField(
-                                    'effective_date_field',
-                                    effectiveDate,
-                                    __('Effective date', 'iservice'),
+                            {{ fields.datetimeField(
+                                'effective_date_field',
+                                effectiveDate,
+                                __('Effective date', 'iservice'),
+                                field_options|merge({
+                                    'min': "now"|date("Y-m-d H:i:s"),
+                                    'readonly': effectiveDateFieldReadonly,
+                                })
+                            ) }}
+
+                            <script>
+                                $(document).ready(function(){
+                                    $('[name="effective_date_field"]').on('change', function(){
+                                        $('[name="effective_date_manually_changed"]').val(1);
+                                    });
+                                });
+                            </script>
+
+                            {% if not effectiveDateFieldReadonly %}
+                                {{ fields.hiddenField(
+                                    'effective_date_manually_changed',
+                                    0,
+                                    '',
                                     field_options|merge({
-                                        'min': "now"|date("Y-m-d H:i:s"),
-                                        'readonly': effectiveDateFieldReadonly,
+                                        'no_label': true,
                                     })
                                 ) }}
-
-                                <script>
-                                    $(document).ready(function(){
-                                        $('[name="effective_date_field"]').on('change', function(){
-                                            $('[name="effective_date_manually_changed"]').val(1);
-                                        });
-                                    });
-                                </script>
-
-                                {% if not effectiveDateFieldReadonly %}
-                                    {{ fields.hiddenField(
-                                        'effective_date_manually_changed',
-                                        0,
-                                        '',
-                                        field_options|merge({
-                                            'no_label': true,
-                                        })
-                                    ) }}
-                                {% endif %}
                             {% endif %}
 
                             {% if movementRelatedFields %}
