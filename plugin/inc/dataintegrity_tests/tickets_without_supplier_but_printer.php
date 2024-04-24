@@ -16,7 +16,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets with printer but without partner',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has printer <b>[pid]</b> but no partner.",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has printer <b>[pid]</b> but no partner.",
         ],
     ],
 ];

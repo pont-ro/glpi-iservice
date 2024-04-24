@@ -4,7 +4,7 @@ return [
     'query' => "
         select *
         from (
-              select c.id cid, c.printers_id pid, count(ct.tickets_id) ticket_count, group_concat('<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?mode=9999&id=', ct.tickets_id, '\"  target=\"_blank\">', ct.tickets_id, '</a>' separator ', ') ticket_ids
+              select c.id cid, c.printers_id pid, count(ct.tickets_id) ticket_count, group_concat('<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=', ct.tickets_id, '\"  target=\"_blank\">', ct.tickets_id, '</a>' separator ', ') ticket_ids
               from glpi_cartridges c
               join glpi_plugin_iservice_cartridges_tickets ct on ct.cartridges_id = c.id
               join glpi_tickets t on t.id = ct.tickets_id and t.is_deleted = 0

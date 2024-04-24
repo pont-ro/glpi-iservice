@@ -21,9 +21,9 @@ return [
             'alert' => true,
             'summary_text' => 'There are {count} tickets with invalid cartridges',
             'iteration_text' => [
-                "return empty('[pid]');" => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has no printer but the following cartridges: [cartridge_ids]",
-                "return empty('[cid]');" => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has the following cartridges that do not exist anymore: [cartridge_ids]",
-                "return empty('[cp_id]');" => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has cartridges ([cartridge_ids]) that are not compatible with the printer on the ticket: <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]'>[pid]</a>",
+                "return empty('[pid]');" => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has no printer but the following cartridges: [cartridge_ids]",
+                "return empty('[cid]');" => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has the following cartridges that do not exist anymore: [cartridge_ids]",
+                "return empty('[cp_id]');" => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has cartridges ([cartridge_ids]) that are not compatible with the printer on the ticket: <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]'>[pid]</a>",
             ]
         ],
     ],

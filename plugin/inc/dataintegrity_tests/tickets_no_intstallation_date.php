@@ -19,7 +19,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets which install cartridges but do not have installation date',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[id]&mode=9999' target='_blank'>[id]</a> installs [cartridge_count] cartridges but does not have installation date",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[id]' target='_blank'>[id]</a> installs [cartridge_count] cartridges but does not have installation date",
         ],
     ],
 ];
