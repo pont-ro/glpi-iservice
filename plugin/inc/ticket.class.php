@@ -53,7 +53,7 @@ class PluginIserviceTicket extends Ticket
     public function isUserTechPark(): bool
     {
         $printer = $this->getFirstPrinter();
-        return !empty($printer->fields['users_id_tech']) && $printer->fields['users_id_tech'] === Session::getLoginUserID();
+        return ($printer->fields['users_id_tech'] ?? '') === Session::getLoginUserID();
     }
 
     public static function getFormModeUrl($mode): string
