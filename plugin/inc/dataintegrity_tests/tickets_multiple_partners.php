@@ -20,7 +20,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets with multiple partners',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has [pcount] partners: [pnames]",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has [pcount] partners: [pnames]",
         ],
     ],
 ];

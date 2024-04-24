@@ -21,7 +21,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets that uninstall more than 1 cartridges with the same mercury code',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[ticket_id]&mode=9999' target='_blank'>[ticket_id]</a> uninstalls [count] cartridges with the same type ([type_name]) and mercury code ([mercurycode]): [cartridge_ids]",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[ticket_id]' target='_blank'>[ticket_id]</a> uninstalls [count] cartridges with the same type ([type_name]) and mercury code ([mercurycode]): [cartridge_ids]",
         ],
     ],
 ];
