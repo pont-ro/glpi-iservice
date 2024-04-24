@@ -490,9 +490,6 @@ class Printers extends View
                 'supplier_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => "AND s.id = %d",
-                    'cache_override' => [
-                        'format' => "AND supplier_id = %d",
-                    ],
                 ],
                 'printer_name' => [
                     'type' => self::FILTERTYPE_TEXT,
@@ -520,9 +517,6 @@ class Printers extends View
                     'header' => 'tech_name',
                     'glpi_class_params' => ['right' => 'own_ticket'],
                     'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
-                    'cache_override' => [
-                        'format' => "AND tech_id = %d",
-                    ],
                 ],
                 'otherserial' => [
                     'type' => self::FILTERTYPE_TEXT,
