@@ -457,7 +457,7 @@ class PluginIserviceTicket extends Ticket
             'effectiveDateFieldReadonly'   => $this->fields['status'] == self::CLOSED,
             'cartridgeInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
             'emMailIdField'             => $options['em_mail_id_field'] ?? null,
-            'technicians'               => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
+            'technicians'               => IserviceToolBox::getUsersByProfiles(['tehnician']),
         ];
 
         if ($options['mode'] == self::MODE_CLOSE) {

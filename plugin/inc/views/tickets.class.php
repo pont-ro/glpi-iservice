@@ -470,7 +470,7 @@ class Tickets extends View
                     'format' => 'AND (a.id = %d OR a.id IS NULL)',
                     'header' => 'tech_assign_name',
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
-                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
+                    'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
                 ],
                 'assigned_only' => [
                     'type' => self::FILTERTYPE_CHECKBOX,

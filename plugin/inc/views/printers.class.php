@@ -519,7 +519,7 @@ class Printers extends View
                     'format' => 'AND u.id = %d',
                     'header' => 'tech_name',
                     'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
-                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
+                    'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
                 ],
                 'otherserial' => [
                     'type' => self::FILTERTYPE_TEXT,

@@ -299,7 +299,7 @@ class Emaintenance extends View
                     'caption' => 'Responsabil',
                     'format' => 'AND u.id = %d',
                     'header' => 'tech_name',
-                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
+                    'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
                 ],
                 'subject' => [
                     'type' => self::FILTERTYPE_TEXT,

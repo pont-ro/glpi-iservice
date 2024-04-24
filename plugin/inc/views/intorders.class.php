@@ -286,7 +286,7 @@ class Intorders extends View
                     'type' => self::FILTERTYPE_SELECT,
                     'format' => 'AND order_placer_id = %d',
                     'header' => 'order_placer',
-                    'options' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
+                    'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
                     'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
                 ],
                 'order_status' => [

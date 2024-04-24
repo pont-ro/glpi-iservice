@@ -17,9 +17,7 @@ class ToolBox
     const RESPONSE_OK    = 'OK';
     const RESPONSE_ERROR = 'ERROR';
 
-    public static array $technicians = [
-        0 => Dropdown::EMPTY_VALUE
-    ];
+    public static array $userByProfile = [];
 
     protected static $codmatValues        = [];
     protected static $exchangeRateService = null;
@@ -329,17 +327,13 @@ class ToolBox
 
         return $model->fields[$attributeToReturn] ?? null;
     }
-
-    public static function getUsersBasedOnProfile(array $profiles): array
+    
+    public static function setUsersByProfileFromDb(string $profileName): void
     {
         global $DB;
 
-        if (count(self::$technicians) > 1) {
-            return self::$technicians;
-        }
-
         $criteria = [
-            'SELECT'         => ['glpi_users.id', 'glpi_users.realname', 'glpi_users.firstname'],
+            'SELECT'         => ['glpi_users.id', 'glpi_users.realname', 'glpi_users.firstname', 'glpi_users.name'],
             'FROM'            => 'glpi_users',
             'LEFT JOIN'       => [
                 'glpi_profiles_users'   => [
@@ -357,7 +351,7 @@ class ToolBox
             ],
             'WHERE'           => [
                 'glpi_users.is_deleted' => 0,
-                'glpi_profiles.name' => $profiles
+                'glpi_profiles.name' => $profileName
             ],
             'ORDER'           => ['glpi_users.realname', 'glpi_users.firstname']
         ];
@@ -365,10 +359,28 @@ class ToolBox
         $result = $DB->request($criteria);
 
         foreach ($result as $user) {
-            self::$technicians[$user['id']] = $user['realname'] . ' ' . $user['firstname'];
+            self::$userByProfile[$profileName][$user['id']] = (!empty($user['realname']) || !empty($user['firstname'])) ? $user['realname'] . ' ' . $user['firstname'] : $user['name'];
+        }
+    }
+
+    public static function getUsersByProfiles(array $profileNames): array
+    {
+        $users = [
+            0 => Dropdown::EMPTY_VALUE
+        ];
+
+        foreach ($profileNames as $profileName) {
+            if (empty(self::$userByProfile[$profileName])) {
+                self::setUsersByProfileFromDb($profileName);
+
+            }
+
+            $users += self::$userByProfile[$profileName];
         }
 
-        return self::$technicians;
+        natcasesort($users);
+
+        return $users;
     }
 
 }

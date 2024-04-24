@@ -145,7 +145,7 @@ class PluginIserviceExtOrder extends CommonDBTM
             'type' => 'Dropdown',
             'class' => 'full',
             'method' => 'showFromArray',
-            'values' => IserviceToolBox::getUsersBasedOnProfile(['tehnician']),
+            'values' => IserviceToolBox::getUsersByProfiles(['tehnician']),
         ];
         $form->displayFieldTableRow('Solicitant', $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id', $this->fields['users_id'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_PROCESSED, $user_dropdown_options));
 
