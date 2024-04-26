@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 /**
  * PluginIserviceExtOrder Class
  * */
@@ -140,13 +142,10 @@ class PluginIserviceExtOrder extends CommonDBTM
 
         // User
         $user_dropdown_options = [
-            'type' => 'User',
+            'type' => 'Dropdown',
             'class' => 'full',
-            'options' => [
-                'comments' => false,
-                'addicon' => false,
-                'right' => 'own_ticket',
-            ],
+            'method' => 'showFromArray',
+            'values' => IserviceToolBox::getUsersByProfiles(['tehnician']),
         ];
         $form->displayFieldTableRow('Solicitant', $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id', $this->fields['users_id'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_PROCESSED, $user_dropdown_options));
 

@@ -15,8 +15,6 @@ if (empty(IserviceToolBox::getInputVariable('export'))) {
     Html::header(__("iService", "iservice"), $_SERVER['PHP_SELF'], "plugin_iservice_views", $view_id, "views");
 }
 
-Session::checkRight('plugin_iservice_views', READ);
-
 Session::checkRight($view::$rightname, READ);
 
 $view->display(false, $export);

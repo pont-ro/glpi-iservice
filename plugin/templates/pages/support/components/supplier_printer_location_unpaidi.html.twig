@@ -70,26 +70,22 @@
 {% endif %}
 
 {% if observerVisible %}
-    {{ fields.dropdownField(
-        'User',
+    {{ fields.dropdownArrayField(
         '_users_id_observer',
         item.fields['_users_id_observer'],
+        technicians,
         __('Watcher'),
-        field_options|merge({
-            'right': 'own_ticket'
-        })
+        field_options
     ) }}
 {% endif %}
 
 {% if assignedVisible %}
-    {{ fields.dropdownField(
-        'User',
+    {{ fields.dropdownArrayField(
         '_users_id_assign',
         item.fields['_users_id_assign'],
+        technicians,
         __('Assigned to'),
-        field_options|merge({
-            'right': 'own_ticket'
-        })
+        field_options
     ) }}
 {% endif %}
 
