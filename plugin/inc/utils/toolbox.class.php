@@ -17,7 +17,7 @@ class ToolBox
     const RESPONSE_OK    = 'OK';
     const RESPONSE_ERROR = 'ERROR';
 
-    public static array $userByProfile = [];
+    public static array $usersByProfile = [];
 
     protected static $codmatValues        = [];
     protected static $exchangeRateService = null;
@@ -327,7 +327,7 @@ class ToolBox
 
         return $model->fields[$attributeToReturn] ?? null;
     }
-    
+
     public static function setUsersByProfileFromDb(string $profileName): void
     {
         global $DB;
@@ -359,7 +359,7 @@ class ToolBox
         $result = $DB->request($criteria);
 
         foreach ($result as $user) {
-            self::$userByProfile[$profileName][$user['id']] = (!empty($user['realname']) || !empty($user['firstname'])) ? $user['realname'] . ' ' . $user['firstname'] : $user['name'];
+            self::$usersByProfile[$profileName][$user['id']] = (!empty($user['realname']) || !empty($user['firstname'])) ? $user['realname'] . ' ' . $user['firstname'] : $user['name'];
         }
     }
 
@@ -370,12 +370,11 @@ class ToolBox
         ];
 
         foreach ($profileNames as $profileName) {
-            if (empty(self::$userByProfile[$profileName])) {
+            if (empty(self::$usersByProfile[$profileName])) {
                 self::setUsersByProfileFromDb($profileName);
-
             }
 
-            $users += self::$userByProfile[$profileName];
+            $users += self::$usersByProfile[$profileName];
         }
 
         natcasesort($users);
