@@ -40,7 +40,7 @@ class Operations extends View
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, UPDATE),
             ],
             'close' => [
-                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CLOSE . "&id=$row_data[ticket_id]",
+                'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => __('Close ticket', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),

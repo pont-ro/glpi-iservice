@@ -90,6 +90,13 @@ function plugin_init_iservice(): void
         "js/iservice.js",
     ];
 
+    $activeProfileName = $_SESSION['glpiactiveprofile']['name'] ?? null;
+    if ($activeProfileName === 'admin' || $activeProfileName === 'tehnician') {
+        $PLUGIN_HOOKS['add_javascript']['iservice'][] = "js/admin-menu-modifications.js";
+    }
+
+    $PLUGIN_HOOKS['add_javascript']['iservice'][] = "js/general-menu-modifications.js";
+
     $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
 
     $PLUGIN_HOOKS['pre_item_update']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_update';

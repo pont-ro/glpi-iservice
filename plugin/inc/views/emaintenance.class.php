@@ -149,13 +149,13 @@ class Emaintenance extends View
         global $CFG_PLUGIN_ISERVICE;
 
         if (!empty($row_data['ticket_id'])) {
-            $ticket_button = "<a href='ticket.form.php?id=$row_data[ticket_id]&mode=" . PluginIserviceTicket::MODE_CLOSE . "' style='vertical-align: middle;' target='_blank' title='" . __('Close ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_check.png' style='vertical-align: middle;'/></a>";
+            $ticket_button = "<a href='ticket.form.php?id=$row_data[ticket_id]' style='vertical-align: middle;' target='_blank' title='" . __('Close ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_check.png' style='vertical-align: middle;'/></a>";
         } elseif (empty($row_data['printers_id'])) {
             $ticket_button = "<i class='fa fa-exclamation-circle fa-2x' style='color:red; vertical-align: middle;' title='" . __('Cannot identify printer from email', 'iservice') . "'></i>";
         } else {
             $name          = self::getSubjectForDisplay($row_data);
             $content       = urlencode(self::getContentForTicket($row_data));
-            $ticket_button = "<a href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CLOSE . "&items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
+            $ticket_button = "<a href='ticket.form.php?items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
         }
 
         return $ticket_button;

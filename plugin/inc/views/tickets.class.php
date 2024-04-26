@@ -95,7 +95,7 @@ class Tickets extends View
                 'visible' => Session::haveRight('plugin_iservice_view_printers', READ),
             ],
             'close' => [
-                'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CLOSE . "&id=$row_data[ticket_id]",
+                'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => __('Close ticket', 'iservice'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
@@ -193,7 +193,9 @@ class Tickets extends View
             $color = '';
         }
 
-        $title = "Tehnician alocat: $row_data[tech_assign_name]";
+        $row_data['tech_assign_name'] = empty($row_data['tech_assign_name']) ? '&nbsp;' : $row_data['tech_assign_name'];
+
+        $title = !empty($row_data['tech_assign_name']) ? "Tehnician alocat: $row_data[tech_assign_name]" : '';
         if (!empty($row_data['tech_park_name'])) {
             $title .= "\nTehnician park: $row_data[tech_park_name]";
         }

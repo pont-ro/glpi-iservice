@@ -166,7 +166,7 @@ class Cartridges extends View
         }
 
         $ticket_id = empty($row_data['installer_ticket_id']) ? $row_data['saved_installer_ticket_id'] : $row_data['installer_ticket_id'];
-        return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' $style title='$title'>$ticket_id</a>";
+        return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$ticket_id' $style title='$title'>$ticket_id</a>";
     }
 
     public static function getTicketIdDisplay($row_data): string
@@ -176,7 +176,7 @@ class Cartridges extends View
         }
 
         global $CFG_GLPI;
-        $link  = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.form.php?id=$row_data[ticket_id]&mode=" . PluginIserviceTicket::MODE_CLOSE;
+        $link  = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.form.php?id=$row_data[ticket_id]";
         $style = ($row_data['id_partener_livrare'] != $row_data['id_partener_instalare'] && !empty($row_data['date_use'])) ? "style='color:red'" : "";
         $title = "Partener livrare: " . htmlspecialchars($row_data['partener_livrare']) . "($row_data[id_partener_livrare])";
         if (!empty($row_data['id_partener_instalare'])) {
@@ -549,7 +549,7 @@ class Cartridges extends View
                     'align' => 'center',
                     'visible' => !self::isRestrictedMode(),
                     'link' => [
-                        'href' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.form.php?id=[saved_out_ticket_id]&mode=" . PluginIserviceTicket::MODE_CLOSE,
+                        'href' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.form.php?id=[saved_out_ticket_id]",
                         'target' => '_blank',
                     ],
                 ],

@@ -14,7 +14,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges with the same installer and uninstaller ticket',
-            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a> has the same use and out ticket: <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[ticket_id]&mode=9999' target='_blank'>[ticket_id]</a>",
+            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bid%5D=[id]' target='_blank'>[id]</a> has the same use and out ticket: <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[ticket_id]' target='_blank'>[ticket_id]</a>",
         ],
     ],
 ];

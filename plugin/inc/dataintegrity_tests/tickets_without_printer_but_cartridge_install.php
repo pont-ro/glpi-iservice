@@ -17,7 +17,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets without printers but installed cartridges',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has [c_count] installed cartridges but no printer associated",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has [c_count] installed cartridges but no printer associated",
         ],
     ],
 ];
