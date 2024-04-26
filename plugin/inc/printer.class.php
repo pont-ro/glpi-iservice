@@ -376,8 +376,8 @@ class PluginIservicePrinter extends Printer
 
         // Tech user.
         if ($has_full_rights) {
-            $tech_dropdown_options['type']             = 'User';
-            $tech_dropdown_options['options']['right'] = 'own_ticket';
+            $tech_dropdown_options['type']             = 'Dropdown';
+            $tech_dropdown_options['values'] = IserviceToolBox::getUsersByProfiles(['tehnician']);
                 $output                               .= $form->generateFieldTableRow(__('Technician in charge of the hardware'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[users_id_tech]', $printer->fields['users_id_tech'], $readonly || !$has_full_rights, $tech_dropdown_options), $no_wrap_options);
         }
 

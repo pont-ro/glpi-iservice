@@ -28,6 +28,11 @@
               {% if item.isField('date_mod') %}
                   <input type="hidden" name="_read_date_mod" value="{{ item.fields['date_mod'] }}" />
               {% endif %}
+          {% elseif canedit and item.can(id, constant('UPDATE')) %}
+              <button class="btn btn-primary me-2" type="submit" name="update" value="1">
+                  <i class="far fa-save"></i>
+                  <span>{{ _x('button', 'Save') }}</span>
+              </button>
           {% endif %}
 
           {% if not item.isNewID(id) %}

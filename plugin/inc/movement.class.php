@@ -295,7 +295,7 @@ class PluginIserviceMovement extends CommonDBTM
 
                 // User id tech.
                 $users_id_tech         = empty($this->fields['users_id_tech']) ? $item->fields['users_id_tech'] : $this->fields['users_id_tech'];
-                $users_id_tech_options = ['type' => 'User', 'class' => 'full', 'options' => ['right' => 'own_ticket']];
+                $users_id_tech_options = ['type' => 'Dropdown', 'class' => 'full',  'values' => IserviceToolBox::getUsersByProfiles(['tehnician'])];
                 $table_rows[]          = $form->generateFieldTableRow(__('Technician in charge of the hardware'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id_tech', $users_id_tech, false, $users_id_tech_options));
 
                 // Contact number.
