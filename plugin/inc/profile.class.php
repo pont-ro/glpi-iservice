@@ -77,7 +77,7 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_view_reminders' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_cartridges' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_emaintenance' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-            'plugin_iservice_view_global_readcounter' => right_array(ALLSTANDARDRIGHT, array_merge($level15_profiles, $elevated_profiles)),
+            'plugin_iservice_view_global_readcounter' => right_array(ALLSTANDARDRIGHT, $all_profiles),
             'plugin_iservice_view_pending_emails' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
             'plugin_iservice_ticket_own_printers' => right_array(ALLSTANDARDRIGHT, $all_profiles),
             'plugin_iservice_ticket_group_printers' => right_array(ALLSTANDARDRIGHT, array_merge(['superclient'], $elevated_profiles)),
