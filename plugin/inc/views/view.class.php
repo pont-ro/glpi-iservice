@@ -431,8 +431,8 @@ class View extends \CommonGLPI
                     $filter_value    = '#empty#import#data#';
                 } else {
                     $filter_value = $import_data[$filter_data['import']['index']];
-                    if ($import_data['data_luc'] < date('Y-m-d', strtotime('-14days'))) {
-                        if ($import_data['data_luc'] < date('Y-m-d', strtotime('-1000days'))) {
+                    if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-14days'))) {
+                        if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-1000days'))) {
                             $estimate_text = "Datele din CSV sunt mai vechi de 1000 zile (din " . date('Y-m-d', strtotime($import_data['data_luc'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
                             $filter_value = '#empty#import#data#';
                         } else {
