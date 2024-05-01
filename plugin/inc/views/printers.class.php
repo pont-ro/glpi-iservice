@@ -94,7 +94,7 @@ class Printers extends View
             ];
         } elseif (($last_ticket_id = PluginIserviceTicket::getLastIdForPrinterOrSupplier(0, $row_data['printer_id'], true)) > 0) {
             $actions['move']                = [
-                'link' => "/front/ticket.form.php?id=$last_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE,
+                'link' => "/front/ticket.form.php?id=$last_ticket_id",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/cog_orange.png',
                 'title' => "Există tichet deschis",
                 'visible' => Session::haveRight('plugin_iservice_movement', READ),
@@ -490,9 +490,6 @@ class Printers extends View
                 'supplier_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => "AND s.id = %d",
-                    'cache_override' => [
-                        'format' => "AND supplier_id = %d",
-                    ],
                 ],
                 'printer_name' => [
                     'type' => self::FILTERTYPE_TEXT,
@@ -514,15 +511,12 @@ class Printers extends View
                     'header' => 'supplier_name',
                 ],
                 'tech_id' => [
-                    'type' => self::FILTERTYPE_USER,
+                    'type' => self::FILTERTYPE_SELECT,
                     'caption' => 'Responsabil',
                     'format' => 'AND u.id = %d',
                     'header' => 'tech_name',
-                    'glpi_class_params' => ['right' => 'own_ticket'],
                     'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
-                    'cache_override' => [
-                        'format' => "AND tech_id = %d",
-                    ],
+                    'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
                 ],
                 'otherserial' => [
                     'type' => self::FILTERTYPE_TEXT,

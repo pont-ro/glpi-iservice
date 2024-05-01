@@ -96,7 +96,7 @@ if (!empty($mass_action_change_status)) {
         // TRANS: %s is the user login
         sprintf(__('%s updates an item'), $_SESSION["glpiname"])
     );
-    Html::back();
+    Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/intorder.form.php?id=$id");
 } else {
     Html::header(PluginIserviceIntOrder::getTypeName(1), $_SERVER['PHP_SELF']);
     $intOrder->display(

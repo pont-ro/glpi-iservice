@@ -27,7 +27,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => "There are {count} tickets with difference of effective date and last followup effective date greater than $effective_date_max_difference",
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> has effective date <b>[effective_date_field]</b> but the last followup date is <b>[max_followup_date]</b>",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has effective date <b>[effective_date_field]</b> but the last followup date is <b>[max_followup_date]</b>",
         ],
     ],
 ];

@@ -90,5 +90,18 @@ return [
         'client' => [
             'ticket' => 140295,
         ],
+        'super-admin' => [
+            'computer' => 0,
+            'monitor' => 0,
+            'software' => 0,
+            'networking' => 0,
+            'peripheral' => 0,
+            'consumable' => 0,
+            'phone' => 0,
+            'datacenter' => 0,
+            'unmanaged' => 0,
+            'cable_management' => 0,
+            'device' => 0,
+        ],
     ],
 ];

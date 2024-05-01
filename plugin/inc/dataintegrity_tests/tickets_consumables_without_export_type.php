@@ -15,7 +15,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets with consumables without export type',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[id]&mode=9999' target='_blank'>[id]</a> has [consumable_count] consumables but no export type",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[id]' target='_blank'>[id]</a> has [consumable_count] consumables but no export type",
         ],
     ],
 ];

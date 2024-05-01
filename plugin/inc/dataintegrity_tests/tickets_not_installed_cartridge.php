@@ -27,7 +27,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} tickets which do not create cartridge but should',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a> does not create cartridge but it should",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> does not create cartridge but it should",
         ],
     ],
 ];

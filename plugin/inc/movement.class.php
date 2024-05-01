@@ -108,7 +108,7 @@ class PluginIserviceMovement extends CommonDBTM
             }
 
             if (empty($id) && ($last_ticket_id = PluginIserviceTicket::getLastIdForPrinterOrSupplier(0, $this->fields['items_id'], true)) > 0) {
-                Html::displayErrorAndDie("<a href='ticket.form.php?id=$last_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' target='_blank'>Există ticket deschis pentru acest aparat, vă rugăm închideți tichetul mai întâi!</a>");
+                Html::displayErrorAndDie("<a href='ticket.form.php?id=$last_ticket_id' target='_blank'>Există ticket deschis pentru acest aparat, vă rugăm închideți tichetul mai întâi!</a>");
             }
 
             if (empty($this->fields['suppliers_id_old'])) {
@@ -191,12 +191,11 @@ class PluginIserviceMovement extends CommonDBTM
             if (PluginIserviceDB::populateByQuery($ticket_in_customfields, "WHERE movement_id_field = $id LIMIT 1") && $ticket_in->getFromDB($ticket_in_customfields->fields['items_id'])) {
                 $ticket_in_exists = true;
                 $ticket_in_closed = $ticket_in->fields['status'] == Ticket::CLOSED;
-                $ticket_actions   = "<a href='ticket.form.php?id={$ticket_in->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "&_close_on_success=1' class='vsubmit' target='_blank'>" . ($ticket_in_closed ? __("View", "iservice") : (__("Modify", "iservice") . " / " . __("Close", "iservice"))) . "</a>";
+                $ticket_actions   = "<a href='ticket.form.php?id={$ticket_in->getID()}&_close_on_success=1' class='vsubmit' target='_blank'>" . ($ticket_in_closed ? __("View", "iservice") : (__("Modify", "iservice") . " / " . __("Close", "iservice"))) . "</a>";
             } else {
                 $ticket_in_exists                         = false;
                 $ticket_in_closed                         = false;
-                $params                                   = "mode=" . PluginIserviceTicket::MODE_CLOSE;
-                $params                                  .= "&items_id[Printer][0]=" . $this->fields['items_id'];
+                $params                                   = "items_id[Printer][0]=" . $this->fields['items_id'];
                 $params                                  .= "&suppliers_id_old=" . $this->fields['suppliers_id_old'];
                 $params                                  .= "&_movement_id=$id";
                 $params                                  .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('preluare echipament');
@@ -296,7 +295,7 @@ class PluginIserviceMovement extends CommonDBTM
 
                 // User id tech.
                 $users_id_tech         = empty($this->fields['users_id_tech']) ? $item->fields['users_id_tech'] : $this->fields['users_id_tech'];
-                $users_id_tech_options = ['type' => 'User', 'class' => 'full', 'options' => ['right' => 'own_ticket']];
+                $users_id_tech_options = ['type' => 'Dropdown', 'class' => 'full',  'values' => IserviceToolBox::getUsersByProfiles(['tehnician'])];
                 $table_rows[]          = $form->generateFieldTableRow(__('Technician in charge of the hardware'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id_tech', $users_id_tech, false, $users_id_tech_options));
 
                 // Contact number.
@@ -389,15 +388,14 @@ class PluginIserviceMovement extends CommonDBTM
         if (PluginIserviceDB::populateByQuery($ticket_out_customfields, "WHERE movement2_id_field = $id LIMIT 1") && $ticket_out->getFromDB($ticket_out_customfields->fields['items_id'])) {
             $ticket_out_exists = true;
             $ticket_out_closed = $ticket_out->fields['status'] == Ticket::CLOSED;
-            $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? __("View", "iservice") : __("Close", "iservice")) . "</a>";
+            $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? __("View", "iservice") : __("Close", "iservice")) . "</a>";
             if (!$ticket_out_closed) {
-                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}&mode=" . PluginIserviceTicket::MODE_CLOSE . "' class='vsubmit' target='_blank'>" . __("Modify", "iservice") . "</a>";
+                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}' class='vsubmit' target='_blank'>" . __("Modify", "iservice") . "</a>";
             }
         } else {
             $ticket_out_exists = false;
             $ticket_out_closed = false;
-            $params            = "mode=" . PluginIserviceTicket::MODE_CLOSE;
-            $params           .= "&items_id[Printer][0]=" . $this->fields['items_id'];
+            $params            = "items_id[Printer][0]=" . $this->fields['items_id'];
             $params           .= "&_movement2_id=$id";
             $params           .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('livrare echipament');
             $params           .= "&name=livrare echipament";

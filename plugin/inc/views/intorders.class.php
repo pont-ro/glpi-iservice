@@ -283,9 +283,11 @@ class Intorders extends View
                     'header' => 'order_comment',
                 ],
                 'order_placer' => [
-                    'type' => self::FILTERTYPE_USER,
+                    'type' => self::FILTERTYPE_SELECT,
                     'format' => 'AND order_placer_id = %d',
                     'header' => 'order_placer',
+                    'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
+                    'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
                 ],
                 'order_status' => [
                     'type' => self::FILTERTYPE_SELECT,
@@ -316,7 +318,7 @@ class Intorders extends View
                     'title' => 'Tichet',
                     'align' => 'center',
                     'link' => [
-                        'href' => 'ticket.form.php?id=[ticket_id]&mode=' . PluginIserviceTicket::MODE_CLOSE,
+                        'href' => 'ticket.form.php?id=[ticket_id]',
                         'title' => 'Vizualizează tichetul originator',
                     ],
                     'default_sort' => 'DESC',

@@ -16,7 +16,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridges with unmarked installer ticket',
-            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> has installer tikcet <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]&mode=9999' target='_blank'>[tid]</a>, but it is not saved on the cartridge.",
+            'iteration_text' => "Cartridge <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0%5Bid%5D=[cid]' target='_blank'>[cid]</a> has installer tikcet <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a>, but it is not saved on the cartridge.",
         ],
     ],
 ];

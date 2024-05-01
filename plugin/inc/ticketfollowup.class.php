@@ -58,7 +58,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
 
             foreach ($result as $data) {
                 $followupsData['rows'][] = [
-                    'class' => ($data['is_private'] ? 'bg-danger' : ''),
+                    'class' => '',
                     'cols' => [
                         'date' => [
                             'value' => Html::convDateTime($data["date"]),
@@ -70,7 +70,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
                         ],
                         'description' => [
                             'value' => Html::resume_text($data["content"], $CFG_GLPI["cut"]),
-                            'class' => 'center',
+                            'class' => 'center' .  ($data['is_private'] ? ' text-danger' : ''),
                         ],
                     ],
                 ];
