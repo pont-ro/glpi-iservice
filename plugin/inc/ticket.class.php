@@ -301,8 +301,8 @@ class PluginIserviceTicket extends Ticket
     public static function getLastIdForPrinterOrSupplierFromInput($input, $open = null, $additional_condition = '', $additional_join = ''): string
     {
         return self::getLastIdForPrinterOrSupplier(
-            IserviceToolBox::getValueFromInput('_suppliers_id_assign', $input),
-            IserviceToolBox::getValueFromInput('printer_id', $input),
+            IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $input),
+            IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getValueFromInput('printer_id', $input),
             $open, $additional_condition, $additional_join
         );
     }
@@ -322,8 +322,8 @@ class PluginIserviceTicket extends Ticket
     public static function getFirstIdForItemWithInput($item, $open = null, $additional_condition = '', $additional_join = ''): int
     {
         return self::getFirstIdForPrinterOrSupplier(
-            IserviceToolBox::getValueFromInput('_suppliers_id_assign', $item->input),
-            IserviceToolBox::getItemsIdFromInput($item->input, 'Printer'),
+            IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $item->input),
+            IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($item->input, 'Printer'),
             $open, $additional_condition, $additional_join
         );
     }
@@ -1433,7 +1433,7 @@ class PluginIserviceTicket extends Ticket
 
     public static function handleDeliveredStatusChange(PluginFieldsTicketticketcustomfield $item)
     {
-        // This is used only to handle the consumables when changing the "delivered" checkbox
+        // This is used only to handle the consumables when changing the "delivered" checkbox.
         if (!in_array('delivered_field', $item->updates) || !array_key_exists('without_paper_field', $item->fields)) {
             return;
         }
