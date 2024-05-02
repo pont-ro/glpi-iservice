@@ -177,6 +177,13 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
         }
     }
 
+    // Do not allow to close a ticket if is a toner replacement ticket and no cartridges are installed.
+    $installed_cartridges = PluginIserviceTicket::getTicketInstalledCartridgeIds($item);
+    if (empty($installed_cartridges) && preg_match("/(replacement|inlocui|înlocui)/i", $item->input['content'])) {
+        $can_close = false;
+        Session::addMessageAfterRedirect("Tichetul de înlocuire cartuș nu poate fi închis fară cartuș instalat!", true, ERROR);
+    }
+
     // Do not allow to close a ticket if it has older effective date then the last closed ticket.
     $last_closed_ticket_id = PluginIserviceTicket::getLastIdForItemWithInput($item, false);
     $last_closed_ticket    = new PluginIserviceTicket();
