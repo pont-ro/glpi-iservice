@@ -89,9 +89,10 @@ function plugin_iservice_pre_Ticket_update(Ticket $item)
 {
     // plugin_iservice_ticket_adjust_data_luc($item);
     // plugin_iservice_ticket_adjust_counters($item);
-    // if (PluginIserviceTicket::isTicketClosing($item)) {
-    // plugin_iservice_ticket_check_if_can_close($item);
-    // }
+    if (PluginIserviceTicket::isTicketClosing($item)) {
+        plugin_iservice_ticket_check_if_can_close($item);
+    }
+
     if (PluginIserviceTicket::isTicketOpening($item)) {
         plugin_iservice_ticket_reopen_newer_tickets($item);
     }
@@ -157,5 +158,35 @@ function plugin_iservice_ticket_update_related_movement(Ticket $item)
                 'invoice' => 1,
             ]
         );
+    }
+}
+
+function plugin_iservice_ticket_check_if_can_close(Ticket $item)
+{
+    global $CFG_PLUGIN_ISERVICE;
+    $can_close = true;
+
+    // Do not allow to close a ticket if there is an older opened ticket.
+    $first_open_ticket_id = PluginIserviceTicket::getFirstIdForItemWithInput($item, true);
+
+    $first_open_ticket = new PluginIserviceTicket();
+    if ($first_open_ticket->getFromDB($first_open_ticket_id) && $first_open_ticket->customfields->fields['effective_date_field'] <= $item->input['effective_date_field']) {
+        if ($first_open_ticket_id > 0 && ($item->isNewID($item->getID()) || $first_open_ticket_id < $item->getID())) {
+            $can_close = false;
+            Session::addMessageAfterRedirect("Tichetul nu poate fi închis deoarece există un tichet deschis cu data efectivă mai mică (<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$first_open_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' target='_blank'>$first_open_ticket_id</a>)!", true, WARNING);
+        }
+    }
+
+    // Do not allow to close a ticket if it has older effective date then the last closed ticket.
+    $last_closed_ticket_id = PluginIserviceTicket::getLastIdForItemWithInput($item, false);
+    $last_closed_ticket    = new PluginIserviceTicket();
+    if ($last_closed_ticket->getFromDB($last_closed_ticket_id) && $last_closed_ticket->customfields->fields['effective_date_field'] >= $item->input['effective_date_field']) {
+        $can_close = false;
+        Session::addMessageAfterRedirect("Tichetul nu poate fi închis deoarece are data efectivă mai mică decât ultimul tichet închis (<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' target='_blank'>$last_closed_ticket_id</a>)!", true, WARNING);
+    }
+
+    if (!$can_close) {
+        $item->input['status'] = $item->fields['status'] ?? Ticket::WAITING;
+        $item->update_error    = 'cannot_close';
     }
 }
