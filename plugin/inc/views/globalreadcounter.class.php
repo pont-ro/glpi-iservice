@@ -82,9 +82,10 @@ class GlobalReadCounter extends View
             return '';
         }
 
-        $data_difference = round((time() - strtotime($param_data['row_data']['last_effective_date'])) / (60 * 60 * 24));
-        $estimate_value  = '';
-        $icon_click      = "";
+        $estimateItilCategoryId = PluginIserviceTicket::getItilCategoryId('Citire contor - estimat');
+        $data_difference        = round((time() - strtotime($param_data['row_data']['last_effective_date'])) / (60 * 60 * 24));
+        $estimate_value         = '';
+        $icon_click             = "";
         foreach (['total2_black_field', 'total2_color_field', 'effective_date_field'] as $fieldname) {
             switch ($fieldname) {
             case 'total2_black_field':
@@ -112,7 +113,7 @@ class GlobalReadCounter extends View
             $icon_click .= sprintf("$(\"#badge-%s-%s-%s\").hide();", $badge_type, $param_data['row_id'], $fieldname);
         }
 
-        $icon_click .= sprintf("setSelectField($(\"[name=globalreadcounter0\\\\[printer\\\\]\\\\[%s\\\\]\\\\[itilcategories_id\\\\]]\") , \"30\", \"Citire contor - estimat\");", $param_data['row_id']);
+        $icon_click .= sprintf("setSelectField($(\"[name=globalreadcounter0\\\\[printer\\\\]\\\\[%s\\\\]\\\\[itilcategories_id\\\\]]\") , \"$estimateItilCategoryId\", \"Citire contor - estimat\");", $param_data['row_id']);
         return "onclick='$icon_click'";
     }
 
