@@ -136,6 +136,12 @@
       {% if options.label2raw %}
          {{ options.label2raw|raw }}
       {% endif %}
+      {% if options.button|length > 0 %}
+         {% if options.button.href %}
+            <a class='ms-2 {{ options.button.class }}' href='{{ options.button.href }}'>{{ options.button.label }}</a>
+         {% endif %}
+      {% endif %}
+
    {% endset %}
 
    {{ fieldsOriginal.field(name, field, label, options) }}

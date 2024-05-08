@@ -509,6 +509,32 @@ class PluginIserviceTicket extends Ticket
                 self::EXPORT_TYPE_INVOICE_ID => _n('Invoice', 'Invoices', 1, 'iservice'),
                 '' => Dropdown::EMPTY_VALUE,
             ];
+
+            if ($this->customfields->fields['exported_field']) {
+                $months = array(
+                    1 => 'ianuarie',
+                    2 => 'februarie',
+                    3 => 'martie',
+                    4 => 'aprilie',
+                    5 => 'mai',
+                    6 => 'iunie',
+                    7 => 'iulie',
+                    8 => 'august',
+                    9 => 'septembrie',
+                    10 => 'octombrie',
+                    11 => 'noiembrie',
+                    12 => 'decembrie',
+                );
+                $supplier = new PluginIservicePartner();
+                $supplier->getFromDB($partnerId);
+                $mailSubject = "Factura ExpertLine - {$supplier->fields['name']} - " . $months[date("n")] . ", " . date("Y");
+                $mailBody = $supplier->getMailBody();
+                $templateParams['sendMailButtonConfig'] = [
+                    'label' => __('Send email to client', 'iservice'),
+                    'href' => "mailto:{$supplier->customfields->fields['email_for_invoices_field']}?subject=$mailSubject&body=$mailBody",
+                    'class' => 'vsubmit',
+                ];
+            }
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
