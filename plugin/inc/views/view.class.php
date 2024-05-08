@@ -431,12 +431,12 @@ class View extends \CommonGLPI
                     $filter_value    = '#empty#import#data#';
                 } else {
                     $filter_value = $import_data[$filter_data['import']['index']];
-                    if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-14days'))) {
-                        if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-1000days'))) {
-                            $estimate_text = "Datele din CSV sunt mai vechi de 1000 zile (din " . date('Y-m-d', strtotime($import_data['effective_date_field'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
+                    if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-7days'))) {
+                        if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-1year'))) {
+                            $estimate_text = "Datele din CSV sunt mai vechi de 1 an (din " . date('Y-m-d', strtotime($import_data['effective_date_field'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
                             $filter_value = '#empty#import#data#';
                         } else {
-                            $estimate_text = "Datele din CSV sunt mai vechi de 14 zile (din " . date('Y-m-d', strtotime($import_data['effective_date_field'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
+                            $estimate_text = "Datele din CSV sunt mai vechi de 7 zile (din " . date('Y-m-d', strtotime($import_data['effective_date_field'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
                         }
                     } elseif (!empty($filter_data['min_value']) && $filter_value !== '#empty#import#data#' && $filter_value < $filter_data['min_value']) {
                         $error_hint    = $this->evalIfFunction($filter_data['import']['minimum_error_hint'] ?? "Click pentru a seta", ['param_data' => $params]);
