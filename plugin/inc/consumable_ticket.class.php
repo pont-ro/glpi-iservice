@@ -149,10 +149,10 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     'allConsumablesDropdown' => [
                         'order'    => 3,
                         'label'    => __('Full list', 'iservice'),
-                        'type'     => 'dropdown',
-                        'value'    => '',
-                        'itemType' => 'PluginIserviceConsumable',
                         'name'     => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
+                        'type'     => 'dropdown',
+                        'itemType' => 'PluginIserviceConsumable',
+                        'value'    => '',
                         'options'    => $consumables_selector_options,
                     ],
                 ],
