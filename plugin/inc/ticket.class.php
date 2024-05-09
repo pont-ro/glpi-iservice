@@ -663,6 +663,8 @@ class PluginIserviceTicket extends Ticket
                 'value' => __('Estimation', 'iservice'),
             ];
         }
+
+        return [];
     }
 
     public function isClosed(): bool
@@ -1138,7 +1140,7 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareInputForAdd($input): array|bool
     {
-        foreach (array_keys($input['items_id']) as $itemtype) {
+        foreach (array_keys($input['items_id'] ?? []) as $itemtype) {
             foreach ($input['items_id'][$itemtype] as $key => $value) {
                 if (empty($value)) {
                     unset($input['items_id'][$itemtype][$key]);

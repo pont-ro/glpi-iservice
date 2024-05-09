@@ -158,11 +158,11 @@ class PluginIserviceMovement extends CommonDBTM
         $printer->getFromDB($this->fields['items_id']);
 
         if ($id > 0) {
-            $total2_black               = $this->fields['total2_black_field'] ?? $printer->lastTicket()->fields['total2_black_field'] ?? '';
-            $total2_color               = $this->fields['total2_color_field'] ?? $printer->lastTicket()->fields['total2_color_field'] ?? '';
+            $total2_black               = $this->fields['total2_black_field'] ?? $printer->lastTicket()->customfields->fields['total2_black_field'] ?? '';
+            $total2_color               = $this->fields['total2_color_field'] ?? $printer->lastTicket()->customfields->fields['total2_color_field'] ?? '';
             $invoiced_total_black_field = $this->fields['invoiced_total_black_field'] ?? $item_customfields->fields['invoiced_total_black_field'] ?? '';
             $invoiced_total_color_field = $this->fields['invoiced_total_color_field'] ?? $item_customfields->fields['invoiced_total_color_field'] ?? '';
-            $invoice_date_field         = $this->fields['invoice_date'] ?? $item_customfields->fields['invoice_date'] ?? '';
+            $invoice_date_field         = $this->fields['invoice_date'] ?? $item_customfields->fields['invoice_date_field'] ?? '';
             $invoice_expiry_date_field  = $this->fields['invoice_expiry_date_field'] ?? $item_customfields->fields['invoice_expiry_date_field'] ?? '';
             $dba                        = $this->fields['dba'] ?? $item_customfields->fields['daily_bk_average_field'] ?? '';
             $dca                        = $this->fields['dca'] ?? $item_customfields->fields['daily_color_average_field'] ?? '';
@@ -170,8 +170,8 @@ class PluginIserviceMovement extends CommonDBTM
             $snooze_read_check          = $this->fields['snoozereadcheck'] ?? date('Y-m-d', strtotime('yesterday'));
             $table_rows[]               = $form->generateFieldTableRow(
                 'Date facturare și contoare', '<div id="invoice-data" style="width:82%">'
-                    . '<div style="display:inline-block;width:50%">ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoice_date', $invoice_date_field) . '</b></div>'
-                    . '<div style="display:inline-block;width:50%">expirare factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoice_expiry_date_field', $invoice_expiry_date_field) . '</b></div>'
+                    . '<div style="display:inline-block;width:50%">ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoice_date', date('Y-m-d', strtotime($invoice_date_field))) . '</b></div>'
+                    . '<div style="display:inline-block;width:50%">expirare factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoice_expiry_date_field', date('Y-m-d', strtotime($invoice_expiry_date_field))) . '</b></div>'
                     . '<div style="display:inline-block;width:50%">Contor black ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoiced_total_black_field', $invoiced_total_black_field) . '</b></div>'
                     . '<div style="display:inline-block;width:50%">Contor black ultima intervenție: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'total2_black_field', $total2_black) . '</b></div>'
                     . '<div style="display:inline-block;width:50%">Contor color ultima factură: <b>' . $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, 'invoiced_total_color_field', $invoiced_total_color_field) . '</b></div>'
