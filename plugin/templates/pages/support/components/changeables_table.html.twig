@@ -5,7 +5,7 @@
 
 <div class="form-field row col-12 mb-2">
     <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
-        {{ __('Change cartridge', 'iservice') }}
+        <a target='_blank' class="" href='{{ changeablesTableData["cartridge_link"] }}'>{{ __('Change cartridge', 'iservice') }}</a>
     </label>
     <div class="col-xxl-8 field-container {{ options.valueClass }}">
         {% if tableData.addItemsSection %}

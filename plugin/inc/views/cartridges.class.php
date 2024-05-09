@@ -274,7 +274,7 @@ class Cartridges extends View
 
         $settings = [
             'name' => self::getName(),
-            'instant_display' => self::isRestrictedMode(),
+            'instant_display' => self::isRestrictedMode() || $printer_model_id,
             'query' => "
                         SELECT
                             c.id 
