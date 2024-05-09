@@ -440,6 +440,10 @@ class PluginIserviceTicket extends Ticket
         $prepared_data['field_required'] = [];
         $closed                          = $this->isClosed();
 
+        $isColorPrinter   = $this->printer ? $this->printer->isColor() : null;
+        $isPlotterPrinter = $this->printer ? $this->printer->isPlotter() : null;
+        $printersFieldReadonly = $this->getFirstPrinter()->getID() > 0;
+
         $options['target'] = $options['target'] ?? '';
 
         $templateParams = [
@@ -449,7 +453,7 @@ class PluginIserviceTicket extends Ticket
             'partnersFieldReadonly'   => $this->getFirstAssignedPartner()->getID() > 0,
             'printerId'               => $printerId,
             'printerFieldLabel'       => $this->getPrinterFieldLabel(),
-            'printersFieldReadonly'   => $this->getFirstPrinter()->getID() > 0,
+            'printersFieldReadonly'   => $printersFieldReadonly,
             'usageAddressField'       => $this->getPrinterUsageAddress(),
             'locationName'            => $location->fields['completename'] ?? null,
             'locationId'              => !empty($this->fields['locations_id']) ? $this->fields['locations_id'] : ($location ? ($location->getID() > 0 ? $location->getID() : 0) : null),
@@ -472,6 +476,7 @@ class PluginIserviceTicket extends Ticket
         ];
 
         if ($ID > 0) {
+            $lastTicket = self::getLastForPrinterOrSupplier($partnerId, $printerId);
             $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $printerId, false);
 
             $templateParams['printer']                    = $this->printer;
@@ -535,6 +540,9 @@ class PluginIserviceTicket extends Ticket
                     'class' => 'vsubmit',
                 ];
             }
+
+            $templateParams['csvCounterButtonConfig'] = $this->getCsvCounterButtonConfig($closed, $this->printer ?? null, $isColorPrinter, $isPlotterPrinter, $templateParams['total2BlackDisabled'] ?? false, $templateParams['total2BlackRequiredMinimum'] ?? null, $templateParams['total2ColorRequiredMinimum'], $lastClosedTicket);
+            $templateParams['estimateButtonConfig'] = $this->getEstimateButtonConfig($this, $closed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter);
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
@@ -551,6 +559,104 @@ class PluginIserviceTicket extends Ticket
         }
 
         return true;
+    }
+
+    public function getCsvCounterButtonConfig($closed, $printer, $colorPrinter, $plotterPrinter, $total2BlackDisabled, $total2BlackRequiredMinimum, $total2ColorRequiredMinimum, $lastClosedTicket): array
+    {
+        if (empty($printer)) {
+            return [];
+        }
+
+        $csv_data = PluginIserviceEmaintenance::getDataFromCsvsForSpacelessSerial($printer->getSpacelessSerial());
+        if (!empty($csv_data) && !$total2BlackDisabled) {
+            $style   = '';
+            $onclick = '';
+            $title   = "Click pentru valoarea din CSV\nData contor: {$csv_data['effective_date_field']}\nContor black: ";
+
+            if (!empty($csv_data['total2_black_field']['error'])) {
+                $style = "style='color: red;'";
+                $title .= $csv_data['total2_black_field']['error'];
+            } else {
+                $title .= $csv_data['total2_black_field'];
+                if ($csv_data['total2_black_field'] < $total2BlackRequiredMinimum) {
+                    $style = "style='color: red;'";
+                    $title .= " < $total2BlackRequiredMinimum (minim valid)!";
+                } else {
+                    $onclick .= sprintf("$(\"[name=total2_black_field]\").val(%d);", $csv_data['total2_black_field']);
+                }
+            }
+            if ($colorPrinter || $plotterPrinter) {
+                $title .= $plotterPrinter ? "\nSuprafață printată:" : "\nContor color: ";
+                if (!empty($csv_data['total2_color_field']['error'])) {
+                    $style = "style='color: red;'";
+                    $title .= $csv_data['total2_color_field']['error'];
+                } else {
+                    $title .= $csv_data['total2_color_field'];
+                    if ($csv_data['total2_color_field'] < $total2ColorRequiredMinimum) {
+                        $style = "color: red;";
+                        $title .= " < $total2ColorRequiredMinimum (minim valid)!";
+                    } else {
+                        $onclick .= sprintf("$(\"[name=total2_color_field]\").val(%d);", $csv_data['total2_color_field']);
+                    }
+                }
+            }
+
+            $dataLucRequieredMinimum = $closed ? '2000-01-01' : date('Y-m-d H:i', strtotime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '2000-01-01'));
+            if (!isset($csv_data['effective_date_field']['error']) && $csv_data['effective_date_field'] >= $dataLucRequieredMinimum) {
+                $onclick .= sprintf("setGlpiDateField($(\"[name=effective_date_field]\").closest(\".flatpickr\"), \"%s\");", $csv_data['effective_date_field']);
+            }
+
+            $onclick .= 'return false;';
+
+            return [
+                'options' => [
+                    'buttonClass' => 'submit',
+                    'on_click' => $onclick,
+                    'style' => $style,
+                    'title' => $title,
+                ],
+                'value' => __('from', 'iservice') . ' CSV',
+            ];
+        }
+
+        return [];
+    }
+
+    public function getEstimateButtonConfig($ticket, $closed, $printerId, $printer, $lastTicket, $lastClosedTicket, $colorPrinter, $plotterPrinter): array
+    {
+        if (empty($printer)) {
+            return [];
+        }
+
+        if (!$closed && $printerId > 0 && !$printer->isRouter() && (empty($id) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') <= $ticket->customfields->fields['effective_date_field']) && $lastClosedTicket->getID() > 0 && !$printer->customfields->fields['no_invoice_field']) {
+            $lastDataLuc = new DateTime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '');
+            $daysSinceLastCounter = $lastDataLuc->diff(new DateTime(empty($ticket->customfields->fields['effective_date_field']) ? null : $ticket->customfields->fields['effective_date_field']))->format("%a");
+            $estimatedBlack = $lastClosedTicket->customfields->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter;
+            $estimatedColor = $lastClosedTicket->customfields->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter;
+            $title = "";
+            $onclick = '';
+            if ($estimatedBlack > 0) {
+                $title .= "black: $estimatedBlack ({$lastClosedTicket->customfields->fields['total2_black_field']} + {$printer->customfields->fields['daily_bk_average_field']}*$daysSinceLastCounter)";
+                $onclick .= "$(\"[name=total2_black_field]\").val($estimatedBlack);";
+            }
+            if (($colorPrinter || $plotterPrinter) && $estimatedColor > 0) {
+                $title .= ", " . ($plotterPrinter ? "suprafață hârtie" : "color") . ": $estimatedColor ({$lastClosedTicket->customfields->fields['total2_color_field']} + {$printer->customfields->fields['daily_color_average_field']}*$daysSinceLastCounter)";
+                $onclick .= "$(\"[name=total2_color_field]\").val($estimatedColor);";
+            }
+
+            $onclick .= 'return false;';
+            // Uncomment this line to see date explanation
+            // $title .= sprintf(" [%s - %s]", date('Y-m-d', strtotime($ticket->fields['data_luc'])), date('Y-m-d', strtotime($last_closed_ticket->fields['data_luc'])));
+
+            return [
+                'options' => [
+                    'buttonClass' => 'submit',
+                    'on_click' => $onclick,
+                    'title' => $title,
+                ],
+                'value' => __('Estimation', 'iservice'),
+            ];
+        }
     }
 
     public function isClosed(): bool

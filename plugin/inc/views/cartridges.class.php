@@ -183,6 +183,9 @@ class Cartridges extends View
             $title .= "\r\nPartener instalare: " . htmlspecialchars($row_data['partener_instalare']) . " ($row_data[id_partener_instalare])";
         } else {
         }
+        if (!empty($style)) {
+            $title .= "\r\nCartușul a fost instalat de alt partener!";
+        }
 
         return "<a href='$link' $style title='$title' target='_blank'>$row_data[ticket_id]</a>";
     }

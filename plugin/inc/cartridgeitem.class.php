@@ -64,6 +64,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
     {
         $data                 = [];
         $changeableCartridges = self::getChangeablesForTicket($ticket, $dropdownOptions);
+        $data['warning'] = '';
         if (empty($changeableCartridges)) {
             if ($dropdownOptions['used']) {
                 $unusedChangeableCartridges = self::getChangeablesForTicket($ticket);

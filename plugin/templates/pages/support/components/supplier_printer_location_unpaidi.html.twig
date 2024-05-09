@@ -13,7 +13,7 @@
 ) }}
 
 {{ fieldsIservice.dropdownFieldExtended(
-    'Printer',
+    'PluginIservicePrinter',
     'printer_id',
     printerId,
     printerFieldLabel,
@@ -23,7 +23,7 @@
                 'glpi_infocoms as i': {
                     'ON': {
                         'i': 'items_id',
-                        'glpi_printers': 'id'
+                        'glpi_plugin_iservice_printers': 'id'
                     }
                 }
             },

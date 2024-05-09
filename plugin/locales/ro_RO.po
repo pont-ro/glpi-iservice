@@ -1001,6 +1001,12 @@ msgstr "(Re)Setează drepturile implicite ale profilului"
 msgid "Send email to client"
 msgstr "Trimite email către client"
 
+msgid "Estimation"
+msgstr "Estimare"
+
+msgid "from"
+msgstr "din"
+
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
 

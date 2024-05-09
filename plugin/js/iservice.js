@@ -111,7 +111,7 @@ function setSelectField($wrapper_element, $value, $text)
 
 function setGlpiDateField($wrapper_element, $value)
 {
-    $wrapper_element.find('input.flatpickr,input.flatpickr-input').val($value);
+    $wrapper_element.find('input.flatpickr,input.input').val($value);
 }
 
 function setDateFilters($caller_element, $start_value, $end_value)

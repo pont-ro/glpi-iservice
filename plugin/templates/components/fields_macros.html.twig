@@ -92,11 +92,18 @@
       {% if type %}
          type="{{ type }}"
       {% endif %}
-      name="{{ name }}"
+      {% if name %}
+         name="{{ name }}"
+      {% endif %}
       value="{{ value }}"
-      data-required="{{ options.data-required }}"
+      {% if options.data-required %}
+         data-required="{{ options.data-required }}"
+      {% endif %}
       {% if options.on_click %}
          onclick="{{ options.on_click }}"
+      {% endif %}
+      {% if options.style %}
+         style="{{ options.style }}"
       {% endif %}
       {% if options.title %}
         title="{{ options.title }}"
@@ -107,6 +114,34 @@
       {% endif %}
       <span>{{ label ?? value }}</span>
    </button>
+{% endmacro %}
+
+{% macro numberField(name, value, label = '', options = {}) %}
+   {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
+   {% if options.step != 'any' and options.step|round(0, 'floor') != options.step %}
+      {# Only format number if not a whole number #}
+      {% set value = call('Html::formatNumber', [value, true]) %}
+   {% endif %}
+
+   {% if value == "" %}
+      {% set value = (options.min is defined ? options.min : 0) %}
+   {% endif %}
+
+   {% set field %}
+      <input type="number" id="%id%"
+             class="form-control {{ options.input_addclass }}"
+             name="{{ name }}" value="{{ value }}"
+              {{ options.readonly ? 'readonly' : '' }}
+              {{ options.disabled ? 'disabled' : '' }}
+              {{ options.required ? 'required' : '' }}
+              {% if options.min is defined %}min="{{ options.min }}"{% endif %}
+              {% if options.max is defined %}max="{{ options.max }}"{% endif %}
+              {% if options.step is defined %}step="{{ options.step }}"{% endif %} />
+      {% if options.buttons|length > 0 %}
+         {{ _self.additionalButtons(options.buttons) }}
+      {% endif %}
+   {% endset %}
+   {{ fieldsOriginal.field(name, field, label, options) }}
 {% endmacro %}
 
 {% macro checkboxFieldExtended(name, value, label = '', options = {}) %}
@@ -136,15 +171,23 @@
       {% if options.label2raw %}
          {{ options.label2raw|raw }}
       {% endif %}
-      {% if options.button|length > 0 %}
-         {% if options.button.href %}
-            <a class='ms-2 {{ options.button.class }}' href='{{ options.button.href }}'>{{ options.button.label }}</a>
-         {% endif %}
+      {% if options.buttons|length > 0 %}
+            {{ _self.additionalButtons(options.buttons) }}
       {% endif %}
 
    {% endset %}
 
    {{ fieldsOriginal.field(name, field, label, options) }}
+{% endmacro %}
+
+{% macro additionalButtons(buttons) %}
+   {% for button in buttons %}
+      {% if button.href %}
+         <a class='ms-2 {{ button.class }}' href='{{ button.href }}'>{{ button.label }}</a>
+      {% elseif button %}
+         {{ _self.button(button.type, button.name, button.value, button.label, button.options) }}
+      {% endif %}
+   {% endfor %}
 {% endmacro %}
 
 {% macro dropdownFieldExtended(itemtype, name, value, label = '', options = {}) %}
@@ -190,7 +233,7 @@
                   picker.setDate(picker.altInput.value, true, picker.config.altFormat)
                },
                plugins: [
-                  CustomFlatpickrButtons({ 'buttons': {{ options.buttons|raw }} })
+                  CustomFlatpickrButtons({ 'buttons': {{ options.dateTimePickerButtons|raw }} })
                ]
             });
          });

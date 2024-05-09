@@ -28,7 +28,7 @@
                             {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
 
                             {% if printer %}
-                                {{ fields.numberField(
+                                {{ fieldsIservice.numberField(
                                     'total2_black_field',
                                     item.customfields.fields['total2_black_field'],
                                     __('Black counter reading', 'iservice'),
@@ -39,6 +39,11 @@
                                             'data-toggle': 'tooltip',
                                             'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
                                         },
+                                        'buttons': [
+                                            csvCounterButtonConfig,
+                                            estimateButtonConfig,
+                                        ],
+                                        'input_addclass': 'w-50 d-inline-block',
                                     })
                                 ) }}
                             {% endif %}
@@ -137,7 +142,7 @@
                                     __('Exported in csv and imported in hMarfa', 'iservice'),
                                     field_options|merge({
                                         'disabled': true,
-                                        'button': sendMailButtonConfig
+                                        'buttons': [sendMailButtonConfig],
                                     })
                                 ) }}
                             {%  endif %}
@@ -149,7 +154,7 @@
                                 field_options|merge({
                                     'min': "now"|date("Y-m-d H:i:s"),
                                     'readonly': effectiveDateFieldReadonly,
-                                    'buttons':
+                                    'dateTimePickerButtons':
                                         '[
                                             {
                                                label: "' ~ __("Today")  ~ '",
