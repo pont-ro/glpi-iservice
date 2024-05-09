@@ -68,7 +68,6 @@ function plugin_iservice_redefine_menus($menus): array
 
 function plugin_iservice_Ticket_add(Ticket $item)
 {
-    plugin_iservice_ticket_update_related_movement($item);
 }
 
 function plugin_iservice_Ticket_update(Ticket $item)
@@ -76,8 +75,6 @@ function plugin_iservice_Ticket_update(Ticket $item)
     if (PluginIserviceTicket::wasTicketClosedStatusChanging($item)) {
         PluginIserviceTicket::moveCartridges($item);
     }
-
-    plugin_iservice_ticket_update_related_movement($item);
 }
 
 function plugin_iservice_PluginFieldsTicketticketcustomfield_update(PluginFieldsTicketticketcustomfield $item)
@@ -140,24 +137,6 @@ function plugin_iservice_ticket_reopen_newer_tickets(Ticket $parentItem)
 
         $message .= "</ul><a href='javascript:none;' onclick='openInNewTab(\".reopened-ticket\");return false;'>" . __('See all', 'iservice') . "</a>";
         Session::addMessageAfterRedirect($message, false, WARNING);
-    }
-}
-
-/**
- * Updates the related movement if _services_invoiced.
- *
- * @param Ticket $item
- */
-function plugin_iservice_ticket_update_related_movement(Ticket $item)
-{
-    if (!empty($item->input['_services_invoiced'])) {
-        $movement = new PluginIserviceMovement();
-        $movement->update(
-            [
-                'id' => ($item->input['movement_id_field'] ?? 0) ?: $item->input['movement2_id_field'] ?? 0,
-                'invoice' => 1,
-            ]
-        );
     }
 }
 

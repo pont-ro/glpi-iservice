@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2021-02-09 09:46+0200\n"
-"PO-Revision-Date: 2023-07-04 17:49+0300\n"
+"PO-Revision-Date: 2024-05-09 07:24+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro_RO\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: ajax/getCounters.php:30
 msgid "Uninstall from printer"
@@ -18,7 +18,7 @@ msgstr "Dezinstalează de pe aparat"
 
 #: ajax/getPrinterCartridgesPopup.php:41 inc/views/Printers.php:209
 msgid "You have no compatible cartridges!"
-msgstr "Nu aveți cartușe compatibile"
+msgstr "Nu aveți cartușe compatibile!"
 
 #: ajax/manageBackup.php:57 ajax/manageCartridge.php:34
 #: ajax/manageConsumable.php:24 ajax/manageDataintegrityTest.php:17
@@ -812,11 +812,11 @@ msgstr "Șterge acest cartuș"
 
 #: inc/views/Cartridges.php:44
 msgid "Cartridge deleted from database"
-msgstr "Cartuș șters din baza de date "
+msgstr "Cartuș șters din baza de date"
 
 #: inc/views/deleteCartridgeFromDb.php:18
 msgid "Could not delete cartridge from the database"
-msgstr "Nu s-a putut șterge cartușul din baza de date. "
+msgstr "Nu s-a putut șterge cartușul din baza de date"
 
 #: inc/views/Emaintenance.php:31 inc/views/Printers.php:51
 #: inc/views/Tickets.php:86
@@ -972,10 +972,10 @@ msgid "Don't forget to press 'Update' button to save your changes"
 msgstr "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificările"
 
 msgid "Are you sure you want to reopen the ticket?"
-msgstr "'Sigur vreți să redeschideți tichetul?'"
+msgstr "Sigur vreți să redeschideți tichetul?"
 
 msgid " closed tickets will be reopened. Are you sure you want to continue?"
-msgstr  " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"
+msgstr " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"
 
 msgid "There is an unfinished movement for this printer, please finish movement %s first!"
 msgstr "O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea %s întâi!"
@@ -985,6 +985,9 @@ msgstr "Nu bifați înainte ca factura de servicii să fie emisă, operația nu 
 
 msgid "To create an invoice, press the link"
 msgstr "Pentru a crea factura, apăsați linkul"
+
+msgid "invoicing"
+msgstr "facturare"
 
 msgid "Profile rights have been reset to default settings"
 msgstr "Drepturile au fost resetate la setările implicite"

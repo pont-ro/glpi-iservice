@@ -11,7 +11,11 @@ use Glpi\Application\View\TemplateRenderer;
 class PluginIserviceTicket extends Ticket
 {
 
-    use PluginIserviceItem, PluginIserviceCommonITILObject;
+    use PluginIserviceCommonITILObject;
+    use PluginIserviceItem {
+        post_addItem as postAddItem;
+        post_updateItem as postUpdateItem;
+    }
 
     /*
      *
@@ -430,13 +434,14 @@ class PluginIserviceTicket extends Ticket
         $this->initForm($ID, $options);
         $this->setPrinter($options['printerId'] ?? null);
         $printerId                            = $this->getPrinterId();
+        if (isset($this->fields['items_id']) && !isset($this->fields['items_id']['Printer'])) {
+            $this->fields['items_id']             = ['Printer' => [$printerId]];
+        }
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
         $location                             = $this->getLocation();
         $this->setTicketUsersFields($ID, $options);
         $this->setDefaultEffectiveDateField();
-        $canUpdate                       = !$ID
-            || (Session::getCurrentInterface() == "central"
-                && $this->canUpdateItem());
+        $canUpdate                       = !$ID || (Session::getCurrentInterface() == "central" && $this->canUpdateItem());
         $prepared_data['field_required'] = [];
         $closed                          = $this->isClosed();
 
@@ -831,39 +836,11 @@ class PluginIserviceTicket extends Ticket
 
         global $CFG_PLUGIN_ISERVICE;
 
-        $ticket_name = (isset($this->input['_no_message_link']) ? $this->getID() : $this->getLink(['mode' => $this->input['_mode']]));
-
-        switch ($this->input['_mode']) {
-        case PluginIserviceTicket::MODE_CREATENORMAL:
-            $ticketreport_href = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.report.php?id={$this->getID()}";
-            $suffix            = sprintf("%s <a href='$ticketreport_href' target='_blank'>%s</a>", ucfirst(__('see', 'iservice')), lcfirst(__('intervention report', 'iservice')));
-            break;
-        case PluginIserviceTicket::MODE_CREATEQUICK:
-        case PluginIserviceTicket::MODE_CLOSE:
-            $supplier = PluginIservicePartner::getFromTicketInput($this->input);
-            $s2       = PluginIservicePartner::get(1);
-            if ($supplier->isNewItem()) {
-                $suffix = "";
-            } else {
-                $printers_href = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers&printers0[supplier_name]=" . $supplier->fields['name'];
-                $suffix        = sprintf("%s <a href='$printers_href'>%s</a>", ucfirst(__('see', 'iservice')), lcfirst(_n('Printer', 'Printers', 2, 'iservice')));
-            }
-            break;
-        case PluginIserviceTicket::MODE_PARTNERCONTACT:
-            $suffix = "<a href='#' onclick='window.close();'>" . __('Close', 'iservice') . "</a>";
-            break;
-        default:
-            $suffix = '';
-            break;
-        }
-
-        if (!empty($suffix)) {
-            $suffix = "<br>$suffix";
-        }
+        $ticket_name = (isset($this->input['_no_message_link']) ? $this->getID() : $this->getLink());
 
         IserviceToolBox::clearAfterRedirectMessages(INFO);
 
-        Session::addMessageAfterRedirect(sprintf(__('Ticket %s saved successfully.', 'iservice'), stripslashes($ticket_name)) . stripslashes($suffix));
+        Session::addMessageAfterRedirect(sprintf(__('Ticket %s saved successfully.', 'iservice'), stripslashes($ticket_name)));
     }
 
     public function getLink($options = []): string
@@ -1098,6 +1075,37 @@ class PluginIserviceTicket extends Ticket
         }
 
         return $input;
+    }
+
+    public function post_addItem($history = 1): void
+    {
+        $this->postAddItem($history);
+        $this->updateRelatedMovement($this->input['_services_invoiced'] ?? 0);
+    }
+
+    public function post_updateItem($history = 1): void
+    {
+        $this->postUpdateItem($history);
+        $this->updateRelatedMovement($this->input['_services_invoiced'] ?? 0);
+    }
+
+    protected function updateRelatedMovement($servicesInvoiced): void
+    {
+        if (empty($servicesInvoiced)) {
+            return;
+        }
+
+        if (0 === ($movementId = ($this->customfields->fields['movement_id_field'] ?? 0) ?: $this->customfields->fields['movement2_id_field'] ?? 0)) {
+            return;
+        }
+
+        $movement = new PluginIserviceMovement();
+        $movement->update(
+            [
+                'id' => $movementId,
+                'invoice' => 1,
+            ]
+        );
     }
 
     public static function sendNotificationForTicket($ticket, $config_key = '', $params = []): ?bool
@@ -1822,9 +1830,9 @@ class PluginIserviceTicket extends Ticket
     {
         $this->originalFields = $this->fields;
 
-        $this->fields['movement_id_field']                          = $values['_movement_id'];
-        $this->fields['movement2_id_field']                         = $values['_movement2_id'];
-        $this->fields['plugin_fields_ticketexporttypedropdowns_id'] = $values['_export_type'];
+        $this->fields['movement_id_field']                          = $values['_movement_id'] ?? null;
+        $this->fields['movement2_id_field']                         = $values['_movement2_id'] ?? null;
+        $this->fields['plugin_fields_ticketexporttypedropdowns_id'] = $values['_export_type'] ?? null;
 
         foreach ($values as $key => $val) {
             if (!isset($this->fields[$key])) {
@@ -1896,7 +1904,7 @@ class PluginIserviceTicket extends Ticket
         $fields['_services_invoiced']['value']  = $movement->fields['invoice'] ?? false;
 
         if (!$fields['_services_invoiced']['value']) {
-            $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . __('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?id={$printerId}' target='_blank'>" . __("hMarfa export", "iservice") . "</a></div>";
+            $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . __('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?mode=3&kcsrft=1&item[printer][{$printerId}]=1' target='_blank'>" . __("invoicing", "iservice") . "</a></div>";
         }
 
         $fields['_services_invoiced']['disabled'] = !$canEdit || $fields['_services_invoiced']['value'];
