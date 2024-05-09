@@ -70,26 +70,20 @@ trait PluginIserviceItem
         return $this->get($db->fetchAssoc($result)['id']);
     }
 
-    public function add(array $input, $options = [], $history = true)
+    public function post_addItem($history = 1): void
     {
-        $model  = new parent;
-        $result = $model->add($input, $options, $history);
+        parent::post_addItem($history);
 
-        if ($result && !$this->updateCustomFields($model->getID(), $input)) {
+        if (!$this->updateCustomFields($this->getID(), $this->input)) {
             Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
         }
-
-        return $result;
     }
 
-    public function update(array $input, $history = 1, $options = []): bool
+    public function post_updateItem($history = 1): void
     {
-        $model = new parent;
-        $model->getFromDB($this->getID());
-        $result = $model->update($input, $history, $options);
+        parent::post_updateItem($history);
 
-        return $result && $this->updateCustomFields($model->getID(), $input);
-
+        $this->updateCustomFields($this->getID(), $this->input);
     }
 
     public function updateCustomFields($parentId, $input, $history = 1, $options = []): bool
@@ -99,7 +93,7 @@ trait PluginIserviceItem
         }
 
         if ($this->loadOrCreateCustomFields($parentId)) {
-            return $this->customfields->update(array_filter(array_merge($input, ['id' => $this->customfields->getID()])), $history, $options);
+            return $this->customfields->update(array_merge($input, ['id' => $this->customfields->getID()]), $history, $options);
         }
 
         return false;
