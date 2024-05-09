@@ -505,6 +505,7 @@ class PluginIserviceTicket extends Ticket
 
             $templateParams['changeablesTableData'] = array_merge(
                 [
+                    'cartridge_link' => "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}",
                     'warning' => $warning ?? null,
                 ],
                 PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($closed || (($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'] && $ID > 0))),
