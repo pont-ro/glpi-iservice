@@ -137,17 +137,41 @@
                                     __('Exported in csv and imported in hMarfa', 'iservice'),
                                     field_options|merge({
                                         'disabled': true,
+                                        'button': sendMailButtonConfig
                                     })
                                 ) }}
                             {%  endif %}
 
-                            {{ fields.datetimeField(
+                            {{ fieldsIservice.datetimeField(
                                 'effective_date_field',
                                 effectiveDate,
                                 __('Effective date', 'iservice'),
                                 field_options|merge({
                                     'min': "now"|date("Y-m-d H:i:s"),
                                     'readonly': effectiveDateFieldReadonly,
+                                    'buttons':
+                                        '[
+                                            {
+                                               label: "' ~ __("Today")  ~ '",
+                                               attributes: {
+                                                  "class": "btn btn-outline-secondary"
+                                               },
+                                               onClick: (e, picker) => {
+                                                  picker.setDate(new Date());
+                                               }
+                                            },
+                                            {
+                                               label: "' ~ __("Yesterday") ~ '",
+                                               attributes: {
+                                                  "class": "btn btn-outline-secondary"
+                                               },
+                                               onClick: (e, picker) => {
+                                                  let date = new Date();
+                                                  date.setDate(date.getDate() - 1);
+                                                  picker.setDate(date);
+                                               }
+                                            }
+                                        ]',
                                 })
                             ) }}
 
