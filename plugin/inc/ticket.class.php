@@ -440,8 +440,8 @@ class PluginIserviceTicket extends Ticket
         $prepared_data['field_required'] = [];
         $closed                          = $this->isClosed();
 
-        $isColorPrinter   = $this->printer ? $this->printer->isColor() : null;
-        $isPlotterPrinter = $this->printer ? $this->printer->isPlotter() : null;
+        $isColorPrinter   = $this->printer?->isColor();
+        $isPlotterPrinter = $this->printer?->isPlotter();
         $printersFieldReadonly = $this->getFirstPrinter()->getID() > 0;
 
         $options['target'] = $options['target'] ?? '';
