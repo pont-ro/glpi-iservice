@@ -33,6 +33,7 @@ class Movements extends View
 						SELECT
 							  m.id movement_id_field
 							, m.init_date movement_start_date
+						    , p.id printer_id
 							, p.name printer_name
 							, p.serial printer_serial
 							, os.name old_partner
@@ -128,6 +129,12 @@ class Movements extends View
                 ],
                 'printer_serial' => [
                     'title' => 'Număr serie aparat',
+                    'link' => [
+                        'type' => 'normal',
+                        'href' => 'printer.form.php?id=[printer_id]',
+                        'title' => 'Administrare aparat',
+                        'target' => '_blank',
+                    ],
                 ],
                 'old_partner' => [
                     'title' => 'Partener vechi',
