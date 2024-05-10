@@ -663,6 +663,7 @@ class PluginIserviceTicket extends Ticket
                 'value' => __('Estimation', 'iservice'),
             ];
         }
+        return [];
     }
 
     public function isClosed(): bool
@@ -1107,6 +1108,7 @@ class PluginIserviceTicket extends Ticket
                         'suppliers_id'     => $assign,
                         'type'             => CommonITILActor::ASSIGN,
                         'use_notification' => 0,
+                        '_from_object' => true, // This is needed to avoid ticket status change in CommonITILActor.php:post_addItem() method, line 438.
                     ]
                 )
                 ) {
@@ -1138,7 +1140,7 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareInputForAdd($input): array|bool
     {
-        foreach (array_keys($input['items_id']) as $itemtype) {
+        foreach (array_keys($input['items_id'] ?? []) as $itemtype) {
             foreach ($input['items_id'][$itemtype] as $key => $value) {
                 if (empty($value)) {
                     unset($input['items_id'][$itemtype][$key]);
