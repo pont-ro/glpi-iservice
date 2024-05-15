@@ -433,23 +433,24 @@ class PluginIserviceTicket extends Ticket
     {
         $this->initForm($ID, $options);
         $this->setPrinter($options['printerId'] ?? null);
-        $printerId                            = $this->getPrinterId();
+        $printerId = $this->getPrinterId();
         if (isset($this->fields['items_id']) && !isset($this->fields['items_id']['Printer'])) {
-            $this->fields['items_id']             = ['Printer' => [$printerId]];
+            $this->fields['items_id'] = ['Printer' => [$printerId]];
         }
+
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
         $location                             = $this->getLocation();
         $this->setTicketUsersFields($ID, $options);
-        $this->setDefaultEffectiveDateField();
         $canUpdate                       = !$ID || (Session::getCurrentInterface() == "central" && $this->canUpdateItem());
         $prepared_data['field_required'] = [];
         $closed                          = $this->isClosed();
 
-        $isColorPrinter   = $this->printer?->isColor();
-        $isPlotterPrinter = $this->printer?->isPlotter();
+        $isColorPrinter        = $this->printer?->isColor();
+        $isPlotterPrinter      = $this->printer?->isPlotter();
         $printersFieldReadonly = $this->getFirstPrinter()->getID() > 0;
 
-        $options['target'] = $options['target'] ?? '';
+        $options['target']       = $options['target'] ?? '';
+        $options['withtemplate'] = 'ticket';
 
         $templateParams = [
             'item'                    => $this,
@@ -473,15 +474,20 @@ class PluginIserviceTicket extends Ticket
             'solvedStatusValue'           => self::SOLVED,
             'consumablesTableData'        => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']))),
 
-            'effectiveDate'                => $this->fields['status'] == self::SOLVED || $this->fields['status'] == self::CLOSED ? $this->customfields->fields['effective_date_field'] : date('Y-m-d H:i:s'),
+            'effectiveDate'                => $this->customfields->fields['effective_date_field'] ?? date('Y-m-d H:i:s'),
             'effectiveDateFieldReadonly'   => $this->fields['status'] == self::CLOSED,
             'cartridgeInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
             'emMailIdField'             => $options['em_mail_id_field'] ?? null,
             'technicians'               => IserviceToolBox::getUsersByProfiles(['tehnician']),
+            'iServiceTicketTemplate'    => new PluginIserviceTicketTemplate(),
+            'title' => !empty($this->fields['name']) ? $this->fields['name'] : $options['getParams']['title'] ?? '',
+            'content' => !empty($this->fields['content']) ? $this->fields['content'] : $options['getParams']['content'] ?? '',
         ];
 
-        if ($ID > 0) {
-            $lastTicket = self::getLastForPrinterOrSupplier($partnerId, $printerId);
+        $renderExtendedForm = $ID > 0 || $printerId > 0;
+
+        if ($renderExtendedForm) {
+            $lastTicket       = self::getLastForPrinterOrSupplier($partnerId, $printerId);
             $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $printerId, false);
 
             $templateParams['printer']                    = $this->printer;
@@ -505,10 +511,10 @@ class PluginIserviceTicket extends Ticket
 
             $templateParams['changeablesTableData'] = array_merge(
                 [
-                    'cartridge_link' => "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}",
+                    'cartridge_link' => $this->printer ? "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}" : null,
                     'warning' => $warning ?? null,
                 ],
-                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($closed || (($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'] && $ID > 0))),
+                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($closed || (($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > ($this->customfields->fields['effective_date_field'] ?? '') && $ID > 0))),
             );
 
             if (!empty($this->printer->fields['printermodels_id'])) {
@@ -521,8 +527,8 @@ class PluginIserviceTicket extends Ticket
                 '' => Dropdown::EMPTY_VALUE,
             ];
 
-            if ($this->customfields->fields['exported_field']) {
-                $months = array(
+            if ($this->customfields->fields['exported_field'] ?? false) {
+                $months   = [
                     1 => 'ianuarie',
                     2 => 'februarie',
                     3 => 'martie',
@@ -535,11 +541,11 @@ class PluginIserviceTicket extends Ticket
                     10 => 'octombrie',
                     11 => 'noiembrie',
                     12 => 'decembrie',
-                );
+                ];
                 $supplier = new PluginIservicePartner();
                 $supplier->getFromDB($partnerId);
-                $mailSubject = "Factura ExpertLine - {$supplier->fields['name']} - " . $months[date("n")] . ", " . date("Y");
-                $mailBody = $supplier->getMailBody();
+                $mailSubject                            = "Factura ExpertLine - {$supplier->fields['name']} - " . $months[date("n")] . ", " . date("Y");
+                $mailBody                               = $supplier->getMailBody();
                 $templateParams['sendMailButtonConfig'] = [
                     'label' => __('Send email to client', 'iservice'),
                     'href' => "mailto:{$supplier->customfields->fields['email_for_invoices_field']}?subject=$mailSubject&body=$mailBody",
@@ -548,7 +554,7 @@ class PluginIserviceTicket extends Ticket
             }
 
             $templateParams['csvCounterButtonConfig'] = $this->getCsvCounterButtonConfig($closed, $this->printer ?? null, $isColorPrinter, $isPlotterPrinter, $templateParams['total2BlackDisabled'] ?? false, $templateParams['total2BlackRequiredMinimum'] ?? null, $templateParams['total2ColorRequiredMinimum'], $lastClosedTicket);
-            $templateParams['estimateButtonConfig'] = $this->getEstimateButtonConfig($this, $closed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter);
+            $templateParams['estimateButtonConfig']   = $this->getEstimateButtonConfig($this, $closed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter);
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
@@ -558,7 +564,7 @@ class PluginIserviceTicket extends Ticket
         $options['ticketHasConsumables'] = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
         $templateParams['submitButtons'] = $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
 
-        if ($ID > 0) {
+        if ($renderExtendedForm) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
         } else {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/inquiry.html.twig", $templateParams);
@@ -580,26 +586,27 @@ class PluginIserviceTicket extends Ticket
             $title   = "Click pentru valoarea din CSV\nData contor: {$csv_data['effective_date_field']}\nContor black: ";
 
             if (!empty($csv_data['total2_black_field']['error'])) {
-                $style = "style='color: red;'";
+                $style  = "style='color: red;'";
                 $title .= $csv_data['total2_black_field']['error'];
             } else {
                 $title .= $csv_data['total2_black_field'];
                 if ($csv_data['total2_black_field'] < $total2BlackRequiredMinimum) {
-                    $style = "style='color: red;'";
+                    $style  = "style='color: red;'";
                     $title .= " < $total2BlackRequiredMinimum (minim valid)!";
                 } else {
                     $onclick .= sprintf("$(\"[name=total2_black_field]\").val(%d);", $csv_data['total2_black_field']);
                 }
             }
+
             if ($colorPrinter || $plotterPrinter) {
                 $title .= $plotterPrinter ? "\nSuprafață printată:" : "\nContor color: ";
                 if (!empty($csv_data['total2_color_field']['error'])) {
-                    $style = "style='color: red;'";
+                    $style  = "style='color: red;'";
                     $title .= $csv_data['total2_color_field']['error'];
                 } else {
                     $title .= $csv_data['total2_color_field'];
                     if ($csv_data['total2_color_field'] < $total2ColorRequiredMinimum) {
-                        $style = "color: red;";
+                        $style  = "color: red;";
                         $title .= " < $total2ColorRequiredMinimum (minim valid)!";
                     } else {
                         $onclick .= sprintf("$(\"[name=total2_color_field]\").val(%d);", $csv_data['total2_color_field']);
@@ -635,25 +642,25 @@ class PluginIserviceTicket extends Ticket
         }
 
         if (!$closed && $printerId > 0 && !$printer->isRouter() && (empty($id) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') <= $ticket->customfields->fields['effective_date_field']) && $lastClosedTicket->getID() > 0 && !$printer->customfields->fields['no_invoice_field']) {
-            $lastDataLuc = new DateTime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '');
+            $lastDataLuc          = new DateTime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '');
             $daysSinceLastCounter = $lastDataLuc->diff(new DateTime(empty($ticket->customfields->fields['effective_date_field']) ? null : $ticket->customfields->fields['effective_date_field']))->format("%a");
-            $estimatedBlack = $lastClosedTicket->customfields->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter;
-            $estimatedColor = $lastClosedTicket->customfields->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter;
-            $title = "";
-            $onclick = '';
+            $estimatedBlack       = $lastClosedTicket->customfields->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter;
+            $estimatedColor       = $lastClosedTicket->customfields->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter;
+            $title                = "";
+            $onclick              = '';
             if ($estimatedBlack > 0) {
-                $title .= "black: $estimatedBlack ({$lastClosedTicket->customfields->fields['total2_black_field']} + {$printer->customfields->fields['daily_bk_average_field']}*$daysSinceLastCounter)";
+                $title   .= "black: $estimatedBlack ({$lastClosedTicket->customfields->fields['total2_black_field']} + {$printer->customfields->fields['daily_bk_average_field']}*$daysSinceLastCounter)";
                 $onclick .= "$(\"[name=total2_black_field]\").val($estimatedBlack);";
             }
+
             if (($colorPrinter || $plotterPrinter) && $estimatedColor > 0) {
-                $title .= ", " . ($plotterPrinter ? "suprafață hârtie" : "color") . ": $estimatedColor ({$lastClosedTicket->customfields->fields['total2_color_field']} + {$printer->customfields->fields['daily_color_average_field']}*$daysSinceLastCounter)";
+                $title   .= ", " . ($plotterPrinter ? "suprafață hârtie" : "color") . ": $estimatedColor ({$lastClosedTicket->customfields->fields['total2_color_field']} + {$printer->customfields->fields['daily_color_average_field']}*$daysSinceLastCounter)";
                 $onclick .= "$(\"[name=total2_color_field]\").val($estimatedColor);";
             }
 
             $onclick .= 'return false;';
             // Uncomment this line to see date explanation
             // $title .= sprintf(" [%s - %s]", date('Y-m-d', strtotime($ticket->fields['data_luc'])), date('Y-m-d', strtotime($last_closed_ticket->fields['data_luc'])));
-
             return [
                 'options' => [
                     'buttonClass' => 'submit',
@@ -723,7 +730,7 @@ class PluginIserviceTicket extends Ticket
 
     public function addCartridge($ticketId, $input, &$errorMessage = ''): bool
     {
-        $supplierId = $input['suppliers_id'] ?? null;
+        $supplierId = $input['suppliers_id'] ?? $this->getFirstAssignedPartner()->getID();
         $printerId  = $input['printer_id'] ?? null;
 
         if (!$this->preCartridgeAddChecks($input, $supplierId, $printerId) || !$this->getFromDB($ticketId)) {
@@ -1081,8 +1088,6 @@ class PluginIserviceTicket extends Ticket
         $this->addPrinter($ticketId, $post);
 
         $this->createFollowup($ticketId, $post);
-
-        $this->updateEffectiveDate($ticketId, $post);
     }
 
     public function addPartner($ticketId, $post): bool
@@ -1109,6 +1114,7 @@ class PluginIserviceTicket extends Ticket
                         'suppliers_id'     => $assign,
                         'type'             => CommonITILActor::ASSIGN,
                         'use_notification' => 0,
+                        '_from_object' => true, // This is needed to avoid ticket status change in CommonITILActor.php:post_addItem() method, line 438.
                     ]
                 )
                 ) {
@@ -1416,19 +1422,6 @@ class PluginIserviceTicket extends Ticket
 
     }
 
-    public function setDefaultEffectiveDateField(): void
-    {
-        if (empty($this->customfields)) {
-            $this->customfields = new PluginFieldsTicketticketcustomfield();
-        }
-
-        if (!isset($this->customfields->fields['effective_date_field'])
-            || IserviceToolBox::isDateEmpty($this->customfields->fields['effective_date_field'])
-        ) {
-            $this->customfields->fields['effective_date_field'] = date('Y-m-d H:i:s');
-        }
-    }
-
     public function getPartnerId($options = []): ?int
     {
         $partnerId = $this->getID() > 0 ? $this->getFirstAssignedPartner()->getID() : null;
@@ -1553,25 +1546,28 @@ class PluginIserviceTicket extends Ticket
 
     }
 
-    public function updateEffectiveDate($ticketId, $post): void
+    public function updateEffectiveDate($post): array
     {
         // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change unless it was manually changed.
         // We presume that in such cases effective date is always set.
-        if ($this->fields['status'] === Ticket::SOLVED || $this->fields['status'] === Ticket::CLOSED || !empty($post['effective_date_manually_changed'])) {
-            return;
-        } else {
-            if (empty($this->customfields)) {
-                $this->customfields = new PluginFieldsTicketticketcustomfield();
-            }
-
-            $this->customfields->update(
-                [
-                    'id' => $this->customfields->getID(),
-                    'effective_date_field' => date('Y-m-d H:i:s')
-                ]
-            );
+        if ((intval($post['status'] ?? null)) === Ticket::SOLVED || (intval($post['status'] ?? null)) === Ticket::CLOSED || !empty($post['effective_date_manually_changed'])) {
+            return $post;
         }
 
+        // Do not update if this is a cartridge or consumable handling operation
+        foreach (['add_cartridge', 'remove_cartridge', 'update_cartridge', 'add_consumable', 'remove_consumable', 'update_consumable'] as $operation) {
+            if (isset($post[$operation])) {
+                return $post;
+            }
+        }
+
+        $lastTicket = self::getLastForPrinterOrSupplier($post['printer_id'], $post['suppliers_id']);
+
+        if (empty($lastTicket->fields) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') < $post['effective_date_field']) {
+            $post['effective_date_field'] = date('Y-m-d H:i:s');
+        }
+
+        return $post;
     }
 
     public static function handleDeliveredStatusChange(PluginFieldsTicketticketcustomfield $item)
@@ -1695,6 +1691,10 @@ class PluginIserviceTicket extends Ticket
 
     public function getButtonsConfig($ID, $options, $movement = null): array
     {
+        if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
+            return [];
+        }
+
         $close_confirm_message = '';
         $available_cartridges  = PluginIserviceCartridgeItem::getChangeablesForTicket($this);
 

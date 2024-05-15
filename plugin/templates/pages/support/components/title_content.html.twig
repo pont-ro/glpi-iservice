@@ -2,7 +2,7 @@
 
 {{ fields.textField(
     'name',
-    item.fields['name'],
+    title,
     __('Title'),
     field_options|merge({
         'required': true,
@@ -11,7 +11,7 @@
 
 {{ fields.textareaField(
     'content',
-    item.fields['content'],
+    content,
     __('Ticket description', 'iservice'),
     field_options|merge({
         'enable_richtext': 1,

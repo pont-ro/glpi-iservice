@@ -46,20 +46,32 @@ if ($id > 0) {
     unset($_REQUEST['id']);
 }
 
+if (empty($id) && (!empty($addConsumable) || !empty($addCartridge))) {
+    $add = true;
+}
+
 if (!empty($add)) {
     $ticket->check(-1, CREATE, $post);
+    $post['status']                 = Ticket::INCOMING;
+    $post['_do_not_compute_status'] = true; // This is needed to avoid ticket status change in CommonITILObject.php:prepareInputForUpdate method, line 1780.
+    $id                             = $ticket->add($post);
 
-    $ticketId = $ticket->add($post);
-
-    if (empty($ticketId)) {
+    if (empty($id)) {
         Session::addMessageAfterRedirect(__('Could not create ticket!', 'iservice'), true, ERROR);
         Html::back();
     }
 
-    $ticket->updateItem($ticketId, $post, true);
+    $post = $ticket->updateEffectiveDate($post);
+    $ticket->updateItem($id, $post, true);
 
-    Html::redirect($ticket->getFormURL() . '?id=' . $ticketId);
+    if (empty($addConsumable) && empty($addCartridge)) {
+        // Redirect only if we are not adding consumables or cartridges.
+        Html::redirect($ticket->getFormURL() . '?id=' . $id);
+    }
+
+    $delayedRedirect = $ticket->getFormURL() . '?id=' . $id;
 } elseif (!empty($update)) {
+    $post = $ticket->updateEffectiveDate($post);
     $ticket->updateItem($id, $post);
 
     if (empty($noRedirectAfterTicketUpdate)) {
@@ -68,8 +80,8 @@ if (!empty($add)) {
 }
 
 $partnerPrinterIds = [
-    'suppliers_id' => IserviceToolBox::getInputVariable('suppliers_id'),
-    'printer_id' => IserviceToolBox::getInputVariable('printer_id'),
+    'suppliers_id' => IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get),
+    'printer_id' => IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($get, 'Printer'),
 ];
 
 if (!empty($addConsumable) && !empty($id)) {
@@ -97,11 +109,16 @@ if (!empty($global_readcounter) && ($globalreadcounter0 = IserviceToolBox::getAr
     $success = PluginIserviceTicket::createGlobalReadCounterTickets($globalreadcounter0);
 }
 
+if (!empty($delayedRedirect)) {
+    Html::redirect($delayedRedirect);
+}
+
 Html::header($header_title);
 
 if ($global_readcounter) {
     $ticket->displayResult('global_readcounter', $success);
 } else {
+    $options['getParams'] = $get ?? [];
     $ticket->showForm($id, $options);
 }
 
