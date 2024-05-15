@@ -223,7 +223,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
         $printer          = new Printer();
         $printer_location = new Location();
-        $printer_id       = $ticket->fields['items_id']['Printer'][0] ?? $ticket->getFirstPrinter()->getID();
+        $printer_id       = $ticket->printer->fields['id'] ?? $ticket->fields['items_id']['Printer'][0] ?? $ticket->getFirstPrinter()->getID();
         $supplier_id      = $ticket->fields['_suppliers_id_assign'] ?? $ticket->getFirstAssignedPartner()->getID() ?: 0;
 
         if (!$printer->getFromDB($printer_id) || ($printer->fields['locations_id'] > 0 && !$printer_location->getFromDB($printer->fields['locations_id']))) {

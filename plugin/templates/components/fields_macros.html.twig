@@ -23,15 +23,17 @@
    {{ fieldsOriginal.field(name, field, label, options) }}
 {% endmacro %}
 
-{% macro customFormRow(label, value, options = {}) %}
-   <div class="form-field row col-12 mb-2">
-      <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
-         {{ label }}
-      </label>
-      <div class="col-xxl-8 field-container {{ options.valueClass }}">
-         {{ value|raw }}
+{% macro customFormRow(name, label, value, options = {}) %}
+   {% if options.fields_template is not defined or not options.fields_template.isHiddenField(name) %}
+      <div class="form-field row col-12 mb-2">
+         <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
+            {{ label }}
+         </label>
+         <div class="col-xxl-8 field-container {{ options.valueClass }}">
+            {{ value|raw }}
+         </div>
       </div>
-   </div>
+   {% endif %}
 {% endmacro %}
 
 {% macro bootstrapGridTableField(label, data, options = {}) %}
@@ -193,13 +195,20 @@
 {% macro dropdownFieldExtended(itemtype, name, value, label = '', options = {}) %}
    {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
 
-   {{ fieldsOriginal.dropdownField(
-      itemtype,
-      name,
-      value,
-      label,
-      options
-   ) }}
+   {% if options.fields_template and options.fields_template.isHiddenInput(name) %}
+      {{ fieldsOriginal.hiddenField(name, value, label, options|merge({
+         'no_label': true
+      })
+      ) }}
+   {% else %}
+      {{ fieldsOriginal.dropdownField(
+         itemtype,
+         name,
+         value,
+         label,
+         options
+      ) }}
+    {% endif %}
 
    {% if options.readonly %}
       <input type="hidden" name="{{ name }}" value="{{ value }}">

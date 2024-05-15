@@ -12,11 +12,11 @@
     {{ include('components/form/header.html.twig', {'in_twig': true}) }}
 
     {% set params  = params ?? [] %}
-    {% set withtemplate = params['withtemplate'] ?? '' %}
     {% set item_type = item.getType() %}
     {% set field_options = {
         'locked_fields': item.getLockedFields(),
         'full_width': true,
+        'fields_template': iServiceTicketTemplate,
     } %}
 
     <div class="card-body d-flex flex-wrap">
@@ -120,11 +120,11 @@
                                 ) }}
                             {% endif %}
 
-                            <div class="add-consumable-div">
-                                {% if consumablesTableData and printer %}
+                            {% if consumablesTableData and printer and (field_options.fields_template is not defined or not field_options.fields_template.isHiddenField('Consumables'))%}
+                                <div class="add-consumable-div">here
                                     {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
-                                {% endif %}
-                            </div>
+                                </div>
+                            {% endif %}
 
                             {% if item.hasConsumables() %}
                                 {{ fieldsIservice.checkboxFieldExtended(

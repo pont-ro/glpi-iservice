@@ -70,20 +70,43 @@ trait PluginIserviceItem
         return $this->get($db->fetchAssoc($result)['id']);
     }
 
+    public function add(array $input, $options = [], $history = true)
+    {
+        $model  = new parent;
+        $result = $model->add($input, $options, $history);
+
+        if ($result) {
+            $this->post_addItem($history);
+
+            if (!$this->updateCustomFields($model->getID(), $input)) {
+                Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
+            }
+        }
+
+        return $result;
+    }
+
     public function post_addItem($history = 1): void
     {
-        parent::post_addItem($history);
+        // This should be kept here, but do not call parent::post_addItem($history) here, because it is already called in add().
+    }
 
-        if (!$this->updateCustomFields($this->getID(), $this->input)) {
-            Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
+    public function update(array $input, $history = 1, $options = []): bool
+    {
+        $model = new parent;
+        $model->getFromDB($this->getID());
+        $result = $model->update($input, $history, $options);
+
+        if ($result) {
+            $this->post_updateItem($history);
         }
+
+        return $result && $this->updateCustomFields($model->getID(), $input);
     }
 
     public function post_updateItem($history = 1): void
     {
-        parent::post_updateItem($history);
-
-        $this->updateCustomFields($this->getID(), $this->input);
+        // This should be kept here, but do not call parent::post_updateItem($history) here, because it is already called in update().
     }
 
     public function updateCustomFields($parentId, $input, $history = 1, $options = []): bool
