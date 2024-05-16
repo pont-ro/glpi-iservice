@@ -1983,18 +1983,14 @@ class PluginIserviceTicket extends Ticket
             ],
         ];
 
-        $movement_id  = $this->customfields->fields['movement_id_field'] ?? IserviceToolBox::getInputVariable('_movement_id');
-        $movement2_id = $this->customfields->fields['movement2_id_field'] ?? IserviceToolBox::getInputVariable('_movement2_id');
-
-        if (empty($movement_id) && empty($movement2_id)) {
-            return [];
-        }
+        $movement_id  = IserviceToolBox::getInputVariable('_movement_id') ?? $this->customfields->fields['movement_id_field'] ?? '';
+        $movement2_id = IserviceToolBox::getInputVariable('_movement2_id') ?? $this->customfields->fields['movement2_id_field'] ?? '';
 
         if (empty($id) && ($movement = PluginIserviceMovement::getOpenFor('Printer', $printerId)) !== false && empty($movement_id) && empty($movement2_id)) {
             Html::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>" . sprintf(__('There is an unfinished movement for this printer, please finish movement %s first!', 'iservice'), $movement) . "</a>");
         } else {
             $movement = new PluginIserviceMovement();
-            $movement->getFromDB($movement_id ?: $movement2_id ?: -1);
+            $movement->getFromDB($this->customfields->fields['movement_id_field'] ?: $this->customfields->fields['movement2_id_field'] ?: -1);
         }
 
         $customFields = new PluginFieldsTicketticketcustomfield();
@@ -2004,6 +2000,10 @@ class PluginIserviceTicket extends Ticket
 
         if (PluginIserviceDB::populateByQuery($customFields, "WHERE movement2_id_field = " . IserviceToolBox::getInputVariable('_movement2_id', -2) . " LIMIT 1")) {
             Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('_movement2_id')));
+        }
+
+        if (empty($movement_id) && empty($movement2_id)) {
+            return [];
         }
 
         $fields['_movement_id']['value']   = $movement_id;

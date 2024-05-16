@@ -762,7 +762,7 @@ class PluginIservicePrinter extends Printer
 
     public static function getCMConditionForDisplay(): string
     {
-        return "sunt în CM și status-ul începe cu CO, GAR sau PRO";
+        return "sunt în CM, au cel puțin un cartuș instalat și status-ul începe cu CO, GAR sau PRO";
     }
 
     public static function getInstalledCartridges($printer_id, $additional_condition = ''): array|bool
