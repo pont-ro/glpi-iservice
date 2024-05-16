@@ -71,7 +71,7 @@ class Operations extends View
 
     public static function getTicketConsumablesDisplay($row_data): string
     {
-        $export_type = empty($row_data['plugin_fields_ticketexporttypedropdowns_id']) ? '' : ucfirst("$row_data[plugin_fields_ticketexporttypedropdowns_id]<br>");
+        $export_type = empty($row_data['plugin_fields_ticketexporttypedropdowns_id']) ? '' : PluginIserviceTicket::getExportType($row_data['plugin_fields_ticketexporttypedropdowns_id']) . '<br>';
         if ($row_data['ticket_exported']) {
             return "<b>$export_type</b>$row_data[ticket_consumables]";
         } else {

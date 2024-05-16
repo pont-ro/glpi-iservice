@@ -522,9 +522,9 @@ class PluginIserviceTicket extends Ticket
             }
 
             $templateParams['exportTypeOptions'] = [
+                '' => Dropdown::EMPTY_VALUE,
                 self::EXPORT_TYPE_NOTICE_ID => __('Notice', 'iservice'),
                 self::EXPORT_TYPE_INVOICE_ID => _n('Invoice', 'Invoices', 1, 'iservice'),
-                '' => Dropdown::EMPTY_VALUE,
             ];
 
             if ($this->customfields->fields['exported_field'] ?? false) {
@@ -1722,7 +1722,7 @@ class PluginIserviceTicket extends Ticket
                 $buttons['reopen'] = [
                     'type'    => 'submit',
                     'name'    => 'update',
-                    'label'   => __('Reopen', 'iservice'),
+                    'label'   => __('Reopen'),
                     'value'   => 1,
                     'options' => [
                         'on_click' => 'if (confirm("' . $confirm . '")) {
@@ -1735,7 +1735,7 @@ class PluginIserviceTicket extends Ticket
                     $buttons['close'] = [
                         'type'    => 'submit',
                         'name'    => 'update',
-                        'label'   => __('Close', 'iservice'),
+                        'label'   => __('Close'),
                         'value'   => 1,
                         'options' => [
                             'data-confirm-message' => $close_confirm_message,
@@ -1895,7 +1895,9 @@ class PluginIserviceTicket extends Ticket
                 PluginIserviceTicket::prepareDataForGlobalReadCounter($ticketData);
                 $track->explodeArrayFields();
                 $last_opened_ticket = PluginIserviceTicket::getLastForPrinterOrSupplier(0, $printerId, true);
-                if ($last_opened_ticket->getID() > 0 && $last_opened_ticket->customfields->fields['effective_date_field'] < $ticketData['effective_date_field']) {
+                if (($last_opened_ticket->getID() > 0 && $last_opened_ticket->customfields->fields['effective_date_field'] < $ticketData['effective_date_field'])
+                    || IserviceToolBox::inProfileArray(['client', 'superclient'])
+                ) {
                     $ticketData['_dont_close'] = true;
                 }
 
@@ -1904,11 +1906,13 @@ class PluginIserviceTicket extends Ticket
                     unset($ticketData['_dont_close']);
                 }
 
-                if (in_array($_SESSION["glpiactiveprofile"]["name"], ['tehnician', 'admin', 'super-admin'])) {
+                if (IserviceToolBox::inProfileArray(['client', 'superclient', 'admin', 'super-admin'])) {
                     $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
+                } else {
+                    $ticketData['_users_id_assign'] = IserviceToolBox::getUserIdByName('Cititor');
                 }
 
-                if ($track->add(array_merge($track->fields, $ticketData, ['add' => 'add', '_no_message' => 1]))) {
+                if ($track->add(array_merge($ticketData, $track->fields, ['add' => 'add', '_no_message' => 1]))) {
                     $ticket_count++;
                 } else {
                     $success = false;
@@ -2023,6 +2027,18 @@ class PluginIserviceTicket extends Ticket
             'movement' => $movement ?? null,
         ];
 
+    }
+
+    public static function getExportType($ticketExportTypeDropdownsId): string
+    {
+        switch (true) {
+        case self::isNotice($ticketExportTypeDropdownsId):
+            return __('Notice', 'iservice');
+        case self::isInvoice($ticketExportTypeDropdownsId):
+            return __('Invoice', 'iservice');
+        default:
+            return '';
+        }
     }
 
 }

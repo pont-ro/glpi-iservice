@@ -83,7 +83,18 @@
 
                             {% set canUpdateInitalValue = canupdate %}
                             {% set canupdate = false %}
-                            {{ include('components/itilobject/fields/status.html.twig') }}
+                            <div id="statusElementContainer">
+                                {{ include('components/itilobject/fields/status.html.twig') }}
+                                {% if item.fields['status'] == constant('Ticket::CLOSED') %}
+                                    <script>
+                                        const statusElementContainer = $('#statusElementContainer');
+                                        if (statusElementContainer.find('.closed').length > 0 && statusElementContainer.find('.btn').length > 0) {
+                                            statusElementContainer.find('.btn').remove();
+                                        }
+                                    </script>
+                                {% endif %}
+                            </div>
+
                             {% set canupdate = canUpdateInitalValue %}
 
                             {{ fields.checkboxField(
@@ -124,6 +135,13 @@
                                 <div class="add-consumable-div">
                                     {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
                                 </div>
+                                {% if item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'] == 0 %}
+                                    <script>
+                                        $(document).ready(function(){
+                                            $(".add-consumable-div").hide();
+                                        });
+                                    </script>
+                                {% endif %}
                             {% endif %}
 
                             {% if item.hasConsumables() %}
