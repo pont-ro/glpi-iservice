@@ -1385,7 +1385,7 @@ class PluginIserviceTicket extends Ticket
             unset($post['_followup_content']);
         }
 
-        if (!isset($post['effective_date_field'])
+        if (!isset($post['effective_date_field']) && (empty($post['id']) || $post['id'] < 1)
         ) {
             $post['effective_date_field'] = date('Y-m-d H:i:s');
         }
@@ -1554,7 +1554,7 @@ class PluginIserviceTicket extends Ticket
             return $post;
         }
 
-        // Do not update if this is a cartridge or consumable handling operation
+        // Do not update if this is a cartridge or consumable handling operation.
         foreach (['add_cartridge', 'remove_cartridge', 'update_cartridge', 'add_consumable', 'remove_consumable', 'update_consumable'] as $operation) {
             if (isset($post[$operation])) {
                 return $post;

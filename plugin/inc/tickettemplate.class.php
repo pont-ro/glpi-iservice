@@ -37,7 +37,6 @@ class PluginIserviceTicketTemplate extends ITILTemplate
                 'no_travel_field' => true,
                 '_export_type' => true,
                 'Consumables' => true, // Not an input, but a whole section, it is handled differently in ticket.html.twig..
-                'effective_date_field' => true,
                 '_followup_content' => true,
             ];
         }
@@ -51,6 +50,7 @@ class PluginIserviceTicketTemplate extends ITILTemplate
         if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
             return [
                 'suppliers_id' => true,
+                'effective_date_field' => true,
             ];
         }
 
