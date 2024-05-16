@@ -1385,7 +1385,7 @@ class PluginIserviceTicket extends Ticket
             unset($post['_followup_content']);
         }
 
-        if (!isset($post['effective_date_field']) && (empty($post['id']) || $post['id'] < 1)
+        if (!isset($post['effective_date_field']) && (empty($post['id']) || $post['id'] < 0)
         ) {
             $post['effective_date_field'] = date('Y-m-d H:i:s');
         }
