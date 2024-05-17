@@ -363,6 +363,15 @@ class ToolBox
         }
     }
 
+    public static function getUserIdByName($name)
+    {
+        $user = new \User();
+        $user->getFromDBbyName($name);
+        $id = $user->getID();
+
+         return $id > -1 ? $id : 0;
+    }
+
     public static function getUsersByProfiles(array $profileNames): array
     {
         $users = [
