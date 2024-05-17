@@ -104,11 +104,11 @@ class PluginIserviceMovement extends CommonDBTM
             $item->getFromDB($this->fields['items_id']);
             PluginIserviceDB::populateByItemsId($item_customfields, $this->fields['items_id'], $itemtype);
             if (empty($id) && ($movement = PluginIserviceMovement::existsFor($itemtype, $this->fields['items_id'])) !== false) {
-                Html::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea $movement întâi!</a>");
+                PluginIserviceHtml::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea $movement întâi!</a>");
             }
 
             if (empty($id) && ($last_ticket_id = PluginIserviceTicket::getLastIdForPrinterOrSupplier(0, $this->fields['items_id'], true)) > 0) {
-                Html::displayErrorAndDie("<a href='ticket.form.php?id=$last_ticket_id' target='_blank'>Există ticket deschis pentru acest aparat, vă rugăm închideți tichetul mai întâi!</a>");
+                PluginIserviceHtml::displayErrorAndDie("<a href='ticket.form.php?id=$last_ticket_id' target='_blank'>Există ticket deschis pentru acest aparat, vă rugăm închideți tichetul mai întâi!</a>");
             }
 
             if (empty($this->fields['suppliers_id_old'])) {

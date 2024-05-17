@@ -1983,7 +1983,7 @@ class PluginIserviceTicket extends Ticket
         $movement2_id = IserviceToolBox::getInputVariable('_movement2_id') ?? $this->customfields->fields['movement2_id_field'] ?? '';
 
         if (empty($id) && ($movement = PluginIserviceMovement::getOpenFor('Printer', $printerId)) !== false && empty($movement_id) && empty($movement2_id)) {
-            Html::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>" . sprintf(__('There is an unfinished movement for this printer, please finish movement %s first!', 'iservice'), $movement) . "</a>");
+            PluginIserviceHtml::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>" . sprintf(__('There is an unfinished movement for this printer, please finish movement %s first!', 'iservice'), $movement) . "</a>");
         } else {
             $movement = new PluginIserviceMovement();
             $movement->getFromDB($this->customfields->fields['movement_id_field'] ?: $this->customfields->fields['movement2_id_field'] ?: -1);

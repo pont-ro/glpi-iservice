@@ -49,6 +49,9 @@ function plugin_init_iservice(): void
 {
     global $CFG_GLPI, $PLUGIN_HOOKS;
     global $CFG_PLUGIN_ISERVICE;
+    global $DEBUG_SQL, $TIMER_DEBUG;
+
+    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
 
     $CFG_PLUGIN_ISERVICE = [
         'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice"
@@ -68,6 +71,13 @@ function plugin_init_iservice(): void
     if (!Session::getLoginUserID()) {
         return;
     }
+
+    $PLUGIN_HOOKS[Hooks::DEBUG_TABS]['iservice'] = [
+        'iservice' => [
+            'title' => 'iService',
+            'display_callable' => 'plugin_iservice_debug_tab',
+        ]
+    ];
 
     // Must override the formcreator hook, as it has bug.
     $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['formcreator'][Profile::class] = 'plugin_iservice_hook_formcreator_update_profile';
@@ -109,6 +119,17 @@ function plugin_init_iservice(): void
     $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
 
     PluginIserviceConfig::handleConfigValues();
+}
+
+function plugin_iservice_debug_tab($with_session, $ajax, $rand): void
+{
+    global $DEBUG_SQL, $TIMER_DEBUG;
+
+    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Displaying iService debug tab';
+
+    echo "<pre>";
+    print_r($DEBUG_SQL['debug_times']);
+    echo "</pre>";
 }
 
 /**

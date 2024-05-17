@@ -5,6 +5,7 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceHtml {
 
@@ -873,4 +874,14 @@ class PluginIserviceHtml {
         return sprintf($message_template, 'http://expertline.ro/', isset($CFG_GLPI["version"]) ? $CFG_GLPI['version'] : GLPI_VERSION, GLPI_YEAR);
     }
 
+    static function displayErrorAndDie(string $message)
+    {
+        TemplateRenderer::getInstance()->display('display_and_die.html.twig', [
+            'title'   => __('Access denied'),
+            'message' => $message,
+        ]);
+
+        Html::nullFooter();
+        exit();
+    }
 }
