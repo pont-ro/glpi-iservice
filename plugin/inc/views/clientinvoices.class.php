@@ -145,7 +145,7 @@ class ClientInvoices extends View
 
         ob_start();
         echo '<br/><h1>Ultimele 5 tichete cu categoria "Plati" pentru clientul ' . self::getName($partner, $client_access) . '</h1>';
-        $view = Views::getView('GlpiPlugin\Iservice\Views\LastNTickets', false);
+        $view = Views::getView('LastNTickets', false);
         $view->customize(['type' => LastNTickets::TYPE_PLATI, 'n' => 10, 'supplier_id' => $partner->getID()]);
         $view->display(true, false, 0, false);
         $suffix = ob_get_contents();
