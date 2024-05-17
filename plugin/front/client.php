@@ -1,8 +1,7 @@
 <?php
 
 // Imported from iService2, needs refactoring.
-define('GLPI_ROOT', '../../..');
-require_once GLPI_ROOT . '/inc/includes.php';
+require "../inc/includes.php";
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\Views;
@@ -34,7 +33,7 @@ if (Session::getLoginUserID()) {
 // If cui is not entered, request authentication.
 if (empty($cui)) {
     Html::header('', filter_input(INPUT_SERVER, 'PHP_SELF'));
-    $html = new Html();
+    $html = new PluginIserviceHtml();
     $html->openForm(['method' => 'post']);
     echo "Vă rugăm introduceți Codul Unic de Înregistrare (CUI): ";
     echo "<input type='text' name='cui'> ";
@@ -61,12 +60,12 @@ if ($cui !== $partner_cui) {
 }
 
 // All good, we can display client page.
-Html::header($partner->fields['name'], filter_input(INPUT_SERVER, 'PHP_SELF'), $partner);
+Html::header($partner->fields['name'], filter_input(INPUT_SERVER, 'PHP_SELF'), 'plugin_iservice_views');
 
 if (!empty($partner)) {
-    $view = Views::getView(IserviceToolBox::getInputVariable('view', 'facturi_client'), false);
+    $view = Views::getView(IserviceToolBox::getInputVariable('view', 'ClientInvoices'), false);
     $view->customize(['client_access' => true,'partner' => $partner]);
-    PluginIserviceProfile::checkRight($view->getRightName());
+    PluginIserviceProfile::checkRight($view::$rightname);
     $view->display();
 }
 

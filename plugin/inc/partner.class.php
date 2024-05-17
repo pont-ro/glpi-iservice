@@ -135,7 +135,7 @@ class PluginIservicePartner extends Supplier
         return $CFG_GLPI['root_doc'] . "/plugins/iservice/front/client.php?id=" . $this->customfields->fields['magic_link_field'];
     }
 
-    public function getInvoiceInfo($invoice_info = 0): array
+    public function getInvoiceInfo($invoice_info = 0): array|float
     {
         global $DB;
         $conditions = [
