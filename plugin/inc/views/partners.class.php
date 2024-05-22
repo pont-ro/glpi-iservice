@@ -177,6 +177,7 @@ class Partners extends View
                 'Nume_Partener' => [
                     'title' => 'Partener',
                     'sort_default_dir' => 'DESC',
+                    'tooltip' => __('See invoice list', 'iservice'),
                     'link' => [
                         'href' => 'views.php?view=ClientInvoices&clientinvoices0[partner_id]=[id]',
                         'target' => '_blank',

@@ -14,7 +14,8 @@ if (!isset($_SESSION['magic_link_access'][$magic_link])) {
     $client_ip                                  = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
     $_SESSION['magic_link_access'][$magic_link] = $client_ip;
     if (filter_var($client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-        $download = new PluginIserviceDownload(PluginIserviceDownload::DOWNLOAD_TYPE_MAGIC_LINK);
+        $download = new PluginIserviceDownload();
+        $download->setDownloadType(PluginIserviceDownload::DOWNLOAD_TYPE_MAGIC_LINK);
         $download->add(
             [
                 'items_id' => $partner->getID(),
