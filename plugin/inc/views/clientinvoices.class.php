@@ -43,7 +43,8 @@ class ClientInvoices extends View
 
     public static function getDownloadDisplay($row_data, $magic_link)
     {
-        $download = new PluginIserviceDownload(PluginIserviceDownload::DOWNLOAD_TYPE_INVOICE);
+        $download = new PluginIserviceDownload();
+        $download->setDownloadType(PluginIserviceDownload::DOWNLOAD_TYPE_INVOICE);
         if ($download->exists($row_data['nrfac'])) {
             if (empty($magic_link)) {
                 return "Nu exista linkul magic!";
@@ -103,6 +104,7 @@ class ClientInvoices extends View
         $mail_body                                  = $partner->getMailBody('scadente');
         $generate_magic_link_button_options['type'] = 'submit';
         $contact_partner_link                       = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?_suppliers_id_assign={$partner->getID()}&mode=" . PluginIserviceTicket::MODE_PARTNERCONTACT;
+        $partnerPrintersLink                        = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers&printers0[supplier_name]={$partner->fields['name']}";
         ob_start();
         $form = new PluginIserviceHtml();
         $form->openForm(
@@ -125,6 +127,7 @@ class ClientInvoices extends View
                         $form->generateButton('generate_magic_link', 'Generează link magic' . (empty($magic_link) ? '' : ' nou'), $generate_magic_link_button_options),
                         empty($magic_link) ? '' : "<a href='mailto:$mail_recipient?subject=$mail_subject&body=$mail_body' class='vsubmit' style='margin:1em;'>Trimite email</a>",
                         "<a href='$contact_partner_link' class='vsubmit' style='margin:1em;' target='_blank'>Ticket plăți</a>",
+                        "<a href='$partnerPrintersLink' class='vsubmit'  target='_blank' title=\"" . __('Printers of the client', 'iservice') . "\">" . __('Client printers', 'iservice') . "</a>"
                     ]
                 ),
             ]

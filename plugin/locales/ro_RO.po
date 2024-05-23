@@ -1010,6 +1010,15 @@ msgstr "Estimare"
 msgid "from"
 msgstr "din"
 
+msgid "See invoice list"
+msgstr "Vezi lista facturi"
+
+msgid "Client printers"
+msgstr "Aparate client"
+
+msgid "Printers of the client"
+msgstr "Aparatele acestui client"
+
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
 
