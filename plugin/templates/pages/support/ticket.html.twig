@@ -17,7 +17,10 @@
         'locked_fields': item.getLockedFields(),
         'full_width': true,
         'fields_template': iServiceTicketTemplate,
+        'disabled': isClosed,
     } %}
+
+    {% set canupdate = false %}
 
     <div class="card-body d-flex flex-wrap">
         <div class="col-12 col-xxl-10 flex-column">
@@ -34,7 +37,7 @@
                                     __('Black counter reading', 'iservice'),
                                     field_options|merge({
                                         'min': total2BlackRequiredMinimum,
-                                        'disabled': total2BlackDisabled,
+                                        'disabled': total2BlackDisabled or isClosed,
                                         'add_field_attribs': {
                                             'data-toggle': 'tooltip',
                                             'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
@@ -56,7 +59,7 @@
                                     __('Color counter reading', 'iservice'),
                                     field_options|merge({
                                         'min': total2ColorRequiredMinimum,
-                                        'disabled': total2ColorDisabled,
+                                        'disabled': total2ColorDisabled or isClosed,
                                         'add_field_attribs': {
                                             'data-toggle': 'tooltip',
                                             'title': __('Counter') ~ ' 106',
@@ -70,7 +73,9 @@
                                 'itilcategories_id',
                                 item.fields['itilcategories_id'],
                                 __('Category'),
-                                field_options
+                                field_options|merge({
+                                    'required': true
+                                })
                             ) }}
 
                             {{ include('@iservice/pages/support/components/title_content.html.twig') }}
@@ -170,7 +175,7 @@
                                 effectiveDate,
                                 __('Effective date', 'iservice'),
                                 field_options|merge({
-                                    'min': "now"|date("Y-m-d H:i:s"),
+                                    'minDate': minEffectiveDate,
                                     'readonly': effectiveDateFieldReadonly,
                                     'dateTimePickerButtons':
                                         '[

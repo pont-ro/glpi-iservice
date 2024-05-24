@@ -78,9 +78,9 @@ trait PluginIserviceItem
         if ($result) {
             $this->post_addItem($history);
 
-            if (!$this->updateCustomFields($model->getID(), $input)) {
-                Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
-            }
+            // if (!$this->updateCustomFields($model->getID(), $input)) {
+            // Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
+            // }
         }
 
         return $result;
@@ -101,7 +101,7 @@ trait PluginIserviceItem
             $this->post_updateItem($history);
         }
 
-        return $result && $this->updateCustomFields($model->getID(), $input);
+        return $result; // && $this->updateCustomFields($model->getID(), $input);
     }
 
     public function post_updateItem($history = 1): void
@@ -109,6 +109,7 @@ trait PluginIserviceItem
         // This should be kept here, but do not call parent::post_updateItem($history) here, because it is already called in update().
     }
 
+    /* Looks like this function is not needed anymore, custom fields are updated in PluginFieldsContainer::preItemUpdate hook, but we have to see if this works in all our use cases.
     public function updateCustomFields($parentId, $input, $history = 1, $options = []): bool
     {
         if (isset($input['items_id'])) {
@@ -120,7 +121,7 @@ trait PluginIserviceItem
         }
 
         return false;
-    }
+    }*/
 
     public function getFromDB($ID): bool
     {

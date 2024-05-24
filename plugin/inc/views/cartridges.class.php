@@ -157,7 +157,7 @@ class Cartridges extends View
         }
 
         global $CFG_PLUGIN_ISERVICE;
-        if ($row_data['saved_installer_ticket_id'] !== $row_data['installer_ticket_id']) {
+        if (intval($row_data['saved_installer_ticket_id']) !== intval($row_data['installer_ticket_id'])) {
             $style = "style='color:red;'";
             $title = "$row_data[saved_installer_ticket_id] != $row_data[installer_ticket_id]";
         } else {
