@@ -46,6 +46,7 @@ class InboundLots extends View
                 'start_date' => [
                     'type' => 'date',
                     'caption' => 'Data factură',
+                    'class' => 'mx-1',
                     'format' => 'Y-m-d',
                     'empty_value' => '2000-01-01',
                     'pre_widget' => "{$this->getWidgets()[self::WIDGET_LAST_6_MONTH]} {$this->getWidgets()[self::WIDGET_LAST_MONTH]} {$this->getWidgets()[self::WIDGET_THIS_MONTH]} ",

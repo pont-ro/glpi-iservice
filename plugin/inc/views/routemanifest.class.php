@@ -54,6 +54,7 @@ class RouteManifest extends View
                 'start_date' => [
                     'type' => self::FILTERTYPE_DATE,
                     'caption' => 'Data efectivă',
+                    'class' => 'mx-1',
                     'format' => 'Y-m-d 00:00:00',
                     'empty_value' => date("Y-m-01"),
                     'pre_widget' => "{$this->getWidgets()[self::WIDGET_LAST_MONTH]} {$this->getWidgets()[self::WIDGET_THIS_MONTH]} ",

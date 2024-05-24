@@ -220,6 +220,7 @@ class Evaluation extends View
                 'start_date' => [
                     'type' => 'date',
                     'caption' => 'Perioadă evaluare',
+                    'class' => 'mx-1',
                     'format' => 'Y-m-d',
                     'empty_value' => date("Y-m-d", strtotime("-" . (date('w') - 1) . " days")),
                     'pre_widget' => "{$this->getWidgets()[self::WIDGET_LAST_WEEK]} {$this->getWidgets()[self::WIDGET_THIS_WEEK]}",
@@ -227,6 +228,7 @@ class Evaluation extends View
                 'end_date' => [
                     'type' => 'date',
                     'caption' => ' - ',
+                    'class' => 'mx-1',
                     'format' => 'Y-m-d',
                     'empty_value' => date('Y-m-d'),
                 ],
