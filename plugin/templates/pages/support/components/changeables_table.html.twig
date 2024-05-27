@@ -163,12 +163,35 @@
     </div>
 </div>
 
-{{ fields.dateField(
+{{ fieldsIservice.datetimeField(
     '_cartridge_installation_date',
-    item.customfields.fields['cartridge_install_date_field'] ?? 'now'|date('Y-m-d'),
+    item.customfields.fields['cartridge_install_date_field'],
     __('Change date', 'iservice'),
     field_options|merge({
         'readonly': cartridgeInstallDateFieldReadonly,
+        'dateTimePickerButtons':
+        '[
+            {
+               label: "' ~ __("Today")  ~ '",
+               attributes: {
+                  "class": "btn btn-outline-secondary"
+               },
+               onClick: (e, picker) => {
+                  picker.setDate(new Date());
+               }
+            },
+            {
+               label: "' ~ __("Yesterday") ~ '",
+               attributes: {
+                  "class": "btn btn-outline-secondary"
+               },
+               onClick: (e, picker) => {
+                  let date = new Date();
+                  date.setDate(date.getDate() - 1);
+                  picker.setDate(date);
+               }
+            }
+        ]',
     })
 ) }}
 

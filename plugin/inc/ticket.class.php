@@ -443,7 +443,7 @@ class PluginIserviceTicket extends Ticket
         $this->setTicketUsersFields($ID, $options);
         $canUpdate                       = !$ID || (Session::getCurrentInterface() == "central" && $this->canUpdateItem());
         $prepared_data['field_required'] = [];
-        $closed                          = $this->isClosed();
+        $isClosed                        = $this->isClosed();
 
         $isColorPrinter        = $this->printer?->isColor();
         $isPlotterPrinter      = $this->printer?->isPlotter();
@@ -454,6 +454,7 @@ class PluginIserviceTicket extends Ticket
 
         $templateParams = [
             'item'                    => $this,
+            'isClosed'                => $isClosed,
             'params'                  => $options,
             'partnerId'               => $partnerId,
             'partnersFieldReadonly'   => $this->getFirstAssignedPartner()->getID() > 0,
@@ -490,6 +491,8 @@ class PluginIserviceTicket extends Ticket
             $lastTicket       = self::getLastForPrinterOrSupplier($partnerId, $printerId);
             $lastClosedTicket = self::getLastForPrinterOrSupplier(0, $printerId, false);
 
+            $templateParams['minEffectiveDate'] = $lastClosedTicket->customfields->fields['effective_date_field'] ?? null;
+
             $templateParams['printer']                    = $this->printer;
             $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
             $templateParams['total2ColorRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_color_field'] ?? 0;
@@ -514,7 +517,7 @@ class PluginIserviceTicket extends Ticket
                     'cartridge_link' => $this->printer ? "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}" : null,
                     'warning' => $warning ?? null,
                 ],
-                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($closed || (($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > ($this->customfields->fields['effective_date_field'] ?? '') && $ID > 0))),
+                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($isClosed || (($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > ($this->customfields->fields['effective_date_field'] ?? '') && $ID > 0))),
             );
 
             if (!empty($this->printer->fields['printermodels_id'])) {
@@ -553,8 +556,8 @@ class PluginIserviceTicket extends Ticket
                 ];
             }
 
-            $templateParams['csvCounterButtonConfig'] = $this->getCsvCounterButtonConfig($closed, $this->printer ?? null, $isColorPrinter, $isPlotterPrinter, $templateParams['total2BlackDisabled'] ?? false, $templateParams['total2BlackRequiredMinimum'] ?? null, $templateParams['total2ColorRequiredMinimum'], $lastClosedTicket);
-            $templateParams['estimateButtonConfig']   = $this->getEstimateButtonConfig($this, $closed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter);
+            $templateParams['csvCounterButtonConfig'] = $this->getCsvCounterButtonConfig($isClosed, $this->printer ?? null, $isColorPrinter, $isPlotterPrinter, $templateParams['total2BlackDisabled'] ?? false, $templateParams['total2BlackRequiredMinimum'] ?? null, $templateParams['total2ColorRequiredMinimum'], $lastClosedTicket);
+            $templateParams['estimateButtonConfig']   = $this->getEstimateButtonConfig($this, $isClosed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter);
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
@@ -583,7 +586,13 @@ class PluginIserviceTicket extends Ticket
         if (!empty($csv_data) && !$total2BlackDisabled) {
             $style   = '';
             $onclick = '';
-            $title   = "Click pentru valoarea din CSV\nData contor: {$csv_data['effective_date_field']}\nContor black: ";
+            $title   = '';
+
+            if (!empty($csv_data['effective_date_field']['error'])) {
+                $title .= $csv_data['effective_date_field']['error'] . ' ';
+            } elseif (!empty($csv_data['effective_date_field'])) {
+                $title .= "Click pentru valoarea din CSV\nData contor: {$csv_data['effective_date_field']}\nContor black: ";
+            }
 
             if (!empty($csv_data['total2_black_field']['error'])) {
                 $style  = "style='color: red;'";
@@ -617,6 +626,8 @@ class PluginIserviceTicket extends Ticket
             $dataLucRequieredMinimum = $closed ? '2000-01-01' : date('Y-m-d H:i', strtotime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '2000-01-01'));
             if (!isset($csv_data['effective_date_field']['error']) && $csv_data['effective_date_field'] >= $dataLucRequieredMinimum) {
                 $onclick .= sprintf("setGlpiDateField($(\"[name=effective_date_field]\").closest(\".flatpickr\"), \"%s\");", $csv_data['effective_date_field']);
+            } elseif (isset($csv_data['effective_date_field']) && $csv_data['effective_date_field'] < $dataLucRequieredMinimum) {
+                $onclick .= sprintf("alert(\"Data din CSV (%s) este mai mică decât data efectivă (%s) din ultimul ticket închis!\");", $csv_data['effective_date_field'], $dataLucRequieredMinimum);
             }
 
             $onclick .= 'return false;';
@@ -738,7 +749,7 @@ class PluginIserviceTicket extends Ticket
         }
 
         $cartridgeitemsId   = $input['_plugin_iservice_cartridge']['cartridgeitems_id'] ?? '';
-        $installDate        = $input['_cartridge_installation_date'] ?? '';
+        $installDate        = $input['cartridge_install_date_field'] ?? '';
         $imposedCartridgeId = $input['_cartridge_id'] ?? null;
 
         $cartridgeItemData = explode('l', $cartridgeitemsId, 2);
@@ -1393,7 +1404,14 @@ class PluginIserviceTicket extends Ticket
         if (isset($post['_cartridge_installation_date'])
             && !empty($post['cartridge_install_date_manually_changed'])
         ) {
+            if ($post['_cartridge_installation_date'] > $post['effective_date_field']) {
+                $post = [];
+                Session::addMessageAfterRedirect('Data instalării cartușului nu poate fi mai recentă decât data efectivă!', false, ERROR);
+            }
+
             $post['cartridge_install_date_field'] = $post['_cartridge_installation_date'];
+        } elseif (!empty($post['add_cartridge'])) {
+            $post['cartridge_install_date_field'] = $post['effective_date_field'] ?? '';
         }
 
         if (isset($post['_export_type'])) {
@@ -1834,12 +1852,12 @@ class PluginIserviceTicket extends Ticket
                 $ticket->customfields->fields['total2_color_field'] ?? null,
                 $ticket->customfields->fields['cartridge_install_date_field'] ?? $ticket->customfields->fields['effective_date_field']
             );
-            if (abs($install_result) != $cartridge_item['cartridges_id']) {
+            if (abs(intval($install_result)) != $cartridge_item['cartridges_id']) {
                 Session::addMessageAfterRedirect($install_result, false, ERROR);
             } else {
                 $cartridge_ticket->update(
                     [
-                        'id' => $cartridge_item->fields['id'],
+                        'id' => $cartridge_item['id'],
                         'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridge_item['plugin_fields_cartridgeitemtypedropdowns_id'],
                     ]
                 );

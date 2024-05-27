@@ -257,8 +257,8 @@ class Tickets extends View
 
         $effective_date_start_pre_widget =
             "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-6 months")) . "\")' value='ultimele 6 luni'>" .
-            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-30 days")) . "\")' value='ultimele 30 zile'>" .
-            "<input type='button' class='submit' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-7 days")) . "\")' value='ultimele 7 zile'>";
+            "<input type='button' class='submit ms-1' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-30 days")) . "\")' value='ultimele 30 zile'>" .
+            "<input type='button' class='submit ms-1' onclick='$(\"[name=\\\"tickets0[effective_date_start]\\\"]\").val(\"" . date("Y-m-d", strtotime("-7 days")) . "\")' value='ultimele 7 zile'>";
 
         $right_condition = '';
         if (!Session::haveRight('plugin_iservice_ticket_all_printers', READ)) {
@@ -397,6 +397,7 @@ class Tickets extends View
                 'effective_date_start' => [
                     'type' => self::FILTERTYPE_LABEL,
                     'caption' => '',
+                    'class' => 'mx-1',
                     'format' => "AND ((t.effective_date_field IS NULL AND '%1\$s' = '') OR t.effective_date_field >= '%1\$s 00:00:00')",
                     'style' => 'width: 6em;',
                     'pre_widget' => $effective_date_start_pre_widget,
@@ -405,6 +406,7 @@ class Tickets extends View
                 'effective_date_field' => [
                     'type' => self::FILTERTYPE_DATE,
                     'caption' => '< Data efectivă <',
+                    'class' => 'mx-1',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date('Y-m-d'),
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
@@ -412,12 +414,14 @@ class Tickets extends View
                 'observer_id' => [
                     'type' => self::FILTERTYPE_USER,
                     'caption' => 'Observator',
+                    'class' => 'mx-1',
                     'format' => 'AND o.id = %d',
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
                 ],
                 'unlinked' => [
                     'type' => self::FILTERTYPE_CHECKBOX,
                     'caption' => 'Fără partener sau aparat',
+                    'class' => 'mx-1',
                     'format' => 'AND (p.name is null OR s.name is null)',
                     'visible' => !self::inProfilearray('subtehnician', 'superclient', 'client'),
                 ],
