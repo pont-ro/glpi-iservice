@@ -507,8 +507,8 @@ class PluginIserviceTicket extends Ticket
             $templateParams['assignedVisible'] = true;
 
             $lastTicketWithCartridge = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
-            if ($ID > 0 && ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
-                $warning = "Atenție. Există un tichet mai nou ({$lastTicketWithCartridge->getID()}) cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet.";
+            $newerTicketsWithCartridgeExists = ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'];
+            if ($ID > 0 && $newerTicketsWithCartridgeExists) {
                 $warning = sprintf(__('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.', 'iservice'), [$lastTicketWithCartridge->getID()]);
             }
 
@@ -517,7 +517,7 @@ class PluginIserviceTicket extends Ticket
                     'cartridge_link' => $this->printer ? "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}" : null,
                     'warning' => $warning ?? null,
                 ],
-                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($isClosed || (($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > ($this->customfields->fields['effective_date_field'] ?? '') && $ID > 0))),
+                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($isClosed || ($newerTicketsWithCartridgeExists && $ID > 0))),
             );
 
             if (!empty($this->printer->fields['printermodels_id'])) {

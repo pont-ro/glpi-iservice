@@ -8,6 +8,9 @@
         <a target='_blank' class="" href='{{ changeablesTableData["cartridge_link"] }}'>{{ __('Change cartridge', 'iservice') }}</a>
     </label>
     <div class="col-xxl-8 field-container {{ options.valueClass }}">
+        {% if tableData.warning %}
+            <p class="warning">{{ tableData.warning }}</p>
+        {% endif %}
         {% if tableData.addItemsSection %}
             <div class="table-responsive">
                 <table class="table">
