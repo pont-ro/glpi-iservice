@@ -490,11 +490,12 @@ class View extends \CommonGLPI
 
             if ($filter_in_header) {
                 if (isset($filter_data['header_caption'])) {
-                    $filter_widget .= "$filter_data[header_caption] ";
+                    $filter_widget .= "$filter_data[header_caption]";
                 }
             } else {
                 if (isset($filter_data['caption'])) {
-                    $filter_widget .= "<label>$filter_data[caption]</label>";
+                    $class = $filter_data['class'] ? " class='$filter_data[class]'" : '';
+                    $filter_widget .= "<label$class>$filter_data[caption]</label>";
                 }
             }
         }
