@@ -19,6 +19,7 @@ if (($addConsumable = IserviceToolBox::getInputVariable('add_consumable'))
     || ($removeCartridge  = IserviceToolBox::getInputVariable('remove_cartridge'))
     || ($updateCartridge  = IserviceToolBox::getInputVariable('update_cartridge'))
     || ($export = IserviceToolBox::getInputVariable('export'))
+    || ($deleteDocument = IserviceToolBox::getInputVariable('delete_document'))
 ) {
     $update                      = true;
     $noRedirectAfterTicketUpdate = true;
@@ -101,6 +102,8 @@ if (!empty($addConsumable) && !empty($id)) {
     Html::redirect($CFG_PLUGIN_ISERVICE['root_doc'] . "/front/hmarfaexport.form.php?id=$id&mode=" . PluginIserviceHmarfa::EXPORT_MODE_TICKET);
 } elseif (!empty($add_cartridges_as_negative_consumables)) {
     add_cartridges_as_negative_consumables();
+} elseif (!empty($deleteDocument)) {
+    $ticket->deleteDocument($post);
 } else {
     $options = array_merge($options, $get ?? [], $post ?? [], $partnerPrinterIds);
 }
@@ -119,6 +122,7 @@ if ($global_readcounter) {
     $ticket->displayResult('global_readcounter', $success);
 } else {
     $options['getParams'] = $get ?? [];
+    Html::requireJs('fileupload');
     $ticket->showForm($id, $options);
 }
 
