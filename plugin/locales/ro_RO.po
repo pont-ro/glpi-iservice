@@ -1019,6 +1019,18 @@ msgstr "Aparate client"
 msgid "Printers of the client"
 msgstr "Aparatele acestui client"
 
+msgid "Select if the printer is not billed individually, but together with other printers"
+msgstr "Bifați aici în cazul în care aparatul NU se factureaza individual, ci este facturat împreună cu mai multe aparate"
+
+msgid "Are you sure you want to reset custom fields to default settings?"
+msgstr "Sigur vreți să resetați câmpurile adiționale la setările implicite?"
+
+msgid "Custom fields have been reset to default settings"
+msgstr "Câmpurile adiționale au fost resetate la setările implicite"
+
+msgid "An error occurred while resetting custom fields to default settings"
+msgstr "A apărut o eroare în timpul resetării câmpurilor adiționale la setările implicite"
+
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
 

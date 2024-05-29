@@ -173,3 +173,8 @@ div.actions-wrap {
     position: absolute;
     padding: 2px;
 }
+
+.checkbox-after-input {
+    display: inline-block;
+    margin-left: 1em;
+}

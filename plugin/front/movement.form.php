@@ -29,7 +29,7 @@ if (!empty($add)) {
     $movement->check(-1, CREATE, $post);
 
     if (($id = $movement->add($post)) !== false) {
-        // if ticket_id is set and positive, it means that we have to close the ticket.
+        // If ticket_id is set and positive, it means that we have to close the ticket.
         if (isset($post['ticket_id']) && $post['ticket_id'] > 0) {
             $ticket       = new PluginIserviceTicket();
             $ticket_input = [
@@ -93,10 +93,11 @@ if (!empty($add)) {
                 'usage_address_field' => $post['usage_address'],
                 'contact_num' => $post['contact_num'],
                 'contact' => $post['contact'],
-                'dailybkaveragefield' => $post['dba'],
-                'dailycoloraveragefield' => empty($post['dca']) ? 'NULL' : $post['dca'],
-                'disableemfield' => $post['disableem'],
-                'snoozereadcheckfield' => $post['snoozereadcheck'],
+                'daily_bk_average_field' => $post['dba'],
+                'daily_color_average_field' => empty($post['dca']) ? 'NULL' : $post['dca'],
+                'disable_em_field' => $post['disableem'],
+                'snooze_read_check_field' => $post['snoozereadcheck'],
+                'global_contract_field' => 0,
             ]
         ) or die("Error updating $post[itemtype] customfields");
         $infocom = new Infocom();
