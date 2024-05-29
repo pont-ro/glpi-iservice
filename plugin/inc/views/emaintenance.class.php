@@ -101,9 +101,9 @@ class Emaintenance extends View
         $display = '';
 
         if (!empty($row_data['suggested'])) {
-            $em      = new PluginIserviceEMEmail();
+            $em      = new \PluginIserviceEMEmail();
             $printer = PluginIserviceEmaintenance::getPrinterFromEmailData($row_data);
-            $infocom = new Infocom();
+            $infocom = new \Infocom();
             if (!empty($printer)) {
                 $infocom->getFromDBforDevice('Printer', $printer->getID());
             }
