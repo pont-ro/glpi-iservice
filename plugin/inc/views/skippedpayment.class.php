@@ -26,7 +26,7 @@ class SkippedPayment extends View
 							, pla.max as max_pla
 							, e.initiale as nume_part
 							, CONCAT(u.realname, ' ', u.firstname) as tech_num
-						    , s.items_id as supplier_id
+						    , scf.items_id as supplier_id
 						FROM (SELECT codbenef FROM {$this->table_prefix}hmarfa_facturi WHERE tip LIKE 'TF%' AND (codl = 'F' OR stare like 'V%') GROUP BY codbenef) b
 						LEFT JOIN {$this->table_prefix}hmarfa_firme e ON e.cod = b.codbenef
 						LEFT JOIN (SELECT codbenef, MIN(datafac) as min, MAX(datafac) as max 
@@ -44,7 +44,7 @@ class SkippedPayment extends View
 							nepla on nepla.codbenef = b.codbenef
 						LEFT JOIN {$this->table_prefix}hmarfa_facturi f on f.tip LIKE 'TF%' AND (codl = 'F' OR stare like 'V%') AND f.codbenef = b.codbenef AND f.datafac = nepla.min
 						LEFT JOIN glpi_users u on SUBSTRING(u.name FROM 1 FOR 3) = SUBSTRING(f.nrcmd FROM 1 FOR 3)
-						LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields s on s.hmarfa_code_field = e.cod
+						LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields scf on scf.hmarfa_code_field = e.cod
 						WHERE nepla.min < pla.max
 						GROUP BY b.codbenef
 						",
