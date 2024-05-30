@@ -4,20 +4,22 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\RichText\RichText;
+
 /**
  * PluginIserviceReminder Class
  * */
 class PluginIserviceReminder extends Reminder
 {
 
-    static $rightname = 'reminder_public';
+    public static $rightname = 'reminder_public';
 
-    static function getTable($classname = null)
+    public static function getTable($classname = null)
     {
         return Reminder::getTable($classname);
     }
 
-    function display($options = [])
+    public function display($options = [])
     {
         $options = filter_input_array(INPUT_GET);
         if (isset($options['id']) && !$this->isNewID($options['id'])) {
@@ -40,7 +42,7 @@ class PluginIserviceReminder extends Reminder
         $this->showForm($options['id'], $display_options);
     }
 
-    function showForm($ID, $options = [])
+    public function showForm($ID, $options = [])
     {
         global $CFG_GLPI;
 
@@ -72,10 +74,10 @@ class PluginIserviceReminder extends Reminder
 
         $form_header[] = "<tr><th colspan=2>$table_head_text</th></tr>";
 
-        // Name
+        // Name.
         $form_rows[] = $html->generateFieldTableRow(__('Title'), $html->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'name', $this->fields['name']));
 
-        // Visibility
+        // Visibility.
         $visibility_dropdown_options = [
             'method' => 'showFromArray',
             'values' => [
@@ -86,7 +88,7 @@ class PluginIserviceReminder extends Reminder
         $visibility                  = array_key_exists(0, $this->entities) ? '1' : '0';
         $form_rows[]                 = $html->generateFieldTableRow('Public', $html->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'visibility', $visibility, false, $visibility_dropdown_options));
 
-        // User
+        // User.
         $user_dropdown_options = [
             'type' => 'User',
         ];
@@ -96,7 +98,7 @@ class PluginIserviceReminder extends Reminder
 
         $form_rows[] = $html->generateFieldTableRow('Redactor', $html->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id', $this->fields['users_id'], true, $user_dropdown_options));
 
-        // State
+        // State.
         $state_dropdown_options = [
             'type' => 'Planning',
             'method' => 'dropdownState',
@@ -108,13 +110,21 @@ class PluginIserviceReminder extends Reminder
         ];
         $form_rows[]            = $html->generateFieldTableRow(__('Status'), $html->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'state', $this->fields['state'], false, $state_dropdown_options));
 
-        // Description
-        $form_rows[] = $html->generateFieldTableRow(__('Description'), $html->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, 'text', $this->fields['text']));
+        // Description.
+        $form_rows[] = $html->generateFieldTableRow(
+            __('Description'), Html::textarea(
+                ['name'              => 'text',
+                    'value'             => RichText::getSafeHtml($this->fields["text"], true),
+                    'enable_richtext'   => true,
+                    'display'           => false,
+                ]
+            )
+        );
 
-        // Buttons
+        // Buttons.
         $form_rows[] = "<tr class='buttons'><td colspan=2>" . implode('', $buttons) . "</td></tr>";
 
-        // Create the table
+        // Create the table.
         $form_table = new PluginIserviceHtml_table('tab_cadre_fixe', $form_header, $form_rows);
         echo $form_table;
 
@@ -122,23 +132,23 @@ class PluginIserviceReminder extends Reminder
         return true;
     }
 
-    function post_addItem()
+    public function post_addItem()
     {
         parent::post_addItem();
         $this->adjustVisibility();
     }
 
-    function post_updateItem($history = 1)
+    public function post_updateItem($history = 1)
     {
         parent::post_updateItem($history);
         $this->adjustVisibility();
     }
 
-    function adjustVisibility()
+    public function adjustVisibility()
     {
         if (isset($this->input['visibility'])) {
             $entity_reminder = new Entity_Reminder();
-            $already_visible = $entity_reminder->getFromDBByQuery("WHERE reminders_id = {$this->getID()}  LIMIT 1");
+            $already_visible = PluginIserviceDB::populateByQuery($entity_reminder, "WHERE reminders_id = {$this->getID()}  LIMIT 1");
             if ($this->input['visibility']) {
                 if (!$already_visible) {
                     $entity_reminder->add(['add' => 'add', 'reminders_id' => $this->getID(), 'entities_id' => 0, '_no_message' => true]);
@@ -149,12 +159,12 @@ class PluginIserviceReminder extends Reminder
         }
     }
 
-    function haveVisibilityAccess()
+    public function haveVisibilityAccess()
     {
         return parent::haveVisibilityAccess() || in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin']);
     }
 
-    function canUpdateItem()
+    public function canUpdateItem()
     {
         return ($this->fields['users_id'] == Session::getLoginUserID() || in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin'])) && parent::canUpdateItem();
     }
