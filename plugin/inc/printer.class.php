@@ -376,13 +376,21 @@ class PluginIservicePrinter extends Printer
 
         // Tech user.
         if ($has_full_rights) {
-            $tech_dropdown_options['type']             = 'Dropdown';
+            $tech_dropdown_options['type']   = 'Dropdown';
             $tech_dropdown_options['values'] = IserviceToolBox::getUsersByProfiles(['tehnician']);
-                $output                               .= $form->generateFieldTableRow(__('Technician in charge of the hardware'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[users_id_tech]', $printer->fields['users_id_tech'], $readonly || !$has_full_rights, $tech_dropdown_options), $no_wrap_options);
+                $output                     .= $form->generateFieldTableRow(__('Technician in charge of the hardware'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[users_id_tech]', $printer->fields['users_id_tech'], $readonly || !$has_full_rights, $tech_dropdown_options), $no_wrap_options);
         }
 
         // State.
-        $output .= $form->generateFieldTableRow(__('Status'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[states_id]', $printer->fields['states_id'], $readonly || !$has_full_rights, ['type' => 'State']), $no_wrap_options);
+        $output .= $form->generateFieldTableRow(
+            __('Status'),
+            $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[states_id]', $printer->fields['states_id'], $readonly || !$has_full_rights, ['type' => 'State', 'class' => 'width-auto'])
+            . '<div class="checkbox-after-input">' . $form->generateField(
+                PluginIserviceHtml::FIELDTYPE_CHECKBOX, 'global_contract_field', $printer_customfields->fields['global_contract_field'],
+                $readonly || !$has_full_rights, ['postfix' => __('Global contract', 'iservice'), 'title' => __('Select if the printer is not billed individually, but together with other printers', 'iservice')]
+            ) . '</div>',
+            $no_wrap_options
+        );
 
         // Type.
         $output .= $form->generateFieldTableRow(__('Type'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[printertypes_id]', $printer->fields['printertypes_id'], $readonly || !$has_full_rights, ['type' => 'PrinterType']), $no_wrap_options);

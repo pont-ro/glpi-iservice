@@ -62,7 +62,8 @@ if (!empty($add)) {
         Html::back();
     }
 
-    $post = $ticket->updateEffectiveDate($post);
+    $post          = $ticket->updateEffectiveDate($post);
+    $ticket->input = array_merge($ticket->input, $post);
     $ticket->updateItem($id, $post, true);
 
     if (empty($addConsumable) && empty($addCartridge)) {
@@ -72,7 +73,8 @@ if (!empty($add)) {
 
     $delayedRedirect = $ticket->getFormURL() . '?id=' . $id;
 } elseif (!empty($update)) {
-    $post = $ticket->updateEffectiveDate($post);
+    $post          = $ticket->updateEffectiveDate($post);
+    $ticket->input = array_merge($ticket->input, $post);
     $ticket->updateItem($id, $post);
 
     if (empty($noRedirectAfterTicketUpdate)) {

@@ -369,5 +369,19 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0"
+    },
+    {
+        "name": "global_contract_field",
+        "old_name": "contractglobalfield",
+        "label": [
+            "Global contract",
+            "Contract global"
+        ],
+        "type": "yesno",
+        "ranking": "280",
+        "default_value": "0",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
     }
 ]
