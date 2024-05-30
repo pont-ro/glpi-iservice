@@ -506,7 +506,7 @@ class PluginIserviceTicket extends Ticket
             $templateParams['observerVisible'] = true;
             $templateParams['assignedVisible'] = true;
 
-            $lastTicketWithCartridge = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
+            $lastTicketWithCartridge         = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
             $newerTicketsWithCartridgeExists = ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'];
             if ($ID > 0 && $newerTicketsWithCartridgeExists) {
                 $warning = sprintf(__('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.', 'iservice'), [$lastTicketWithCartridge->getID()]);
@@ -558,6 +558,8 @@ class PluginIserviceTicket extends Ticket
 
             $templateParams['csvCounterButtonConfig'] = $this->getCsvCounterButtonConfig($isClosed, $this->printer ?? null, $isColorPrinter, $isPlotterPrinter, $templateParams['total2BlackDisabled'] ?? false, $templateParams['total2BlackRequiredMinimum'] ?? null, $templateParams['total2ColorRequiredMinimum'], $lastClosedTicket);
             $templateParams['estimateButtonConfig']   = $this->getEstimateButtonConfig($this, $isClosed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter);
+
+            $templateParams['ticketDocuments'] = $this->getAttachedDocuments();
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
@@ -574,6 +576,46 @@ class PluginIserviceTicket extends Ticket
         }
 
         return true;
+    }
+
+    public function getAttachedDocuments(): array
+    {
+        $docItem   = new Document_Item();
+        $document  = new Document();
+        $documents = [];
+        foreach ($docItem->find(
+            [
+                "itemtype" => $this->getType(),
+                "items_id"  => $this->getID()
+            ]
+        ) as $docItemData) {
+            if ($document->getFromDB($docItemData['documents_id'])) {
+                $documents[] = [
+                    'id' => $document->getID(),
+                    'filename' => $document->fields['filename'],
+                ];
+            }
+        }
+
+        return $documents;
+    }
+
+    public function deleteDocument($post): void
+    {
+        $doc = new Document();
+        $doc->getFromDB((int) $post['documents_id']);
+        if ($doc->can($doc->getID(), UPDATE)) {
+            $documentItem         = new Document_Item();
+            $found_document_items = $documentItem->find(
+                [
+                    $this->getAssociatedDocumentsCriteria(),
+                    'documents_id' => $doc->getID()
+                ]
+            );
+            foreach ($found_document_items as $item) {
+                $documentItem->delete(Toolbox::addslashes_deep($item), true);
+            }
+        }
     }
 
     public function getCsvCounterButtonConfig($closed, $printer, $colorPrinter, $plotterPrinter, $total2BlackDisabled, $total2BlackRequiredMinimum, $total2ColorRequiredMinimum, $lastClosedTicket): array
@@ -1579,7 +1621,7 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-        $lastTicket = self::getLastForPrinterOrSupplier($post['printer_id'], $post['suppliers_id']);
+        $lastTicket = self::getLastForPrinterOrSupplier($post['printer_id'] ?? null, $post['suppliers_id'] ?? null);
 
         if (empty($lastTicket->fields) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') < $post['effective_date_field']) {
             $post['effective_date_field'] = date('Y-m-d H:i:s');
