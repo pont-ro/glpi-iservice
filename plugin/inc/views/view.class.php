@@ -184,7 +184,7 @@ class View extends \CommonGLPI
     /*
      * @return GlpiPlugin\Iservice\Views\View
      */
-    public static function createFromSettings($settings, $table_prefix = '', $table_suffix = ''): array
+    public static function createFromSettings($settings, $table_prefix = '', $table_suffix = ''): View
     {
         $class = get_called_class();
         $view  = new $class(false, $table_prefix, $table_suffix);
