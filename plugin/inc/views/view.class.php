@@ -434,7 +434,7 @@ class View extends \CommonGLPI
                     if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-7days'))) {
                         if ($import_data['effective_date_field'] < date('Y-m-d', strtotime('-1year'))) {
                             $estimate_text = "Datele din CSV sunt mai vechi de 1 an (din " . date('Y-m-d', strtotime($import_data['effective_date_field'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
-                            $filter_value = '#empty#import#data#';
+                            $filter_value  = '#empty#import#data#';
                         } else {
                             $estimate_text = "Datele din CSV sunt mai vechi de 7 zile (din " . date('Y-m-d', strtotime($import_data['effective_date_field'])) . '). ' . $this->evalIfFunction($filter_data['import']['estimate_text'] ?? '', ['param_data' => $params]);
                         }
@@ -494,7 +494,7 @@ class View extends \CommonGLPI
                 }
             } else {
                 if (isset($filter_data['caption'])) {
-                    $class = $filter_data['class'] ? " class='$filter_data[class]'" : '';
+                    $class          = $filter_data['class'] ? " class='$filter_data[class]'" : '';
                     $filter_widget .= "<label$class>$filter_data[caption]</label>";
                 }
             }
@@ -1215,7 +1215,7 @@ class View extends \CommonGLPI
     protected function refreshCacheFile($file_name): ?array
     {
         global $DB;
-        $table_name = 'glpi_plugin_iservice_cachetable_' . $this->getMachineName();
+        $table_name = 'glpi_plugin_iservice_cachetable_' . strtolower($this->getMachineName());
         $DB->query("DROP TABLE IF EXISTS $table_name");
         if (!$DB->query("CREATE TABLE $table_name AS {$this->getFilterlessQuery()}")) {
             echo $DB->error(), "<br>CREATE TABLE $table_name AS {$this->getFilterlessQuery()}";

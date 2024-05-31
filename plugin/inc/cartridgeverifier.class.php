@@ -76,6 +76,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         );
 
         if (empty($cartridges)) {
+            $task->log("No cartridges returned\n");
             return 0; // Nothing to do.
         }
 
