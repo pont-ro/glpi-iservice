@@ -12,7 +12,7 @@ use Glpi\RichText\RichText;
 class PluginIserviceReminder extends Reminder
 {
 
-    public static $rightname = 'reminder_public';
+    public static $rightname = 'plugin_iservice_view_reminders';
 
     public static function getTable($classname = null)
     {
