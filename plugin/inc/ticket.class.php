@@ -1199,6 +1199,8 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareInputForAdd($input): array|bool
     {
+        $this->removeEmptyStringFromNumericFields($input);
+
         foreach (array_keys($input['items_id'] ?? []) as $itemtype) {
             foreach ($input['items_id'][$itemtype] as $key => $value) {
                 if (empty($value)) {
@@ -1216,6 +1218,8 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareInputForUpdate($input): array
     {
+        $this->removeEmptyStringFromNumericFields($input);
+
         foreach ([CommonITILActor::ASSIGN => 'assign', CommonITILActor::REQUESTER => 'requester', CommonITILActor::OBSERVER => 'observer'] as $user_type_key => $user_type) {
             foreach (['glpi_tickets_users' => 'users_id', 'glpi_suppliers_tikcets' => 'suppliers_id'] as $table => $item_type) {
                 if ((($input['_' . $item_type . '_' . $user_type] ?? 0) ?: 0) != (($input['_' . $item_type . '_' . $user_type . '_original'] ?? 0) ?: 0)) {
@@ -2010,6 +2014,23 @@ class PluginIserviceTicket extends Ticket
         foreach ($values as $key => $val) {
             if (!isset($this->fields[$key])) {
                 $this->fields[$key] = $val;
+            }
+        }
+
+    }
+
+    public function removeEmptyStringFromNumericFields(&$data): void
+    {
+        $fields = [
+            'movement_id_field',
+            'movement2_id_field',
+            'em_mail_id_field',
+            'total2_black_field',
+            'total2_color_field',
+        ];
+        foreach ($fields as $field) {
+            if (isset($data[$field]) && $data[$field] === '') {
+                $data[$field] = null;
             }
         }
 
