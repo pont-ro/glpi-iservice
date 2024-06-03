@@ -509,7 +509,7 @@ class PluginIserviceTicket extends Ticket
             $lastTicketWithCartridge         = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
             $newerTicketsWithCartridgeExists = ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'];
             if ($ID > 0 && $newerTicketsWithCartridgeExists) {
-                $warning = sprintf(__('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.', 'iservice'), [$lastTicketWithCartridge->getID()]);
+                $warning = sprintf(__('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.', 'iservice'), $lastTicketWithCartridge->getID());
             }
 
             $templateParams['changeablesTableData'] = array_merge(
