@@ -1199,7 +1199,7 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareInputForAdd($input): array|bool
     {
-        $this->removeEmptyStringFromNumericFields($input);
+        self::removeEmptyStringFromNumericFields($input);
 
         foreach (array_keys($input['items_id'] ?? []) as $itemtype) {
             foreach ($input['items_id'][$itemtype] as $key => $value) {
@@ -1218,7 +1218,7 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareInputForUpdate($input): array
     {
-        $this->removeEmptyStringFromNumericFields($input);
+        self::removeEmptyStringFromNumericFields($input);
 
         foreach ([CommonITILActor::ASSIGN => 'assign', CommonITILActor::REQUESTER => 'requester', CommonITILActor::OBSERVER => 'observer'] as $user_type_key => $user_type) {
             foreach (['glpi_tickets_users' => 'users_id', 'glpi_suppliers_tikcets' => 'suppliers_id'] as $table => $item_type) {
@@ -1991,6 +1991,7 @@ class PluginIserviceTicket extends Ticket
 
     private static function prepareDataForGlobalReadCounter(&$ticketData): void
     {
+        self::removeEmptyStringFromNumericFields($ticketData);
         $ticketData = array_merge(
             $ticketData,
             [
@@ -2005,6 +2006,7 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareDataForMovement($values)
     {
+        self::removeEmptyStringFromNumericFields($values);
         $this->fields         = $this->updateEffectiveDate($this->fields);
         $this->originalFields = $this->fields;
 
@@ -2020,7 +2022,7 @@ class PluginIserviceTicket extends Ticket
 
     }
 
-    public function removeEmptyStringFromNumericFields(&$data): void
+    public static function removeEmptyStringFromNumericFields(&$data): void
     {
         $fields = [
             'movement_id_field',
