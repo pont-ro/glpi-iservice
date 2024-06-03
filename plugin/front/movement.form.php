@@ -129,7 +129,7 @@ if (!empty($add)) {
             $contract_item = new Contract_Item();
             $contract_item->add(['add' => 'add','itemtype' => $post['itemtype'],'items_id' => $post['items_id'],'contracts_id' => $post['contracts_id']]) or die("Error adding item to new contract");
             $contract_supplier = new Contract_Supplier();
-            // If supplier is already on contract, this will throw an error, so don't check for errors
+            // If supplier is already on contract, this will throw an error, so don't check for errors.
             $contract_supplier->add(['add' => 'add','contracts_id' => $post['contracts_id'],'suppliers_id' => $post['suppliers_id']]);
         }
 

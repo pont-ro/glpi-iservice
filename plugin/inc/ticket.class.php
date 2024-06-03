@@ -1610,28 +1610,28 @@ class PluginIserviceTicket extends Ticket
 
     }
 
-    public function updateEffectiveDate($post): array
+    public function updateEffectiveDate($input): array
     {
         // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change unless it was manually changed.
         // We presume that in such cases effective date is always set.
-        if ((intval($post['status'] ?? null)) === Ticket::SOLVED || (intval($post['status'] ?? null)) === Ticket::CLOSED || !empty($post['effective_date_manually_changed'])) {
-            return $post;
+        if ((intval($input['status'] ?? null)) === Ticket::SOLVED || (intval($input['status'] ?? null)) === Ticket::CLOSED || !empty($input['effective_date_manually_changed'])) {
+            return $input;
         }
 
         // Do not update if this is a cartridge or consumable handling operation.
         foreach (['add_cartridge', 'remove_cartridge', 'update_cartridge', 'add_consumable', 'remove_consumable', 'update_consumable'] as $operation) {
-            if (isset($post[$operation])) {
-                return $post;
+            if (isset($input[$operation])) {
+                return $input;
             }
         }
 
-        $lastTicket = self::getLastForPrinterOrSupplier($post['printer_id'] ?? null, $post['suppliers_id'] ?? null);
+        $lastTicket = self::getLastForPrinterOrSupplier($input['printer_id'] ?? null, $input['suppliers_id'] ?? null);
 
-        if (empty($lastTicket->fields) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') < $post['effective_date_field']) {
-            $post['effective_date_field'] = date('Y-m-d H:i:s');
+        if (empty($lastTicket->fields) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') < $input['effective_date_field'] || empty($input['effective_date_field'])) {
+            $input['effective_date_field'] = date('Y-m-d H:i:s');
         }
 
-        return $post;
+        return $input;
     }
 
     public static function handleDeliveredStatusChange(PluginFieldsTicketticketcustomfield $item)
@@ -2005,6 +2005,7 @@ class PluginIserviceTicket extends Ticket
 
     public function prepareDataForMovement($values)
     {
+        $this->fields         = $this->updateEffectiveDate($this->fields);
         $this->originalFields = $this->fields;
 
         $this->fields['movement_id_field']                          = $values['_movement_id'] ?? null;
