@@ -1945,7 +1945,7 @@ class PluginIserviceTicket extends Ticket
     {
         $result = [];
 
-        $printer_id = IserviceToolBox::getInputVariable('printer_id');
+        $printer_id = IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($this->fields, 'Printer');
         $printer    = new PluginIservicePrinter();
         if (empty($printer_id) && $this->getID() > 0) {
             $printer = $this->getFirstPrinter();

@@ -139,7 +139,7 @@ function add_cartridges_as_negative_consumables(): void
     $track->fields['status'] = Ticket::WAITING;
     if (($newTicketId = $track->add($track->fields)) !== false) {
         $printer = new PluginIservicePrinter();
-        $printer->getFromDB(filter_input(INPUT_GET, 'items_id'));
+        $printer->getFromDB(filter_input(INPUT_GET, 'items_id') ?: IserviceToolBox::getItemsIdFromInput($track->fields, 'Printer'));
         $plugin_iservice_consumable_ticket = new PluginIserviceConsumable_Ticket();
         $cartridge_counts                  = filter_input(INPUT_GET, 'cartridge-count', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         $cartridgeitem                     = new PluginIserviceCartridgeItem();
