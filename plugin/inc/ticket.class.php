@@ -1525,7 +1525,7 @@ class PluginIserviceTicket extends Ticket
                 $plugin_iservice_consumable_ticket_data['plugin_fields_typefielddropdowns_id'] = $cartridgeitem->getSupportedTypes()[0];
             }
 
-            (new PluginIserviceConsumable_Ticket())->add($plugin_iservice_consumable_ticket_data);
+            (new PluginIserviceConsumable_Ticket())->add($plugin_iservice_consumable_ticket_data, ['printer_id' => $post['printer_id'] ?? null]);
         } else {
             Session::addMessageAfterRedirect('Selectați un consumabil / o piesă', false, ERROR);
         }
@@ -1557,7 +1557,13 @@ class PluginIserviceTicket extends Ticket
 
         if (!empty($post['_plugin_iservice_consumables_tickets']) && is_array($post['_plugin_iservice_consumables_tickets'])) {
             $plugin_iservice_consumable_ticket = new PluginIserviceConsumable_Ticket();
-            foreach (array_keys($post['_plugin_iservice_consumables_tickets']) as $id_to_delete) {
+            foreach (array_keys(
+                array_filter(
+                    $post['_plugin_iservice_consumables_tickets'], function ($value) {
+                        return $value === '1';
+                    }
+                )
+            ) as $id_to_delete) {
                 $plugin_iservice_consumable_ticket->delete(['id' => $id_to_delete]);
             }
         } else {
@@ -1569,6 +1575,7 @@ class PluginIserviceTicket extends Ticket
     public function updateConsumable($ticketId, $post): void
     {
         $this->check($ticketId, UPDATE);
+        $this->filterDataForSelectedConsumableTickets($post);
 
         $success                   = $this->update($post);
         $consumable_prices         = explode('###', $this->customfields->fields['consumable_prices_field']);
@@ -1608,6 +1615,29 @@ class PluginIserviceTicket extends Ticket
             );
         }
 
+    }
+
+    public function filterDataForSelectedConsumableTickets(&$input): void
+    {
+        $consumableArrays = [
+            '_plugin_iservice_consumable_orig_prices',
+            '_plugin_iservice_consumable_codes',
+            '_plugin_iservice_consumable_create_cartridges',
+            '_plugin_iservice_consumable_locations',
+            '_plugin_iservice_consumable_prices',
+            '_plugin_iservice_consumable_prices_in_euro',
+            '_plugin_iservice_consumable_amounts',
+        ];
+
+        foreach ($consumableArrays as $consumableArray) {
+            if (!empty($input[$consumableArray])) {
+                foreach ($input[$consumableArray] as $key => $value) {
+                    if (($input['_plugin_iservice_consumables_tickets'][$key] ?? null) !== '1') {
+                        unset($input[$consumableArray][$key]);
+                    }
+                }
+            }
+        }
     }
 
     public function updateEffectiveDate($input): array
