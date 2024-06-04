@@ -169,4 +169,9 @@ class PluginIserviceReminder extends Reminder
         return ($this->fields['users_id'] == Session::getLoginUserID() || in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin'])) && parent::canUpdateItem();
     }
 
+    public static function canCreate()
+    {
+        return (Session::haveRightsOr(self::$rightname, [CREATE, self::PERSONAL]));
+    }
+
 }
