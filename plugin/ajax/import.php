@@ -121,11 +121,9 @@ function changeEmptyStringToNull(array $input, array $fieldMap): array
     return $result;
 }
 
-function forceValues(array $result, array $forceValues): array
+function forceValues(array $result, array $forceValues = []): array
 {
-    if (empty($forceValues)) {
-        return $result;
-    }
+    $forceValues = array_merge($forceValues, ['_disablenotif' => 1]);
 
     foreach ($forceValues as $fieldName => $value) {
         $result[$fieldName] = $value;
