@@ -11,13 +11,13 @@ $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Starting views.php';
 
 $view_id      = IserviceToolBox::getInputVariable('view', 'Unpaid_Invoices');
 $view_archive = IserviceToolBox::getInputVariable('view_archive', false);
-$export       = filter_input(INPUT_POST, 'export') || filter_input(INPUT_GET, 'export');
+$export       = IserviceToolBox::getInputVariable('export', false);
 
 $view = Views::getView($view_id, true, $view_archive);
 
 $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'View data loaded';
 
-if (empty(IserviceToolBox::getInputVariable('export'))) {
+if (empty($export)) {
     Html::header(__("iService", "iservice"), $_SERVER['PHP_SELF'], "plugin_iservice_views", $view_id, "views");
 }
 
@@ -27,4 +27,6 @@ $view->display(false, $export);
 
 $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'View displayed';
 
-Html::footer();
+if (empty($export)) {
+    Html::footer();
+}
