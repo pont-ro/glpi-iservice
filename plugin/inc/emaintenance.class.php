@@ -580,7 +580,7 @@ class PluginIserviceEmaintenance extends MailCollector
                 $this->fetch_emails++;
                 $result[$this->processEmail($this->protectedStorage->getUniqueId($this->protectedStorage->key()), $this->protectedStorage->current())] += 1;
             } catch (\Exception $e) {
-                Toolbox::logInFile('mailgate', sprintf(__('Message is invalid: %1$s') . '<br/>', $e->getMessage()));
+                Toolbox::logInFile('mailgate', 'Message is invalid:<br/>' . $e->getMessage());
                 $result['error'] += 1;
             }
         } while ($this->protectedStorage->valid() && ($this->fetch_emails < $this->maxfetch_emails));
