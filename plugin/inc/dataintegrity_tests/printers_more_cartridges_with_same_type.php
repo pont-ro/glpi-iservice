@@ -1,4 +1,7 @@
 <?php
+
+global $CFG_PLUGIN_ISERVICE;
+
 return [
     'query' => "
         select * from (
