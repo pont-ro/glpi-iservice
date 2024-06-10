@@ -24,6 +24,8 @@ class ToolBox
 
     public static $lastExchangeRateServiceError = null;
 
+    public static $expert_line_id = null;
+
     public static function getArrayInputVariable($variable_name, $default_value = null, $input_type = INPUT_REQUEST): ?array
     {
         if (!is_array($default_value) && $default_value !== null) {
@@ -394,6 +396,15 @@ class ToolBox
     public static function br2nl($input)
     {
         return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n", "", str_replace("\r", "", htmlspecialchars_decode($input))));
+    }
+
+    public static function getExpertLineId(): int
+    {
+        if (empty(self::$expert_line_id)) {
+            self::$expert_line_id = self::getIdentifierByAttribute('Supplier', 'Expert Line srl');
+        }
+
+        return self::$expert_line_id;
     }
 
 }

@@ -163,7 +163,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
             from glpi_printers p
             join glpi_states st on st.id = p.states_id
             join glpi_printertypes pt on pt.id = p.printertypes_id
-            join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id != " . PluginIservicePartner::ID_EXPERTLINE . "
+            join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id != " . IserviceToolBox::getExpertLineId() . "
             join glpi_suppliers s on s.id = ic.suppliers_id
             join glpi_plugin_fields_suppliersuppliercustomfields scf on scf.cm_field = 1 and scf.items_id = ic.suppliers_id and scf.itemtype = 'Supplier'
             left join glpi_cartridges c on c.printers_id = p.id

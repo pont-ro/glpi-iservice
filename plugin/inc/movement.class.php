@@ -14,8 +14,7 @@ class PluginIserviceMovement extends CommonDBTM
     const TYPE_OUT  = 'out';
     const TYPE_MOVE = 'move';
 
-    public static $rightname      = 'plugin_iservice_movement';
-    public static $expert_line_id = null;
+    public static $rightname = 'plugin_iservice_movement';
 
     public static function dummy(): array
     {
@@ -23,15 +22,6 @@ class PluginIserviceMovement extends CommonDBTM
         return [
             __('Printer', 'iservice'),
         ];
-    }
-
-    public static function getExpertLineId(): int
-    {
-        if (empty(self::$expert_line_id)) {
-            self::$expert_line_id = IserviceToolBox::getIdentifierByAttribute('Supplier', 'Expert Line srl');
-        }
-
-        return self::$expert_line_id;
     }
 
     public function __construct($itemtype = '')
@@ -145,7 +135,7 @@ class PluginIserviceMovement extends CommonDBTM
 
             $table_rows[] = "<tr><td colspan=2><input type='hidden' name='ticket_id' value='{$this->fields['ticket_id']}'/>$text_to_display</td></tr>";
             if (stripos($itilcategory->fields['name'], 'preluare') === 0) {
-                $this->fields['suppliers_id'] = self::getExpertLineId();
+                $this->fields['suppliers_id'] = IserviceToolBox::getExpertLineId();
             }
         }
 
@@ -445,9 +435,9 @@ class PluginIserviceMovement extends CommonDBTM
 
     public static function getTypeFromSuppliers($old_supplier_id, $new_supplier_id)
     {
-        if ($old_supplier_id == self::getExpertLineId()) {
+        if ($old_supplier_id == IserviceToolBox::getExpertLineId()) {
             return self::TYPE_OUT;
-        } elseif ($new_supplier_id == self::getExpertLineId()) {
+        } elseif ($new_supplier_id == IserviceToolBox::getExpertLineId()) {
             return self::TYPE_IN;
         } else {
             return self::TYPE_MOVE;
