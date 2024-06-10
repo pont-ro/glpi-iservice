@@ -1081,16 +1081,16 @@ class View extends \CommonGLPI
 
             $this->prepareCache();
             $this->query = empty($this->cache_query) ? "SELECT * FROM {$this->use_cache['table_name']}" : $this->cache_query;
-            if (strpos($this->query, '}')) {
+            if (strpos($this->query, '}') && is_array($this->use_cache)) {
                 foreach ($this->use_cache as $cache_variable_name => $cache_variable_value) {
                     $this->query = str_replace('{' . $cache_variable_name . '}', $cache_variable_value, $this->query);
                 }
             }
 
-            $style          = date('Y-m-d H:i:s') > $this->use_cache['data_expire_warning'] ? "style='color:red'" : "";
-            $title          = sprintf(__("Expires on %s", 'iservice'), $this->use_cache['data_expires']);
+            $style          = date('Y-m-d H:i:s') > ($this->use_cache['data_expire_warning'] ?? '') ? "style='color:red'" : "";
+            $title          = sprintf(__("Expires on %s", 'iservice'), $this->use_cache['data_expires'] ?? '');
             $refresh_button = "<input class='submit' onclick='$(\"#cache-refresh\").val(1);$(\".refresh-target\").submit();' $style type='submit' value='" . __('Refresh', 'iservice') . "'>";
-            $this->name    .= " [<span $style title='$title'>" . sprintf(__('from cache %s', 'iservice'), $this->use_cache['data_cached']) . " $refresh_button</span>]";
+            $this->name    .= " [<span $style title='$title'>" . sprintf(__('from cache %s', 'iservice'), $this->use_cache['data_cached'] ?? '') . " $refresh_button</span>]";
         }
 
         $this->adjustQueryOrderBy();
