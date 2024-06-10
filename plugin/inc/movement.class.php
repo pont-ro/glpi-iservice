@@ -362,7 +362,7 @@ class PluginIserviceMovement extends CommonDBTM
                 $table_rows[] = "<tr><td colspan=2><h3>Drepturi de acces SPECIALE</h3></td></tr>";
 
                 // User.
-                $users_id         = empty($this->fields['users_id']) ? $item->fields['users_id'] : $this->fields['users_id'];
+                $users_id         = empty($this->fields['users_id']) ? 0 : $this->fields['users_id']; // As requested on EXL-388, users_id should be reseted on movement.
                 $users_id_options = ['type' => 'User', 'class' => 'full', 'options' => ['right' => 'all']];
                 $table_rows[]     = $form->generateFieldTableRow(__('External user'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id', $users_id, false, $users_id_options));
 
