@@ -1824,7 +1824,7 @@ class PluginIserviceTicket extends Ticket
                             } else {this.stopPropagation()}'
                     ],
                 ];
-            } else {
+            } elseif (!$closed) {
                 if ($this->isCloseable()) {
                     $buttons['close'] = [
                         'type'    => 'submit',
