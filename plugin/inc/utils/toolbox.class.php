@@ -99,7 +99,7 @@ class ToolBox
             }
         }
 
-        return in_array($_SESSION["glpiactiveprofile"]["name"], $profiles);
+        return in_array($_SESSION["glpiactiveprofile"]["name"] ?? [], $profiles);
     }
 
     public static function getExchangeRate($currency = 'Euro'): ?float

@@ -3,7 +3,7 @@
 /* Array keys must use dot notation, e.g. 'config_override.core.palette' => 'auror'. */
 
 return [
-    'url_base' => ($_SERVER['HTTP_ORIGIN'] ?? '') ?: 'http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . $_SERVER['HTTP_HOST'],
+    'url_base' => ($_SERVER['HTTP_ORIGIN'] ?? '') ?: 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . ($_SERVER['HTTP_HOST'] ?? ''),
     'enabled_crons.h_marfa_import' => true,
     'enabled_crons.em_mailgate' => true,
     'enabled_crons.data_integrity_test' => false,
