@@ -9,7 +9,7 @@ return [
         left join glpi_cartridges c on c.id = ct.cartridges_id
         left join glpi_printers p on p.id = it.items_id
         left join glpi_cartridgeitems_printermodels cp on cp.printermodels_id = p.printermodels_id and cp.cartridgeitems_id = c.cartridgeitems_id
-        where cp.id is null
+        where cp.id is null AND t.date > '" . PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from') . "'
         group by t.id;
         ",
     'test' => [

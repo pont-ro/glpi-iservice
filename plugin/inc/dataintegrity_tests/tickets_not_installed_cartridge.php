@@ -17,6 +17,7 @@ return [
           AND pcf.em_field = 1
           AND scf.cm_field = 1
           AND ct.tickets_id NOT IN ('84693', '88333', '92634')
+          AND tcf.effective_date_field > '" . PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from') . "'
         GROUP BY tid;
         ",
     'test' => [
