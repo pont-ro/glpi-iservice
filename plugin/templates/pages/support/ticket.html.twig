@@ -25,6 +25,15 @@
             <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
                 <div class="row flex-row align-items-start flex-grow-1">
                     <div class="row flex-row">
+                        {% if item.id > 0 %}
+                            {{ fields.readOnlyField(
+                                'id',
+                                item.fields['id'],
+                                __('ID'),
+                                field_options
+                            ) }}
+                        {% endif %}
+
                         {% block form_fields %}
                             {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
 
