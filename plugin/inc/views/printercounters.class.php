@@ -307,9 +307,9 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , @lastClosedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, plct.total2_black_field + plct.total2_color_field) last_closed_counter
                   , @lastClosedDate := plct.effective_date_field last_closed_date
                   , @estimateCounter := @lastClosedCounter + datediff(NOW(), @lastClosedDate) * @da estimate_counter
-                  , @availableEstimate := 1 - round((@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 2) available_percentage_estimate
+                  , @availableEstimate := 1 - round(IF((@atc * @lc * @uc) > 0, (@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 0), 2) available_percentage_estimate
                   , if (@availableEstimate < @atl, 'da', 'nu') below_limit
-                  , round(coalesce((@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, 180) - datediff(NOW(), @lastClosedDate) + (@atc * @lc * @uc / @da) * (@changeable_count / @compatible_printer_count)) days_to_visit
+                  , round(coalesce(IF(@da > 0, (@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, NULL), 180) - datediff(NOW(), @lastClosedDate) + (IF(@da > 0, @atc * @lc * @uc / @da, 0)) * (IF(@compatible_printer_count > 0, @changeable_count / @compatible_printer_count, 0))) days_to_visit
                   , concat('<span title=\"', coalesce(ccc.cids, 'nu există cartușe compatibile'), '\">', @changeable_count, '</span> / <span title=\"', coalesce(ccpc.pids, 'nu există aparate compatibile'), '\">', @compatible_printer_count, '</span>') in_stock
                   , getPrinterDailyAverage(p.id, 0) cdba
                   , getPrinterDailyAverage(p.id, 1) cdca
