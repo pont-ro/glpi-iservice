@@ -1805,7 +1805,7 @@ class PluginIserviceTicket extends Ticket
         $buttons = [];
         $closed  = $this->isClosed();
         if ($ID > 0) {
-            if ($closed && IserviceToolBox::inProfileArray(['super-admin'])) {
+            if ($closed && IserviceToolBox::inProfileArray(['super-admin', 'admin'])) {
                 $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->customfields->fields['effective_date_field'], $this->getPartnerId(), $this->getPrinterId());
                 if (count($newer_closed_ticket_ids)) {
                     $confirm = count($newer_closed_ticket_ids) . __(" closed tickets will be reopened. Are you sure you want to continue?", 'iservice');
