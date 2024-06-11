@@ -44,6 +44,8 @@ class PluginIserviceTicket extends Ticket
 
     public static $customFieldsModelName = 'PluginFieldsTicketticketcustomfield';
 
+    public static $rightname = 'plugin_iservice_view_tickets';
+
     public $printer             = null;
     const EXPORT_TYPE_NOTICE_ID = 1;
 
@@ -53,6 +55,25 @@ class PluginIserviceTicket extends Ticket
     {
         return parent::canViewItem() || $this->isUserTechPark();
     }
+
+//    public static function canCreate()
+//    {
+//        if (static::$rightname) {
+//            return Session::haveRight(static::$rightname, CREATE);
+//        }
+//
+//        return false;
+//    }
+//
+//    public function canCreateItem()
+//    {
+//
+//        if (!$this->checkEntity()) {
+//            return false;
+//        }
+//
+//        return true;
+//    }
 
     public function isUserTechPark(): bool
     {
@@ -459,6 +480,7 @@ class PluginIserviceTicket extends Ticket
             'partnerId'               => $partnerId,
             'partnersFieldReadonly'   => $this->getFirstAssignedPartner()->getID() > 0,
             'printerId'               => $printerId,
+            'filter_printers_by_users_id' => IserviceToolBox::inProfileArray(['client', 'superclient']) ? Session::getLoginUserID() : null,
             'printerFieldLabel'       => $this->getPrinterFieldLabel(),
             'printersFieldReadonly'   => $printersFieldReadonly,
             'usageAddressField'       => $this->getPrinterUsageAddress(),
@@ -507,7 +529,7 @@ class PluginIserviceTicket extends Ticket
             $templateParams['assignedVisible'] = true;
 
             $lastTicketWithCartridge         = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
-            $newerTicketsWithCartridgeExists = ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field'];
+            $newerTicketsWithCartridgeExists = ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > ($this->customfields->fields['effective_date_field'] ?? date('Y-m-d H:i:s'));
             if ($ID > 0 && $newerTicketsWithCartridgeExists) {
                 $warning = sprintf(__('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.', 'iservice'), $lastTicketWithCartridge->getID());
             }
