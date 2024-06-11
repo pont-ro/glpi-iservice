@@ -56,25 +56,6 @@ class PluginIserviceTicket extends Ticket
         return parent::canViewItem() || $this->isUserTechPark();
     }
 
-//    public static function canCreate()
-//    {
-//        if (static::$rightname) {
-//            return Session::haveRight(static::$rightname, CREATE);
-//        }
-//
-//        return false;
-//    }
-//
-//    public function canCreateItem()
-//    {
-//
-//        if (!$this->checkEntity()) {
-//            return false;
-//        }
-//
-//        return true;
-//    }
-
     public function isUserTechPark(): bool
     {
         $printer = $this->getFirstPrinter();
