@@ -78,7 +78,7 @@ trait PluginIserviceItem
         if ($result) {
             $this->post_addItem($history);
 
-            $result = $this->updateCustomFields($model, $input);
+            $this->updateCustomFields($model, $input);
         }
 
         return $result;
