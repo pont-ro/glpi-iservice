@@ -334,8 +334,11 @@ class View extends \CommonGLPI
 
     protected function displayFilters(): ?bool
     {
-        foreach ($this->mass_actions as &$mass_action) {
+        foreach ($this->mass_actions as $key => &$mass_action) {
             $this->mass_actions_column |= self::ensureArrayKey($mass_action, 'visible', true) ? 1 : 0;
+            if (!$mass_action['visible']) {
+                unset($this->mass_actions[$key]);
+            }
         }
 
         if (empty($this->filters)) {

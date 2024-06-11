@@ -482,7 +482,8 @@ class Printers extends View
                 ],
                 'mass_invoice' => [
                     'caption' => 'Facturează',
-                    'action' => 'hmarfaexport.form.php?mode=3'
+                    'action' => 'hmarfaexport.form.php?mode=3',
+                    'visible' => !self::inProfileArray('superclient', 'client'),
                 ],
             ],
             'filters' => [
