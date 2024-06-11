@@ -28,16 +28,17 @@ if (($addConsumable = IserviceToolBox::getInputVariable('add_consumable'))
 $global_readcounter                     = IserviceToolBox::getInputVariable('global_readcounter');
 $add_cartridges_as_negative_consumables = IserviceToolBox::getInputVariable('add_cartridges_as_negative_consumables');
 
-$post                 = filter_input_array(INPUT_POST);
-$get                  = filter_input_array(INPUT_GET);
+$post                 = filter_input_array(INPUT_POST) ?: [];
+$get                  = filter_input_array(INPUT_GET) ?: [];
+$input                = array_merge((is_array($get) ? $get : []), (is_array($post) ? $post : []));
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get);
 $options['printerId'] = IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($get, 'Printer');
 $options['mode']      = IserviceToolBox::getInputVariable('mode');
 
 $errorMessage = '';
 
-if (!empty($post)) {
-    $post = PluginIserviceTicket::preProcessPostData($post);
+if (!empty($input)) {
+    $input = PluginIserviceTicket::preProcessPostData($input);
 }
 
 if ($id > 0) {
@@ -52,19 +53,19 @@ if (empty($id) && (!empty($addConsumable) || !empty($addCartridge))) {
 }
 
 if (!empty($add)) {
-    $ticket->check(-1, CREATE, $post);
-    $post['status']                 = Ticket::INCOMING;
-    $post['_do_not_compute_status'] = true; // This is needed to avoid ticket status change in CommonITILObject.php:prepareInputForUpdate method, line 1780.
-    $id                             = $ticket->add($post);
+    $ticket->check(-1, CREATE, $input);
+    $input['status']                 = Ticket::INCOMING;
+    $input['_do_not_compute_status'] = true; // This is needed to avoid ticket status change in CommonITILObject.php:prepareInputForUpdate method, line 1780.
+    $id                             = $ticket->add($input);
 
     if (empty($id)) {
         Session::addMessageAfterRedirect(__('Could not create ticket!', 'iservice'), true, ERROR);
         Html::back();
     }
 
-    $post          = $ticket->updateEffectiveDate($post);
-    $ticket->input = array_merge($ticket->input, $post);
-    $ticket->updateItem($id, $post, true);
+    $input          = $ticket->updateEffectiveDate($input);
+    $ticket->input = array_merge($ticket->input, $input);
+    $ticket->updateItem($id, $input, true);
 
     if (empty($addConsumable) && empty($addCartridge)) {
         // Redirect only if we are not adding consumables or cartridges.
@@ -73,9 +74,9 @@ if (!empty($add)) {
 
     $delayedRedirect = $ticket->getFormURL() . '?id=' . $id;
 } elseif (!empty($update)) {
-    $post          = $ticket->updateEffectiveDate($post);
-    $ticket->input = array_merge($ticket->input, $post);
-    $ticket->updateItem($id, $post);
+    $input          = $ticket->updateEffectiveDate($input);
+    $ticket->input = array_merge($ticket->input, $input);
+    $ticket->updateItem($id, $input);
 
     if (empty($noRedirectAfterTicketUpdate)) {
         Html::redirect($ticket->getFormURL() . '?id=' . $id);
@@ -88,26 +89,26 @@ $partnerPrinterIds = [
 ];
 
 if (!empty($addConsumable) && !empty($id)) {
-    $ticket->addConsumable($id, $post);
+    $ticket->addConsumable($id, $input);
 } elseif (!empty($removeConsumable) && !empty($id)) {
-    $ticket->removeConsumable($id, $post);
+    $ticket->removeConsumable($id, $input);
 } elseif (!empty($updateConsumable) && !empty($id)) {
-    $ticket->updateConsumable($id, $post);
+    $ticket->updateConsumable($id, $input);
 } elseif (!empty($addCartridge) && !empty($id)) {
-    $ticket->addCartridge($id, array_merge($post, $partnerPrinterIds), $errorMessage);
+    $ticket->addCartridge($id, array_merge($input, $partnerPrinterIds), $errorMessage);
     Session::addMessageAfterRedirect($errorMessage, false, ERROR);
 } elseif (!empty($removeCartridge) && !empty($id)) {
-    $ticket->removeCartridge($id, array_merge($post, $partnerPrinterIds));
+    $ticket->removeCartridge($id, array_merge($input, $partnerPrinterIds));
 } elseif (!empty($updateCartridge) && !empty($id)) {
-    $ticket->updateCartridge($id, array_merge($post, $partnerPrinterIds));
+    $ticket->updateCartridge($id, array_merge($input, $partnerPrinterIds));
 } elseif (!empty($export)) {
     Html::redirect($CFG_PLUGIN_ISERVICE['root_doc'] . "/front/hmarfaexport.form.php?id=$id&mode=" . PluginIserviceHmarfa::EXPORT_MODE_TICKET);
 } elseif (!empty($add_cartridges_as_negative_consumables)) {
     add_cartridges_as_negative_consumables();
 } elseif (!empty($deleteDocument)) {
-    $ticket->deleteDocument($post);
+    $ticket->deleteDocument($input);
 } else {
-    $options = array_merge($options, $get ?? [], $post ?? [], $partnerPrinterIds);
+    $options = array_merge($options, $get ?? [], $input ?? [], $partnerPrinterIds);
 }
 
 if (!empty($global_readcounter) && ($globalreadcounter0 = IserviceToolBox::getArrayInputVariable('globalreadcounter0', []))) {

@@ -578,8 +578,8 @@ class PluginIserviceTicket extends Ticket
                 ];
             }
 
-            $templateParams['csvCounterButtonConfig'] = $this->getCsvCounterButtonConfig($isClosed, $this->printer ?? null, $isColorPrinter, $isPlotterPrinter, $templateParams['total2BlackDisabled'] ?? false, $templateParams['total2BlackRequiredMinimum'] ?? null, $templateParams['total2ColorRequiredMinimum'], $lastClosedTicket);
-            $templateParams['estimateButtonConfig']   = $this->getEstimateButtonConfig($this, $isClosed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter);
+            $templateParams['csvCounterButtonConfig'] = !IserviceToolBox::inProfileArray(['client', 'superclient']) ? $this->getCsvCounterButtonConfig($isClosed, $this->printer ?? null, $isColorPrinter, $isPlotterPrinter, $templateParams['total2BlackDisabled'] ?? false, $templateParams['total2BlackRequiredMinimum'] ?? null, $templateParams['total2ColorRequiredMinimum'], $lastClosedTicket) : null;
+            $templateParams['estimateButtonConfig']   = !IserviceToolBox::inProfileArray(['client', 'superclient']) ? $this->getEstimateButtonConfig($this, $isClosed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter) : null;
 
             $templateParams['ticketDocuments'] = $this->getAttachedDocuments();
         }
