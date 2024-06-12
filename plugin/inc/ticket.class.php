@@ -1783,7 +1783,17 @@ class PluginIserviceTicket extends Ticket
 
     public function isCloseable(): bool
     {
-        return !$this->hasConsumables() || (!empty($this->customfields->fields['delivered_field']) && !empty($this->customfields->fields['exported_field']));
+        $isMovement = !empty($this->customfields->fields['movement_id_field']) || !empty($this->customfields->fields['movement2_id_field']);
+        if ($isMovement) {
+            $movement = new PluginIserviceMovement();
+            $movement->getFromDB($this?->customfields?->fields['movement_id_field'] ?: $this?->customfields?->fields['movement2_id_field'] ?: -1);
+        }
+
+        return
+            !empty($this->fields['_users_id_assign']) &&
+            !empty($this->fields['itilcategories_id']) &&
+            (!$isMovement || !empty($movement->fields['invoice'])) &&
+            (!$this->hasConsumables() || (!empty($this->customfields->fields['delivered_field']) && !empty($this->customfields->fields['exported_field'])));
     }
 
     public function getButtonsConfig($ID, $options, $movement = null): array
