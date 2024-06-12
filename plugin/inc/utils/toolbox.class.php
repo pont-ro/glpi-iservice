@@ -5,6 +5,8 @@ namespace GlpiPlugin\Iservice\Utils;
 
 use DateTime;
 use Dropdown;
+use PluginFieldsContainer;
+use PluginFieldsField;
 use PluginIserviceDB;
 use TValuta;
 
@@ -405,6 +407,39 @@ class ToolBox
         }
 
         return self::$expert_line_id;
+    }
+
+    public static function populateCustomFieldsWithDefaultValues($item, &$input)
+    {
+        $containerId = PluginFieldsContainer::findContainer(get_Class($item));
+
+        $fields = [];
+
+        if ($containerId) {
+            $field_obj = new PluginFieldsField();
+            $fields    = $field_obj->find(
+                [
+                    'plugin_fields_containers_id' => $containerId
+                ]
+            );
+        }
+
+        foreach ($fields as $field) {
+            if (!$field['is_active'] || $field['mandatory'] != 1 || $field['type'] == "yesno" || $field['type'] == "header") {
+                continue;
+            }
+
+            $value = $input[$field['name']] ?? null;
+
+            if ($value === null
+                || $value === ''
+                || (($field['type'] === 'dropdown' || preg_match('/^dropdown-.+/i', $field['type'])) && $value == 0)
+                || ($field['type'] === 'glpi_item' && $value === null)
+                || (in_array($field['type'], ['date', 'datetime']) && $value == 'NULL')
+            ) {
+                $input[$field['name']] = $field['default_value'];
+            }
+        }
     }
 
 }

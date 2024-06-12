@@ -1,6 +1,8 @@
 <?php
 
 // Imported from iService2, needs refactoring.
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 trait PluginIserviceItem
 {
     protected static $item_cache = [];
@@ -72,7 +74,8 @@ trait PluginIserviceItem
 
     public function add(array $input, $options = [], $history = true)
     {
-        $model  = new parent;
+        $model = new parent;
+        IserviceToolBox::populateCustomFieldsWithDefaultValues($model, $input);
         $result = $model->add($input, $options, $history);
 
         if ($result) {
@@ -92,6 +95,7 @@ trait PluginIserviceItem
     public function update(array $input, $history = 1, $options = []): bool
     {
         $model = new parent;
+        IserviceToolBox::populateCustomFieldsWithDefaultValues($model, $input);
         $model->getFromDB($this->getID());
         $result = $model->update($input, $history, $options);
 
