@@ -1,5 +1,7 @@
 <?php
 global $CFG_GLPI;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 return [
     'query' => "
         SELECT
@@ -16,7 +18,7 @@ return [
         WHERE p.is_deleted = 0 
           AND p.printertypes_id =" . PluginIservicePrinter::ID_ROUTER_TYPE . "
           AND ci.id is null 
-          AND (s.id <> " . PluginIservicePartner::ID_EXPERTLINE . " OR COALESCE(l.name, '') <> 'Fara cartela')
+          AND (s.id <> " . IserviceToolBox::getExpertLineId() . " OR COALESCE(l.name, '') <> 'Fara cartela')
         ",
     'test' => [
         'alert' => true,

@@ -20,6 +20,8 @@ if ($task !== 'DataIntegrityTest') {
 $task_class  = "PluginIserviceTask_$task";
 $task_object = new $task_class();
 
+Html::header($task_object->getTitle(), filter_input(INPUT_SERVER, 'PHP_SELF'));
+
 $task_object->execute();
 
 Html::footer();

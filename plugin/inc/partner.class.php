@@ -11,8 +11,6 @@ class PluginIservicePartner extends Supplier
 {
     use PluginIserviceItem;
 
-    const ID_EXPERTLINE = 525;
-
     const INVOICEINFO_FULL_UNPAID        = -2;
     const INVOICEINFO_FULL               = -1;
     const INVOICEINFO_DEBT               = 0;
