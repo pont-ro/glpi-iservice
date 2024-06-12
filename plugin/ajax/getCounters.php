@@ -5,7 +5,7 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 // Direct access to file
 if (strpos($_SERVER['PHP_SELF'], "getCounters.php")) {
-    include '../../../inc/includes.php';
+    include '../inc/includes.php';
     header("Content-Type: text/html; charset=UTF-8");
     Html::header_nocache();
 }

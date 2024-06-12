@@ -485,6 +485,11 @@ class Printers extends View
                     'action' => 'hmarfaexport.form.php?mode=3',
                     'visible' => !self::inProfileArray('superclient', 'client'),
                 ],
+                'available_cartridges' => [
+                    'caption' => __('Cartridges available', 'iservice'),
+                    'action' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/views.php?view=Cartridges',
+                    'visible' => self::inProfileArray('superclient', 'client'),
+                ],
             ],
             'filters' => [
                 'filter_buttons_prefix' => "$import_button $printer_counters_button",
