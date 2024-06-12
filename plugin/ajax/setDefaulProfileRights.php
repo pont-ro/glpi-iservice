@@ -9,23 +9,15 @@ function setDefaultProfileRights(): bool
 {
     global $DB;
 
-    $defaultValues = include PLUGIN_ISERVICE_DIR . '/inc/rights.config.php';
+    $rightsConfig = getRightsConfig();
 
-    foreach ($defaultValues['defaultValues'] ?? [] as $profileName => $rightValues) {
+    foreach ($rightsConfig['defaultValues'] ?? [] as $profileName => $rightValues) {
         foreach ($rightValues as $rightName => $rightValue) {
-            $profile = new Profile();
-            if (!$profile->getFromDBByRequest(
-                [
-                    'WHERE' => [
-                        'name' => $profileName,
-                    ],
-                ]
-            )
-            ) {
+            $profile = getProfileByName($profileName);
+            if (!$profile) {
                 return false;
             }
 
-            $profileId = $profile->fields['id'];
             if (!$DB->update(
                 'glpi_profilerights',
                 [
@@ -34,7 +26,7 @@ function setDefaultProfileRights(): bool
                 [
                     'WHERE'  => [
                         'name' => $rightName,
-                        'profiles_id' => $profileId,
+                        'profiles_id' => $profile->fields['id'],
                     ],
                 ]
             )
@@ -47,4 +39,57 @@ function setDefaultProfileRights(): bool
         return true;
 }
 
+function setDefaultProfileRightsForCustomFields(): bool
+{
+    global $DB;
+
+    $profilesWithFullAccess = getRightsConfig()['customFieldsRightsSettings']['profilesWithFullAccess'] ?? [];
+
+    foreach ($profilesWithFullAccess as $profileName) {
+        $profile = getProfileByName($profileName);
+        if (!$profile) {
+            return false;
+        }
+
+        if (!$DB->update(
+            'glpi_plugin_fields_profiles',
+            [
+                'right' => 4,
+            ],
+            [
+                'WHERE'  => [
+                    'profiles_id' => $profile->fields['id'],
+                ],
+            ]
+        )
+        ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function getRightsConfig(): array
+{
+    $rightsConfig = include PLUGIN_ISERVICE_DIR . '/inc/rights.config.php';
+
+    return $rightsConfig ?? [];
+}
+
+function getProfileByName(String $profileName): Profile|bool
+{
+    $profile = new Profile();
+    $result  = $profile->getFromDBByRequest(
+        [
+            'WHERE' => [
+                'name' => $profileName,
+            ],
+        ]
+    );
+
+    return $result ? $profile : false;
+}
+
 echo setDefaultProfileRights() ? __('Profile rights have been reset to default settings', 'iservice') : __('An error occurred while resetting profile rights to default settings', 'iservice');
+echo "<br>" . (setDefaultProfileRightsForCustomFields() ? __('Profile rights for custom fields have been reset to default settings', 'iservice') : __('An error occurred while resetting custom fields profile rights to default settings', 'iservice'));

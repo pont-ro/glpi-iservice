@@ -95,6 +95,14 @@ function plugin_iservice_pre_Ticket_update(Ticket $item)
     }
 }
 
+function redirect_from_central()
+{
+    if (!IserviceToolBox::inProfileArray(['admin', 'super-admin'])) {
+        global $CFG_PLUGIN_ISERVICE;
+        Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets");
+    }
+}
+
 /**
  * Reopen all newer tickets.
  *

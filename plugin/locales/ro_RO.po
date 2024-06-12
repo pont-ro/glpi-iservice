@@ -992,8 +992,14 @@ msgstr "facturare"
 msgid "Profile rights have been reset to default settings"
 msgstr "Drepturile au fost resetate la setările implicite"
 
+msgid "Profile rights for custom fields have been reset to default settings"
+msgstr "Drepturile pentru câmpurile adiționale au fost resetate la setările implicite"
+
 msgid "An error occurred while resetting profile rights to default settings"
 msgstr "A apărut o eroare în timpul resetării drepturilor la setările implicite"
+
+msgid "An error occurred while resetting custom fields profile rights to default settings"
+msgstr "A apărut o eroare în timpul resetării drepturilor pentru câmpurile adiționale la setările implicite"
 
 msgid "Are you sure you want to reset profile rights to default settings?"
 msgstr "Sigur vreți să resetați drepturile la setările implicite?"

@@ -36,7 +36,7 @@ window.moveIconsToHeader = function () {
 }
 
 window.moveMenuContent = function (dropDownTitle, append = false) {
-    let dropDown      = $('li[title=' + dropDownTitle + ']');
+    let dropDown      = $('li[title="' + dropDownTitle + '"]');
     let menuList      = $('#navbar-menu .navbar-nav').last();
     jQuery.fn.reverse = [].reverse;
 

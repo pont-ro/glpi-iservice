@@ -111,4 +111,14 @@ return [
             'device' => 0,
         ],
     ],
+    'customFieldsRightsSettings' => [
+        'profilesWithFullAccess' => [
+            'super-admin',
+            'admin',
+            'tehnician',
+            'subtehnician',
+            'superclient',
+            'client',
+        ],
+    ]
 ];

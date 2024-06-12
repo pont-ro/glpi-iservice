@@ -78,9 +78,7 @@ trait PluginIserviceItem
         if ($result) {
             $this->post_addItem($history);
 
-            // if (!$this->updateCustomFields($model->getID(), $input)) {
-            // Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
-            // }
+            $this->updateCustomFields($model, $input);
         }
 
         return $result;
@@ -101,7 +99,7 @@ trait PluginIserviceItem
             $this->post_updateItem($history);
         }
 
-        return $result; // && $this->updateCustomFields($model->getID(), $input);
+        return $result && $this->updateCustomFields($model, $input);
     }
 
     public function post_updateItem($history = 1): void
@@ -109,19 +107,29 @@ trait PluginIserviceItem
         // This should be kept here, but do not call parent::post_updateItem($history) here, because it is already called in update().
     }
 
-    /* Looks like this function is not needed anymore, custom fields are updated in PluginFieldsContainer::preItemUpdate hook, but we have to see if this works in all our use cases.
-    public function updateCustomFields($parentId, $input, $history = 1, $options = []): bool
+    public function updateCustomFields($model, $input, $history = 1, $options = []): bool
     {
+        // If custom fields was updated by hooks, plugin_fields_data is not empty.
+        if (!empty($model->plugin_fields_data)) {
+            return true;
+        }
+
         if (isset($input['items_id'])) {
             unset($input['items_id']);
         }
 
-        if ($this->loadOrCreateCustomFields($parentId)) {
-            return $this->customfields->update(array_merge($input, ['id' => $this->customfields->getID()]), $history, $options);
+        $result = false;
+
+        if ($this->loadOrCreateCustomFields($model->getID())) {
+            $result = $this->customfields->update(array_merge($input, ['id' => $this->customfields->getID()]), $history, $options);
         }
 
-        return false;
-    }*/
+        if (!$result) {
+            Session::addMessageAfterRedirect('Could not save custom fields', true, ERROR);
+        }
+
+        return $result;
+    }
 
     public function getFromDB($ID): bool
     {
