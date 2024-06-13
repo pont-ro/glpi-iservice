@@ -110,6 +110,14 @@ return [
             'cable_management' => 0,
             'device' => 0,
         ],
+        'admin' => [
+            'location' => 23,
+            'state' => 23,
+        ],
+        'tehnician' => [
+            'location' => 23,
+            'state' => 23,
+        ],
     ],
     'customFieldsRightsSettings' => [
         'profilesWithFullAccess' => [
