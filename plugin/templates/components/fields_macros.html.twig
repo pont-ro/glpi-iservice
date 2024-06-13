@@ -8,7 +8,6 @@
    {% if value == "" %}
       {% set value = (options.min is defined ? options.min : 0) %}
    {% endif %}
-
    {% set field %}
       <input type="number" id="%id%"
              class="form-control {{ options.input_addclass }}"
@@ -19,6 +18,9 @@
               {% if options.min is defined %}min="{{ options.min }}"{% endif %}
               {% if options.max is defined %}max="{{ options.max }}"{% endif %}
               {% if options.step is defined %}step="{{ options.step }}"{% endif %} />
+      {% if options.buttons|length > 0 %}
+         {{ _self.additionalButtons(options.buttons) }}
+      {% endif %}
    {% endset %}
    {{ fieldsOriginal.field(name, field, label, options) }}
 {% endmacro %}
@@ -116,34 +118,6 @@
       {% endif %}
       <span>{{ label ?? value }}</span>
    </button>
-{% endmacro %}
-
-{% macro numberField(name, value, label = '', options = {}) %}
-   {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
-   {% if options.step != 'any' and options.step|round(0, 'floor') != options.step %}
-      {# Only format number if not a whole number #}
-      {% set value = call('Html::formatNumber', [value, true]) %}
-   {% endif %}
-
-   {% if value == "" %}
-      {% set value = (options.min is defined ? options.min : 0) %}
-   {% endif %}
-
-   {% set field %}
-      <input type="number" id="%id%"
-             class="form-control {{ options.input_addclass }}"
-             name="{{ name }}" value="{{ value }}"
-              {{ options.readonly ? 'readonly' : '' }}
-              {{ options.disabled ? 'disabled' : '' }}
-              {{ options.required ? 'required' : '' }}
-              {% if options.min is defined %}min="{{ options.min }}"{% endif %}
-              {% if options.max is defined %}max="{{ options.max }}"{% endif %}
-              {% if options.step is defined %}step="{{ options.step }}"{% endif %} />
-      {% if options.buttons|length > 0 %}
-         {{ _self.additionalButtons(options.buttons) }}
-      {% endif %}
-   {% endset %}
-   {{ fieldsOriginal.field(name, field, label, options) }}
 {% endmacro %}
 
 {% macro checkboxFieldExtended(name, value, label = '', options = {}) %}
