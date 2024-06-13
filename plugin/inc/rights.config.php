@@ -117,6 +117,7 @@ return [
         'tehnician' => [
             'location' => 23,
             'state' => 23,
+            'ticket' => 259103,
         ],
     ],
     'customFieldsRightsSettings' => [
