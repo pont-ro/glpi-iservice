@@ -72,7 +72,7 @@ return [
                 ],
             ],
             'state' => [
-                'title' => __('State'),
+                'title' => __('Status'),
                 'icon'  => 'ti ti-subtask',
                 'page'  => "/front/state.php",
                 'roles' => ['admin', 'tehnician'],
