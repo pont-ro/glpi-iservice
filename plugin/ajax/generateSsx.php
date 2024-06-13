@@ -3,7 +3,7 @@
 // Imported from iService2, needs refactoring. Original file: "generate_ssx.php".
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
-// Direct access to file
+// Direct access to file.
 if (strpos($_SERVER['PHP_SELF'], "generateSsx.php")) {
     include '../inc/includes.php';
     header("Content-Type: text/html; charset=UTF-8");
@@ -73,7 +73,7 @@ foreach (['S.' . $file_name_parts[1], 'SX.' . $file_name_parts[1]] as $file_name
 
         if ($header_count > 8) {
             $new_cost_centre = $data[8];
-        } elseif (preg_match('#\(\*([^\*]*)\*#', $data[7], $matches)) {
+        } elseif (preg_match('/\((.*?) -/', $data[7], $matches)) {
             $new_cost_centre = $matches[1];
         } else {
             $result .= "Rândul $row nu conține numele centrului de cost.<br>";
