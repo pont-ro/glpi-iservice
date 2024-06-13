@@ -57,7 +57,7 @@ return [
                 'title' => __('Location'),
                 'icon'  => 'ti ti-map-pin',
                 'page'  => "/front/location.php",
-                'roles' => ['super-admin','admin', 'tehnician'],
+                'roles' => ['admin', 'tehnician'],
                 'options' => [
                     'sortOrder' => 120,
                 ],
@@ -66,7 +66,7 @@ return [
                 'title' => '+ ' . __('Location'),
                 'icon'  => 'ti ti-map-pin',
                 'page'  => "/front/location.form.php",
-                'roles' => ['super-admin','admin', 'tehnician'],
+                'roles' => ['admin', 'tehnician'],
                 'options' => [
                     'sortOrder' => 130,
                 ],
