@@ -88,14 +88,14 @@ return [
     ],
     'defaultValues' => [
         'client' => [
-            'ticket' => 140295,
-            'printer' => 127,
-            'cartridge' => 127,
+            'ticket' => 127,
+            'printer' => 0,
+            'cartridge' => 0,
         ],
         'superclient' => [
-            'ticket' => 140295,
-            'printer' => 127,
-            'cartridge' => 127,
+            'ticket' => 127,
+            'printer' => 0,
+            'cartridge' => 0,
         ],
         'super-admin' => [
             'computer' => 0,

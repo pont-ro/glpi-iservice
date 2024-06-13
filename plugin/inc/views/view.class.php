@@ -163,7 +163,7 @@ class View extends \CommonGLPI
             'title' => static::getMenuName(),
             'page' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=" . substr(strrchr(static::class, "\\"), 1),
             'icon'  => static::$icon,
-            'options' => static::getAdditionalMenuOptions(),
+            'options' => static::getAdditionalMenuOptions() ?: [],
         ];
     }
 

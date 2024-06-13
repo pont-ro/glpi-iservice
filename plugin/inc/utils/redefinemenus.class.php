@@ -71,11 +71,6 @@ class RedefineMenus
                 'hMarfaImport' => self::getHMarfaMenuItem(),
                 'dataIntegrityTestNotEm' => $dataIntegrityTestMenuItems['!em'] ?? [],
                 'dataIntegrityTestEm' => $dataIntegrityTestMenuItems['em'] ?? [],
-                'temp_element5' => [
-                    'title' => 'temp_element3',
-                    'icon'  => 'fa far fa-envelope header-icon me-1 element6',
-                    'page'   => '',
-                ],
             ]
         ];
     }
