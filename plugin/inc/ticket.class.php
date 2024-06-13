@@ -51,6 +51,9 @@ class PluginIserviceTicket extends Ticket
 
     const EXPORT_TYPE_INVOICE_ID = 2;
 
+    public $total2BlackRequiredMinimum;
+    public $total2ColorRequiredMinimum;
+
     public function canViewItem(): bool
     {
         return parent::canViewItem() || $this->isUserTechPark();
@@ -496,9 +499,9 @@ class PluginIserviceTicket extends Ticket
 
             $templateParams['minEffectiveDate'] = $lastClosedTicket->customfields->fields['effective_date_field'] ?? null;
 
-            $templateParams['printer']                    = $this->printer;
-            $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
-            $templateParams['total2ColorRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_color_field'] ?? 0;
+            $templateParams['printer']        = $this->printer;
+            $this->total2BlackRequiredMinimum = $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
+            $this->total2ColorRequiredMinimum = $templateParams['total2ColorRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_color_field'] ?? 0;
 
             // If there are newer closed tickets, we do not allow counter change, as counters on the cartridges will be messed up.
             if ($ID > 0 && ($lastClosedTicket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
@@ -1792,6 +1795,7 @@ class PluginIserviceTicket extends Ticket
         return
             !empty($this->fields['_users_id_assign']) &&
             !empty($this->fields['itilcategories_id']) &&
+            (empty($this->getPrinterId()) || ($this->customfields->fields['total2_black_field'] >= $this->total2BlackRequiredMinimum) && ($this->customfields->fields['total2_color_field'] >= $this->total2ColorRequiredMinimum)) &&
             (!$isMovement || !empty($movement->fields['invoice'])) &&
             (!$this->hasConsumables() || (!empty($this->customfields->fields['delivered_field']) && !empty($this->customfields->fields['exported_field'])));
     }
