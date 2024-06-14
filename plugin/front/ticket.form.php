@@ -56,14 +56,14 @@ if (!empty($add)) {
     $ticket->check(-1, CREATE, $input);
     $input['status']                 = Ticket::INCOMING;
     $input['_do_not_compute_status'] = true; // This is needed to avoid ticket status change in CommonITILObject.php:prepareInputForUpdate method, line 1780.
-    $id                             = $ticket->add($input);
+    $id                              = $ticket->add($input);
 
     if (empty($id)) {
         Session::addMessageAfterRedirect(__('Could not create ticket!', 'iservice'), true, ERROR);
         Html::back();
     }
 
-    $input          = $ticket->updateEffectiveDate($input);
+    $input         = $ticket->updateEffectiveDate($input);
     $ticket->input = array_merge($ticket->input, $input);
     $ticket->updateItem($id, $input, true);
 
@@ -74,7 +74,7 @@ if (!empty($add)) {
 
     $delayedRedirect = $ticket->getFormURL() . '?id=' . $id;
 } elseif (!empty($update)) {
-    $input          = $ticket->updateEffectiveDate($input);
+    $input         = $ticket->updateEffectiveDate($input);
     $ticket->input = array_merge($ticket->input, $input);
     $ticket->updateItem($id, $input);
 
