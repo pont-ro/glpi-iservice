@@ -97,6 +97,16 @@ return [
             'printer' => 0,
             'cartridge' => 0,
         ],
+        'tehnician' => [
+            'ticket' => 261151,
+            'printer' => 127,
+            'cartridge' => 127,
+        ],
+        'admin' => [
+            'ticket' => 261151,
+            'printer' => 127,
+            'cartridge' => 127,
+        ],
         'super-admin' => [
             'computer' => 0,
             'monitor' => 0,

@@ -43,6 +43,8 @@ class PluginIserviceHtml {
         $onchange = $this->adjustAttribute('onchange', $options['onchange'] ?? null, ';');
         $data_attributes = $this->getDataAttributesFromArray($options);
         $output = isset($options['prefix']) ? $options['prefix'] : "";
+
+        $required = ($options['required'] ?? false) ? ' required' : '';
         switch ($type) {
             case self::FIELDTYPE_CHECKBOX:
                 $onchange_value = $options['onchange'] ?? [];
@@ -183,7 +185,7 @@ class PluginIserviceHtml {
                 } else {
                     $read_only = '';
                 }
-                $output .= "<input$class$data_attributes id='$name' name='$name'$onchange$onclick$read_only$style$title type='$type' value='$value' />";
+                $output .= "<input$class$data_attributes id='$name' name='$name'$onchange$onclick$read_only$required$style$title type='$type' value='$value' />";
                 break;
             case self::FIELDTYPE_MEMO:
             case self::FIELDTYPE_RICHMEMO:
