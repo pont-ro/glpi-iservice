@@ -18,7 +18,7 @@ $view = Views::getView($view_id, true, $view_archive);
 $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'View data loaded';
 
 if (empty($export)) {
-    Html::header(__("iService", "iservice"), $_SERVER['PHP_SELF'], "plugin_iservice_views", $view_id, "views");
+    Html::header($view->getTitle() . ' - ' . __("iService", "iservice"), $_SERVER['PHP_SELF'], "plugin_iservice_views", $view_id, "views");
 }
 
 Session::checkRight($view::$rightname, READ);
