@@ -71,11 +71,6 @@ class RedefineMenus
                 'hMarfaImport' => self::getHMarfaMenuItem(),
                 'dataIntegrityTestNotEm' => $dataIntegrityTestMenuItems['!em'] ?? [],
                 'dataIntegrityTestEm' => $dataIntegrityTestMenuItems['em'] ?? [],
-                'temp_element5' => [
-                    'title' => 'temp_element3',
-                    'icon'  => 'fa far fa-envelope header-icon me-1 element6',
-                    'page'   => '',
-                ],
             ]
         ];
     }
@@ -165,15 +160,15 @@ class RedefineMenus
             return;
         }
 
-        $content = array_merge($menus['iService']['content'] ?? [], IserviceMenu::getMenuUrls($activeProfileName));
+        $content       = array_merge($menus['iService']['content'] ?? [], IserviceMenu::getMenuUrls($activeProfileName));
+        $contentSorted = [];
+        foreach ($content as $key => $item) {
+            $contentSorted[$item['options']['sortOrder'] ?? $key] = $item;
+        }
 
-        usort(
-            $content, function ($a, $b) {
-                return (int) ($a['options']['sortOrder'] ?? 0) <=> (int) ($b['options']['sortOrder'] ?? 0);
-            }
-        );
+        ksort($contentSorted);
 
-        $menus['iService']['content'] = $content;
+        $menus['iService']['content'] = $contentSorted;
 
     }
 

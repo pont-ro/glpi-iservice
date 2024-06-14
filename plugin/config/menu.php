@@ -53,6 +53,42 @@ return [
                     'sortOrder' => 30,
                 ],
             ],
+            'location' => [
+                'title' => __('Location'),
+                'icon'  => 'ti ti-map-pin',
+                'page'  => "/front/location.php",
+                'roles' => ['admin', 'tehnician'],
+                'options' => [
+                    'sortOrder' => 120,
+                ],
+            ],
+            'location_add' => [
+                'title' => '+ ' . __('Location'),
+                'icon'  => 'ti ti-map-pin',
+                'page'  => "/front/location.form.php",
+                'roles' => ['admin', 'tehnician'],
+                'options' => [
+                    'sortOrder' => 130,
+                ],
+            ],
+            'state' => [
+                'title' => __('Status'),
+                'icon'  => 'ti ti-subtask',
+                'page'  => "/front/state.php",
+                'roles' => ['admin', 'tehnician'],
+                'options' => [
+                    'sortOrder' => 140,
+                ],
+            ],
+            'state_add' => [
+                'title' => '+ ' . __('Status'),
+                'icon'  => 'ti ti-subtask',
+                'page'  => "/front/state.form.php",
+                'roles' => ['admin', 'tehnician'],
+                'options' => [
+                    'sortOrder' => 150,
+                ],
+            ],
         ],
         'classes' => [
             'GlpiPlugin\Iservice\Views\Tickets',

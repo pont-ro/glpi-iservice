@@ -63,7 +63,10 @@ function plugin_iservice_hook_formcreator_update_profile(CommonDBTM $item): void
 
 function plugin_iservice_redefine_menus($menus): array
 {
-    return RedefineMenus::redefine($menus);
+    $menus                = RedefineMenus::redefine($menus);
+    $_SESSION['glpimenu'] = $menus;
+
+    return $menus;
 }
 
 function plugin_iservice_Ticket_add(Ticket $item)
