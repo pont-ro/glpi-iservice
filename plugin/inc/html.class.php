@@ -44,10 +44,7 @@ class PluginIserviceHtml {
         $data_attributes = $this->getDataAttributesFromArray($options);
         $output = isset($options['prefix']) ? $options['prefix'] : "";
 
-        $required = '';
-        if ($options['required'] ?? false) {
-            $required = ' required';
-        }
+        $required = ($options['required'] ?? false) ? ' required' : '';
         switch ($type) {
             case self::FIELDTYPE_CHECKBOX:
                 $onchange_value = $options['onchange'] ?? [];

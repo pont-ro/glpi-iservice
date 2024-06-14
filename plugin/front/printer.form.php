@@ -55,7 +55,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
     $input = array_merge($post_data['printer'] ?? [], $post['_customfields']['printer'] ?? []);
     IserviceToolBox::populateCustomFieldsWithDefaultValues($printer, $input);
 
-    if (($id = $printer->add($input)) != false) {
+    if (($id = $printer->add($input)) !== false) {
         if (!PluginIserviceDB::populateByItemsId($printer_customfields, $id)) {
             $input['add']      = 'add';
             $input['items_id'] = $id;
