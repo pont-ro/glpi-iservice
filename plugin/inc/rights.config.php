@@ -89,21 +89,11 @@ return [
     'defaultValues' => [
         'client' => [
             'ticket' => 127,
-            'printer' => 0,
-            'cartridge' => 0,
-        ],
-        'superclient' => [
-            'ticket' => 127,
-            'printer' => 0,
-            'cartridge' => 0,
-        ],
-        'tehnician' => [
-            'ticket' => 261151,
             'printer' => 127,
             'cartridge' => 127,
         ],
-        'admin' => [
-            'ticket' => 261151,
+        'superclient' => [
+            'ticket' => 127,
             'printer' => 127,
             'cartridge' => 127,
         ],

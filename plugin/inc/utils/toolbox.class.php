@@ -431,11 +431,12 @@ class ToolBox
 
             $value = $input[$field['name']] ?? null;
 
-            if ($value === null
+            if (($value === null
                 || $value === ''
                 || (($field['type'] === 'dropdown' || preg_match('/^dropdown-.+/i', $field['type'])) && $value == 0)
                 || ($field['type'] === 'glpi_item' && $value === null)
-                || (in_array($field['type'], ['date', 'datetime']) && $value == 'NULL')
+                || (in_array($field['type'], ['date', 'datetime']) && $value == 'NULL'))
+                && $field['default_value'] !== ''
             ) {
                 $input[$field['name']] = $field['default_value'];
             }
