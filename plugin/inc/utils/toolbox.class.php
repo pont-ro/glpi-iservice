@@ -387,6 +387,10 @@ class ToolBox
                 self::setUsersByProfileFromDb($profileName);
             }
 
+            if (empty(self::$usersByProfile[$profileName])) {
+                continue;
+            }
+
             $users += self::$usersByProfile[$profileName];
         }
 
