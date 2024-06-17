@@ -1,0 +1,387 @@
+[
+    {
+        "name": "last_invoice_data_header_field",
+        "old_name": "contor_fact",
+        "label": [
+            "Last invoice data",
+            "Date ultima facturare"
+        ],
+        "type": "header",
+        "ranking": "10",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "invoice_date_field",
+        "old_name": "data_fact",
+        "label": [
+            "Invoice date",
+            "Data Facturării"
+        ],
+        "type": "datetime",
+        "ranking": "20",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "invoice_expiry_date_field",
+        "old_name": "data_exp_fact",
+        "label": [
+            "Invoice expiry date",
+            "Data exp. facturare"
+        ],
+        "type": "datetime",
+        "ranking": "30",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "invoiced_total_black_field",
+        "old_name": "total2_black_fact",
+        "label": [
+            "Invoiced black",
+            "Black facturat"
+        ],
+        "type": "number",
+        "ranking": "40",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
+    },
+    {
+        "name": "invoiced_total_color_field",
+        "old_name": "total2_color_fact",
+        "label": [
+            "Invoiced color",
+            "Color facturat"
+        ],
+        "type": "number",
+        "ranking": "50",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
+    },
+    {
+        "name": "invoiced_value_field",
+        "old_name": "valfactfield",
+        "label": [
+            "Invoiced value",
+            "Valoare facturată"
+        ],
+        "type": "number",
+        "ranking": "60",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "15,2"
+    },
+    {
+        "name": "plan_settings_header_field",
+        "old_name": "setari_plan",
+        "label": [
+            "Plan settings",
+            "Setări plan"
+        ],
+        "type": "header",
+        "ranking": "70",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "week_nr_field",
+        "old_name": "week_nr",
+        "label": [
+            "Week number",
+            "Număr săptămână"
+        ],
+        "type": "number",
+        "ranking": "80",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "15,0"
+    },
+    {
+        "name": "plan_observations_field",
+        "old_name": "observations",
+        "label": [
+            "Plan observations",
+            "Observații plan"
+        ],
+        "type": "text",
+        "ranking": "90",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "contact_data_header_field",
+        "old_name": "sep_date_contact",
+        "label": [
+            "Contact data",
+            "Date contact"
+        ],
+        "type": "header",
+        "ranking": "100",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "contact_gps_field",
+        "old_name": "gps",
+        "label": [
+            "GPS coordinates",
+            "Coordonate GPS"
+        ],
+        "type": "text",
+        "ranking": "110",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "em_settings_header_field",
+        "old_name": "setari_em",
+        "label": [
+            "E-Maintenance settings",
+            "Setari E-Maintenance"
+        ],
+        "type": "header",
+        "ranking": "120",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "em_field",
+        "old_name": "emaintenancefield",
+        "label": [
+            "E-Maintenance",
+            "E-Maintenance"
+        ],
+        "type": "yesno",
+        "ranking": "130",
+        "default_value": "0",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "disable_em_field",
+        "old_name": "disableemfield",
+        "label": [
+            "Disable EM",
+            "Exclus din EM"
+        ],
+        "type": "yesno",
+        "ranking": "140",
+        "default_value": "0",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "last_read_field",
+        "old_name": "lastreadfield",
+        "label": [
+            "Last read",
+            "Data ultima citire din CSV"
+        ],
+        "type": "date",
+        "ranking": "150",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "snooze_read_check_field",
+        "old_name": "snoozereadcheckfield",
+        "label": [
+            "Snooze read check",
+            "Amână verificarea citirii până"
+        ],
+        "type": "date",
+        "ranking": "160",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "usage_settings_header_field",
+        "old_name": "setari_folosire",
+        "label": [
+            "Usage settings",
+            "Setari folosire"
+        ],
+        "type": "header",
+        "ranking": "170",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "1",
+        "mandatory": "0"
+    },
+    {
+        "name": "daily_bk_average_field",
+        "old_name": "dailybkaveragefield",
+        "label": [
+            "Daily black average",
+            "Numar copii bk pe zi"
+        ],
+        "type": "number",
+        "ranking": "180",
+        "default_value": "100",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "10,0"
+    },
+    {
+        "name": "daily_color_average_field",
+        "old_name": "dailycoloraveragefield",
+        "label": "Numar copii color pe zi",
+        "type": "number",
+        "ranking": "190",
+        "default_value": "100",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "10,0"
+    },
+    {
+        "name": "uc_bk_field",
+        "old_name": "ucbkfield",
+        "label": [
+            "Bk usage coefficient",
+            "Coeficient de folosire bk"
+        ],
+        "type": "number",
+        "ranking": "200",
+        "default_value": "1",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
+    },
+    {
+        "name": "uc_cyan_field",
+        "old_name": "uccfield",
+        "label": [
+            "Cyan usage coefficient",
+            "Coeficient de folosire cyan"
+        ],
+        "type": "number",
+        "ranking": "210",
+        "default_value": "1",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
+    },
+    {
+        "name": "uc_magenta_field",
+        "old_name": "ucmfield",
+        "label": [
+            "Magenta usage coefficient",
+            "Coeficient de folosire magenta"
+        ],
+        "type": "number",
+        "ranking": "230",
+        "default_value": "1",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
+    },
+    {
+        "name": "uc_yellow_field",
+        "old_name": "ucyfield",
+        "label": [
+            "Yellow usage coefficient",
+            "Coeficient de folosire yellow"
+        ],
+        "type": "number",
+        "ranking": "240",
+        "default_value": "1",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "1",
+        "decimalPrecision": "5,2"
+    },
+    {
+        "name": "cost_center_field",
+        "old_name": "costcenterfield",
+        "label": [
+            "Cost center",
+            "Centru de cost"
+        ],
+        "type": "text",
+        "ranking": "250",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "usage_address_field",
+        "old_name": "usageaddressfield",
+        "label": [
+            "Usage address",
+            "Adresa de folosire"
+        ],
+        "type": "textarea",
+        "ranking": "260",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "no_invoice_field",
+        "old_name": "noinvoicefield",
+        "label": [
+            "No Invoice",
+            "Exclus din facturare"
+        ],
+        "type": "yesno",
+        "ranking": "270",
+        "default_value": "0",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "global_contract_field",
+        "old_name": "contractglobalfield",
+        "label": [
+            "Global contract",
+            "Contract global"
+        ],
+        "type": "yesno",
+        "ranking": "280",
+        "default_value": "0",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    }
+]

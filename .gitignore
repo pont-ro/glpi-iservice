@@ -1,3 +1,4 @@
 .idea
 /glpi
 /temp
+/plugin/config/local.php

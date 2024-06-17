@@ -1,9 +1,15 @@
 <?php
 
-define('ISERVICE_VERSION', '0.0.1');
+use Glpi\Plugin\Hooks;
+use GlpiPlugin\Iservice\Utils\HtaccessChecker;
+use GlpiPlugin\Iservice\Utils\ViewsMenu;
+use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
+use GlpiPlugin\Iservice\Utils\IserviceMenu;
+
+define('ISERVICE_VERSION', '0.0.5');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
-    define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iService");
+    define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
 }
 
 if (!defined("GLPI_PLUGIN_DOC_DIR")) {
@@ -11,7 +17,27 @@ if (!defined("GLPI_PLUGIN_DOC_DIR")) {
 }
 
 if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
-    define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iService");
+    define("PLUGIN_ISERVICE_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/iservice");
+}
+
+if (!file_exists(PLUGIN_ISERVICE_DOC_DIR)) {
+    mkdir(PLUGIN_ISERVICE_DOC_DIR);
+}
+
+if (!defined("PLUGIN_ISERVICE_CACHE_DIR")) {
+    define("PLUGIN_ISERVICE_CACHE_DIR", PLUGIN_ISERVICE_DOC_DIR . "/cache");
+}
+
+if (!file_exists(PLUGIN_ISERVICE_CACHE_DIR)) {
+    mkdir(PLUGIN_ISERVICE_CACHE_DIR);
+}
+
+if (!defined("PLUGIN_ISERVICE_LOG_DIR")) {
+    define("PLUGIN_ISERVICE_LOG_DIR", PLUGIN_ISERVICE_DOC_DIR . "/logs");
+}
+
+if (!file_exists(PLUGIN_ISERVICE_LOG_DIR)) {
+    mkdir(PLUGIN_ISERVICE_LOG_DIR);
 }
 
 /**
@@ -21,12 +47,91 @@ if (!defined("PLUGIN_ISERVICE_DOC_DIR")) {
  */
 function plugin_init_iservice(): void
 {
-    global $PLUGIN_HOOKS;
+    global $CFG_GLPI, $PLUGIN_HOOKS;
+    global $CFG_PLUGIN_ISERVICE;
+    global $DEBUG_SQL, $TIMER_DEBUG;
 
-    // required!
-    $PLUGIN_HOOKS['csrf_compliant']['iService'] = true;
+    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
 
-    // some code here, like call to Plugin::registerClass(), populating PLUGIN_HOOKS, ...
+    $CFG_PLUGIN_ISERVICE = [
+        'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice"
+    ];
+
+    // Required!
+    $PLUGIN_HOOKS['csrf_compliant']['iservice'] = true;
+
+    HtaccessChecker::check();
+
+    if (!Plugin::isPluginActive('iservice')) {
+        return;
+    }
+
+    $PLUGIN_HOOKS['change_profile']['iservice'] = ['PluginIserviceProfile', 'changeprofile'];
+
+    if (!Session::getLoginUserID()) {
+        return;
+    }
+
+    $PLUGIN_HOOKS[Hooks::DEBUG_TABS]['iservice'] = [
+        'iservice' => [
+            'title' => 'iService',
+            'display_callable' => 'plugin_iservice_debug_tab',
+        ]
+    ];
+
+    // Must override the formcreator hook, as it has bug.
+    $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['formcreator'][Profile::class] = 'plugin_iservice_hook_formcreator_update_profile';
+
+    // Add link in plugin page.
+    $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.form.php';
+
+    // Add entry to configuration menu.
+    $PLUGIN_HOOKS["menu_toadd"]['iservice'] = [
+        'config'       => 'PluginIserviceMenu',
+        'iService'     => IserviceMenu::getClasses(),
+        'views'        => ViewsMenu::getClasses(),
+        'specialViews' => SpecialViewsMenu::getClasses(),
+    ];
+
+    $PLUGIN_HOOKS['add_css']['iservice'][] = "css/iservice.css";
+
+    $PLUGIN_HOOKS['add_javascript']['iservice'] = [
+        "js/import.js",
+        "js/iservice.js",
+    ];
+
+    $activeProfileName = $_SESSION['glpiactiveprofile']['name'] ?? null;
+    if ($activeProfileName === 'admin' || $activeProfileName === 'tehnician') {
+        $PLUGIN_HOOKS['add_javascript']['iservice'][] = "js/admin-menu-modifications.js";
+    } elseif ($activeProfileName === 'client') {
+        $PLUGIN_HOOKS['add_javascript']['iservice'][] = "js/client-menu-modifications.js";
+    }
+
+    $PLUGIN_HOOKS['add_javascript']['iservice'][] = "js/general-menu-modifications.js";
+
+    $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
+
+    $PLUGIN_HOOKS['pre_item_update']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_update';
+
+    $PLUGIN_HOOKS['item_add']['iservice']['Ticket']    = 'plugin_iservice_Ticket_add';
+    $PLUGIN_HOOKS['item_update']['iservice']['Ticket'] = 'plugin_iservice_Ticket_update';
+
+    $PLUGIN_HOOKS['item_update']['iservice']['PluginFieldsTicketticketcustomfield'] = 'plugin_iservice_PluginFieldsTicketticketcustomfield_update';
+
+    $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
+
+    PluginIserviceConfig::handleConfigValues();
+}
+
+function plugin_iservice_debug_tab($with_session, $ajax, $rand): void
+{
+    global $DEBUG_SQL, $TIMER_DEBUG;
+
+    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Displaying iService debug tab';
+
+    echo "<pre>";
+    print_r($DEBUG_SQL['debug_times']);
+    echo "</pre>";
 }
 
 /**
@@ -37,15 +142,15 @@ function plugin_init_iservice(): void
 function plugin_version_iservice(): array
 {
     return [
-        'name'           => 'iService',
-        'version'        => ISERVICE_VERSION,
-        'author'         => 'hupu',
-        'license'        => 'GLPv3',
-        'homepage'       => '',
-        'requirements'   => [
-            'glpi'   => [
-                'min' => '10.0',
-                'max' => '10.1',
+        'name'         => 'iService',
+        'version'      => ISERVICE_VERSION,
+        'author'       => 'hupu',
+        'license'      => 'GLPv3',
+        'homepage'     => '',
+        'requirements' => [
+            'glpi' => [
+                'min'     => '10.0',
+                'max'     => '10.1',
                 'plugins' => ['fields', 'formcreator'],
             ],
         ],
@@ -59,7 +164,7 @@ function plugin_version_iservice(): array
  */
 function plugin_iservice_check_prerequisites(): bool
 {
-    // do what the checks you want
+    // Do what checks you want.
     return true;
 }
 
@@ -73,15 +178,15 @@ function plugin_iservice_check_prerequisites(): bool
  */
 function plugin_iservice_check_config(bool $verbose = false): bool
 {
-//    if (true) { // Your configuration check
+    if (file_exists(PLUGIN_ISERVICE_DIR . '/install/install.php')) {
         return true;
-//    }
+    }
 
-//    if ($verbose) {
-//        echo "Installed, but not configured";
-//    }
-//
-//    return false;
+    if ($verbose) {
+        echo "Installed, but not configured";
+    }
+
+    return false;
 }
 
 /**
@@ -94,4 +199,18 @@ function plugin_iservice_options(): array
     return [
         Plugin::OPTION_AUTOINSTALL_DISABLED => true,
     ];
+}
+
+function plugin_iservice_check_status(): void
+{
+    global $CFG_GLPI;
+    if (!Plugin::isPluginLoaded('iservice')) {
+        if (Session::haveRight('config', UPDATE)) {
+            Session::addMessageAfterRedirect('Please activate or upgrade iService plugin!', true, WARNING);
+            Html::redirect($CFG_GLPI['root_doc'] . '/front/plugin.php');
+        } else {
+            Session::addMessageAfterRedirect('iService plugin must be activated or upgraded, please contact the administrator!', true, ERROR);
+            Html::redirect($CFG_GLPI['root_doc'] . '/front/central.php');
+        }
+    }
 }

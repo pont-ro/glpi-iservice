@@ -1,0 +1,112 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{{ fieldsIservice.dropdownFieldExtended(
+    'Supplier',
+    'suppliers_id',
+    partnerId,
+    __('Partener'),
+    field_options|merge({
+        'on_change': "$(this).closest('form').submit();",
+        'readonly': partnersFieldReadonly,
+    })
+) }}
+
+{{ fieldsIservice.dropdownFieldExtended(
+    'PluginIservicePrinter',
+    'printer_id',
+    printerId,
+    printerFieldLabel,
+    field_options|merge({
+        'condition': {
+            'LEFT JOIN': {
+                'glpi_infocoms as i': {
+                    'ON': {
+                        'i': 'items_id',
+                        'glpi_plugin_iservice_printers': 'id'
+                    }
+                }
+            },
+            'WHERE': {
+                'i.suppliers_id': partnerId,
+                'RAW': {
+                    'glpi_plugin_iservice_printers.users_id':  (filter_printers_by_users_id ? ['=', filter_printers_by_users_id] : ['>' , '-1'])
+                }
+            }
+        },
+        'on_change': "$(this).closest('form').submit();",
+        'readonly': printersFieldReadonly
+    })
+) }}
+
+{% if usageAddressField %}
+    {{ fields.textField(
+        'printer[usage_address_field]',
+        usageAddressField,
+        __('Usage Address', 'iservice'),
+        field_options|merge({
+            'disabled': true,
+        })
+    ) }}
+{% endif %}
+
+{% if locationName %}
+    {{ fields.textField(
+        'printer[locationName]',
+        locationName,
+        __('Location'),
+        field_options|merge({
+            'disabled': true,
+        })
+    ) }}
+{% endif %}
+
+{% if locationId %}
+    {{ fields.hiddenField(
+        'locations_id',
+        locationId,
+        '',
+        field_options|merge({
+            'no_label': true,
+        })
+    ) }}
+{% endif %}
+
+{% if observerVisible %}
+    {{ fields.dropdownArrayField(
+        '_users_id_observer',
+        item.fields['_users_id_observer'],
+        technicians,
+        __('Watcher'),
+        field_options
+    ) }}
+{% endif %}
+
+{% if assignedVisible %}
+    {{ fields.dropdownArrayField(
+        '_users_id_assign',
+        item.fields['_users_id_assign'],
+        technicians,
+        __('Assigned to'),
+        field_options
+    ) }}
+{% endif %}
+
+{% if sumOfUnpaidInvoicesLink %}
+    {{ fieldsIservice.customFormRow(
+        'sumOfUnpaidInvoicesLink',
+        __('Sum of unpaid invoices', 'iservice'),
+        sumOfUnpaidInvoicesLink,
+        field_options|merge({
+            'valueClass': 'mt-2'
+        })
+    ) }}
+{% endif %}
+
+{% if lastInvoiceAndCountersTable %}
+    {{ fieldsIservice.customFormRow(
+        'lastInvoiceAndCountersTable',
+        __('Last invoice and counter information', 'iservice'),
+        lastInvoiceAndCountersTable
+    ) }}
+{% endif %}

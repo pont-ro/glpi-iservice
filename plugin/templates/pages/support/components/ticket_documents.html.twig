@@ -1,0 +1,36 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+<div class="form-field row col-12 mb-2">
+    <label class="col-form-label col-xxl-4 text-xxl-end">
+        {{ __('Documents') }}
+    </label>
+    <div class="col-xxl-8 field-container mt-2">
+        {% if ticketDocuments %}
+            {% for document in ticketDocuments %}
+                <input type="hidden" name="documents_id" value="{{ document.id }}">
+                <a href="/front/document.send.php?docid={{ document.id }}"
+                   alt="{{ document.filename }}"
+                   title="{{ document.filename }}"
+                   target='_blank'>
+                    <span class='b'>{{ document.filename }}</span>
+                </a>
+                <button type="submit" class="btn btn-sm btn-ghost-secondary" name="delete_document" value="1" title="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Delete permanently') }}">
+                    <i class="ti ti-trash"></i>
+                </button>
+                <br>
+            {% endfor %}
+        {% endif %}
+        <hr>
+        {{ fields.fileField(
+            'filename',
+            '',
+            __('File'),
+            {
+                'multiple': true,
+                'accept': 'image/*, application/pdf',
+                'disabled': isClosed,
+                'no_label': true
+            }
+        ) }}
+    </div>
+</div>

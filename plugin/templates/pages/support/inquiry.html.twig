@@ -1,0 +1,41 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{% set params  = params ?? [] %}
+{% set no_header = no_header|default(not item.isNewItem() and not _get._in_modal|default(false)) %}
+{% set bg = '' %}
+{% if item.isDeleted() %}
+    {% set bg = 'asset-deleted' %}
+{% endif %}
+
+<div class="asset {{ bg }}">
+    {{ include('components/form/header.html.twig', {'in_twig': true}) }}
+
+    {% set params  = params ?? [] %}
+    {% set withtemplate = params['withtemplate'] ?? '' %}
+    {% set item_type = item.getType() %}
+    {% set field_options = {
+        'locked_fields': item.getLockedFields(),
+        'full_width': true,
+    } %}
+
+    <div class="card-body d-flex flex-wrap">
+        <div class="col-12 col-xxl-10 flex-column">
+            <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+                <div class="row flex-row align-items-start flex-grow-1">
+                    <div class="row flex-row">
+                        {% block form_fields %}
+                            {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
+
+                            {{ include('@iservice/pages/support/components/title_content.html.twig') }}
+                            {{ include('@iservice/pages/support/components/ticket_documents.html.twig') }}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ include('@iservice/pages/support/components/buttons.html.twig') }}
+</div>
+

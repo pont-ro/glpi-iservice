@@ -1,0 +1,108 @@
+[
+    {
+        "name": "mercury_code_field",
+        "old_name": "mercurycodefield",
+        "label": ["Mercury Code","Mercury Code"],
+        "type": "text",
+        "ranking": "10",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "1"
+    },
+    {
+        "name": "compatible_mercury_codes_field",
+        "old_name": "mercurycodesfield",
+        "label": ["Compatible Mercury Codes", "Mercurycode-uri compatibile (între '' și separate cu virgulă)"],
+        "type": "text",
+        "ranking": "20",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0"
+    },
+    {
+        "name": "atc_field",
+        "old_name": "atcfield",
+        "label": ["Average total count","Contor total mediu (ATC)"],
+        "type": "number",
+        "ranking": "30",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "11,0"
+    },
+    {
+        "name": "cartridgeitemtype",
+        "old_name": "typefield",
+        "label": ["Types","Tipuri disponibile (doar pentru referință)"],
+        "type": "dropdown",
+        "ranking": "40",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "dropdown_values": [
+            {
+                "name": "Black",
+                "comment": "id: 1"
+            },
+            {
+                "name": "Cyan",
+                "comment": "id: 2"
+            },
+            {
+                "name": "Magenta",
+                "comment": "id: 3"
+            },
+            {
+                "name": "Yellow",
+                "comment": "id: 4"
+            },
+            {
+                "name": "Mat black",
+                "comment": "id: 5"
+            },
+            {
+                "name": "Foto black",
+                "comment": "id: 6"
+            },
+            {
+                "name": "Necunoscut",
+                "comment": "id: 7"
+            },
+            {
+                "name": "Piesă de schimb",
+                "comment": "id: 9"
+            },
+            {
+                "name": "Color",
+                "comment": "id: 10"
+            }
+        ]
+    },
+    {
+        "name": "life_coefficient_field",
+        "old_name": "lcfield",
+        "label": ["Life coefficient","Coeficient durata de viață"],
+        "type": "number",
+        "ranking": "50",
+        "default_value": "1",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "0",
+        "decimalPrecision": "5,2"
+    },
+    {
+        "name": "supported_types_field",
+        "old_name": "supportedtypesfield",
+        "label": ["Supported types","Tipuri suportate (separate cu virgulă)"],
+        "type": "text",
+        "ranking": "60",
+        "default_value": "",
+        "is_active": "1",
+        "is_readonly": "0",
+        "mandatory": "1"
+    }
+]

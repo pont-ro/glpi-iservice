@@ -1,0 +1,236 @@
+{% macro numberField(name, value, label = '', options = {}) %}
+   {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
+   {% if options.step != 'any' and options.step|round(0, 'floor') != options.step and options.formatNumber == true %}
+      {# Only format number if not a whole number #}
+      {% set value = call('Html::formatNumber', [value, true]) %}
+   {% endif %}
+
+   {% if value == "" %}
+      {% set value = (options.min is defined ? options.min : 0) %}
+   {% endif %}
+   {% set field %}
+      <input type="number" id="%id%"
+             class="form-control {{ options.input_addclass }}"
+             name="{{ name }}" value="{{ value }}"
+              {{ options.readonly ? 'readonly' : '' }}
+              {{ options.disabled ? 'disabled' : '' }}
+              {{ options.required ? 'required' : '' }}
+              {% if options.min is defined %}min="{{ options.min }}"{% endif %}
+              {% if options.max is defined %}max="{{ options.max }}"{% endif %}
+              {% if options.step is defined %}step="{{ options.step }}"{% endif %} />
+      {% if options.buttons|length > 0 %}
+         {{ _self.additionalButtons(options.buttons) }}
+      {% endif %}
+   {% endset %}
+   {{ fieldsOriginal.field(name, field, label, options) }}
+{% endmacro %}
+
+{% macro customFormRow(name, label, value, options = {}) %}
+   {% if options.fields_template is not defined or not options.fields_template.isHiddenField(name) %}
+      <div class="form-field row col-12 mb-2">
+         <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
+            {{ label }}
+         </label>
+         <div class="col-xxl-8 field-container {{ options.valueClass }}">
+            {{ value|raw }}
+         </div>
+      </div>
+   {% endif %}
+{% endmacro %}
+
+{% macro bootstrapGridTableField(label, data, options = {}) %}
+   <div class="form-field row col-12 mb-2">
+      <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
+         {{ label }}
+      </label>
+      <div class="col-xxl-8 field-container {{ options.valueClass }}">
+         {{ _self.bootstrapGridTable(data) }}
+      </div>
+   </div>
+{% endmacro %}
+
+{% macro bootstrapGridTable(data) %}
+   <div class="row">
+      {% for colData in data['header'] %}
+         <div class="col fw-bold m-2 {{ colData.class }}">
+            {{ colData.value }}
+         </div>
+      {% endfor %}
+   </div>
+   {% for key, rowData in data['rows'] %}
+      <div class="row {{ rowData.class }}">
+         {% for colData in rowData.cols %}
+            <div class="col m-2 {{ colData.class }}">
+               {{ colData.value|raw }}
+            </div>
+         {% endfor %}
+      </div>
+   {% endfor %}
+{% endmacro %}
+
+{% macro marcoCallHelper(type, name, value, label = '', options = {}, itemType = '', elements = {}) %}
+   {% import 'components/form/fields_macros.html.twig' as fields %}
+   {% if type == 'textField' %}
+      {{ fields.textField(name, value, label, options) }}
+   {% elseif type == 'checkbox' %}
+      {{ fields.checkboxField(name, value, label, options) }}
+   {% elseif type == 'checkboxExtended' %}
+      {{ _self.checkboxFieldExtended(name, value, label, options) }}
+   {% elseif type == 'customFormRow' %}
+      {{ _self.customFormRow(label, value, options) }}
+   {% elseif type == 'hidden' %}
+      {{ fields.hiddenField(name, value, label, options) }}
+   {% elseif type == 'dropdown' %}
+      {{ fields.dropdownField(itemType, name, value, label, options) }}
+   {% elseif type == 'dropdownArray' %}
+     {{ fields.dropdownArrayField(name, value, elements, label, options) }}
+   {% elseif type == 'button' %}
+      {{ _self.button('', name, value, label, options) }}
+   {% endif %}
+{% endmacro %}
+
+{% macro button(type, name, value, label = '', options = {}) %}
+   <button
+      data-bs-toggle="tooltip"
+      class="btn {{ options.buttonClass ?? '' }}"
+      {% if type %}
+         type="{{ type }}"
+      {% endif %}
+      {% if name %}
+         name="{{ name }}"
+      {% endif %}
+      value="{{ value }}"
+      {% if options.data-required %}
+         data-required="{{ options.data-required }}"
+      {% endif %}
+      {% if options.on_click %}
+         onclick="{{ options.on_click }}"
+      {% endif %}
+      {% if options.style %}
+         style="{{ options.style }}"
+      {% endif %}
+      {% if options.title %}
+        title="{{ options.title }}"
+      {% endif %}
+   >
+      {% if options.buttonIconClass %}
+         <i class="{{ options.buttonIconClass }}"></i>
+      {% endif %}
+      <span>{{ label ?? value }}</span>
+   </button>
+{% endmacro %}
+
+{% macro checkboxFieldExtended(name, value, label = '', options = {}) %}
+   {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
+   {% if options.fields_template.isMandatoryField(name) %}
+      {% set options = {'required': true}|merge(options) %}
+   {% endif %}
+
+   {% set options = {
+      'center': true,
+   }|merge(options) %}
+
+   {% set field %}
+      <input type="hidden"   name="{{ name }}" value="{{ options.disabled ? value : 0 }}" />
+      <input type="checkbox" name="{{ name }}" value="1" class="form-check-input" id="%id%"
+              {{ value == 1 ? 'checked' : '' }}
+              {{ options.readonly ? 'readonly' : '' }}
+              {{ options.required ? 'required' : '' }}
+              {{ options.disabled ? 'disabled' : '' }}
+              {% if options.on_change %}
+                 onchange="{{ options.on_change }}"
+              {% endif %}
+      />
+      {% if options.label2 %}
+         <span class="form-check-label"> {{ options.label2 }}</span>
+      {% endif %}
+      {% if options.label2raw %}
+         {{ options.label2raw|raw }}
+      {% endif %}
+      {% if options.buttons|length > 0 %}
+            {{ _self.additionalButtons(options.buttons) }}
+      {% endif %}
+
+   {% endset %}
+
+   {{ fieldsOriginal.field(name, field, label, options) }}
+{% endmacro %}
+
+{% macro additionalButtons(buttons) %}
+   {% for button in buttons %}
+      {% if button.href %}
+         <a class='ms-2 {{ button.class }}' href='{{ button.href }}'>{{ button.label }}</a>
+      {% elseif button %}
+         {{ _self.button(button.type, button.name, button.value, button.label, button.options) }}
+      {% endif %}
+   {% endfor %}
+{% endmacro %}
+
+{% macro dropdownFieldExtended(itemtype, name, value, label = '', options = {}) %}
+   {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
+
+   {% if options.fields_template and options.fields_template.isHiddenInput(name) %}
+      {{ fieldsOriginal.hiddenField(name, value, label, options|merge({
+         'no_label': true
+      })
+      ) }}
+   {% else %}
+      {{ fieldsOriginal.dropdownField(
+         itemtype,
+         name,
+         value,
+         label,
+         options
+      ) }}
+    {% endif %}
+
+   {% if options.readonly %}
+      <input type="hidden" name="{{ name }}" value="{{ value }}">
+   {% endif %}
+{% endmacro %}
+
+{% macro datetimeField(name, value, label = '', options = {}) %}
+   {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
+   {% set options = {'rand': random()}|merge(options) %}
+   {% set options = {'id': name|slug ~ '_' ~ options.rand}|merge(options) %}
+   {% set locale = get_current_locale() %}
+
+   {% if options.fields_template and options.fields_template.isHiddenInput(name) %}
+      {{ fieldsOriginal.hiddenField(name, value, label, options|merge({
+         'no_label': true
+         })
+      ) }}
+   {% else %}
+
+      {% set field %}
+         {{ fieldsOriginal.flatpickrHtmlInput(name, value, label, options) }}
+         <script>
+
+            $(function() {
+               $('#{{ options.id }}').flatpickr({
+                  altInput: true,
+                  dateFormat: 'Y-m-d H:i:S',
+                  minDate: '{{ options.minDate }}',
+                  altFormat: '{{ call('Toolbox::getDateFormat', ['js']) }} H:i:S',
+                  enableTime: true,
+                  wrap: true,
+                  enableSeconds: true,
+                  weekNumbers: true,
+                  time_24hr: true,
+                  allowInput: {{ options.readonly ? 'false' : 'true' }},
+                  clickOpens: {{ options.readonly ? 'false' : 'true' }},
+                  locale: getFlatPickerLocale('{{ locale['language'] }}', '{{ locale['region'] }}'),
+                  onClose(dates, currentdatestring, picker) {
+                     picker.setDate(picker.altInput.value, true, picker.config.altFormat)
+                  },
+                  plugins: [
+                     CustomFlatpickrButtons({ 'buttons': {{ options.dateTimePickerButtons|raw }} })
+                  ]
+               });
+            });
+         </script>
+      {% endset %}
+
+      {{ fieldsOriginal.field(name, field, label, options) }}
+   {% endif %}
+{% endmacro %}

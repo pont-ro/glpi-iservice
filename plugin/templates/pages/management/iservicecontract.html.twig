@@ -1,0 +1,184 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+{% set params  = params ?? [] %}
+{% set no_header = no_header|default(not item.isNewItem() and not _get._in_modal|default(false)) %}
+{% set bg = '' %}
+{% if item.isDeleted() %}
+   {% set bg = 'asset-deleted' %}
+{% endif %}
+
+<div class="asset {{ bg }}">
+   {{ include('components/form/header.html.twig', {'in_twig': true}) }}
+
+   {% set rand = random() %}
+   {% set params  = params ?? [] %}
+   {% set withtemplate = params['withtemplate'] ?? '' %}
+   {% set item_type = item.getType() %}
+   {% set field_options = {
+      'locked_fields': item.getLockedFields(),
+   } %}
+
+   <div class="card-body d-flex flex-wrap">
+      <div class="col-12 col-xxl-12 flex-column">
+         <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+            <div class="row flex-row align-items-start flex-grow-1">
+               <div class="row flex-row">
+                  {% block form_fields %}
+                     {% set type_itemtype = 'Contract' %}
+                     {% set type_fk = 'id' %}
+
+                     {{ fields.dropdownField(
+                        'Contract',
+                        'contract_id',
+                        item.fields['id'],
+                        'Contract'|itemtype_name,
+                        field_options|merge({
+                           'on_change': 'window.location.href=\"//\" + window.location.host + window.location.pathname + \"?contract_id=\" + $(this).val();',
+                        })
+                     ) }}
+
+                     {{ fields.textField(
+                        'contract[name]',
+                        item.fields['name'],
+                        __('Name'),
+                     field_options
+                     ) }}
+
+                     {{ fields.textField(
+                        'contract[num]',
+                        item.fields['num'],
+                        _x('phone', 'Number'),
+                        field_options
+                     ) }}
+
+                     {{ fields.dateField(
+                        'contract[begin_date]',
+                        item.fields['begin_date'],
+                        __('Start date'),
+                        field_options
+                     ) }}
+
+                     {{ fields.dropdownNumberField('contract[duration]', item.fields['duration'], __('Initial contract period'), field_options|merge({
+                        'rand': rand,
+                        'min': 1,
+                        'max': 120,
+                        'step': 1,
+                        'toadd': [constant('Dropdown::EMPTY_VALUE')],
+                        'unit': 'month',
+                        'add_field_html': warranty_expiration|default('')
+                     })) }}
+
+                     {{ fields.dropdownNumberField('contract[periodicity]', item.fields['periodicity'], __('Contract renewal period'), field_options|merge({
+                        'rand': rand,
+                        'min': 12,
+                        'max': 60,
+                        'step': 12,
+                        'toadd': {
+                           0: constant('Dropdown::EMPTY_VALUE'),
+                           1: _n('%d month', '%d months', 1)|format(1),
+                           2: _n('%d month', '%d months', 2)|format(2),
+                           3: _n('%d month', '%d months', 3)|format(3),
+                           6: _n('%d month', '%d months', 6)|format(6),
+                        },
+                        'unit': 'month',
+                     })) }}
+
+                     {% set type_itemtype = item.getTypeClass() %}
+                     {% set type_fk = item.getTypeForeignKeyField() %}
+                     {{ fields.dropdownField(
+                        type_itemtype,
+                        'contract[' ~ type_fk ~ ']',
+                        item.fields[type_fk],
+                        type_itemtype|itemtype_name,
+                        field_options
+                     ) }}
+
+                     {{ fields.textareaField(
+                        'contract[comment]',
+                        item.fields['comment'],
+                        _n('Comment', 'Comments', get_plural_number()),
+                        field_options
+                     ) }}
+
+                     {{ fields.numberField(
+                        '_customfields[contract][included_copies_bk_field]',
+                        item.fields['included_copies_bk_field'],
+                        'Copii black incluse',
+                        field_options
+                     ) }}
+
+                     {{ fields.numberField(
+                        '_customfields[contract][included_copies_col_field]',
+                        item.fields['included_copies_col_field'],
+                        'Copii color incluse',
+                        field_options
+                     ) }}
+
+                     {{ fieldsIservice.numberField(
+                        '_customfields[contract][copy_price_bk_field]',
+                        item.fields['copy_price_bk_field'],
+                        'Tarif copie black',
+                        field_options|merge({
+                           'step': '0.0001'})
+                     ) }}
+
+                     {{ fieldsIservice.numberField(
+                        '_customfields[contract][copy_price_col_field]',
+                        item.fields['copy_price_col_field'],
+                        'Tarif copie color',
+                        field_options|merge({
+                           'step': '0.0001'})
+                     ) }}
+
+                     {{ fields.numberField(
+                        '_customfields[contract][included_copy_value_field]',
+                        item.fields['included_copy_value_field'],
+                        'Valoare copii incluse',
+                        field_options|merge({
+                           'step': '0.01'})
+                     ) }}
+
+                     {{ fields.numberField(
+                        '_customfields[contract][monthly_fee_field]',
+                        item.fields['monthly_fee_field'],
+                        'Tarif lunar',
+                        field_options|merge({
+                           'step': '0.01'})
+                     ) }}
+
+                     {{ fields.numberField(
+                        '_customfields[contract][currency_field]',
+                        item.fields['currency_field'],
+                        'Curs de calcul',
+                        field_options|merge({
+                           'step': '0.0001'})
+                     ) }}
+
+                     {{ fields.numberField(
+                        '_customfields[contract][copy_price_divider_field]',
+                        item.fields['copy_price_divider_field'],
+                        'Divizor PU copie',
+                        field_options
+                     ) }}
+
+                  {% endblock %}
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   {% if item_type == 'Contract' %}
+      {{ include('components/form/support_hours.html.twig') }}
+   {% endif %}
+   {{ include('components/form/buttons.html.twig') }}
+   {% if no_inventory_footer is not defined or no_inventory_footer == false %}
+      {{ include('components/form/inventory_info.html.twig') }}
+   {% endif %}
+
+   {% if params['formfooter'] is null or params['formfooter'] == true %}
+      <div class="card-footer mx-n2 mb-n2 mt-4">
+         {{ include('components/form/dates.html.twig') }}
+      </div>
+   {% endif %}
+</div>

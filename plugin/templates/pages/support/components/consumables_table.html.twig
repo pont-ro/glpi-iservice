@@ -1,0 +1,174 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+<div class="form-field row col-12 mb-2">
+    <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
+        {{ _n('Consumable', 'Consumables', 2, 'iservice') }}
+    </label>
+    <div class="col-xxl-8 field-container {{ options.valueClass }}">
+        {% if consumablesTableData.addConsumablesSection %}
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        {% for input in consumablesTableData.addConsumablesSection.inputs|sort((a, b) => a.order - b.order) %}
+                            {% if input.type != 'hidden' %}
+                            <td class="align-bottom">
+                                {{ input.no_label ? '' : input.label }}
+                            </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    <tr class="{{ consumablesTableData.addConsumablesSection.class }}">
+                        {% for input in consumablesTableData.addConsumablesSection.inputs|sort((a, b) => a.order - b.order) %}
+                            {% if input.type != 'hidden' %}
+                            <td>
+                            {% endif %}
+                                {{ fieldsIservice.marcoCallHelper(
+                                    input.type,
+                                    input.name,
+                                    input.value,
+                                    input.label,
+                                    field_options|merge(input.options ?? []),
+                                    input.itemType
+                                ) }}
+                            {% if input.type != 'hidden' %}
+                            </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div>
+        {% endif %}
+        {% if consumablesTableData.consumablesTableSection.type == 'grid' %}
+            <div class="row">
+                {% for column in consumablesTableData.consumablesTableSection.header %}
+                    <div class="col {{ column.class }}">
+                        {{ column.value }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% for row in consumablesTableData.consumablesTableSection.rows %}
+                <div class="row">
+                    {% for column in row.cols %}
+                    <div class="col {{ column.class }}">
+                        {% if column.value %}
+                            {{ column.value|raw }}
+                        {% endif %}
+                        {% if column.input %}
+                            {{ fieldsIservice.marcoCallHelper(
+                                column.input.type,
+                                column.input.name,
+                                column.input.value,
+                                column.input.label ?? '',
+                                field_options|merge(column.input.options ?? []),
+                                column.input.itemType
+                            ) }}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="row">
+                {% for button in consumablesTableData.consumablesTableSection.buttons %}
+                    <div class="col {{ column.class }}">
+                        {% if button.input %}
+                            {{ fieldsIservice.marcoCallHelper(
+                                button.input.type,
+                                button.input.name,
+                                button.input.value,
+                                button.input.label ?? '',
+                                field_options|merge(button.input.options ?? []),
+                                button.input.itemType
+                            ) }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if consumablesTableData.consumablesTableSection.type == 'table' %}
+            <div class="table-responsive consumables-update-section">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            {% for column in consumablesTableData.consumablesTableSection.header %}
+                                {% if not column.hidden %}
+                                    <th class="{{ column.class }}">
+                                        {{ column.value }}
+                                    </th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in consumablesTableData.consumablesTableSection.rows %}
+                            <tr class="">
+                                {% for column in row.cols %}
+                                    {% if not column.hidden %}
+                                        <td class="{{ column.class }}"
+                                        {% if column.title %}
+                                            title="{{ column.title }}"
+                                        {% endif %}
+                                        >
+                                            {% if column.value %}
+                                                {{ column.value|raw }}
+                                            {% endif %}
+                                            {% if column.input %}
+                                                {{ fieldsIservice.marcoCallHelper(
+                                                    column.input.type,
+                                                    column.input.name,
+                                                    column.input.value,
+                                                    column.input.label ?? '',
+                                                    field_options|merge(column.input.options ?? []),
+                                                    column.input.itemType
+                                                ) }}
+                                            {% endif %}
+                                        </td>
+                                    {% elseif column.input.type == 'hidden' %}
+                                        {{ fieldsIservice.marcoCallHelper(
+                                            column.input.type,
+                                            column.input.name,
+                                            column.input.value,
+                                            column.input.label ?? '',
+                                            field_options|merge(column.input.options ?? []),
+                                            column.input.itemType
+                                        ) }}
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-2 d-flex flex-row-reverse align-items-start flex-wrap">
+                {% for button in consumablesTableData.consumablesTableSection.buttons %}
+
+                        {% if button.input %}
+                            {{ fieldsIservice.marcoCallHelper(
+                                button.input.type,
+                                button.input.name,
+                                button.input.value,
+                                button.input.label ?? '',
+                                field_options|merge(button.input.options ?? []),
+                                button.input.itemType
+                            ) }}
+                        {% endif %}
+
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.consumables-update-section input').change(function () {
+            $('.consumables-update-section').addClass('border border-warning');
+
+            if ($('.consumables-update-section-changed-alert').length === 0) {
+                $('.consumables-update-section')
+                    .append('<div class="p-2 text-danger text-end consumables-update-section-changed-alert">' + __("Don't forget to press 'Update' button to save your changes", 'iservice') + '</div>');
+            }
+        });
+    });
+</script>

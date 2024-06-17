@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
--
+- EXL-322 - Refactored table creation install step
+- EXL-289 - Added self tests from iService2
+- EXL-301 - Implemented profile rights based on iService2
+- EXL-290 - Added hMarfa import
+- EXL-292 - Moved "Monthly plan" from iService2
+- EXL-294 - Migrated views from iService2
+- EXL-287 - Added plugin config handling
+- EXL-284 - Clean up unnecessary menu items
+- EXL-285 - Added htaccess based redirect to https 
+- EXL-274 - Added import tab to the config page
+- EXL-274 - config page to the plugin
+- EXL-273 - Added custom fields creation to the plugin
 
 ## [0.0.1] - 2023.04.28
 

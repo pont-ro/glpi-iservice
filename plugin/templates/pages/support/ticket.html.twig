@@ -1,0 +1,257 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{% set params  = params ?? [] %}
+{% set no_header = no_header|default(not item.isNewItem() and not _get._in_modal|default(false)) %}
+{% set bg = '' %}
+{% if item.isDeleted() %}
+    {% set bg = 'asset-deleted' %}
+{% endif %}
+
+<div class="asset {{ bg }}">
+    {{ include('components/form/header.html.twig', {'in_twig': true}) }}
+
+    {% set params  = params ?? [] %}
+    {% set item_type = item.getType() %}
+    {% set field_options = {
+        'locked_fields': item.getLockedFields(),
+        'full_width': true,
+        'fields_template': iServiceTicketTemplate,
+        'disabled': isClosed,
+    } %}
+
+    <div class="card-body d-flex flex-wrap">
+        <div class="col-12 col-xxl-10 flex-column">
+            <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+                <div class="row flex-row align-items-start flex-grow-1">
+                    <div class="row flex-row">
+                        {% if item.id > 0 %}
+                            {{ fields.readOnlyField(
+                                'id',
+                                item.fields['id'],
+                                __('ID'),
+                                field_options
+                            ) }}
+                        {% endif %}
+
+                        {% block form_fields %}
+                            {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
+
+                            {% if printer %}
+                                {{ fieldsIservice.numberField(
+                                    'total2_black_field',
+                                    item.customfields.fields['total2_black_field'],
+                                    __('Black counter reading', 'iservice'),
+                                    field_options|merge({
+                                        'min': total2BlackRequiredMinimum,
+                                        'disabled': total2BlackDisabled or isClosed,
+                                        'add_field_attribs': {
+                                            'data-toggle': 'tooltip',
+                                            'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
+                                        },
+                                        'buttons': [
+                                            csvCounterButtonConfig,
+                                            estimateButtonConfig,
+                                        ],
+                                        'input_addclass': 'w-50 d-inline-block',
+                                    })
+                                ) }}
+                            {% endif %}
+
+
+                            {% if printer.isColor() %}
+                                {{ fields.numberField(
+                                    'total2_color_field',
+                                    item.customfields.fields['total2_color_field'],
+                                    __('Color counter reading', 'iservice'),
+                                    field_options|merge({
+                                        'min': total2ColorRequiredMinimum,
+                                        'disabled': total2ColorDisabled or isClosed,
+                                        'add_field_attribs': {
+                                            'data-toggle': 'tooltip',
+                                            'title': __('Counter') ~ ' 106',
+                                        },
+                                    })
+                                ) }}
+                            {% endif %}
+
+                            {{ fields.dropdownField(
+                                'ITILCategory',
+                                'itilcategories_id',
+                                item.fields['itilcategories_id'],
+                                __('Category'),
+                                field_options|merge({
+                                    'required': true
+                                })
+                            ) }}
+
+                            {{ include('@iservice/pages/support/components/title_content.html.twig') }}
+
+                            {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
+
+                            {% if printer %}
+                                {{ include('@iservice/pages/support/components/changeables_table.html.twig') }}
+                            {% endif %}
+
+                            {% set canUpdateInitalValue = canupdate %}
+                            {% set canupdate = false %}
+                            <div id="statusElementContainer">
+                                {{ include('components/itilobject/fields/status.html.twig') }}
+                                {% if item.fields['status'] == constant('Ticket::CLOSED') %}
+                                    <script>
+                                        const statusElementContainer = $('#statusElementContainer');
+                                        if (statusElementContainer.find('.closed').length > 0 && statusElementContainer.find('.btn').length > 0) {
+                                            statusElementContainer.find('.btn').remove();
+                                        }
+                                    </script>
+                                {% endif %}
+                            </div>
+
+                            {% set canupdate = canUpdateInitalValue %}
+
+                            {{ fields.checkboxField(
+                                '_operator_reading',
+                                item.fields['_operator_reading'],
+                                __('Operator reading', 'iservice'),
+                                field_options
+                            ) }}
+
+                            {{ fields.checkboxField(
+                                'without_paper_field',
+                                item.customfields.fields['without_paper_field'],
+                                __('Without papers', 'iservice'),
+                                field_options
+                            ) }}
+
+                            {{ fields.checkboxField(
+                                'no_travel_field',
+                                item.customfields.fields['no_travel_field'],
+                                __('Without moving', 'iservice'),
+                                field_options
+                            ) }}
+
+                            {% if partnerId > 0 %}
+                                {{ fields.dropdownArrayField(
+                                    '_export_type',
+                                    item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
+                                    exportTypeOptions,
+                                    __('Export type', 'iservice'),
+                                    field_options|merge({
+                                        'required': item.hasConsumables(),
+                                        'on_change': 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}',
+                                    })
+                                ) }}
+                            {% endif %}
+
+                            {% if consumablesTableData and printer and (field_options.fields_template is not defined or not field_options.fields_template.isHiddenField('Consumables'))%}
+                                <div class="add-consumable-div">
+                                    {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
+                                </div>
+                                {% if item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'] == 0 %}
+                                    <script>
+                                        $(document).ready(function(){
+                                            $(".add-consumable-div").hide();
+                                        });
+                                    </script>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if item.hasConsumables() %}
+                                {{ fieldsIservice.checkboxFieldExtended(
+                                    'delivered_field',
+                                    item.getID() > 0 ? item.customfields.fields['delivered_field'] : deliveredDefaultValue,
+                                    __('Delivered', 'iservice'),
+                                    field_options|merge({
+                                        'disabled': item.customfields.fields['exported_field']
+                                    })
+                                ) }}
+
+                                {{ fieldsIservice.checkboxFieldExtended(
+                                    'exported_field',
+                                    item.customfields.fields['exported_field'],
+                                    __('Exported in csv and imported in hMarfa', 'iservice'),
+                                    field_options|merge({
+                                        'disabled': true,
+                                        'buttons': [sendMailButtonConfig],
+                                    })
+                                ) }}
+                            {%  endif %}
+
+                            {{ fieldsIservice.datetimeField(
+                                'effective_date_field',
+                                effectiveDate,
+                                __('Effective date', 'iservice'),
+                                field_options|merge({
+                                    'minDate': minEffectiveDate,
+                                    'readonly': effectiveDateFieldReadonly,
+                                    'dateTimePickerButtons':
+                                        '[
+                                            {
+                                               label: "' ~ __("Today")  ~ '",
+                                               attributes: {
+                                                  "class": "btn btn-outline-secondary"
+                                               },
+                                               onClick: (e, picker) => {
+                                                  picker.setDate(new Date());
+                                               }
+                                            },
+                                            {
+                                               label: "' ~ __("Yesterday") ~ '",
+                                               attributes: {
+                                                  "class": "btn btn-outline-secondary"
+                                               },
+                                               onClick: (e, picker) => {
+                                                  let date = new Date();
+                                                  date.setDate(date.getDate() - 1);
+                                                  picker.setDate(date);
+                                               }
+                                            }
+                                        ]',
+                                })
+                            ) }}
+
+                            <script>
+                                $(document).ready(function(){
+                                    $('[name="effective_date_field"]').on('change', function(){
+                                        $('[name="effective_date_manually_changed"]').val(1);
+                                    });
+                                });
+                            </script>
+
+                            {% if not effectiveDateFieldReadonly %}
+                                {{ fields.hiddenField(
+                                    'effective_date_manually_changed',
+                                    0,
+                                    '',
+                                    field_options|merge({
+                                        'no_label': true,
+                                    })
+                                ) }}
+                            {% endif %}
+
+                            {% if movementRelatedFields %}
+                                {{ include('@iservice/pages/support/components/movement_related_fields.html.twig') }}
+                            {% endif %}
+
+                            {% if emMailIdField %}
+                                {{ fields.hiddenField(
+                                    'em_mail_id_field',
+                                    emMailIdField,
+                                    '',
+                                    field_options|merge({
+                                        'no_label': true,
+                                    })
+                                ) }}
+                            {% endif %}
+                            {{ include('@iservice/pages/support/components/ticket_documents.html.twig') }}
+
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ include('@iservice/pages/support/components/buttons.html.twig') }}
+</div>
+
