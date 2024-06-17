@@ -5,6 +5,8 @@ require "../inc/includes.php";
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
+global $DB;
+
 $id       = IserviceToolBox::getInputVariable('id');
 $add      = IserviceToolBox::getInputVariable('add');
 $move     = IserviceToolBox::getInputVariable('move');
@@ -85,14 +87,12 @@ if (!empty($add)) {
         $item_customfields->update(
             [
                 $item_customfields->getIndexName() => $item_customfields->getID(),
-                'total2_black_fact' => $post['total2_black_fact'],
-                'total2_color_fact' => $post['total2_color_fact'],
-                'data_fact' => $post['data_fact'],
-                'data_exp_fact' => $post['data_exp_fact'],
-                'week_nr' => $post['week_number'],
+                'invoiced_total_black_field' => $post['invoiced_total_black_field'],
+                'invoiced_total_color_field' => $post['invoiced_total_color_field'],
+                'invoice_date_field' => $post['invoice_date'],
+                'invoice_expiry_date_field' => $post['invoice_expiry_date_field'],
+                'week_nr_field' => $post['week_number'],
                 'usage_address_field' => $post['usage_address'],
-                'contact_num' => $post['contact_num'],
-                'contact' => $post['contact'],
                 'daily_bk_average_field' => $post['dba'],
                 'daily_color_average_field' => empty($post['dca']) ? 'NULL' : $post['dca'],
                 'disable_em_field' => $post['disableem'],
