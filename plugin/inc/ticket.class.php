@@ -1402,8 +1402,8 @@ class PluginIserviceTicket extends Ticket
                 __('Invoice expiry date', 'iservice'),
                 ($plotterPrinter ? __('Printed surface', 'iservice') : __('Color counter', 'iservice')) . ' ' . __('last invoice', 'iservice'),
                 ($plotterPrinter ? __('Printed surface', 'iservice') : __('Color counter', 'iservice')) . ' ' . __('last closed ticket', 'iservice'),
-                __('Black counter', 'iservice') . ' ' . __('last invoice', 'iservice'),
-                __('Black counter', 'iservice') . ' ' . __('last closed ticket', 'iservice'),
+                ($plotterPrinter ? __('Consumed ink', 'iservice') : __('Black counter', 'iservice')) . ' ' . __('last invoice', 'iservice'),
+                ($plotterPrinter ? __('Consumed ink', 'iservice') : __('Black counter', 'iservice')) . ' ' . __('last closed ticket', 'iservice'),
             ], '', '', 'th'
         );
         return new PluginIserviceHtml_table(

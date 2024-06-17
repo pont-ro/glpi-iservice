@@ -63,7 +63,7 @@
                                 {{ fields.numberField(
                                     'total2_color_field',
                                     item.customfields.fields['total2_color_field'],
-                                    printer.isPlotter() ? __('Printed paper area', 'iservice') : __('Color counter reading', 'iservice'),
+                                    printer.isPlotter() ? __('Printed surface', 'iservice') : __('Color counter reading', 'iservice'),
                                     field_options|merge({
                                         'min': total2ColorRequiredMinimum,
                                         'disabled': total2ColorDisabled or isClosed,
