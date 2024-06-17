@@ -58,7 +58,7 @@ BEGIN
     SELECT COUNT(DISTINCT p.id) INTO printerCount
     FROM glpi_plugin_iservice_cartridges c
     LEFT JOIN glpi_locations l1 on l1.id = c.locations_id_field
-    LEFT JOIN glpi_plugin_fields_suppliercustomfields cfs on cfs.items_id = c.suppliers_id_field and cfs.itemtype = 'Supplier'
+    LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs on cfs.items_id = c.suppliers_id_field and cfs.itemtype = 'Supplier'
     JOIN glpi_cartridgeitems_printermodels cp ON cp.cartridgeitems_id = c.cartridgeitems_id
     JOIN glpi_printers p ON p.printermodels_id = cp.printermodels_id
     LEFT JOIN glpi_locations l2 on l2.id = p.locations_id
@@ -141,7 +141,7 @@ BEGIN
     INTO atc, lc, uc, da, counter_last, counter_use, last_data_luc
     FROM glpi_plugin_iservice_cartridges c
     LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.itemtype = 'CartridgeItem' AND cfci.items_id = c.cartridgeitems_id
-    LEFT JOIN glpi_plugin_iservice_printers p ON p.id = c.printers_id
+    LEFT JOIN glpi_plugin_iservice_printers_with_last_closed_ticket_data p ON p.id = c.printers_id
     -- LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
     LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
     LEFT JOIN glpi_plugin_iservice_tickets t on t.id = c.tickets_id_use_field
@@ -187,11 +187,11 @@ BEGIN
     DECLARE lastDataLuc DATETIME;
     
     SELECT
-        p.last_effective_date_field -- plct.effective_date_field
+        p.last_effective_date -- plct.effective_date_field
       , CASE color WHEN 1 THEN p.last_total2_color /* plct.total2_color_field */ ELSE p.last_total2_black /* plct.total2_black_field */ END
       , CASE color WHEN 1 THEN cfp.daily_color_average_field ELSE cfp.daily_bk_average_field END
     INTO lastDataLuc, lastCounter, dailyAverage
-    FROM glpi_plugin_iservice_printers p
+    FROM glpi_plugin_iservice_printers_with_last_closed_ticket_data p
     -- LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
     JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND  cfp.items_id = p.id
     WHERE p.id = printerId;
