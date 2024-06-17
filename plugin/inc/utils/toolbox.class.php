@@ -400,7 +400,7 @@ class ToolBox
         return preg_replace('/<br\s?\/?>/ius', "\n", str_replace("\n", "", str_replace("\r", "", htmlspecialchars_decode($input))));
     }
 
-    public static function getExpertLineId(): int
+    public static function getExpertLineId(): int|null
     {
         if (empty(self::$expert_line_id)) {
             self::$expert_line_id = self::getIdentifierByAttribute('Supplier', 'Expert Line srl');
