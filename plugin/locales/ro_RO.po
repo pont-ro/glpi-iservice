@@ -1037,6 +1037,9 @@ msgstr "Câmpurile adiționale au fost resetate la setările implicite"
 msgid "An error occurred while resetting custom fields to default settings"
 msgstr "A apărut o eroare în timpul resetării câmpurilor adiționale la setările implicite"
 
+msgid "You can not install this cartridge because it is already installed with an other ticket!"
+msgstr "Nu puteți instala acest cartuș deoarece este deja instalat cu un alt tichet!"
+
 #~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
 #~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
 
