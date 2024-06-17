@@ -41,7 +41,7 @@
                                 {{ fieldsIservice.numberField(
                                     'total2_black_field',
                                     item.customfields.fields['total2_black_field'],
-                                    __('Black counter reading', 'iservice'),
+                                    printer.isPlotter() ? __('Consumed ink', 'iservice') : __('Black counter reading', 'iservice'),
                                     field_options|merge({
                                         'min': total2BlackRequiredMinimum,
                                         'disabled': total2BlackDisabled or isClosed,
@@ -59,11 +59,11 @@
                             {% endif %}
 
 
-                            {% if printer.isColor() %}
+                            {% if printer.isColor() or printer.isPlotter() %}
                                 {{ fields.numberField(
                                     'total2_color_field',
                                     item.customfields.fields['total2_color_field'],
-                                    __('Color counter reading', 'iservice'),
+                                    printer.isPlotter() ? __('Printed paper area', 'iservice') : __('Color counter reading', 'iservice'),
                                     field_options|merge({
                                         'min': total2ColorRequiredMinimum,
                                         'disabled': total2ColorDisabled or isClosed,
