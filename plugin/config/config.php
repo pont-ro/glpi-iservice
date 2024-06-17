@@ -23,7 +23,7 @@ return [
     'dataintegritytests.cache_timeout' => 3600, // 60 minutes
     'folder_integrity.report_file' => PLUGIN_ISERVICE_CACHE_DIR . "/unknown_directory_entries",
     'open_ticket_limit' => 50,
-    'views.show_limit' => 'false',
+    'views.show_limit' => true,
     'plugin.cleanup_on_uninstall' => false,
     'old_db' => [
         'host' => 'localhost',
