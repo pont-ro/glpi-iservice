@@ -840,6 +840,11 @@ class PluginIserviceTicket extends Ticket
         }
 
         $cartridge->getFromDB($cartridgeIdToInstall);
+        if ($cartridge->fields['printers_id'] > 0) {
+            Session::addMessageAfterRedirect(__('You can not install this cartridge because it is already installed with an other ticket!', 'iservice'), false, WARNING);
+            return false;
+        }
+
         PluginIserviceDB::populateByItemsId($cartridgeCustomfields, $cartridge->fields['cartridgeitems_id']);
         $cartridge->fields['printers_id']        = $printerId;
         $cartridge->fields['mercury_code_field'] = $cartridgeCustomfields->fields['mercury_code_field'];
