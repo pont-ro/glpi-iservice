@@ -20,7 +20,7 @@ return [
     ],
     'schedule' => [
         'display_last_result' => true,
-        'hours'               => [3],
+        'h:m'                 => ['3:01'],
         'ignore_text'         => [
             'hours' => "Checked only at 3",
         ]

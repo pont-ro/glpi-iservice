@@ -71,9 +71,9 @@ return [
     ],
     'schedule' => [
         'display_last_result' => true,
-        'hours'               => ['2-4:01', '14:01'],
+        'hours'               => ['4:01', '14:01'],
         'ignore_text'         => [
-            'hours' => "Checked only from 02 to 04 and 14",
+            'hours' => "Checked only at 4:01 and 14:01",
         ]
     ]
 ];
