@@ -431,10 +431,10 @@ class PluginIservicePrinter extends Printer
             $output .= $form->generateFieldTableRow(__('Comments'), $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, 'printer[comment]', $printer->fields['comment'], $readonly));
         }
 
-        // Planlunar week.
+        // MonthlyPlan week.
         $output .= $form->generateFieldTableRow('Număr săptămână', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][week_nr_field]', $printer_customfields->fields['week_nr_field'], $readonly || !$has_full_rights));
 
-        // Planlunar comments.
+        // MonthlyPlan comments.
         $output .= $form->generateFieldTableRow('Observații plan lunar', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[printer][plan_observations_field]', $printer_customfields->fields['plan_observations_field'], $readonly || !$has_full_rights));
 
         $output .= "</table>";

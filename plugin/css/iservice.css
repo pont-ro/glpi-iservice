@@ -179,6 +179,11 @@ div.actions-wrap {
     margin-left: 1em;
 }
 
+#monthlyplan a {
+    color: inherit;
+    font-weight: inherit;
+}
+
 .submit.disabled {
     pointer-events: auto !important;
 }
