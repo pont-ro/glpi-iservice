@@ -183,3 +183,7 @@ div.actions-wrap {
     color: inherit;
     font-weight: inherit;
 }
+
+.submit.disabled {
+    pointer-events: auto !important;
+}
