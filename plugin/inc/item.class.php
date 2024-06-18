@@ -75,7 +75,7 @@ trait PluginIserviceItem
     public function add(array $input, $options = [], $history = true)
     {
         $model = new parent;
-        IserviceToolBox::populateCustomFieldsWithDefaultValues($model, $input);
+        IserviceToolBox::preprocessInputValuesForCustomFields(get_Class($model), $input);
         $result = $model->add($input, $options, $history);
 
         if ($result) {
@@ -95,7 +95,7 @@ trait PluginIserviceItem
     public function update(array $input, $history = 1, $options = []): bool
     {
         $model = new parent;
-        IserviceToolBox::populateCustomFieldsWithDefaultValues($model, $input);
+        IserviceToolBox::preprocessInputValuesForCustomFields(get_Class($model), $input);
         $model->getFromDB($this->getID());
         $result = $model->update($input, $history, $options);
 
@@ -165,7 +165,7 @@ trait PluginIserviceItem
                 [
                     'add' => 'add',
                     'items_id' => $ID,
-                    'itemtype' => $this->getType(),
+                    'itemtype' => (new parent())->getType(),
                     '_no_message' => true
                 ]
             )

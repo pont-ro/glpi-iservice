@@ -53,14 +53,14 @@ $contract_customfields = new PluginFieldsContractcontractcustomfield();
 if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer']['name'])) {
     $printer->check(-1, CREATE, $post_data['printer']);
     $input = array_merge($post_data['printer'] ?? [], $post['_customfields']['printer'] ?? []);
-    IserviceToolBox::populateCustomFieldsWithDefaultValues($printer, $input);
+    IserviceToolBox::preprocessInputValuesForCustomFields(get_Class($printer), $input);
 
     if (($id = $printer->add($input)) !== false) {
         if (!PluginIserviceDB::populateByItemsId($printer_customfields, $id)) {
             $input['add']      = 'add';
             $input['items_id'] = $id;
             $printer_customfields->add($input);
-        } elseif (empty($$printer->plugin_fields_data)) {
+        } elseif (empty($printer->plugin_fields_data)) {
             $input[$printer_customfields->getIndexName()] = $printer_customfields->getID();
             $printer_customfields->update($input);
         }
@@ -70,7 +70,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
     }
 } elseif (!empty($update) && $post_data['printer'] !== null && !empty($post_data['printer']['name'])) {
     $printer->check($id, UPDATE);
-    IserviceToolBox::populateCustomFieldsWithDefaultValues($printer, $post_data['printer']);
+    IserviceToolBox::preprocessInputValuesForCustomFields(get_Class($printer), $post_data['printer']);
     $printer->update($post_data['printer']);
     PluginIserviceDB::populateByItemsId($printer_customfields, $id);
     $post['_customfields']['printer'][$printer_customfields->getIndexName()] = $printer_customfields->getID();

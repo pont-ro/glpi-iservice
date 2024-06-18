@@ -413,9 +413,9 @@ class ToolBox
         return self::$expert_line_id;
     }
 
-    public static function populateCustomFieldsWithDefaultValues($item, &$input)
+    public static function preprocessInputValuesForCustomFields($className, &$input): void
     {
-        $containerId = PluginFieldsContainer::findContainer(get_Class($item));
+        $containerId = PluginFieldsContainer::findContainer($className);
 
         $fields = [];
 
@@ -429,20 +429,25 @@ class ToolBox
         }
 
         foreach ($fields as $field) {
-            if (!$field['is_active'] || $field['mandatory'] != 1 || $field['type'] == "yesno" || $field['type'] == "header") {
+            if (!$field['is_active'] || $field['type'] == "yesno" || $field['type'] == "header") {
                 continue;
             }
 
             $value = $input[$field['name']] ?? null;
-
-            if (($value === null
-                || $value === ''
-                || (($field['type'] === 'dropdown' || preg_match('/^dropdown-.+/i', $field['type'])) && $value == 0)
-                || ($field['type'] === 'glpi_item' && $value === null)
-                || (in_array($field['type'], ['date', 'datetime']) && $value == 'NULL'))
-                && $field['default_value'] !== ''
-            ) {
-                $input[$field['name']] = $field['default_value'];
+            if ($field['mandatory'] == 1) {
+                if (($value === null
+                    || $value === ''
+                    || (($field['type'] === 'dropdown' || preg_match('/^dropdown-.+/i', $field['type'])) && $value == 0)
+                    || ($field['type'] === 'glpi_item' && $value === null)
+                    || (in_array($field['type'], ['date', 'datetime']) && $value == 'NULL'))
+                    && $field['default_value'] !== ''
+                ) {
+                    $input[$field['name']] = $field['default_value'];
+                }
+            } else {
+                if ($value !== null &&  $field['type'] === 'number' && !is_numeric($value)) {
+                    unset($input[$field['name']]);
+                }
             }
         }
     }
