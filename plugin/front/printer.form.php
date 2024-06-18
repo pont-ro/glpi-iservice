@@ -70,6 +70,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
     }
 } elseif (!empty($update) && $post_data['printer'] !== null && !empty($post_data['printer']['name'])) {
     $printer->check($id, UPDATE);
+    IserviceToolBox::populateCustomFieldsWithDefaultValues($printer, $post_data['printer']);
     $printer->update($post_data['printer']);
     PluginIserviceDB::populateByItemsId($printer_customfields, $id);
     $post['_customfields']['printer'][$printer_customfields->getIndexName()] = $printer_customfields->getID();
