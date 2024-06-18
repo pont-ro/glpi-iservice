@@ -1894,7 +1894,6 @@ class PluginIserviceTicket extends Ticket
                     'options' => [
                         'data-confirm-message' => $close_confirm_message,
                         'on_click'             => '$("[name=status]").val(' . Ticket::CLOSED . ');',
-                        'buttonClass' => 'submit disabled',
                     ],
                 ];
 
