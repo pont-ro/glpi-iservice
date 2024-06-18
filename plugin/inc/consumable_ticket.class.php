@@ -113,7 +113,6 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
             $consumables_selector_options = [
                 'comments'      => false,
                 'display'       => false,
-                'name'          => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
                 'used'          => array_keys($consumables),
                 'specific_tags' => ['transform_function' => "PluginIserviceConsumable_Ticket::TransformDropdownValue($suppliers_id, $items_id, %s)"],
                 'no_label'      => true,
