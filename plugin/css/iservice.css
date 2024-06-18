@@ -178,3 +178,8 @@ div.actions-wrap {
     display: inline-block;
     margin-left: 1em;
 }
+
+#monthlyplan a {
+    color: inherit;
+    font-weight: inherit;
+}

@@ -192,7 +192,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
     }
 </script>
 
-<table id="planlunar" class="tab_cadre wide">
+<table id="monthlyplan" class="tab_cadre wide">
     <tbody>
     <tr>
         <?php for ($column = 1; $column < 5; $column++) { ?>
