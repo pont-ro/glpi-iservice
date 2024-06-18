@@ -92,6 +92,7 @@
 {% macro button(type, name, value, label = '', options = {}) %}
    <button
       data-bs-toggle="tooltip"
+      data-bs-html="true"
       class="btn {{ options.buttonClass ?? '' }}"
       {% if type %}
          type="{{ type }}"
@@ -111,6 +112,9 @@
       {% endif %}
       {% if options.title %}
         title="{{ options.title }}"
+      {% endif %}
+      {% if options.disabled %}
+           disabled="disabled"
       {% endif %}
    >
       {% if options.buttonIconClass %}

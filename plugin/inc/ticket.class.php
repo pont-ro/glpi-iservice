@@ -54,6 +54,8 @@ class PluginIserviceTicket extends Ticket
     public $total2BlackRequiredMinimum;
     public $total2ColorRequiredMinimum;
 
+    public $ticketNotCloseableReasons = '';
+
     public function canViewItem(): bool
     {
         return parent::canViewItem() || $this->isUserTechPark();
@@ -1789,7 +1791,7 @@ class PluginIserviceTicket extends Ticket
         return $consumableTicket->find(['tickets_id' => $this->getID()]) !== [];
     }
 
-    public function isCloseable(): bool
+    public function getNotCloseableReasonsList(): string
     {
         $isMovement = !empty($this->customfields->fields['movement_id_field']) || !empty($this->customfields->fields['movement2_id_field']);
         if ($isMovement) {
@@ -1797,12 +1799,49 @@ class PluginIserviceTicket extends Ticket
             $movement->getFromDB($this?->customfields?->fields['movement_id_field'] ?: $this?->customfields?->fields['movement2_id_field'] ?: -1);
         }
 
-        return
-            !empty($this->fields['_users_id_assign']) &&
-            !empty($this->fields['itilcategories_id']) &&
-            (empty($this->getPrinterId()) || (($this->customfields->fields['total2_black_field'] >= $this->total2BlackRequiredMinimum) && (!$this->printer?->isColor() || $this->customfields->fields['total2_color_field'] >= $this->total2ColorRequiredMinimum))) &&
-            (!$isMovement || !empty($movement->fields['invoice'])) &&
-            (!$this->hasConsumables() || (!empty($this->customfields->fields['delivered_field']) && !empty($this->customfields->fields['exported_field'])));
+        $reasons = [];
+
+        if (empty($this->fields['_users_id_assign'])) {
+            $reasons[] = __('\"Assigned to\" field is empty!', 'iservice');
+        }
+
+        if (empty($this->fields['itilcategories_id'])) {
+            $reasons[] = __("Category is not selected!", 'iservice');
+        }
+
+        if (!empty($this->getPrinterId())) {
+            if ($this->customfields->fields['total2_black_field'] < $this->total2BlackRequiredMinimum) {
+                $reasons[] = __('Black counter under limit!', 'iservice');
+            }
+
+            if ($this->printer?->isColor() && $this->customfields->fields['total2_color_field'] < $this->total2ColorRequiredMinimum) {
+                $reasons[] = __('Color counter under limit!', 'iservice');
+            }
+        }
+
+        if ($isMovement && empty($movement->fields['invoice'])) {
+            $reasons[] = __('Movement not invoiced!', 'iservice');
+        }
+
+        if ($this->hasConsumables()) {
+            if (empty($this->customfields->fields['delivered_field'])) {
+                $reasons[] = __('Unfinished delivery!', 'iservice');
+            }
+
+            if (empty($this->customfields->fields['exported_field'])) {
+                $reasons[] = __('hMarfa export not done!', 'iservice');
+            }
+        }
+
+        return implode("<br>", $reasons);
+    }
+
+    public function isCloseable(): bool
+    {
+
+        $this->ticketNotCloseableReasons = $this->getNotCloseableReasonsList();
+
+        return empty($this->ticketNotCloseableReasons);
     }
 
     public function getButtonsConfig($ID, $options, $movement = null): array
@@ -1847,17 +1886,22 @@ class PluginIserviceTicket extends Ticket
                     ],
                 ];
             } elseif (!$closed) {
-                if ($this->isCloseable()) {
-                    $buttons['close'] = [
-                        'type'    => 'submit',
-                        'name'    => 'update',
-                        'label'   => __('Close'),
-                        'value'   => 1,
-                        'options' => [
-                            'data-confirm-message' => $close_confirm_message,
-                            'on_click'             => '$("[name=status]").val(' . Ticket::CLOSED . ');'
-                        ],
-                    ];
+                $buttons['close'] = [
+                    'type'    => 'submit',
+                    'name'    => 'update',
+                    'label'   => __('Close'),
+                    'value'   => 1,
+                    'options' => [
+                        'data-confirm-message' => $close_confirm_message,
+                        'on_click'             => '$("[name=status]").val(' . Ticket::CLOSED . ');',
+                        'buttonClass' => 'submit disabled',
+                    ],
+                ];
+
+                if (!$this->isCloseable()) {
+                    $buttons['close']['options']['disabled']    = true;
+                    $buttons['close']['options']['buttonClass'] = 'submit disabled';
+                    $buttons['close']['options']['title']       = $this->ticketNotCloseableReasons;
                 }
 
                 $button_statuses = [Ticket::SOLVED, Ticket::WAITING, Ticket::PLANNED, Ticket::ASSIGNED];
@@ -1890,9 +1934,9 @@ class PluginIserviceTicket extends Ticket
 
                 $exportButtonOptions = [
                     'onclick'    => 'if ($(this).hasClass("disabled")) { return false; }',
-                    'data-title' => 'Ticketul nu poate fi exportat până livrarea nu este finalizată',
                 ];
                 if (empty($this->customfields->fields['delivered_field'])) {
+                    $exportButtonOptions['disabled']    = true;
                     $exportButtonOptions['buttonClass'] = 'submit disabled';
                     $exportButtonOptions['title']       = 'Ticketul nu poate fi exportat până livrarea nu este finalizată';
                 }

@@ -178,3 +178,7 @@ div.actions-wrap {
     display: inline-block;
     margin-left: 1em;
 }
+
+.submit.disabled {
+    pointer-events: auto !important;
+}
