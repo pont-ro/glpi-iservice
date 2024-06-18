@@ -62,6 +62,7 @@ class View extends \CommonGLPI
     protected $cache_timeout;
     protected $cache_timeout_warning;
     protected $cache_query;
+    protected $enable_refresh;
     protected $filters;
     protected $columns;
     protected $actions;
@@ -91,6 +92,7 @@ class View extends \CommonGLPI
         'cache_timeout' => 600, // 10 min in seconds
         'cache_timeout_warning' => null,
         'cache_query' => '',
+        'enable_refresh' => true,
         'filters' => [],
         'columns' => [],
         'actions' => [],
@@ -1092,8 +1094,8 @@ class View extends \CommonGLPI
 
             $style          = date('Y-m-d H:i:s') > ($this->use_cache['data_expire_warning'] ?? '') ? "style='color:red'" : "";
             $title          = sprintf(__("Expires on %s", 'iservice'), $this->use_cache['data_expires'] ?? '');
-            $refresh_button = "<input class='submit' onclick='$(\"#cache-refresh\").val(1);$(\".refresh-target\").submit();' $style type='submit' value='" . __('Refresh', 'iservice') . "'>";
-            $this->name    .= " [<span $style title='$title'>" . sprintf(__('from cache %s', 'iservice'), $this->use_cache['data_cached'] ?? '') . " $refresh_button</span>]";
+            $refresh_button = $this->enable_refresh ? " <input class='submit' onclick='$(\"#cache-refresh\").val(1);$(\".refresh-target\").submit();' $style type='submit' value='" . __('Refresh', 'iservice') . "'>" : "";
+            $this->name    .= " [<span $style title='$title'>" . sprintf(__('from cache %s', 'iservice'), $this->use_cache['data_cached'] ?? '') . "$refresh_button</span>]";
         }
 
         $this->adjustQueryOrderBy();

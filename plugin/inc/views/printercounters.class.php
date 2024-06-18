@@ -167,12 +167,13 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $this->enable_emaintenance_data_import = false;
         $settings                              = parent::getSettings();
         $settings['name']                      = __('Printer counters', 'iservice') . " care " . PluginIservicePrinter::getCMConditionForDisplay();
-        $settings['mass_actions']              = [
-            'update_daily_averages' => [
-                'caption' => 'Modifică mediile zilnice + reîmprospătează',
-                'action' => 'views.php?view=PrinterCounters',
-            ],
-        ];
+        $settings['enable_refresh']            = false;
+        $settings['mass_actions']              = [];
+//            'update_daily_averages' => [
+//                'caption' => 'Modifică mediile zilnice + reîmprospătează',
+//                'action' => 'views.php?view=PrinterCounters',
+//            ],
+//        ];
         foreach (array_keys($settings['filters']) as $filter_id) {
             if (!in_array($filter_id, ['supplier_id', 'printer_name', 'supplier_name', 'printer_location', 'serial', 'otherserial', 'tech_id'])) {
                 unset($settings['filters'][$filter_id]);
