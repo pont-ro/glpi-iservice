@@ -113,7 +113,8 @@ class PluginIservicePartner extends Supplier
     {
         if ($id instanceof PluginIservicePartner) {
             $partner = $id;
-            $partner->check($id->getID(), UPDATE);
+            $id = $partner->getID();
+            $partner->check($id, UPDATE);
         } else {
             $partner = new PluginIservicePartner();
             $partner->check($id, UPDATE);
@@ -208,7 +209,7 @@ In cazul in care debitul mentionat mai sus a fost deja achitat, va rugam sa igno
 Pentru lamuriri suplimentare sau inadvertente va rugam sa luati legatura cu persoana dvs. de contact din cadrul companiei noastre, sau rsapundeti la acest mail
 
 Pentru a vedea situatia ultimelor 10 facturi si a le descarca in format pdf, accesati link-ul urmator:
-http://iservice2.expertline-magazin.ro{$this->getMagicLink()}
+http://iservice3.expertline-magazin.ro{$this->getMagicLink()}
 
 Va rog pastrati acest link deoarece datele de pe acest link vor fi in permananenta actualizate, deci va putea fi folosit pe viitor.
 In cazul in care vi se cere o parola suplimentara pentru a accesa serverul Expert Line va rugam trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366
@@ -234,7 +235,7 @@ Valoare facturi neachitate: $unpaid_invoices_value
 $unpaid_invoices_list
 
 Pentru a vedea situatia ultimelor 10 facturi si a le descarca in format pdf, accesati link-ul urmator:
-http://iservice2.expertline-magazin.ro{$this->getMagicLink()}
+http://iservice3.expertline-magazin.ro{$this->getMagicLink()}
 
 Va rog pastrati acest link deoarece datele de pe acest link vor fi in permananenta actualizate, deci va putea fi folosit pe viitor.
 In cazul in care vi se cere o parola suplimentara pentru a accesa serverul Expert Line va rugam trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366
