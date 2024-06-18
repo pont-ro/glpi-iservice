@@ -1791,7 +1791,7 @@ class PluginIserviceTicket extends Ticket
         return $consumableTicket->find(['tickets_id' => $this->getID()]) !== [];
     }
 
-    public function getNotCloseableReasonsList(): string
+    public function getNotCloseableReasonsList(): array
     {
         $isMovement = !empty($this->customfields->fields['movement_id_field']) || !empty($this->customfields->fields['movement2_id_field']);
         if ($isMovement) {
@@ -1833,7 +1833,7 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-        return implode("<br>", $reasons);
+        return $reasons;
     }
 
     public function isCloseable(): bool
@@ -1901,7 +1901,7 @@ class PluginIserviceTicket extends Ticket
                 if (!$this->isCloseable()) {
                     $buttons['close']['options']['disabled']    = true;
                     $buttons['close']['options']['buttonClass'] = 'submit disabled';
-                    $buttons['close']['options']['title']       = $this->ticketNotCloseableReasons;
+                    $buttons['close']['options']['title']       = implode("<br>", $this->ticketNotCloseableReasons);
                 }
 
                 $button_statuses = [Ticket::SOLVED, Ticket::WAITING, Ticket::PLANNED, Ticket::ASSIGNED];
