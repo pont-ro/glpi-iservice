@@ -69,8 +69,17 @@ function plugin_iservice_redefine_menus($menus): array
     return $menus;
 }
 
-function plugin_iservice_Ticket_add(Ticket $item)
+function plugin_iservice_pre_Ticket_update(Ticket $item)
 {
+    // plugin_iservice_ticket_adjust_data_luc($item);
+    // plugin_iservice_ticket_adjust_counters($item);
+    if (PluginIserviceTicket::isTicketClosing($item)) {
+        plugin_iservice_ticket_check_if_can_close($item);
+    }
+
+    if (PluginIserviceTicket::isTicketOpening($item)) {
+        plugin_iservice_ticket_reopen_newer_tickets($item);
+    }
 }
 
 function plugin_iservice_Ticket_update(Ticket $item)
@@ -85,16 +94,26 @@ function plugin_iservice_PluginFieldsTicketticketcustomfield_update(PluginFields
     PluginIserviceTicket::handleDeliveredStatusChange($item);
 }
 
-function plugin_iservice_pre_Ticket_update(Ticket $item)
-{
-    // plugin_iservice_ticket_adjust_data_luc($item);
-    // plugin_iservice_ticket_adjust_counters($item);
-    if (PluginIserviceTicket::isTicketClosing($item)) {
-        plugin_iservice_ticket_check_if_can_close($item);
+function plugin_iservice_Printer_update(Printer $item) {
+    if (!in_array('locations_id', $item->updates)) {
+        return;
+    }
+    $cartridge_object = new PluginIserviceCartridge();
+    // Move all the installed cartridges to the new location
+    foreach ($cartridge_object->find(["date_out is null AND not date_use is null AND printers_id = " . $item->getID()]) as $cartridge) {
+        $cartridge_object->update(array('id' => $cartridge['id'], 'locations_id_field' => $item->fields['locations_id'] ?: '0'));
+    }
+}
+
+function plugin_iservice_Infocom_update($item) {
+    if (!in_array('suppliers_id', $item->updates) || empty($item->oldvalues['suppliers_id']) || $item->fields['itemtype'] !== 'Printer') {
+        return;
     }
 
-    if (PluginIserviceTicket::isTicketOpening($item)) {
-        plugin_iservice_ticket_reopen_newer_tickets($item);
+    $cartridge_object = new PluginIserviceCartridge();
+    // Move all the installed cartridges to the new partner
+    foreach ($cartridge_object->find(["NOT date_use IS null AND date_out IS null AND suppliers_id_field = {$item->oldvalues['suppliers_id']} AND printers_id = {$item->fields['items_id']}"]) as $cartridge) {
+        $cartridge_object->update(array('id' => $cartridge['id'], 'suppliers_id_field' => $item->fields['suppliers_id'] ?? 0));
     }
 }
 

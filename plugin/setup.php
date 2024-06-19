@@ -113,10 +113,10 @@ function plugin_init_iservice(): void
 
     $PLUGIN_HOOKS['pre_item_update']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_update';
 
-    $PLUGIN_HOOKS['item_add']['iservice']['Ticket']    = 'plugin_iservice_Ticket_add';
     $PLUGIN_HOOKS['item_update']['iservice']['Ticket'] = 'plugin_iservice_Ticket_update';
-
     $PLUGIN_HOOKS['item_update']['iservice']['PluginFieldsTicketticketcustomfield'] = 'plugin_iservice_PluginFieldsTicketticketcustomfield_update';
+    $PLUGIN_HOOKS['item_update']['iservice']['Printer'] = 'plugin_iservice_Printer_update';
+    $PLUGIN_HOOKS['item_update']['iservice']['Infocom'] = 'plugin_iservice_Infocom_update';
 
     $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
 
