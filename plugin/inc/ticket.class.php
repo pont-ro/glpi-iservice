@@ -929,7 +929,7 @@ class PluginIserviceTicket extends Ticket
 
         if (!$success) {
             // Do nothing in particular if no success so far but check if there is a selected cartridge.
-        } elseif (!empty($input['_plugin_iservice_cartridges_tickets']) && is_array($input['_plugin_iservice_cartridges_tickets'])) {
+        } elseif (is_array($input['_plugin_iservice_cartridges_tickets'] ?? null)) {
             $cartridge                       = new PluginIserviceCartridge();
             $pluginIserviceCartridgesTickets = new PluginIserviceCartridge_Ticket();
             foreach (array_keys($input['_plugin_iservice_cartridges_tickets']) as $idToDelete) {
@@ -942,13 +942,13 @@ class PluginIserviceTicket extends Ticket
                         'id' => $pluginIserviceCartridgesTickets->fields['cartridges_id'],
                         'printers_id' => 0,
                         'date_use' => 'NULL',
-                        'tickets_id_use' => 'NULL',
+                        'tickets_id_use_field' => 'NULL',
                         'date_out' => 'NULL',
-                        'tickets_id_out' => 'NULL',
+                        'tickets_id_out_field' => 'NULL',
                         'pages_out_field' => 0,
-                        'pages_color' => 0,
-                        'pages_use' => 0,
-                        'pages_color_use' => 0,
+                        'pages_color_out_field' => 0,
+                        'pages_use_field' => 0,
+                        'pages_color_use_field' => 0,
                     ]
                 );
                 $success &= $pluginIserviceCartridgesTickets->delete(['id' => $idToDelete]);

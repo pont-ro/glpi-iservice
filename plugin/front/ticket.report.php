@@ -351,11 +351,11 @@ PluginIserviceDB::populateByQuery(
                                                     $cartridge_data[$index]['instalat'] = $cartridge['cpt'];
                                                     $counters                           = $cartridge['pages_use_field'];
                                                     if ($printer->isColor()) {
-                                                        $counters .= " (n)<br>$cartridge[pages_color_use] (c)";
+                                                        $counters .= " (n)<br>$cartridge[pages_color_use_field] (c)";
                                                     }
 
                                                     if ($printer->isPlotter()) {
-                                                        $counters .= " (cerneală consumată)<br>$cartridge[pages_color_use] (suprafața printată)";
+                                                        $counters .= " (cerneală consumată)<br>$cartridge[pages_color_use_field] (suprafața printată)";
                                                     }
 
                                                     $cartridge_data[$index]['counters'] = $counters;

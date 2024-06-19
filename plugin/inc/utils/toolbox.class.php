@@ -445,7 +445,7 @@ class ToolBox
                     $input[$field['name']] = $field['default_value'];
                 }
             } else {
-                if ($value !== null &&  $field['type'] === 'number' && !is_numeric($value)) {
+                if ($field['type'] === 'number' && !empty($value) && strtoupper($value) !== 'NULL' && !is_numeric($value)) {
                     unset($input[$field['name']]);
                 }
             }
