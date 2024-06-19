@@ -22,7 +22,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
      */
     public $customfields = null;
 
-    public static $customFieldsModelName =  'PluginFieldsCartridgeitemcartridgeitemcustomfield';
+    public static $customFieldsModelName = 'PluginFieldsCartridgeitemcartridgeitemcustomfield';
 
     public function getSupportedTypes(): array
     {
@@ -64,7 +64,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
     {
         $data                 = [];
         $changeableCartridges = self::getChangeablesForTicket($ticket, $dropdownOptions);
-        $data['warning'] = '';
+        $data['warning']      = '';
         if (empty($changeableCartridges)) {
             if ($dropdownOptions['used']) {
                 $unusedChangeableCartridges = self::getChangeablesForTicket($ticket);
@@ -174,6 +174,10 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             } else {
                 $checked        = " checked='true' disabled='true'";
                 $force_disabled = 'force-disabled';
+            }
+
+            if (empty($checked) && $cartridge_at_printer_location && (!array_key_exists($changeable_cartridge['locations_id_field'], array_column($compatible_printers, 'cnt', 'location_id')))) {
+                $checked  = " checked='true' disabled='true'";
             }
 
             $table .= "<input type='checkbox' class='add-cartridge toggler-checkbox $force_disabled' data-group='$changeable_cartridge[id]' data-for='cartridge-count-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]' data-warning-not='warn-ccount-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]' $checked/>";

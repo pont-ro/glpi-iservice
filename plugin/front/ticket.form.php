@@ -89,7 +89,9 @@ $partnerPrinterIds = [
 ];
 
 if (!empty($addConsumable) && !empty($id)) {
+    $ticket->update($input);
     $ticket->addConsumable($id, $input);
+    Html::redirect($ticket->getFormURL() . '?id=' . $id);
 } elseif (!empty($removeConsumable) && !empty($id)) {
     $ticket->removeConsumable($id, $input);
 } elseif (!empty($updateConsumable) && !empty($id)) {

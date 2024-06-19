@@ -1819,7 +1819,10 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-        if ($isMovement && empty($movement->fields['invoice'])) {
+        if ($isMovement
+            && empty($movement->fields['invoice'])
+            && empty($this->customfields->fields['movement2_id_field'])  // Do not show the message if it is a delivery ticket, from ExpertLine to Client.
+        ) {
             $reasons[] = __('Movement not invoiced!', 'iservice');
         }
 
@@ -1894,7 +1897,6 @@ class PluginIserviceTicket extends Ticket
                     'options' => [
                         'data-confirm-message' => $close_confirm_message,
                         'on_click'             => '$("[name=status]").val(' . Ticket::CLOSED . ');',
-                        'buttonClass' => 'submit disabled',
                     ],
                 ];
 
@@ -2192,15 +2194,17 @@ class PluginIserviceTicket extends Ticket
         $fields['_movement2_id']['render'] = true;
 
         // Services invoiced.
-        global $CFG_PLUGIN_ISERVICE;
-        $fields['_services_invoiced']['render'] = true;
-        $fields['_services_invoiced']['value']  = $movement->fields['invoice'] ?? false;
+        if (empty($movement2_id)) { // Do not show the message if it is a delivery ticket, from ExpertLine to Client.
+            global $CFG_PLUGIN_ISERVICE;
+            $fields['_services_invoiced']['render'] = true;
+            $fields['_services_invoiced']['value']  = $movement->fields['invoice'] ?? false;
 
-        if (!$fields['_services_invoiced']['value']) {
-            $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . __('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?mode=3&kcsrft=1&item[printer][{$printerId}]=1' target='_blank'>" . __("invoicing", "iservice") . "</a></div>";
+            if (!$fields['_services_invoiced']['value']) {
+                $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . __('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?mode=3&kcsrft=1&item[printer][{$printerId}]=1' target='_blank'>" . __("invoicing", "iservice") . "</a></div>";
+            }
+
+            $fields['_services_invoiced']['disabled'] = !$canEdit || $fields['_services_invoiced']['value'];
         }
-
-        $fields['_services_invoiced']['disabled'] = !$canEdit || $fields['_services_invoiced']['value'];
 
         return [
             'fields' => $fields,
