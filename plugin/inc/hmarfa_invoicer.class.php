@@ -457,7 +457,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $descrPart = "{$printer->tableData["model_name"]} ($costCenterText{$printer->tableData["serial"]})";
 
-        if ($printer->tableData['printertype'] === PluginIservicePrinter::ID_PLOTTER_TYPE) {
+        if ($printer->isPlotter()) {
             $row2Subject = 'ml cereneala consumata';
             $row3Subject = 'mp suprafata printata';
         } else {
@@ -494,7 +494,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $rows[2] = [
             'codmat' => $codmat2,
             'val'    => self::numberFormat($val2),
-            'um'     => 'copie bk',
+            'um'     => $printer->isPlotter() ? 'ml cerneală' : 'copie bk',
             'cant'   => self::numberFormat($cant2),
             'fixed'  => $printerInputData['row_2']['fixed'] ?? 0,
             'total'  => self::numberFormat($val2 * $cant2),
@@ -523,7 +523,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $rows[3] = [
             'codmat' => $codmat3,
             'val'    => self::numberFormat($val3),
-            'um'     => 'copie col',
+            'um'     => $printer->isPlotter() ? 'mp supraf prnt' : 'copie col',
             'cant'   => self::numberFormat($cant3),
             'fixed'  => $printerInputData['row_3']['fixed'] ?? 0,
             'total'  => self::numberFormat($val3 * $cant3),
