@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'onInstallStep' => [
+    'rightsToRemoveForNotSuperAdmins' => [
         "agent" => 0,
         "appliance" => 0,
         "backup" => 0,
