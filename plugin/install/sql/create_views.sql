@@ -142,7 +142,8 @@ select
     `cfp`.`uc_yellow_field` as `uc_yellow_field`,
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
-    `cfp`.`no_invoice_field` as `no_invoice_field`
+    `cfp`.`no_invoice_field` as `no_invoice_field`,
+    `cfp`.`global_contract_field` as `no_invoice_field`
 from (((`glpi_printers` `p`
     left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
@@ -197,6 +198,7 @@ select
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
     `cfp`.`no_invoice_field` as `no_invoice_field`,
+    `cfp`.`global_contract_field` as `no_invoice_field`,
     `plct`.`effective_date_field` as last_effective_date,
     `plct`.`total2_black_field` as last_total2_black,
     `plct`.`total2_color_field` as last_total2_color,
