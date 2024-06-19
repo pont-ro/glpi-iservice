@@ -102,7 +102,7 @@ if (!empty($add)) {
         ) or die("Error updating $post[itemtype] customfields");
         $infocom = new Infocom();
         $infocom->getFromDBforDevice($post['itemtype'], $post['items_id']) or die("Error getting infocom to update partner of $post[itemtype]");
-        $infocom->update([$infocom->getIndexName() => $infocom->getID(),'suppliers_id' => $post['suppliers_id']]) or die("Error updating $post[itemtype] with the new partner");
+        $infocom->update([$infocom->getIndexName() => $infocom->getID(),'suppliers_id' => $post['suppliers_id'] ?? 0]) or die("Error updating $post[itemtype] with the new partner");
         $movement->update([$movement->getIndexName() => $id, 'moved' => 1]) or die("Error updating movement (moved=1)");
 
         // Toroljuk azokat a szerzodeseket a jelenlegi partnerrol, amelyek az adott gepet tartalmazzak,

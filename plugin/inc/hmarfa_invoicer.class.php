@@ -1039,13 +1039,14 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             "Nume " . $form->generateNewTabLink('partener', "$CFG_GLPI[root_doc]/front/supplier.form.php?id={$items['first']['supplier']->getID()}") . ':',
             $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['supplier']->fields["name"])
         );
+        $contractId = $items['first']['contract']['id'] ?? '';
         $form->displayFieldTableRow(
-            "Număr " . $form->generateNewTabLink('contract', "$CFG_PLUGIN_ISERVICE[root_doc]/front/contract.form.php?contract_id={$items['first']['contract']['id']}") . ':',
+            "Număr " . $form->generateNewTabLink('contract', "$CFG_PLUGIN_ISERVICE[root_doc]/front/contract.form.php?contract_id=$contractId", $contractId ? [] : ['class' => 'text-danger', 'title' => 'Fără contract']) . ':',
             $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['contract']['num'] ?? '')
         );
         $form->displayFieldTableRow(
             "Tip contract:",
-            $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['contract']['contract_type'])
+            $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['contract']['contract_type'] ?? '')
         );
         $form->displayFieldTableRow(
             "Total factura:",
@@ -1081,8 +1082,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "part_cod", $items['first']['supplier']->customfields->fields['hmarfa_code_field'])
         );
 
+        $currency        = $items['first']['contract']['currency_field'] ?? '0';
         $rateButtonStyle = 'padding: 1px 5px;border-radius: 5px;';
-        $rateButtons     = "&nbsp;&nbsp;<input type='button' name='contract-currency-rate' class='submit' style='$rateButtonStyle' value='Contract: {$items['first']['contract']['currency_field']}' onClick='$(\"#invoice_rate\").val(\"{$items['first']['contract']['currency_field']}\");$(\"[name=refresh]\").click();'>";
+        $rateButtons     = "&nbsp;&nbsp;<input type='button' name='contract-currency-rate' class='submit' style='$rateButtonStyle' value='Contract: $currency' onClick='$(\"#invoice_rate\").val(\"$currency\");$(\"[name=refresh]\").click();'>";
         if ($invoiceData['invoice_rate'] > 1) {
             $official_rate = IserviceToolBox::getExchangeRate('Euro') ?? IserviceToolBox::$lastExchangeRateServiceError;
             $rateOnClick   = $official_rate === 'eroare' ? 'return false;' : "$(\"#invoice_rate\").val(\"$official_rate\");$(\"[name=refresh]\").click();";
@@ -1144,12 +1146,13 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             . '</span>'
         );
 
+        $contractNum = $items['first']['contract']['num'] ?? '<span class="text-danger">???</span>';
         $firstLineUpdaterScript = "
 <script>
   function updateFirstLine() {
       let firstLine = '&nbsp;';
       if ($('#_checkbox_helper_s039').is(':checked')) {
-          firstLine = 'S039-S: {$items['first']['contract']['num']}';
+          firstLine = 'S039-S: $contractNum';
       }
       if ($('#_checkbox_helper_s039_include_status').is(':checked')) {
           firstLine = firstLine + ', {$items['first']['state']->fields['name']}';
