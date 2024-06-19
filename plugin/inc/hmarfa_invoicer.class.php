@@ -341,7 +341,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $differenceCounterBlack = $printer->tableData['counter_difference_bk'] = $printer->tableData['contor_bk_ui'] - $allowedCounterBlack;
         $differenceCounterColor = $printer->tableData['counter_difference_col'] = $printer->tableData['contor_col_ui'] - $allowedCounterColor;
 
-        if ($printer->tableData['printertype'] === PluginIservicePrinter::ID_PLOTTER_TYPE) {
+        if ($printer->isPlotter()) {
             $row2Subject = 'ml cereneala consumata';
             $row3Subject = 'mp suprafata printata';
         } else {
@@ -1422,7 +1422,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             $form->displayTableRow(
                 [
-                    'Contor bk ultima factură',
+                    $printer->isPlotter() ? 'ml cerneală ultima factură' : 'Contor bk ultima factură',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_bk_uf'], true),
                     'Nr copii bk incluse',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['cop_bk_inclus'] . $additionalBlackCopies, true)
@@ -1438,7 +1438,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             $form->displayTableRow(
                 [
-                    'Contor bk ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
+                    ($printer->isPlotter() ? 'ml cerneală ' : 'Contor bk ') . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_bk_ui'], true),
                     'Nr copii col incluse',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['included_copies_col_field'] . $additionalColorCopies, true)
@@ -1446,7 +1446,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             );
             $form->displayTableRow(
                 [
-                    'Contor col ultima factură',
+                    $printer->isPlotter() ? 'mp supraf prnt ultima factură' : 'Contor col ultima factură',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_col_uf'], true),
                     'Val copii incluse',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['included_copy_value_field'], true)
@@ -1454,7 +1454,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             );
             $form->displayTableRow(
                 [
-                    'Contor col ' . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
+                    ($printer->isPlotter() ? 'mp supraf prnt ' : 'Contor col ') . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_col_ui'], true),
                     'Valoare contract',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['monthly_fee_field'], true)
@@ -1639,7 +1639,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "            <tr>\n";
         echo "                <td colspan='2'>\n";
         echo "                    <input type='submit' class='submit' name='refresh' value='Actualizare'/>&nbsp;&nbsp;&nbsp;\n";
-        echo "                    <select onchange='$(\"[name=export_file_name_suffix]\").val($(this).val());$(\"[name=refresh]\").click();' style='width:480px;'>\n";
+        echo "                    <select onchange='$(\"[name=export_file_name_suffix]\").val($(this).val());$(\"[name=refresh]\").click();' style='width:22em;'>\n";
         foreach ($exportFileData['name_suffixes'] as $suffix) {
             echo "                  <option name='$suffix' " . ($suffix === $exportFileData['name_suffix'] ? 'selected' : '') . ">$suffix</option>\n";
         }
@@ -1656,9 +1656,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "                <td>\n";
         echo "                     <input class='submit" . (empty($frontendData['add_disabled_reason']) ? '' : ' disabled') . "' name='add' title='" . ($frontendData['add_disabled_reason'] ?? '') . "' type='submit' value='Adaugă in document' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>\n";
         echo "                     <input name='overwrite' type='checkbox' /> nou &nbsp;&nbsp;&nbsp;\n";
-        echo                      $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'exportfilepath', $exportFileData['path'], false, ['style' => 'width:15em;']);
+        echo                      $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'exportfilepath', $exportFileData['path'], false, ['style' => 'width:17em;']);
         echo "                    <b>/S.$exportFileData[partner_name].</b>";
-        echo "                    <input type='text' name='export_file_name_suffix' value='$exportFileData[name_suffix]' style='width:90px;' onchange='checkExportFileNameSuffix();'/>\n";
+        echo "                    <input type='text' name='export_file_name_suffix' value='$exportFileData[name_suffix]' style='width:10em;' onchange='checkExportFileNameSuffix();'/>\n";
         echo "                    <b>.{$items['first']['supplier']->getID()}.csv</b>";
         echo "                </td>\n";
         echo "                <td style='text-align: right; width: 33%'>\n";
