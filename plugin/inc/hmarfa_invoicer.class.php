@@ -411,8 +411,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     }
                 }
 
-                if ($printer->tableData['cop_col_echiv'] || $printer->tableData['cop_col_inclus']) {
-                    if ($printer->tableData['cop_col_inclus'] || $printer->tableData['cop_col_echiv']) {
+                if (!empty($printer->tableData['cop_col_echiv']) || !empty($printer->tableData['cop_col_inclus'])) {
+                    if (!empty($printer->tableData['cop_col_inclus']) || !empty($printer->tableData['cop_col_echiv'])) {
                         $descr1 .= " ({$printer->tableData['contor_col_uf']}-" . min($printer->tableData['contor_col_ui'], $allowedCounterColor) . ')';
                     } else {
                         $descr1 .= "de la {$printer->tableData['contor_col_uf']}";
@@ -1011,7 +1011,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $mailData    = $frontendData['mailData'];
         $invoiceData = $frontendData['invoiceData'];
-        /*
+        /**/
         $magic_link_label = "Link magic partener:";
         $magic_link_button_name = "Genereaza";
         $magic_link_button_class = "";
@@ -1024,7 +1024,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $magic_link_button = "<input type='submit' name='generate_magic_link' class='submit$magic_link_button_class' value='$magic_link_button_name'>";
         if (empty($items['first']['supplier']->customfields->fields['uic_field'])) {
             $magic_link_button = "<span style='color: red'>Partenerul nu are CUI!</span>";
-        }
+        }/*
         if ($items['first']['supplier']->customfields->fields['uic_field'] != $items['first']['supplier']->hMarfa_fields['cod1']) {
             $part_cui = $items['first']['supplier']->customfields->fields['uic_field'];
             $cod_cui = $items['first']['supplier']->hMarfa_fields['cod1'];
@@ -1034,7 +1034,6 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $form->openTable(['class' => 'no-border']);
 
-        // $form->displayFieldTableRow($magic_link_label, $magic_link_button);
         $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice') . ':', IserviceToolBox::getSumOfUnpaidInvoicesLink($items['first']['supplier']->getID(), $items['first']['supplier']->customfields->fields['hmarfa_code_field']));
         $form->displayFieldTableRow(
             "Nume " . $form->generateNewTabLink('partener', "$CFG_GLPI[root_doc]/front/supplier.form.php?id={$items['first']['supplier']->getID()}") . ':',
@@ -1056,6 +1055,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             "<a href='mailto:$invoiceData[email_for_invoices_field]?subject=$mailData[subject]&body=$mailData[body]'>Trimite email</a> către:",
             $invoiceData['email_for_invoices_field']
         );
+        $form->displayFieldTableRow($magic_link_label, $magic_link_button);
 
         echo "<tr><td colspan='2'></td></tr>",
 

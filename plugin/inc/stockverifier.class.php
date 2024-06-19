@@ -100,9 +100,10 @@ class PluginIserviceStockVerifier extends CommonDBTM
                 $negative_difference = false;
             }
 
+            $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
             $email_message .=
                 sprintf(
-                    "<a href='http://iservice2.expertline-magazin.ro$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=loturi_stoc&loturi_stoc0[cod]=%1\$s&loturi_stoc0[filter_description]=%1\$s (%2\$s)' target='_blank'>%1\$15s</a> (%2\$s) are stoc minim %3\$3d, %4$3s sunt numai %5\$3d în stoc + %6\$3d comenzi în derulare %7\$s<br>",
+                    "<a href='$siteUrl$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=loturi_stoc&loturi_stoc0[cod]=%1\$s&loturi_stoc0[filter_description]=%1\$s (%2\$s)' target='_blank'>%1\$15s</a> (%2\$s) are stoc minim %3\$3d, %4$3s sunt numai %5\$3d în stoc + %6\$3d comenzi în derulare %7\$s<br>",
                     $consumable['codmat'],
                     $consumable['denum'],
                     $consumable['minimum_stock'],
