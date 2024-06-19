@@ -4,6 +4,7 @@
 
 return [
     'url_base' => ($_SERVER['HTTP_ORIGIN'] ?? '') ?: 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . ($_SERVER['HTTP_HOST'] ?? ''),
+    'site_url'  => 'https://iservice3.expertline-magazin.ro',
     'enabled_crons.h_marfa_import' => true,
     'enabled_crons.em_mailgate' => true,
     'enabled_crons.data_integrity_test' => true,

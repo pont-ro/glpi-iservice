@@ -91,7 +91,7 @@ function registerHMarfaImportClick()
     );
 }
 
-// The code blow is imported from iService2. Needs refactoring.
+// The code below is imported from iService2. Needs refactoring.
 function jq( selector )
 {
     return selector.replace(/(:|\.|\[|\]|,|=|@)/g, "\\$1");

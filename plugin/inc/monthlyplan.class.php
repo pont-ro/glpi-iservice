@@ -346,8 +346,9 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                     <tr class="tab_bg_<?php echo $row_num++ % 2 + 1; ?>" style="<?php echo $style; ?>">
                                         <?php
                                         global $CFG_GLPI;
+                                        $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
                                         $body        = "Buna ziua!\r\n";
-                                        $body       .= "Va rog sa completati starea contoarelor copiatoarelor aflate la dvs. pe interfata web: http://iservice2.expertline-magazin.ro\r\n";
+                                        $body       .= "Va rog sa completati starea contoarelor copiatoarelor aflate la dvs. pe interfata web: $siteUrl\r\n";
                                         $body       .= "In cazul in care nu aveti cont de utilizator, sau vi se cere o parola suplimentara pentru a accesa serverul Expert Line, va rog trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366\r\n\r\n";
                                         $body       .= "Cu multumiri,\r\nCarmen";
                                         $mail_body   = str_replace('+', ' ', urlencode($body));
