@@ -142,7 +142,8 @@ select
     `cfp`.`uc_yellow_field` as `uc_yellow_field`,
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
-    `cfp`.`no_invoice_field` as `no_invoice_field`
+    `cfp`.`no_invoice_field` as `no_invoice_field`,
+    `cfp`.`global_contract_field` as `no_invoice_field`
 from (((`glpi_printers` `p`
     left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
@@ -197,6 +198,7 @@ select
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
     `cfp`.`no_invoice_field` as `no_invoice_field`,
+    `cfp`.`global_contract_field` as `no_invoice_field`,
     `plct`.`effective_date_field` as last_effective_date,
     `plct`.`total2_black_field` as last_total2_black,
     `plct`.`total2_color_field` as last_total2_color,
@@ -246,14 +248,15 @@ select
     cfc.plugin_fields_containers_id as plugin_fields_containers_id,
     cfc.tickets_id_use_field as tickets_id_use_field,
     cfc.tickets_id_out_field as tickets_id_out_field,
+    cfc.pages_out_field as pages_color_out_field,
     cfc.pages_color_out_field as pages_color_out_field,
     cfc.pages_use_field as pages_use_field,
     cfc.pages_color_use_field as pages_color_use_field,
-    cfc.printed_pages_field as printed_pages_field,
-    cfc.printed_pages_color_field as printed_pages_color_field,
     cfc.suppliers_id_field as suppliers_id_field,
     cfc.locations_id_field as locations_id_field,
-    cfc.plugin_fields_cartridgeitemtypedropdowns_id as plugin_fields_cartridgeitemtypedropdowns_id
+    cfc.plugin_fields_cartridgeitemtypedropdowns_id as plugin_fields_cartridgeitemtypedropdowns_id,
+    cfc.printed_pages_field as printed_pages_field,
+    cfc.printed_pages_color_field as printed_pages_color_field
 from glpi_cartridges c
      left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge';
 
