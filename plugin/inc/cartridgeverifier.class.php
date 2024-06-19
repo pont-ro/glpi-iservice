@@ -73,16 +73,17 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         } else {
             $tech_id = '';
         }
-
+        $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
         return "Vezi lista completa a aparatelor cu consumabile goale 
-                <a href='http://iservice3.expertline-magazin.ro/plugins/iservice/front/view.php?view=printercounters2&printercounters20[order_by]=estimate_percentages&printercounters20[order_dir]=ASC$tech_id'>aici</a>
+                <a href='$siteUrl/plugins/iservice/front/view.php?view=printercounters2&printercounters20[order_by]=estimate_percentages&printercounters20[order_dir]=ASC$tech_id'>aici</a>
                 <br><br>Următoarele aparate au consumabile goale:<br><ul>";
     }
 
     public static function getEmailMessageItemForCartridge($cartridge): string
     {
+        $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
         return "<li>
-                    Aparat: $cartridge[printer_name] - $cartridge[printer_model_name] - <a href='http://iservice3.expertline-magazin.ro/plugins/iservice/front/ticket.form.php?mode=1&items_id[Printer][0]=$cartridge[printer_id]&_suppliers_id_assign=$cartridge[supplier_id]&_users_id_assign=$cartridge[tech_id]'>crează tichet nou</a><br>
+                    Aparat: $cartridge[printer_name] - $cartridge[printer_model_name] - <a href='$siteUrl/plugins/iservice/front/ticket.form.php?mode=1&items_id[Printer][0]=$cartridge[printer_id]&_suppliers_id_assign=$cartridge[supplier_id]&_users_id_assign=$cartridge[tech_id]'>crează tichet nou</a><br>
                     Partener: $cartridge[supplier_name]<br>
                     Responsabil: $cartridge[tech_name]<br>
                     Centru de cost: $cartridge[costcenter]<br>
