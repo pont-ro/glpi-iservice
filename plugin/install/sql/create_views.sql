@@ -246,14 +246,15 @@ select
     cfc.plugin_fields_containers_id as plugin_fields_containers_id,
     cfc.tickets_id_use_field as tickets_id_use_field,
     cfc.tickets_id_out_field as tickets_id_out_field,
+    cfc.pages_out_field as pages_out_field,
     cfc.pages_color_out_field as pages_color_out_field,
     cfc.pages_use_field as pages_use_field,
     cfc.pages_color_use_field as pages_color_use_field,
-    cfc.printed_pages_field as printed_pages_field,
-    cfc.printed_pages_color_field as printed_pages_color_field,
     cfc.suppliers_id_field as suppliers_id_field,
     cfc.locations_id_field as locations_id_field,
-    cfc.plugin_fields_cartridgeitemtypedropdowns_id as plugin_fields_cartridgeitemtypedropdowns_id
+    cfc.plugin_fields_cartridgeitemtypedropdowns_id as plugin_fields_cartridgeitemtypedropdowns_id,
+    cfc.printed_pages_field as printed_pages_field,
+    cfc.printed_pages_color_field as printed_pages_color_field
 from glpi_cartridges c
      left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge';
 
