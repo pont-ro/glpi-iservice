@@ -88,7 +88,7 @@ case 'clear_color_coefficients':
             'daily_color_average_field' => 0,
             'uc_cyan_field' => 0,
             'uc_magenta_field' => 0,
-            'ucyfield' => 0,
+            'uc_yellow_field' => 0,
         ]
     )
     ) {
