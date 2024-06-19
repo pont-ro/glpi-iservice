@@ -8,11 +8,15 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
 
 # GLPI hacks
 
-- Update: glpi/src/RichText/UserMention.php, line, handleUserMentions() method, line 80 to: `$previous_value = $item->fields[$content_field] ?? null`;
-- If "Find menu is not working" update: 'glpi/src/Html.php', line 6664 to `if (is_array($menu) && strlen($menu['title'] ?? '') > 0) {`
-- Add at the beginning of the `SafeDocumentRoot::check()` method in `glpi/src/common/Document/SafeDocumentRoot.php` the following code:
+- Update `handleUserMentions()` method in `glpi/src/RichText/UserMention.php` line 80 to: `$previous_value = $item->fields[$content_field] ?? null`;
+- If "Find menu is not working" update `glpi/src/Html.php` line 6664 to: `if (is_array($menu) && strlen($menu['title'] ?? '') > 0) {`
+- Add at the beginning of the `SafeDocumentRoot::check()` method in `glpi/src/common/Document/SafeDocumentRoot.php` the following code to disable the server root directory validation:
 ```php
         $this->validated = true;
         $this->validation_messages[] = __('Web server root directory configuration validation disabled by iService.');
         return;
+```
+- Update `validateValues()` method in `glpi/plugins/fields/inc/container.class.php` line 1387 to allow 'NULL' as number value:
+```php
+            } else if ($field['type'] == 'number' && !empty($value) && strtoupper($value) !== 'NULL' && !is_numeric($value)) {
 ```
