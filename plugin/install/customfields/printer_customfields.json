@@ -280,7 +280,7 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1",
+        "mandatory": "0",
         "decimalPrecision": "5,2"
     },
     {
@@ -295,7 +295,7 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1",
+        "mandatory": "0",
         "decimalPrecision": "5,2"
     },
     {
@@ -310,7 +310,7 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1",
+        "mandatory": "0",
         "decimalPrecision": "5,2"
     },
     {
@@ -325,7 +325,7 @@
         "default_value": "1",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1",
+        "mandatory": "0",
         "decimalPrecision": "5,2"
     },
     {
