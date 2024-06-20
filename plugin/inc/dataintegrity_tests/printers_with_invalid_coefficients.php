@@ -23,16 +23,16 @@ return [
         left join glpi_printertypes pt on pt.id = p.printertypes_id
         where p.is_deleted = 0
           and (
-                (
-                      p.printertypes_id != " . PluginIservicePrinter::ID_COLOR_TYPE . "
-                  and p.printertypes_id != " . PluginIservicePrinter::ID_PLOTTER_TYPE . "
-                  and (   p.daily_color_average_field != 0 
-                       or p.uc_cyan_field != 0
-                       or p.uc_magenta_field != 0
-                       or p.uc_yellow_field != 0
-                      )
-                )
-                or
+--                (
+--                      p.printertypes_id != " . PluginIservicePrinter::ID_COLOR_TYPE . "
+--                  and p.printertypes_id != " . PluginIservicePrinter::ID_PLOTTER_TYPE . "
+--                  and (   p.daily_color_average_field != 0 
+--                       or p.uc_cyan_field != 0
+--                       or p.uc_magenta_field != 0
+--                       or p.uc_yellow_field != 0
+--                      )
+--                )
+--                or
                 (
                   (
                        p.printertypes_id = " . PluginIservicePrinter::ID_COLOR_TYPE . "
