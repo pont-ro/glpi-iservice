@@ -25,10 +25,12 @@ return [
         'locations_id'                                => 'Location',
         'tickets_id'                                  => 'Ticket',
         'cartridges_id'                               => 'Cartridge',
+        'cartridges_id_emptied'                       => 'Cartridge',
         'plugin_fields_cartridgeitemtypedropdowns_id' => 'PluginFieldsCartridgeitemtypeDropdown'
     ],
     'handleMissingForeignKeys' => [
         'plugin_fields_cartridgeitemtypedropdowns_id' => ['add' => 100000000],
         'locations_id'                                => ['add' => 100000000],
+        'cartridges_tickets'                       => ['add' => 100000000],
     ],
 ];
