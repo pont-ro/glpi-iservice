@@ -1146,6 +1146,9 @@ class PluginIserviceTicket extends Ticket
     {
         if (!$add) {
             $this->check($ticketId, UPDATE, $post);
+
+            $this->updateTicketsUsers($ticketId, $post); // NOTE that is important to update the users before the ticket itself, otherwise the instead of changing the assigned user, new users will be assigned.
+
             $this->update($post);
         }
 
@@ -1442,6 +1445,38 @@ class PluginIserviceTicket extends Ticket
         if (empty($this->fields['_users_id_assign']) || $this->fields['_users_id_assign'] < 1) {
             $this->fields['_users_id_assign'] = empty($this->printer->fields['users_id_tech']) ? '' : $this->printer->fields['users_id_tech'];
         }
+    }
+
+    public function updateTicketsUsers($ticketId, $input): bool
+    {
+        $ticketUsers = (new Ticket_User())->getActors($ticketId);
+        $assignTypes = [
+            '_users_id_assign' => CommonITILActor::ASSIGN,
+            '_users_id_observer' => CommonITILActor::OBSERVER,
+            '_users_id_requester' => CommonITILActor::REQUESTER,
+        ];
+
+        if (empty($ticketUsers) || empty(array_intersect_key($input, $assignTypes))) {
+            return true;
+        }
+
+        $ticketUser = new Ticket_User();
+
+        foreach ($assignTypes as $inputKey => $actorType) {
+            if (!isset($input[$inputKey])) {
+                continue;
+            }
+
+            $ticketUser->getFromDB($ticketUsers[$actorType][0]['id']);
+            $ticketUser->update(
+                [
+                    'id' => $ticketUsers[$actorType][0]['id'],
+                    'users_id' => $input[$inputKey],
+                ]
+            );
+        }
+
+        return true;
     }
 
     public static function preProcessPostData($post): array
