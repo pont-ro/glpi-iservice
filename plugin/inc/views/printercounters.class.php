@@ -396,6 +396,13 @@ class PrinterCounters extends PluginIserviceViewPrinter
             'empty_value' => "'cartridge'",
             'header' => 'consumable_codes',
         ];
+        $settings['filters']['tech_id']            = array_merge(
+            $settings['filters']['tech_id'] ?? [], [
+                'cache_override' => [
+                    'format' => 'AND tech_id = %d',
+                ]
+            ]
+        );
 
         $settings['columns']['ticket_status']['title'] = 'Acțiuni';
         $settings['columns']['costcenter']             = [
