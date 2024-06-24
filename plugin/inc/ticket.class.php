@@ -1463,7 +1463,7 @@ class PluginIserviceTicket extends Ticket
         $ticketUser = new Ticket_User();
 
         foreach ($assignTypes as $inputKey => $actorType) {
-            if (!isset($input[$inputKey])) {
+            if (!isset($input[$inputKey]) || !isset($ticketUsers[$actorType])) {
                 continue;
             }
 
@@ -1570,7 +1570,7 @@ class PluginIserviceTicket extends Ticket
             $plugin_iservice_consumable_ticket_data['create_cartridge'] = $create_cartridge;
             $cartridgeitem                                              = new PluginIserviceCartridgeItem();
             if ($cartridgeitem->getFromDBByRef($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
-                $plugin_iservice_consumable_ticket_data['plugin_fields_typefielddropdowns_id'] = $cartridgeitem->getSupportedTypes()[0];
+                $plugin_iservice_consumable_ticket_data['plugin_fields_cartridgeitemtypedropdowns_id'] = $cartridgeitem->getSupportedTypes()[0];
             }
 
             (new PluginIserviceConsumable_Ticket())->add($plugin_iservice_consumable_ticket_data, ['printer_id' => $post['printer_id'] ?? null]);

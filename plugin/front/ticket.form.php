@@ -180,7 +180,7 @@ function add_cartridges_as_negative_consumables(): void
                             'tickets_id'                          => $newTicketId,
                             'locations_id'                        => $location_id,
                             'plugin_iservice_consumables_id'      => $cartridge_item_ref,
-                            'plugin_fields_typefielddropdowns_id' => $cartridgeitem->getSupportedTypes()[0],
+                            'plugin_fields_cartridgeitemtypedropdowns_id' => $cartridgeitem->getSupportedTypes()[0],
                             'create_cartridge'                    => 1,
                             'amount'                              => -$amount,
                         ], ['printer' => $printer]
