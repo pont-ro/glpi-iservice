@@ -1094,7 +1094,7 @@ class View extends \CommonGLPI
 
             $style          = date('Y-m-d H:i:s') > ($this->use_cache['data_expire_warning'] ?? '') ? "style='color:red'" : "";
             $title          = sprintf(__("Expires on %s", 'iservice'), $this->use_cache['data_expires'] ?? '');
-            $refresh_button = $this->enable_refresh ? " <input class='submit' onclick='$(\"#cache-refresh\").val(1);$(\".refresh-target\").submit();' $style type='submit' value='" . __('Refresh', 'iservice') . "'>" : "";
+            $refresh_button = $this->enable_refresh ? " <input class='submit' onclick='if (confirm(\"" . __('Warning! This operation will block the database for 5 minutes! Proceed?', 'iservice') . "\") === true) { $(\"#cache-refresh\").val(1);$(\".refresh-target\").submit(); }' $style type='submit' value='" . __('Refresh', 'iservice') . "'>" : "";
             $this->name    .= " [<span $style title='$title'>" . sprintf(__('from cache %s', 'iservice'), $this->use_cache['data_cached'] ?? '') . "$refresh_button</span>]";
         }
 
