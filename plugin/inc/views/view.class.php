@@ -931,7 +931,8 @@ class View extends \CommonGLPI
                     self::ensureArrayKey($mass_action, 'style');
                     self::ensureArrayKey($mass_action, 'new_tab', true);
                     $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
-                    $mass_action_on_click   = 'if (confirm("' . __('Warning! This operation will block the database for 5 minutes! Proceed?', 'iservice') . '") === true) { var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");}';
+                    $mass_action_on_click   = 'if (confirm("' . __('Warning! This operation will block the database for 5 minutes! Proceed?', 'iservice') . '") !== true) { return false; }';
+                    $mass_action_on_click   .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
                     $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
                     $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
                     // $mass_action_on_click .= '$(this).closest("form").delay(1000).attr("action",old_action);$(this).closest("form").delay(1000).attr("target","");';
