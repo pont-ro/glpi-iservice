@@ -123,6 +123,7 @@ return [
             'reminder' => 127,
             'state' => 23,
             'ticket' => 261151,
+            'config' => 3,
         ],
         'tehnician' => [
             'cartridge' => 127,
