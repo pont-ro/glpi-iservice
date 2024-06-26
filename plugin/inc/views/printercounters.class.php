@@ -303,14 +303,17 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , @atl := " . self::AVALIABLE_LIMIT . " avaliable_limit
                   , @changeable_count := coalesce(ccc.count, 0) changeable_count
                   , @compatible_printer_count := coalesce(ccpc.count, 0) compatible_printer_count
-                  , @installedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), cft.total2_color_field, cft.total2_black_field + cft.total2_color_field) installed_counter
+                  , @installedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), cft.total2_color_field, COALESCE(cft.total2_black_field, 0) + COALESCE(cft.total2_color_field, 0)) installed_counter
+                  /*, CONCAT_WS(' | ', 'cfci.plugin_fields_cartridgeitemtypedropdowns_id', cfci.plugin_fields_cartridgeitemtypedropdowns_id, 'cft.total2_black_field', cft.total2_black_field, 'cft.total2_color_field', cft.total2_color_field) installed_counter_debug*/
                   , @installedDate := cft.effective_date_field installed_date
-                  , @lastClosedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, plct.total2_black_field + plct.total2_color_field) last_closed_counter
+                  , @lastClosedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, COALESCE(plct.total2_black_field, 0) + COALESCE(plct.total2_color_field, 0)) last_closed_counter
+                  /*, CONCAT_WS(' | ', 'cfci.plugin_fields_cartridgeitemtypedropdowns_id', cfci.plugin_fields_cartridgeitemtypedropdowns_id, 'plct.total2_black_field', plct.total2_black_field, 'plct.total2_color_field', plct.total2_color_field) last_closed_counter_debug*/
                   , @lastClosedDate := plct.effective_date_field last_closed_date
                   , @estimateCounter := @lastClosedCounter + datediff(NOW(), @lastClosedDate) * @da estimate_counter
-                  , @availableEstimate := 1 - round(IF((@atc * @lc * @uc) > 0, (@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 0), 2) available_percentage_estimate
+                  , @availableEstimate := 1 - round((@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 2) available_percentage_estimate
                   , if (@availableEstimate < @atl, 'da', 'nu') below_limit
-                  , round(coalesce(IF(@da > 0, (@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, NULL), 180) - datediff(NOW(), @lastClosedDate) + (IF(@da > 0, @atc * @lc * @uc / @da, 0)) * (IF(@compatible_printer_count > 0, @changeable_count / @compatible_printer_count, 0))) days_to_visit
+                  , round(coalesce((@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, 180) - datediff(NOW(), @lastClosedDate) + (@atc * @lc * @uc / @da) * (@changeable_count / @compatible_printer_count)) days_to_visit
+                  /*, CONCAT_WS(' | ', '@act:', @atc, '@lc:', @lc, '@uc:', @uc, '@lastClosecCounter', @lastClosedCounter, '@installedCounter', @installedCounter, '@da', @da, '@lastClosedDate', @lastClosedDate, '@changeable_count', @changeable_count, '@compatible_printer_count', @compatible_printer_count) days_to_visit_debug*/
                   , concat('<span title=\"', coalesce(ccc.cids, 'nu există cartușe compatibile'), '\">', @changeable_count, '</span> / <span title=\"', coalesce(ccpc.pids, 'nu există aparate compatibile'), '\">', @compatible_printer_count, '</span>') in_stock
                   , getPrinterDailyAverage(p.id, 0) cdba
                   , getPrinterDailyAverage(p.id, 1) cdca
