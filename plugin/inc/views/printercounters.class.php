@@ -172,6 +172,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
             'update_daily_averages' => [
                 'caption' => 'Modifică mediile zilnice + reîmprospătează',
                 'action' => 'views.php?view=PrinterCounters',
+                'onClick' => 'if (confirm("' . __('Warning! This operation will block the database for 5 minutes! Proceed?', 'iservice') . '") !== true) { return false; }',
             ],
         ];
         foreach (array_keys($settings['filters']) as $filter_id) {
