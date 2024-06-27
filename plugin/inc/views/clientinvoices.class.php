@@ -142,7 +142,7 @@ class ClientInvoices extends View
 
     public static function getSuffix($partner, $client_access)
     {
-        if (!in_array($_SESSION["glpiactiveprofile"]["name"], ['tehnician', 'admin', 'super-admin'])) {
+        if (!isset($_SESSION["glpiactiveprofile"]["name"]) || !in_array($_SESSION["glpiactiveprofile"]["name"], ['tehnician', 'admin', 'super-admin'])) {
             return "";
         }
 

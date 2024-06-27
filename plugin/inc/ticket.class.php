@@ -1467,6 +1467,11 @@ class PluginIserviceTicket extends Ticket
                 continue;
             }
 
+            if ($input[$inputKey] === '0') {
+                $ticketUser->delete(['id' => $ticketUsers[$actorType][0]['id']]);
+                continue;
+            }
+
             $ticketUser->getFromDB($ticketUsers[$actorType][0]['id']);
             $ticketUser->update(
                 [
