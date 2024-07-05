@@ -69,10 +69,15 @@ function plugin_iservice_redefine_menus($menus): array
     return $menus;
 }
 
-function plugin_iservice_pre_Ticket_update(Ticket $item)
+function plugin_iservice_pre_Ticket_add(Ticket $item): void
 {
-    // plugin_iservice_ticket_adjust_data_luc($item);
-    // plugin_iservice_ticket_adjust_counters($item);
+    plugin_iservice_remove_new_lines_from_content($item->input);
+}
+
+function plugin_iservice_pre_Ticket_update(Ticket $item): void
+{
+    plugin_iservice_remove_new_lines_from_content($item->input);
+
     if (PluginIserviceTicket::isTicketClosing($item)) {
         plugin_iservice_ticket_check_if_can_close($item);
     }
@@ -82,19 +87,20 @@ function plugin_iservice_pre_Ticket_update(Ticket $item)
     }
 }
 
-function plugin_iservice_Ticket_update(Ticket $item)
+function plugin_iservice_Ticket_update(Ticket $item): void
 {
     if (PluginIserviceTicket::wasTicketClosedStatusChanging($item)) {
         PluginIserviceTicket::moveCartridges($item);
     }
 }
 
-function plugin_iservice_PluginFieldsTicketticketcustomfield_update(PluginFieldsTicketticketcustomfield $item)
+function plugin_iservice_PluginFieldsTicketticketcustomfield_update(PluginFieldsTicketticketcustomfield $item): void
 {
     PluginIserviceTicket::handleDeliveredStatusChange($item);
 }
 
-function plugin_iservice_Printer_update(Printer $item) {
+function plugin_iservice_Printer_update(Printer $item): void
+{
     if (!in_array('locations_id', $item->updates)) {
         return;
     }
@@ -105,7 +111,8 @@ function plugin_iservice_Printer_update(Printer $item) {
     }
 }
 
-function plugin_iservice_Infocom_update($item) {
+function plugin_iservice_Infocom_update($item): void
+{
     if (!in_array('suppliers_id', $item->updates) || empty($item->oldvalues['suppliers_id']) || $item->fields['itemtype'] !== 'Printer') {
         return;
     }
@@ -114,6 +121,13 @@ function plugin_iservice_Infocom_update($item) {
     // Move all the installed cartridges to the new partner
     foreach ($cartridge_object->find(["NOT date_use IS null AND date_out IS null AND suppliers_id_field = {$item->oldvalues['suppliers_id']} AND printers_id = {$item->fields['items_id']}"]) as $cartridge) {
         $cartridge_object->update(array('id' => $cartridge['id'], 'suppliers_id_field' => $item->fields['suppliers_id'] ?? 0));
+    }
+}
+
+function plugin_iservice_remove_new_lines_from_content(array &$input): void
+{
+    if (!empty($input['content'])) {
+        $input['content'] = preg_replace('/\r\n/', '', $input['content']);
     }
 }
 
