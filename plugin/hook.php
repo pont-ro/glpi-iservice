@@ -74,6 +74,11 @@ function plugin_iservice_pre_Ticket_add(Ticket $item): void
     plugin_iservice_remove_new_lines_from_content($item->input);
 }
 
+function plugin_iservice_pre_PluginFieldsSuppliercustomfield_add(PluginFieldsSuppliersuppliercustomfield $item): void
+{
+    plugin_iservice_pre_PluginFieldsSuppliercustomfield_update($item);
+}
+
 function plugin_iservice_pre_Ticket_update(Ticket $item): void
 {
     plugin_iservice_remove_new_lines_from_content($item->input);
@@ -85,6 +90,25 @@ function plugin_iservice_pre_Ticket_update(Ticket $item): void
     if (PluginIserviceTicket::isTicketOpening($item)) {
         plugin_iservice_ticket_reopen_newer_tickets($item);
     }
+}
+
+function plugin_iservice_pre_PluginFieldsSuppliercustomfield_update(PluginFieldsSuppliersuppliercustomfield $item): void
+{
+    if (empty($item->input['items_id'])) {
+        return;
+    }
+
+    $suppliers = explode(',', $item->input['groupfield']);
+
+    if (empty($item->input['groupfield']) || !in_array($item->input['items_id'], $suppliers)) {
+        $suppliers = array_merge([$item->input['items_id']], $suppliers);
+    }
+
+    array_walk($suppliers, function(&$value) {
+        $value = intval(trim($value, "' \t\n\r\0\x0B"));
+    });
+
+    $item->input['groupfield'] = implode(',', array_unique(array_filter($suppliers)));
 }
 
 function plugin_iservice_Ticket_update(Ticket $item): void
