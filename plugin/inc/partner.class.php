@@ -215,7 +215,7 @@ Pentru a vedea situatia ultimelor 10 facturi si a le descarca in format pdf, acc
 Va rog pastrati acest link deoarece datele de pe acest link vor fi in permananenta actualizate, deci va putea fi folosit pe viitor.
 In cazul in care vi se cere o parola suplimentara pentru a accesa serverul Expert Line va rugam trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366
 
-
+Expert Line incarca in sistemul e-factura toate facturile, in conditiile legii.
 Rugam confirmare de primire.
 
 Cu stima,
@@ -241,6 +241,8 @@ Pentru a vedea situatia ultimelor 10 facturi si a le descarca in format pdf, acc
 Va rog pastrati acest link deoarece datele de pe acest link vor fi in permananenta actualizate, deci va putea fi folosit pe viitor.
 In cazul in care vi se cere o parola suplimentara pentru a accesa serverul Expert Line va rugam trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366
 
+Expert Line incarca in sistemul e-factura toate facturile, in conditiile legii.
+ 
 Cu multumiri,
 Expert Line srl
 ";
