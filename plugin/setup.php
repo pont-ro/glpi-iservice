@@ -112,10 +112,10 @@ function plugin_init_iservice(): void
     $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
 
     $PLUGIN_HOOKS['pre_item_add']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_add';
-    $PLUGIN_HOOKS['pre_item_add']['iservice']['PluginFieldsSuppliercustomfield'] = 'plugin_iservice_pre_PluginFieldsSuppliercustomfield_add';
+    $PLUGIN_HOOKS['pre_item_add']['iservice']['PluginFieldsSuppliersuppliercustomfield'] = 'plugin_iservice_pre_PluginFieldsSuppliercustomfield_add';
 
     $PLUGIN_HOOKS['pre_item_update']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_update';
-    $PLUGIN_HOOKS['pre_item_update']['iservice']['PluginFieldsSuppliercustomfield'] = 'plugin_iservice_pre_PluginFieldsSuppliercustomfield_update';
+    $PLUGIN_HOOKS['pre_item_update']['iservice']['PluginFieldsSuppliersuppliercustomfield'] = 'plugin_iservice_pre_PluginFieldsSuppliercustomfield_update';
 
     $PLUGIN_HOOKS['item_update']['iservice']['Ticket'] = 'plugin_iservice_Ticket_update';
     $PLUGIN_HOOKS['item_update']['iservice']['PluginFieldsTicketticketcustomfield'] = 'plugin_iservice_PluginFieldsTicketticketcustomfield_update';

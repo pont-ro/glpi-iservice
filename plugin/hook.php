@@ -98,9 +98,9 @@ function plugin_iservice_pre_PluginFieldsSuppliercustomfield_update(PluginFields
         return;
     }
 
-    $suppliers = explode(',', $item->input['groupfield']);
+    $suppliers = explode(',', $item->input['group_field']);
 
-    if (empty($item->input['groupfield']) || !in_array($item->input['items_id'], $suppliers)) {
+    if (empty($item->input['group_field']) || !in_array($item->input['items_id'], $suppliers)) {
         $suppliers = array_merge([$item->input['items_id']], $suppliers);
     }
 
@@ -108,7 +108,7 @@ function plugin_iservice_pre_PluginFieldsSuppliercustomfield_update(PluginFields
         $value = intval(trim($value, "' \t\n\r\0\x0B"));
     });
 
-    $item->input['groupfield'] = implode(',', array_unique(array_filter($suppliers)));
+    $item->input['group_field'] = implode(',', array_unique(array_filter($suppliers)));
 }
 
 function plugin_iservice_Ticket_update(Ticket $item): void
