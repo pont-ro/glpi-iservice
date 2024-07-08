@@ -79,6 +79,11 @@ function plugin_iservice_pre_PluginFieldsSuppliercustomfield_add(PluginFieldsSup
     plugin_iservice_pre_PluginFieldsSuppliercustomfield_update($item);
 }
 
+function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_add(PluginFieldsCartridgeitemcartridgeitemcustomfield $item): void
+{
+    plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update($item);
+}
+
 function plugin_iservice_pre_Ticket_update(Ticket $item): void
 {
     plugin_iservice_remove_new_lines_from_content($item->input);
@@ -109,6 +114,35 @@ function plugin_iservice_pre_PluginFieldsSuppliercustomfield_update(PluginFields
     });
 
     $item->input['group_field'] = implode(',', array_unique(array_filter($suppliers)));
+}
+
+function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update(PluginFieldsCartridgeitemcartridgeitemcustomfield $item): void
+{
+    if (empty($item->input['mercury_code_field'])) {
+        return;
+    }
+
+    $mercuryCodes = explode(',', $item->input['compatible_mercury_codes_field']);
+    if (empty($item->input['compatible_mercury_codes_field']) || !in_array($item->input['mercury_code_field'], $mercuryCodes)) {
+        $mercuryCodes = array_merge([$item->input['mercury_code_field']], $mercuryCodes);
+    }
+    array_walk($mercuryCodes, function(&$value) {
+        $value = str_replace(["'", '"'], "", stripslashes($value));
+    });
+
+    $mercuryCodes = array_unique(array_filter($mercuryCodes));
+    array_walk($mercuryCodes, function(&$value) {
+        $value = addslashes("'" . trim($value, "' \t\n\r\0\x0B") . "'");
+    });
+
+    $item->input['compatible_mercury_codes_field'] = implode(',', $mercuryCodes);
+
+
+    $supported_types = explode(',', $item->input['supported_types_field']);
+    array_walk($supported_types, function(&$value) {
+        $value = intval(trim($value, "' \t\n\r\0\x0B"));
+    });
+    $item->input['supported_types_field'] = implode(',', array_unique(array_filter($supported_types)));
 }
 
 function plugin_iservice_Ticket_update(Ticket $item): void
