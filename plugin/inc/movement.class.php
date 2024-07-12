@@ -417,6 +417,7 @@ class PluginIserviceMovement extends CommonDBTM
             $table_rows[] = $form->generateButtonsTableRow($buttons);
         }
 
+        echo "<div id='iservice-body'>";
         $form->openForm(['method' => 'post', 'class' => 'iservice-form two-column']);
 
         if ($id > 0) {
@@ -431,6 +432,7 @@ class PluginIserviceMovement extends CommonDBTM
         echo $table;
 
         $form->closeForm();
+        echo "</div>";
     }
 
     public static function getTypeFromSuppliers($old_supplier_id, $new_supplier_id)
