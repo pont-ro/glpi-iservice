@@ -48,7 +48,7 @@ return [
                 'title' => 'AA',
                 'icon'  => 'fa-solid fa-file-contract',
                 'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php",
-                'roles' => ['super-admin','admin'],
+                'roles' => ['super-admin','admin', 'tehnician'],
                 'options' => [
                     'sortOrder' => 30,
                 ],

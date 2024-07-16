@@ -102,6 +102,10 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
                     $post_data['supplier']['is_active'] = 1;
                 }
 
+                if (!isset($post_data['supplier']['entities_id'])) {
+                    $post_data['supplier']['entities_id'] = 0;
+                }
+
                 if (($partner_id = $supplier->add($post_data['supplier'])) != false) {
                     if (!PluginIserviceDB::populateByItemsId($supplier_customfields, $partner_id)) {
                         $post['_customfields']['supplier']['add']      = 'add';

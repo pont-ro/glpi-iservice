@@ -211,7 +211,7 @@ class PluginIservicePrinter extends Printer
             $contract_customfields->getEmpty();
         }
 
-        if (!$printer->isNewItem()) {
+        if (!empty($printer) && !$printer->isNewItem()) {
             $this->showButtons($printer_id, $printer, $printer_customfields, $supplier);
         }
 
@@ -355,7 +355,7 @@ class PluginIservicePrinter extends Printer
         $output .= $form->generateFieldTableRow(__('Printer', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[id]', $printer->getID(), $readonly, $selector_options), $no_wrap_options);
 
         // Name.
-        $output .= $form->generateFieldTableRow(__('Name'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'printer[name]', $printer->fields['name'], $readonly || !$has_full_rights, ['required' => true]));
+        $output .= $form->generateFieldTableRow(__('Name'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'printer[name]', $printer->fields['name'], $readonly || !$has_full_rights));
 
         // Location.
         $output .= $form->generateFieldTableRow(__('Location'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[locations_id]', $printer->fields['locations_id'], $readonly || !$has_full_rights, ['type' => 'Location']), $no_wrap_options);
@@ -408,7 +408,7 @@ class PluginIservicePrinter extends Printer
         $output .= $form->generateFieldTableRow(__('Model'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[printermodels_id]', $printer->fields['printermodels_id'], $readonly || !$has_full_rights, ['type' => 'PrinterModel']), $no_wrap_options);
 
         // Serial number.
-        $output .= $form->generateFieldTableRow(__('Serial number'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'printer[serial]', $printer->fields['serial'], $readonly || !$has_full_rights, ['required' => true]));
+        $output .= $form->generateFieldTableRow(__('Serial number'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'printer[serial]', $printer->fields['serial'], $readonly || !$has_full_rights));
 
         // Inventory number.
         $output .= $form->generateFieldTableRow(__('Inventory number'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'printer[otherserial]', $printer->fields['otherserial'], $readonly || !$has_full_rights));

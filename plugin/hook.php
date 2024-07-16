@@ -103,7 +103,7 @@ function plugin_iservice_pre_PluginFieldsSuppliercustomfield_update(PluginFields
         return;
     }
 
-    $suppliers = explode(',', $item->input['group_field']);
+    $suppliers = explode(',', $item->input['group_field'] ?? '');
 
     if (empty($item->input['group_field']) || !in_array($item->input['items_id'], $suppliers)) {
         $suppliers = array_merge([$item->input['items_id']], $suppliers);
