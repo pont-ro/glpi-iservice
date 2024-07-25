@@ -112,11 +112,15 @@ function plugin_init_iservice(): void
     $PLUGIN_HOOKS['redefine_menus']['iservice'] = 'plugin_iservice_redefine_menus';
 
     $PLUGIN_HOOKS['pre_item_add']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_add';
+    $PLUGIN_HOOKS['pre_item_add']['iservice']['PluginFieldsPrinterprintercustomfield'] = 'plugin_iservice_pre_PluginFieldsPrintercustomfield_add';
     $PLUGIN_HOOKS['pre_item_add']['iservice']['PluginFieldsSuppliersuppliercustomfield'] = 'plugin_iservice_pre_PluginFieldsSuppliercustomfield_add';
     $PLUGIN_HOOKS['pre_item_add']['iservice']['PluginFieldsCartridgeitemcartridgeitemcustomfield'] = 'plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_add';
 
+    $PLUGIN_HOOKS['post_prepareadd']['iservice']['Ticket'] = 'plugin_iservice_post_Ticket_prepareadd';
+    $PLUGIN_HOOKS['post_prepareadd']['iservice']['PluginIserviceTicket'] = 'plugin_iservice_post_Ticket_prepareadd';
 
     $PLUGIN_HOOKS['pre_item_update']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_update';
+    $PLUGIN_HOOKS['pre_item_update']['iservice']['PluginFieldsPrinterprintercustomfield'] = 'plugin_iservice_pre_PluginFieldsPrintercustomfield_update';
     $PLUGIN_HOOKS['pre_item_update']['iservice']['PluginFieldsSuppliersuppliercustomfield'] = 'plugin_iservice_pre_PluginFieldsSuppliercustomfield_update';
     $PLUGIN_HOOKS['pre_item_update']['iservice']['PluginFieldsCartridgeitemcartridgeitemcustomfield'] = 'plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update';
 
@@ -124,6 +128,9 @@ function plugin_init_iservice(): void
     $PLUGIN_HOOKS['item_update']['iservice']['PluginFieldsTicketticketcustomfield'] = 'plugin_iservice_PluginFieldsTicketticketcustomfield_update';
     $PLUGIN_HOOKS['item_update']['iservice']['Printer'] = 'plugin_iservice_Printer_update';
     $PLUGIN_HOOKS['item_update']['iservice']['Infocom'] = 'plugin_iservice_Infocom_update';
+
+    $PLUGIN_HOOKS['pre_item_delete']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_delete';
+    $PLUGIN_HOOKS['pre_item_purge']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_delete';
 
     $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
 

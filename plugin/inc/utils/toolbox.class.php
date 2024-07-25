@@ -8,6 +8,7 @@ use Dropdown;
 use PluginFieldsContainer;
 use PluginFieldsField;
 use PluginIserviceDB;
+use PluginIservicePrinter;
 use TValuta;
 
 if (!defined('INPUT_REQUEST')) {
@@ -438,6 +439,22 @@ class ToolBox
                 unset($input[$field['name']]);
             }
         }
+    }
+
+    public static function isPrinterColorOrPlotter(mixed $item): bool
+    {
+        if ($item instanceof \Printer) {
+            $printer = $item;
+        } elseif (is_numeric($item)) {
+            $printer = new \Printer();
+            if (!$printer->getFromDB($item)) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return in_array($printer->fields['printertypes_id'], [PluginIservicePrinter::ID_COLOR_TYPE, PluginIservicePrinter::ID_PLOTTER_TYPE]);
     }
 
 }

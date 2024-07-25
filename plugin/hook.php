@@ -71,7 +71,19 @@ function plugin_iservice_redefine_menus($menus): array
 
 function plugin_iservice_pre_Ticket_add(Ticket $item): void
 {
+    // If status has to be changed use $_SESSION['saveInput']['Ticket']['status'], as it will be used to inhibit automatic GLPI status changes.
+
     plugin_iservice_remove_new_lines_from_content($item->input);
+
+    if (PluginIserviceTicket::isTicketClosing($item)) {
+        plugin_iservice_ticket_check_if_can_close($item);
+    }
+
+}
+
+function plugin_iservice_pre_PluginFieldsPrintercustomfield_add(PluginFieldsPrinterprintercustomfield $item): void
+{
+    plugin_iservice_pre_PluginFieldsPrintercustomfield_update($item);
 }
 
 function plugin_iservice_pre_PluginFieldsSuppliercustomfield_add(PluginFieldsSuppliersuppliercustomfield $item): void
@@ -82,6 +94,10 @@ function plugin_iservice_pre_PluginFieldsSuppliercustomfield_add(PluginFieldsSup
 function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_add(PluginFieldsCartridgeitemcartridgeitemcustomfield $item): void
 {
     plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update($item);
+}
+
+function plugin_iservice_post_Ticket_prepareadd(Ticket $item) {
+    plugin_iservice_ticket_restore_status_from_session($item);
 }
 
 function plugin_iservice_pre_Ticket_update(Ticket $item): void
@@ -95,6 +111,21 @@ function plugin_iservice_pre_Ticket_update(Ticket $item): void
     if (PluginIserviceTicket::isTicketOpening($item)) {
         plugin_iservice_ticket_reopen_newer_tickets($item);
     }
+}
+
+function plugin_iservice_pre_PluginFieldsPrintercustomfield_update(PluginFieldsPrinterprintercustomfield $item): void
+{
+    if (empty($item->input['items_id'] ?? $item->fields['items_id'] ?? 0)) {
+        return;
+    }
+
+    if (!IserviceToolBox::isPrinterColorOrPlotter($item->input['items_id'] ?? $item->fields['items_id'] ?? 0)) {
+        $item->input['daily_color_average_field'] = 0;
+        $item->input['uc_cyan_field'] = 0;
+        $item->input['uc_magenta_field'] = 0;
+        $item->input['uc_yellow_field'] = 0;
+    }
+
 }
 
 function plugin_iservice_pre_PluginFieldsSuppliercustomfield_update(PluginFieldsSuppliersuppliercustomfield $item): void
@@ -145,6 +176,23 @@ function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update(PluginF
     $item->input['supported_types_field'] = implode(',', array_unique(array_filter($supported_types)));
 }
 
+/**
+ * Restore the status from $_SESSION
+ * Do not allow automatic status changes coded in GLPI: change back to the originally saved status if it wasn`t deleted due to inability to close the ticket because there is an older one opened.
+ * Do not allow empty status, default it to INCOMING
+ * @param Ticket $item
+ */
+function plugin_iservice_ticket_restore_status_from_session(Ticket $item): void
+{
+    if (!empty($_SESSION['saveInput']['Ticket']['status'])) {
+        $item->input['status'] = $_SESSION['saveInput']['Ticket']['status'];
+    }
+
+    if (empty($item->input['status'])) {
+        $item->input['status'] = Ticket::INCOMING;
+    }
+}
+
 function plugin_iservice_Ticket_update(Ticket $item): void
 {
     if (PluginIserviceTicket::wasTicketClosedStatusChanging($item)) {
@@ -180,6 +228,11 @@ function plugin_iservice_Infocom_update($item): void
     foreach ($cartridge_object->find(["NOT date_use IS null AND date_out IS null AND suppliers_id_field = {$item->oldvalues['suppliers_id']} AND printers_id = {$item->fields['items_id']}"]) as $cartridge) {
         $cartridge_object->update(array('id' => $cartridge['id'], 'suppliers_id_field' => $item->fields['suppliers_id'] ?? 0));
     }
+}
+
+function plugin_iservice_pre_Ticket_delete(Ticket $item): void
+{
+    plugin_iservice_ticket_disable_delete_if_has_consumables_or_cartridges($item);
 }
 
 function plugin_iservice_remove_new_lines_from_content(array &$input): void
@@ -276,5 +329,19 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
     if (!$can_close) {
         $item->input['status'] = $item->fields['status'] ?? Ticket::WAITING;
         $item->update_error    = 'cannot_close';
+    }
+}
+
+/**
+ * Do not allow the deletion of a ticket if it delivers a consumbale or installs a cartridge
+ * @param Ticket $item
+ */
+function plugin_iservice_ticket_disable_delete_if_has_consumables_or_cartridges(Ticket $item)
+{
+    $ticket_consumable = new PluginIserviceConsumable_Ticket();
+    $ticket_cartridge = new PluginIserviceCartridge_Ticket();
+    if ($ticket_consumable->find("tickets_id = {$item->getID()}") || $ticket_cartridge->find("tickets_id = {$item->getID()}")) {
+        $item->input = null;
+        Session::addMessageAfterRedirect("Nu puteți șterge un ticket daca acesta livrează un consumabil sau instalează un cartuș!", true, ERROR);
     }
 }
