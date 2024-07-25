@@ -92,7 +92,8 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                 htf.numar_facturi,
                 htf.total_facturi,
                 putc.ticket_count as ticket_count_by_item,
-                t.effective_date_field last_closed_ticket_close_date
+                t.effective_date_field last_closed_ticket_close_date,
+                count(m.id) as movements_count
             FROM glpi_plugin_iservice_printers p
             JOIN glpi_infocoms i on i.items_id = p.id and i.itemtype = 'Printer'
             JOIN glpi_plugin_iservice_suppliers e on e.id = i.suppliers_id
@@ -102,6 +103,10 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
             LEFT JOIN glpi_plugin_iservice_printer_unclosed_ticket_counts putc ON putc.printers_id = p.id
             LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plt ON plt.printers_id = p.id
             LEFT JOIN glpi_plugin_iservice_tickets t on t.id = plt.tickets_id
+            LEFT JOIN glpi_plugin_iservice_movements m ON (
+                (m.suppliers_id = e.id OR m.suppliers_id_old = e.id)
+                AND init_date >= DATE_SUB(CURDATE(), INTERVAL 40 DAY)
+            )
             WHERE p.week_nr_field > 0 and p.is_deleted = 0 $tech_filter
             GROUP BY p.id
             ORDER BY e.name
@@ -141,6 +146,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
             $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_fax']           = $row['enterprise_fax'];
             $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_comment']       = $row['enterprise_comment'];
             $data[$row['week_nr_field']][$row['enterprise_id']]['enterprise_email_facturi'] = $row['enterprise_email_facturi'];
+            $data[$row['week_nr_field']][$row['enterprise_id']]['movements_count']          = $row['movements_count'];
             if (!isset($data[$row['week_nr_field']][$row['enterprise_id']]['open_tickets_count'])) {
                 $data[$row['week_nr_field']][$row['enterprise_id']]['open_tickets_count'] = 0;
             }
@@ -342,11 +348,15 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                     if (isset($enterprise['moved'])) {
                                         $style .= "font-style:italic;font-weight:bold;";
                                     }
+
+                                    if (isset($enterprise['movements_count']) && $enterprise['movements_count'] > 0) {
+                                        $style .= "background-color:#ffffcc;";
+                                    }
                                     ?>
                                     <tr class="tab_bg_<?php echo $row_num++ % 2 + 1; ?>" style="<?php echo $style; ?>">
                                         <?php
                                         global $CFG_GLPI;
-                                        $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
+                                        $siteUrl     = PluginIserviceConfig::getConfigValue('site_url');
                                         $body        = "Buna ziua!\r\n";
                                         $body       .= "Va rog sa completati starea contoarelor copiatoarelor aflate la dvs. pe interfata web: $siteUrl\r\n";
                                         $body       .= "In cazul in care nu aveti cont de utilizator, sau vi se cere o parola suplimentara pentru a accesa serverul Expert Line, va rog trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366\r\n\r\n";
