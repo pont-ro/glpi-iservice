@@ -1,5 +1,7 @@
 <?php
 
+global $CFG_PLUGIN_ISERVICE;
+
 return [
     'query' => "
         select
@@ -16,7 +18,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => "There are {count} tickets with empty effective date.",
-            'iteration_text' => "Ticket <a href='/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has empty effective date.",
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> has empty effective date.",
         ],
     ],
 ];
