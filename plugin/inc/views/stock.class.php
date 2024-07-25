@@ -59,7 +59,7 @@ class Stock extends View
             'query' => "
                 SELECT
                       l.codmat AS Cod_Articol
-                    , n.denum AS denumire
+                    , n.denum AS Denumire
                     , l.gest AS Gest
                     , l.grupa AS Grupa
                     , SUM(l.stoci-l.iesiri) AS Stoc
