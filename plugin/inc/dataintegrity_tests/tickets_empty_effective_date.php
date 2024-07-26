@@ -9,7 +9,7 @@ return [
           , effective_date_field 
         from glpi_plugin_fields_ticketticketcustomfields
         left join glpi_tickets t on t.id = items_id
-        where (effective_date_field = '' or effective_date_field is null) and t.date > '" . PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from') . "'
+        where (effective_date_field = '' or effective_date_field is null) and t.is_deleted = 0 and t.date > '" . PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from') . "'
         ",
     'test' => [
         'alert' => true,
