@@ -349,8 +349,8 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                         $style .= "font-style:italic;font-weight:bold;";
                                     }
 
-                                    if (isset($enterprise['movements_count']) && $enterprise['movements_count'] > 0) {
-                                        $style .= "background-color:#ffffcc;";
+                                    if ($enterprise['movements_count'] ?? 0 > 0) {
+                                        $style .= "background-color:lightyellow;";
                                     }
                                     ?>
                                     <tr class="tab_bg_<?php echo $row_num++ % 2 + 1; ?>" style="<?php echo $style; ?>">
