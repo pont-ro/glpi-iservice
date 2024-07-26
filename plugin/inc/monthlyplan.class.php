@@ -351,9 +351,10 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
 
                                     if ($enterprise['movements_count'] ?? 0 > 0) {
                                         $style .= "background-color:lightyellow;";
+                                        $title  = "Partener cu mutari in ultimele 40 de zile";
                                     }
                                     ?>
-                                    <tr class="tab_bg_<?php echo $row_num++ % 2 + 1; ?>" style="<?php echo $style; ?>">
+                                    <tr class="tab_bg_<?php echo $row_num++ % 2 + 1; ?>" style="<?php echo $style; ?>" title="<?php echo $title; ?>">
                                         <?php
                                         global $CFG_GLPI;
                                         $siteUrl     = PluginIserviceConfig::getConfigValue('site_url');
