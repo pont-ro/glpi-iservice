@@ -101,7 +101,7 @@ class Operations extends View
                         , t.id ticket_id
                         , t.name ticket_name
                         , t.content ticket_content
-                        , t.total2_black_field + coalesce(t.total2_color_field, 0) ticket_counter_total
+                        , coalesce(t.total2_black_field, 0) + coalesce(t.total2_color_field, 0) ticket_counter_total
                         , t.total2_black_field ticket_counter_black
                         , t.total2_color_field ticket_counter_color
                         , t.contact_name_field ticket_contact
@@ -128,7 +128,7 @@ class Operations extends View
                     LEFT JOIN glpi_suppliers s ON s.id = st.suppliers_id
                     LEFT JOIN glpi_locations l ON l.id = t.locations_id
                     -- LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '<br>(', c.id,')') SEPARATOR '<br>') cartridges
-                    LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '&nbsp;<span title=\"', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)), ' + (', ci.atc_field, ' * ', ci.life_coefficient_field, ')', '\">(pana&nbsp;', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)) + ROUND(ci.atc_field * ci.life_coefficient_field), ')</span><br>[', c.id,COALESCE(CONCAT(' -> ',cat.cartridges_id_emptied),' -> <span style=\"color:red;\" title=\"nu golește nimic\">!!!</span>'),']') SEPARATOR '<br>') cartridges
+                    LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '&nbsp;<span title=\"', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, coalesce(t.total2_black_field, 0) + coalesce(t.total2_color_field, 0)), ' + (', ci.atc_field, ' * ', ci.life_coefficient_field, ')', '\">(pana&nbsp;', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)) + ROUND(ci.atc_field * ci.life_coefficient_field), ')</span><br>[', c.id,COALESCE(CONCAT(' -> ',cat.cartridges_id_emptied),' -> <span style=\"color:red;\" title=\"nu golește nimic\">!!!</span>'),']') SEPARATOR '<br>') cartridges
                                 FROM glpi_plugin_iservice_cartridges_tickets cat
                                 LEFT JOIN glpi_plugin_iservice_tickets t ON t.id = cat.tickets_id
                                 LEFT JOIN glpi_cartridges c ON c.id = cat.cartridges_id

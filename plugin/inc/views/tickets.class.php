@@ -308,7 +308,7 @@ class Tickets extends View
                             , t.id ticket_id
                             , t.name ticket_name
                             , t.content ticket_content
-                            , t.total2_black_field + coalesce(t.total2_color_field, 0) ticket_counter_total
+                            , coalesce(t.total2_black_field, 0) + coalesce(t.total2_color_field, 0) ticket_counter_total
                             , t.total2_black_field ticket_counter_black
                             , t.total2_color_field ticket_counter_color
                             , i.name ticket_category

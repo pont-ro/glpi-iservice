@@ -10,7 +10,7 @@ return [
                 , t.id                tid
                 , t.effective_date_field
                 , t.total2_black_field
-                , t.total2_black_field - coalesce(
+                , coalesce(t.total2_black_field, 0) - coalesce(
                     (
                         select t2.total2_black_field
                         from glpi_plugin_iservice_tickets t2
@@ -21,9 +21,9 @@ return [
                           and (t2.effective_date_field > t.effective_date_field or (t2.effective_date_field = t.effective_date_field and t2.id > t.id))
                         order by t2.effective_date_field, t2.id
                         limit 1
-                    ), t.total2_black_field) black_difference
+                    ), coalesce(t.total2_black_field, 0)) black_difference
                 , t.total2_color_field
-                , t.total2_color_field - coalesce(
+                , coalesce(t.total2_color_field, 0) - coalesce(
                     (
                         select t2.total2_color_field
                         from glpi_plugin_iservice_tickets t2
@@ -34,7 +34,7 @@ return [
                           and (t2.effective_date_field > t.effective_date_field or (t2.effective_date_field = t.effective_date_field and t2.id > t.id))
                         order by t2.effective_date_field, t2.id
                         limit 1
-                    ), t.total2_color_field) color_difference
+                    ), coalesce(t.total2_color_field, 0)) color_difference
                 , coalesce(
                     (
                         select t2.id

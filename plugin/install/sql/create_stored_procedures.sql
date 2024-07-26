@@ -126,10 +126,10 @@ BEGIN
           ELSE IF(cfp.daily_bk_average_field = 0, 180, cfp.daily_bk_average_field)
         END da
       , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
-          WHEN 2 THEN p.last_total2_color -- plct.total2_color_field
-          WHEN 3 THEN p.last_total2_color -- plct.total2_color_field
-          WHEN 4 THEN p.last_total2_color -- plct.total2_color_field
-          ELSE p.last_total2_color -- plct.total2_black_field
+          WHEN 2 THEN p.last_total2_color
+          WHEN 3 THEN p.last_total2_color
+          WHEN 4 THEN p.last_total2_color
+          ELSE p.last_total2_black
         END counter_last
       , CASE cfci.plugin_fields_cartridgeitemtypedropdowns_id 
           WHEN 2 THEN t.total2_color_field
@@ -137,12 +137,11 @@ BEGIN
           WHEN 4 THEN t.total2_color_field
           ELSE t.total2_black_field
         END counter_use
-      ,p.effective_date -- plct.effective_date_field
+      ,p.effective_date
     INTO atc, lc, uc, da, counter_last, counter_use, last_data_luc
     FROM glpi_plugin_iservice_cartridges c
     LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci ON cfci.itemtype = 'CartridgeItem' AND cfci.items_id = c.cartridgeitems_id
     LEFT JOIN glpi_plugin_iservice_printers_with_last_closed_ticket_data p ON p.id = c.printers_id
-    -- LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
     LEFT JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND cfp.items_id = c.printers_id
     LEFT JOIN glpi_plugin_iservice_tickets t on t.id = c.tickets_id_use_field
     WHERE c.id = cartridgeId;
@@ -187,12 +186,11 @@ BEGIN
     DECLARE lastDataLuc DATETIME;
     
     SELECT
-        p.last_effective_date -- plct.effective_date_field
-      , CASE color WHEN 1 THEN p.last_total2_color /* plct.total2_color_field */ ELSE p.last_total2_black /* plct.total2_black_field */ END
+        p.last_effective_date
+      , CASE color WHEN 1 THEN p.last_total2_color ELSE p.last_total2_black END
       , CASE color WHEN 1 THEN cfp.daily_color_average_field ELSE cfp.daily_bk_average_field END
     INTO lastDataLuc, lastCounter, dailyAverage
     FROM glpi_plugin_iservice_printers_with_last_closed_ticket_data p
-    -- LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct ON plct.printers_id = p.id
     JOIN glpi_plugin_fields_printerprintercustomfields cfp ON cfp.itemtype = 'Printer' AND  cfp.items_id = p.id
     WHERE p.id = printerId;
 
@@ -272,8 +270,8 @@ this_proc: BEGIN
   
   SELECT
       COUNT(t.id)
-    , MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2_black_field + t.total2_color_field END)
-    , MAX(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2_black_field + t.total2_black_field END)
+    , MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE COALESCE(t.total2_black_field, 0) + COALESCE(t.total2_color_field, 0) END)
+    , MAX(CASE color WHEN 1 THEN t.total2_color_field ELSE COALESCE(t.total2_black_field, 0) + COALESCE(t.total2_color_field, 0) END)
     , MIN(t.effective_date_field)
     , MAX(t.effective_date_field)
   INTO
@@ -306,7 +304,7 @@ this_proc: BEGIN
       SELECT MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MAX(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MIN(t.effective_date_field), MAX(t.effective_date_field)
       INTO minCounter, maxCounter, minDataLuc, maxDataLuc
       FROM (
-        SELECT t.total2_black_field + t.total2_color_field total2, t.total2_color_field, t.effective_date_field
+        SELECT COALESCE(t.total2_black_field, 0) + COALESCE(t.total2_color_field, 0) total2, t.total2_color_field, t.effective_date_field
         FROM glpi_plugin_iservice_tickets t
         JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
         WHERE t.is_deleted = 0 AND t.`status` = 6
@@ -332,7 +330,7 @@ this_proc: BEGIN
     SELECT MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MAX(CASE color WHEN 1 THEN t.total2_color_field ELSE t.total2 END), MIN(t.effective_date_field), MAX(t.effective_date_field)
     INTO minCounter, maxCounter, minDataLuc, maxDataLuc
     FROM (
-      SELECT t.total2_black_field + t.total2_color_field total2, t.total2_color_field, t.effective_date_field
+      SELECT COALESCE(t.total2_black_field, 0) + COALESCE(t.total2_color_field, 0) total2, t.total2_color_field, t.effective_date_field
       FROM glpi_plugin_iservice_tickets t
       JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
       WHERE t.is_deleted = 0 AND t.`status` = 6

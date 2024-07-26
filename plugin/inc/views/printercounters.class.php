@@ -305,10 +305,8 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , @changeable_count := coalesce(ccc.count, 0) changeable_count
                   , @compatible_printer_count := coalesce(ccpc.count, 0) compatible_printer_count
                   , @installedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), cft.total2_color_field, COALESCE(cft.total2_black_field, 0) + COALESCE(cft.total2_color_field, 0)) installed_counter
-                  /*, CONCAT_WS(' | ', 'cfci.plugin_fields_cartridgeitemtypedropdowns_id', cfci.plugin_fields_cartridgeitemtypedropdowns_id, 'cft.total2_black_field', cft.total2_black_field, 'cft.total2_color_field', cft.total2_color_field) installed_counter_debug*/
                   , @installedDate := cft.effective_date_field installed_date
                   , @lastClosedCounter := if (cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), plct.total2_color_field, COALESCE(plct.total2_black_field, 0) + COALESCE(plct.total2_color_field, 0)) last_closed_counter
-                  /*, CONCAT_WS(' | ', 'cfci.plugin_fields_cartridgeitemtypedropdowns_id', cfci.plugin_fields_cartridgeitemtypedropdowns_id, 'plct.total2_black_field', plct.total2_black_field, 'plct.total2_color_field', plct.total2_color_field) last_closed_counter_debug*/
                   , @lastClosedDate := plct.effective_date_field last_closed_date
                   , @estimateCounter := @lastClosedCounter + datediff(NOW(), @lastClosedDate) * @da estimate_counter
                   , @availableEstimate := 1 - round((@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 2) available_percentage_estimate
