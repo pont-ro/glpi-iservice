@@ -1,1071 +1,1828 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
-"POT-Creation-Date: 2021-02-09 09:46+0200\n"
-"PO-Revision-Date: 2024-05-09 07:24+0300\n"
+"POT-Creation-Date: 2024-07-29 10:15+0300\n"
+"PO-Revision-Date: 2024-07-29 10:18+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro_RO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
-"X-Generator: Poedit 2.2.3\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
+"2:1));\n"
+"X-Generator: Poedit 3.4.4\n"
+"X-Poedit-KeywordsList: __;_n\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: .\n"
 
-#: ajax/getCounters.php:30
+#: ajax/getCounters.php:33
 msgid "Uninstall from printer"
 msgstr "Dezinstalează de pe aparat"
 
-#: ajax/getPrinterCartridgesPopup.php:41 inc/views/Printers.php:209
+#: ajax/getLocationDropdown.php:57 inc/hmarfa.class.php:1352
+#: inc/printer.class.php:681 inc/printer.class.php:699
+#: inc/printer.class.php:720 inc/reminder.class.php:71
+#: inc/ticket.class.php:1993 inc/views/clientinvoices.class.php:126
+msgid "Save"
+msgstr ""
+
+#: ajax/getPrinterCartridgesPopup.php:44 inc/views/printers.class.php:264
 msgid "You have no compatible cartridges!"
 msgstr "Nu aveți cartușe compatibile!"
 
-#: ajax/manageBackup.php:57 ajax/manageCartridge.php:34
-#: ajax/manageConsumable.php:24 ajax/manageDataintegrityTest.php:17
-#: ajax/manageEMMail.php:27 ajax/managePartner.php:21 ajax/managePrinter.php:36
-#: ajax/manageTicket.php:25
-#, php-format
-msgid "Invalid operation: %s"
-msgstr "Operație invalidă: %s"
-
-#: ajax/manageBackup.php:71 ajax/manageCartridge.php:117
-#: ajax/manageConsumable.php:65 ajax/manageDataintegrityTest.php:48
-#: ajax/manageEMMail.php:42 ajax/managePartner.php:44
-#: ajax/managePendingEmail.php:58 ajax/managePrinter.php:120
-#: ajax/manageTicket.php:60
-#, php-format
-msgid "Operation not implemented: %s"
-msgstr "Operația %s nu este implementată"
-
-#: ajax/manageBackup.php:74
-#, php-format
-msgid "Could not complete operation %s for %s"
-msgstr "Operația %s nu poate fi efectuată pentru elementul %s"
-
-#: ajax/manageCartridge.php:30
+#: ajax/manageCartridge.php:34
 #, php-format
 msgid "Invalid cartridge id: %d"
 msgstr "Id cartuș invalid: %d"
 
-#: ajax/manageCartridge.php:39 ajax/manageCartridge.php:63
+#: ajax/manageCartridge.php:39 ajax/manageConsumable.php:27
+#: ajax/manageDataintegrityTest.php:20 ajax/manageEMMail.php:30
+#: ajax/managePrinter.php:44
+#, php-format
+msgid "Invalid operation: %s"
+msgstr "Operație invalidă: %s"
+
+#: ajax/manageCartridge.php:45 ajax/manageCartridge.php:72
 #, php-format
 msgid "Cartridge %d is already installed on a printer"
 msgstr "Cartușul %d este instalat deja pe un aparat"
 
-#: ajax/manageCartridge.php:76 ajax/manageCartridge.php:91
+#: ajax/manageCartridge.php:87 ajax/manageCartridge.php:105
 #, php-format
 msgid "Cartridge %d is not installed on a printer"
 msgstr "Cartușul %d nu este instalat pe un aparat"
 
-#: ajax/manageCartridge.php:79 ajax/manageCartridge.php:94
+#: ajax/manageCartridge.php:91 ajax/manageCartridge.php:109
 #, php-format
 msgid "Cartridge %d is empty, it is not installed on a printer"
 msgstr "Cartușul %d este gol, nu este instalat pe un aparat"
 
-#: ajax/manageCartridge.php:84
+#: ajax/manageCartridge.php:97
 msgid "Could not remove cartridge from the installer ticket."
 msgstr "Cartușul nu poate fi șters de pe tichetul de instalare."
 
-#: ajax/manageCartridge.php:120
+#: ajax/manageCartridge.php:137
+msgid "Could not delete cartridge from the database."
+msgstr "Nu s-a putut șterge cartușul din baza de date."
+
+#: ajax/manageCartridge.php:141 ajax/manageConsumable.php:68
+#: ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45
+#: ajax/managePrinter.php:177
+#, php-format
+msgid "Operation not implemented: %s"
+msgstr "Operația %s nu este implementată"
+
+#: ajax/manageCartridge.php:144
 #, php-format
 msgid "Could not complete operation %s for cartridge %d"
 msgstr "Operația %s nu poate fi efectuată pentru cartușul %d"
 
-#: ajax/manageConsumable.php:68
+#: ajax/manageConsumable.php:38 inc/consumable_model.class.php:66
+#: inc/orderstatus.class.php:159 inc/printer.class.php:676
+#: inc/printer.class.php:694 inc/printer.class.php:715
+#: inc/reminder.class.php:66 inc/views/contracts.class.php:48
+#: inc/views/extorders.class.php:28 inc/views/intorders.class.php:79
+#: inc/views/intorders.class.php:83 inc/views/reminders.class.php:63
+msgid "Add"
+msgstr ""
+
+#: ajax/manageConsumable.php:71
 #, php-format
 msgid "Could not complete operation %s for consumable %d"
 msgstr "Operația %s nu poate fi efectuată pentru consumabilul %d"
 
-#: ajax/manageDataintegrityTest.php:51 ajax/manageEMMail.php:45
+#: ajax/manageCustomFields.php:15
+msgid "Custom fields have been reset to default settings"
+msgstr "Câmpurile adiționale au fost resetate la setările implicite"
+
+#: ajax/manageCustomFields.php:15
+msgid "An error occurred while resetting custom fields to default settings"
+msgstr ""
+"A apărut o eroare în timpul resetării câmpurilor adiționale la setările "
+"implicite"
+
+#: ajax/manageDataintegrityTest.php:55
 #, php-format
 msgid "Could not complete operation %s for item %d"
 msgstr "Operația %s nu poate fi efectuată pentru elementul  %dRES"
 
-#: ajax/manageEMMail.php:22
+#: ajax/manageEMMail.php:25
 #, php-format
 msgid "Invalid id: %d"
 msgstr "Id invalid: %d"
 
-#: ajax/managePartner.php:47 ajax/managePrinter.php:123
-#, php-format
-msgid "Could not complete operation %s for printer %d"
-msgstr "Operația %s nu poate fi efectuată pentru aparatul %d"
-
-#: ajax/managePendingEmail.php:61
-#, php-format
-msgid "Could not complete operation %s for pending email %d"
-msgstr "Operația %s nu poate fi efectuată pentru emailul %d"
-
-#: ajax/managePrinter.php:32
+#: ajax/managePrinter.php:39
 #, php-format
 msgid "Invalid printer id: %d"
 msgstr "Id aparat invalid: %d"
 
-#: ajax/manageTicket.php:63
+#: ajax/managePrinter.php:180
 #, php-format
-msgid "Could not complete operation %s for ticket %d"
-msgstr "Operația %s nu poate fi efectuată pentru tichetul %d"
+msgid "Could not complete operation %s for printer %d"
+msgstr "Operația %s nu poate fi efectuată pentru aparatul %d"
 
-#: front/central.php:14
-msgid "Invalid new profile"
-msgstr "Profil nou invalid"
+#: ajax/setDefaulProfileRights.php:10
+msgid "Profile rights have been reset to default settings"
+msgstr "Drepturile au fost resetate la setările implicite"
 
-#: front/hmarfaexport.form.php:14 inc/menu.class.php:64
-#: inc/printer.class.php:246 inc/ticket.class.php:1751
-#: inc/ticket.class.php:1921 inc/views/Printers.php:33 inc/views/Tickets.php:68
+#: ajax/setDefaulProfileRights.php:10
+msgid "An error occurred while resetting profile rights to default settings"
+msgstr ""
+"A apărut o eroare în timpul resetării drepturilor la setările implicite"
+
+#: ajax/setDefaulProfileRights.php:11
+msgid "Profile rights for custom fields have been reset to default settings"
+msgstr ""
+"Drepturile pentru câmpurile adiționale au fost resetate la setările implicite"
+
+#: ajax/setDefaulProfileRights.php:11
+msgid ""
+"An error occurred while resetting custom fields profile rights to default "
+"settings"
+msgstr ""
+"A apărut o eroare în timpul resetării drepturilor pentru câmpurile "
+"adiționale la setările implicite"
+
+#: config/import.php:5
+msgid "Various data"
+msgstr ""
+
+#: config/import.php:9
+msgid "Profile"
+msgstr ""
+
+#: config/import.php:13
+msgid "Group"
+msgstr ""
+
+#: config/import.php:17 inc/cartridge_ticket.class.php:144
+#: inc/cartridge_ticket.class.php:170 inc/consumable_ticket.class.php:193
+#: inc/movement.class.php:276 inc/printer.class.php:361
+#, fuzzy
+#| msgid "Other location"
+msgid "Location"
+msgstr "Altă locație"
+
+#: config/import.php:21
+msgid "User"
+msgstr ""
+
+#: config/import.php:25
+msgid "User Email"
+msgstr ""
+
+#: config/import.php:29
+msgid "Profile User"
+msgstr ""
+
+#: config/import.php:33 inc/views/reminders.class.php:22
+#: inc/views/reminders.class.php:63
+#, fuzzy
+#| msgid "Reminder list"
+msgid "Reminder"
+msgstr "Lista note"
+
+#: config/import.php:37
+msgid "Entity Reminder"
+msgstr ""
+
+#: config/import.php:41
+msgid "Contact"
+msgstr ""
+
+#: config/import.php:45
+msgid "Plugin Fields Cartridge Item type Dropdown"
+msgstr ""
+
+#: config/import.php:51 config/import.php:59 inc/extorder.class.php:161
+#: inc/monthlyplan.class.php:218 inc/printer.class.php:245
+#: inc/printer.class.php:495 inc/printer.class.php:694
+#: inc/printer.class.php:699 inc/views/extorders.class.php:154
+#, fuzzy
+#| msgid "Save supplier"
+msgid "Supplier"
+msgstr "Salvează partener"
+
+#: config/import.php:55
+#, fuzzy
+#| msgid "Save supplier"
+msgid "Supplier type"
+msgstr "Salvează partener"
+
+#: config/import.php:63
+msgid "Supplier Custom Field"
+msgstr ""
+
+#: config/import.php:67
+#, fuzzy
+#| msgid "Save supplier"
+msgid "Contact Supplier"
+msgstr "Salvează partener"
+
+#: config/import.php:73 config/import.php:97 inc/movement.class.php:23
+#: inc/printer.class.php:244 inc/printer.class.php:303
+#: inc/printer.class.php:355 inc/printer.class.php:676
+#: inc/printer.class.php:681 inc/ticket.class.php:169
+#: inc/views/printers.class.php:107
+#, fuzzy
+#| msgid "Printers"
+msgid "Printer"
+msgstr "Aparate"
+
+#: config/import.php:77
+#, fuzzy
+#| msgid "Printer list"
+msgid "Printer type"
+msgstr "Lista aparate"
+
+#: config/import.php:81
+#, fuzzy
+#| msgid "Printer list"
+msgid "Printer model"
+msgstr "Lista aparate"
+
+#: config/import.php:85
+msgid "Printer Model Custom Field"
+msgstr ""
+
+#: config/import.php:89 inc/printer.class.php:405
+msgid "Manufacturer"
+msgstr ""
+
+#: config/import.php:93
+msgid "State"
+msgstr ""
+
+#: config/import.php:101
+#, fuzzy
+#| msgid "Printer list"
+msgid "Printer Custom Field"
+msgstr "Lista aparate"
+
+#: config/import.php:107 config/import.php:115 inc/movement.class.php:307
+#: inc/printer.class.php:247 inc/printer.class.php:594
+#: inc/printer.class.php:595 inc/printer.class.php:715
+#: inc/printer.class.php:720 inc/views/contracts.class.php:33
+#: inc/views/contracts.class.php:48
+#, fuzzy
+#| msgid "Save contract"
+msgid "Contract"
+msgstr "Salvează contract"
+
+#: config/import.php:111 inc/printer.class.php:633
+#, fuzzy
+#| msgid "Export type"
+msgid "Contract type"
+msgstr "Tip export"
+
+#: config/import.php:119
+msgid "Contract Custom Field"
+msgstr ""
+
+#: config/import.php:123
+#, fuzzy
+#| msgid "Save supplier"
+msgid "Contract Supplier"
+msgstr "Salvează partener"
+
+#: config/import.php:127
+msgid "Contract Item"
+msgstr ""
+
+#: config/import.php:133 config/import.php:145 inc/movement.class.php:228
+#: inc/movement.class.php:407 inc/views/tickets.class.php:30
+#, fuzzy
+#| msgid "Ticket list"
+msgid "Ticket"
+msgstr "Lista tichete"
+
+#: config/import.php:137
+#, fuzzy
+#| msgid "Ticket list"
+msgid "Ticket Template"
+msgstr "Lista tichete"
+
+#: config/import.php:141
+msgid "ITIL Category"
+msgstr ""
+
+#: config/import.php:149
+#, fuzzy
+#| msgid "Ticket list"
+msgid "Ticket User"
+msgstr "Lista tichete"
+
+#: config/import.php:153
+msgid "Supplier Ticket"
+msgstr ""
+
+#: config/import.php:157
+msgid "Group Ticket"
+msgstr ""
+
+#: config/import.php:161
+#, fuzzy
+#| msgid "Open tickets"
+msgid "Item Ticket"
+msgstr "Tichete deschise"
+
+#: config/import.php:165 inc/views/movements.class.php:18
+#, fuzzy
+#| msgid "Movement"
+#| msgid_plural "Movements"
+msgid "Movement"
+msgstr "Mutare"
+
+#: config/import.php:169
+msgid "EMEmail"
+msgstr ""
+
+#: config/import.php:173
+#, fuzzy
+#| msgid "Ticket list"
+msgid "Ticket Custom Field"
+msgstr "Lista tichete"
+
+#: config/import.php:177
+msgid "ITIL Followup"
+msgstr ""
+
+#: config/import.php:183 config/import.php:199
+#: inc/cartridge_ticket.class.php:524 inc/consumable_ticket.class.php:190
+#: inc/views/cartridges.class.php:20
+#, fuzzy
+#| msgid "Change cartridge"
+msgid "Cartridge"
+msgstr "Instalat cartuș"
+
+#: config/import.php:187
+#, fuzzy
+#| msgid "Cartridge deleted from database"
+msgid "Cartridge Item type"
+msgstr "Cartuș șters din baza de date"
+
+#: config/import.php:191
+#, fuzzy
+#| msgid "Cartridges available"
+msgid "Cartridge Item"
+msgstr "Cartușe neinstalate"
+
+#: config/import.php:195
+#, fuzzy
+#| msgid "Cartridge deleted from evidence"
+msgid "Cartridge Item CCustom Field"
+msgstr "Cartuș șters din evidență"
+
+#: config/import.php:203
+#, fuzzy
+#| msgid "Cartridges available"
+msgid "Cartridge Custom Field"
+msgstr "Cartușe neinstalate"
+
+#: config/import.php:207
+msgid "Cartridge Item Printer Model"
+msgstr ""
+
+#: config/import.php:211
+#, fuzzy
+#| msgid "Consumed ink"
+msgid "Consumable Ticket"
+msgstr "Cerneală consumată"
+
+#: config/import.php:215
+#, fuzzy
+#| msgid "Cartridges available"
+msgid "Cartridge Ticket"
+msgstr "Cartușe neinstalate"
+
+#: config/import.php:219
+msgid "Consumable Model"
+msgstr ""
+
+#: config/import.php:223
+msgid "Minimum Stock"
+msgstr ""
+
+#: config/import.php:229 inc/hmarfa.class.php:1344 inc/ticket.class.php:268
+#, fuzzy
+#| msgid "Order"
+#| msgid_plural "Orders"
+msgid "Order"
+msgstr "Comandă"
+
+#: config/import.php:233
+#, fuzzy
+#| msgid "Order status"
+#| msgid_plural "Order statuses"
+msgid "Order Status"
+msgstr "Stare comandă"
+
+#: config/import.php:237
+#, fuzzy
+#| msgid "External order"
+#| msgid_plural "External orders"
+msgid "External Order"
+msgstr "Comandă externă"
+
+#: config/import.php:241
+#, fuzzy
+#| msgid "Internal order"
+#| msgid_plural "Internal orders"
+msgid "Internal Order"
+msgstr "Comandă internă"
+
+#: config/import.php:245
+#, fuzzy
+#| msgid "External order"
+#| msgid_plural "External orders"
+msgid "Internal-External Order"
+msgstr "Comandă externă"
+
+#: config/import.php:251
+msgid "Other"
+msgstr ""
+
+#: config/import.php:255
+msgid "Infocom"
+msgstr ""
+
+#: config/import.php:259
+msgid "Download"
+msgstr ""
+
+#: config/menu.php:7 inc/movement.class.php:184 inc/movement.class.php:381
+#: inc/utils/viewsmenu.class.php:15
+msgid "View"
+msgstr ""
+
+#: config/menu.php:21 inc/utils/specialviewsmenu.class.php:15
+msgid "Special View"
+msgstr ""
+
+#: config/menu.php:35 front/config.form.php:5 front/monthlyplan.php:11
+#: front/views.php:21 inc/menu.class.php:14 inc/utils/iservicemenu.class.php:15
+msgid "iService"
+msgstr "iService"
+
+#: config/menu.php:39
+msgid "Inquiry"
+msgstr "Solicitare"
+
+#: front/contract.form.php:93 front/extorder.form.php:122
+#: front/intorder.form.php:97 front/printer.form.php:78
+#: front/printer.form.php:151 front/printer.form.php:227
+#: front/reminder.form.php:34
+#, php-format
+msgid "%s updates an item"
+msgstr ""
+
+#: front/extorder.form.php:110 front/intorder.form.php:85
+#: front/printer.form.php:68 front/reminder.form.php:20
+#, php-format
+msgid "%1$s adds the item %2$s"
+msgstr ""
+
+#: front/hmarfaexport.form.php:17 inc/printer.class.php:292
+#: inc/ticket.class.php:1993 inc/views/printers.class.php:57
 msgid "hMarfa export"
 msgstr "export hMarfa"
 
-#: front/hmarfaexport.form.php:19
+#: front/hmarfaexport.form.php:26
 msgid "Printer Id is missing!"
 msgstr "Id-ul aparatului lipsește!"
 
-#: front/hmarfaexport.form.php:21 front/ticket.report.php:16
+#: front/hmarfaexport.form.php:28 front/ticket.report.php:18
 msgid "Ticket Id is missing!"
 msgstr "Id-ul tichetului lipsește!"
 
-#: front/hmarfaexport.form.php:23
+#: front/hmarfaexport.form.php:30
 msgid "Something is wrong!"
 msgstr ""
 
-#: front/invoice_confirm.php:53 inc/view.class.php:183
-msgid "Error"
-msgstr "Eroare"
+#: front/movement.form.php:18 front/movement.form.php:183
+#: inc/movement.class.php:116 inc/movement.class.php:264
+#: inc/printer.class.php:303 inc/views/printers.class.php:107
+#, fuzzy
+#| msgid "Movement"
+#| msgid_plural "Movements"
+msgid "Move"
+msgstr "Mutare"
 
-#: front/movement.form.php:14
+#: front/movement.form.php:19
 msgid "Invalid movement type"
 msgstr "Tip mutare invalid"
 
-#: front/movement.form.php:117
+#: front/movement.form.php:136
 msgid "Movement completed successfully"
 msgstr "Mutarea s-a terminat cu succes"
 
-#: front/planlunar.php:123 front/planlunar.php:125 inc/central.class.php:98
-#: inc/central.class.php:99
-msgid "Monthly plan"
-msgstr "Plan lunar"
+#: front/ticket.form.php:47 inc/printer.class.php:284
+#: inc/views/operations.class.php:33 inc/views/printers.class.php:50
+#, fuzzy
+#| msgid "New quick ticket"
+msgid "New ticket"
+msgstr "Tichet rapid nou"
 
-#: front/planlunar.php:131 inc/views/Facturi_Client.php:195
-#: inc/views_views/Unpaid_Invoices.php:168
-msgid "Technician"
-msgstr ""
+#: front/ticket.form.php:62
+msgid "Could not create ticket!"
+msgstr "Nu s-a putut crea tichetul!"
 
-#: front/planlunar.php:134
-msgid "Year"
-msgstr "Anul"
-
-#: front/planlunar.php:135
-msgid "Month"
-msgstr "Luna"
-
-#: front/planlunar.php:137
-msgid "This month"
-msgstr "Luna curentă"
-
-#: front/planlunar.php:139
-msgid "2 month ago"
-msgstr "Acum 2 luni"
-
-#: front/planlunar.php:169 inc/central.class.php:18 inc/central.class.php:19
-#: inc/views/Global_ReadCounter.php:134
-msgid "Global read counter"
-msgstr "Citire globală"
-
-#: front/planlunar.php:169
-msgid "Week"
-msgstr "Săptămâna"
-
-#: front/planlunar.php:176
-msgid "Open tickets"
-msgstr "Tichete deschise"
-
-#: front/planlunar.php:177
-msgid "Unpaid invoices"
-msgstr "Facturi neplătite"
-
-#: front/planlunar.php:178
-msgid "Total unpaid"
-msgstr "Total neplătit"
-
-#: front/ticket.form.php:161
-msgid "You have been redirected because you no longer have access to this ticket"
-msgstr ""
-
-#: front/ticket.form.php:164
-msgid "Error saving ticket"
-msgstr "Eroare la salvarea tichetului"
-
-#: front/ticket.report.php:11 front/ticket.report.php:15
+#: front/ticket.report.php:12 front/ticket.report.php:17
 msgid "Intervention report"
 msgstr "Raport de intervenții"
 
-#: hook.php:679
-msgid "Error restoring cartridges"
-msgstr "Eroare la restaurarea cartușelor"
-
-#: hook.php:710 hook.php:716
-msgid "Error deleting cartridges"
-msgstr "Eroare la ștergerea cartușelor"
-
-#: hook.php:965
+#: hook.php:288
 msgid "The following tickets have been also reopened"
 msgstr "Următoarele tichete au mai fost deschise"
 
-#: inc/cartridge_ticket.class.php:121 inc/consumable_ticket.class.php:124
-#: inc/consumable_ticket.class.php:176 inc/intorder.class.php:160
-#: inc/intorder_extorder.class.php:169 inc/ticket.class.php:1542
-msgid "Amount"
-msgstr "Cantitate"
+#: hook.php:293
+msgid "See all"
+msgstr ""
 
-#: inc/cartridge_ticket.class.php:286
-msgid "Select"
-msgstr "Selectează"
+#: inc/backupcleaner.class.php:22
+msgid "Backup cleaner"
+msgstr ""
 
-msgid "Visible"
-msgstr "Vizibile"
+#: inc/cartridge.class.php:46 inc/cartridge_ticket.class.php:382
+msgid "intalled on"
+msgstr "instalat pe"
 
-#: inc/cartridge_ticket.class.php:317
+#: inc/cartridge_ticket.class.php:99 inc/cartridge_ticket.class.php:277
+#: inc/intorder_extorder.class.php:142
+#, fuzzy
+#| msgid "Add to printer"
+msgid "Add an item"
+msgstr "Instalează acest cartuș"
+
+#: inc/cartridge_ticket.class.php:167 inc/cartridge_ticket.class.php:354
+#: inc/consumable_ticket.class.php:187 inc/printer.class.php:358
+#: inc/printer.class.php:500 inc/printer.class.php:599
+msgid "Name"
+msgstr ""
+
+#: inc/cartridge_ticket.class.php:200 inc/cartridge_ticket.class.php:498
+#: inc/cartridge_ticket.class.php:499 inc/consumable_ticket.class.php:387
+#: inc/consumable_ticket.class.php:390 inc/intorder_extorder.class.php:221
+msgid "Delete"
+msgstr ""
+
+#: inc/cartridge_ticket.class.php:357 inc/printer.class.php:402
+msgid "Type"
+msgstr ""
+
+#: inc/cartridge_ticket.class.php:360
 msgid "Empties"
 msgstr "Golește"
 
-#: inc/cartridge_ticket.class.php:609
+#: inc/cartridge_ticket.class.php:383
+msgid "emptied"
+msgstr "golit"
+
+#: inc/cartridge_ticket.class.php:463
+msgid "No cartridges to replace"
+msgstr "Nu există cartuș de golit"
+
+#: inc/cartridge_ticket.class.php:484 inc/cartridge_ticket.class.php:485
+#: inc/consumable_ticket.class.php:371 inc/consumable_ticket.class.php:374
+#: inc/hmarfa.class.php:1358 inc/movement.class.php:173
+#: inc/movement.class.php:414
+msgid "Update"
+msgstr ""
+
+#: inc/cartridge_ticket.class.php:547 inc/consumable_ticket.class.php:454
+#, fuzzy
+#| msgid "Delete from partner"
+msgid "Delete permanently"
+msgstr "Șterge de la partener"
+
+#: inc/cartridge_ticket.class.php:728
 #, php-format
 msgid "Cartridge - ID %2$d"
 msgstr ""
 
-#: inc/cartridge_ticket.class.php:616
+#: inc/cartridge_ticket.class.php:735 inc/cartridge_ticket.class.php:774
+#: inc/consumable_ticket.class.php:641 inc/consumable_ticket.class.php:680
+#, php-format
+msgid "%1$s: %2$s"
+msgstr ""
+
+#: inc/cartridge_ticket.class.php:735
 msgid "Cartridge successfully added"
 msgstr "Cartuș adăugat cu succes"
 
-#: inc/cartridge_ticket.class.php:652 inc/consumable_ticket.class.php:558
+#: inc/cartridge_ticket.class.php:774 inc/consumable_ticket.class.php:680
 msgid "Consumable successfully deleted"
 msgstr "Consumabil șters cu succes"
 
-#: inc/cartridgeitem.class.php:48
+#: inc/cartridgeitem.class.php:72
 msgid "You have no more compatible cartridges"
 msgstr "Nu aveți alte cartușe compatibile"
 
-#: inc/cartridgeitem.class.php:50
+#: inc/cartridgeitem.class.php:78 inc/views/printers.class.php:489
+msgid "Cartridges available"
+msgstr "Cartușe neinstalate"
+
+#: inc/cartridgeitem.class.php:96
 msgid "You have no compatible cartridges"
 msgstr "Nu aveți cartușe compatibile"
 
-#: inc/cartridgeitem.class.php:53
+#: inc/cartridgeitem.class.php:100
 #, php-format
 msgid "delivered before %s and not installed"
 msgstr "livrate înainte de %s și neinstalate"
 
-#: inc/cartridgeitem.class.php:237
-msgid "There are no compatible cartridges on stock!"
-msgstr "Nu sunt cartușe compatibile în stoc!"
-
-#: inc/central.class.php:10
-msgid "Optimized front"
-msgstr "Front optim"
-
-#: inc/central.class.php:25
-msgid "Read counter / replace cartridge"
-msgstr "Citire contor / înlocuire toner"
-
-#: inc/central.class.php:26 inc/views/Printers.php:14
-msgid "Read counter"
-msgstr "Citire contor"
-
-#: inc/central.class.php:32 inc/central.class.php:33
-msgid "Create inquiry"
-msgstr "Creare sesizare"
-
-msgid "Inquiry"
-msgstr "Solicitare"
-
-#: inc/central.class.php:44 inc/hmarfa.class.php:1239 inc/views/Tickets.php:224
-msgid "Ticket list"
-msgstr "Lista tichete"
-
-#: inc/central.class.php:50 inc/printer.class.php:33 inc/views/Printers.php:236
-#: inc/views/Tickets.php:167
-msgid "Manage printer"
-msgstr "Administrare aparat"
-
-#: inc/central.class.php:56 inc/views/Printers.php:314
-msgid "Printer list"
-msgstr "Lista aparate"
-
-msgid "Printers"
-msgstr "Aparate"
-
-#: inc/central.class.php:62 inc/views/Movements.php:6
-msgid "Movement list"
-msgstr "Lista mutări"
-
-#: inc/central.class.php:63
-msgid "Movement"
-msgid_plural "Movements"
-msgstr[0] "Mutare"
-msgstr[1] "Mutări"
-msgstr[2] "Mutări"
-
-#: inc/central.class.php:68 inc/views/Partners.php:5
-msgid "Due partner list"
-msgstr "Scadență parteneri"
-
-msgid "Due partners"
-msgstr "Scadențe facturi"
-
-#: inc/central.class.php:80 inc/central.class.php:81 inc/hmarfa.class.php:1242
-#: inc/ticket.class.php:833 inc/ticket.class.php:1922
-msgid "Order"
-msgid_plural "Orders"
-msgstr[0] "Comandă"
-msgstr[1] "Comenzi"
-msgstr[2] "Comenzi"
-
-#: inc/central.class.php:92
-msgid "Reminder list"
-msgstr "Lista note"
-
-#: inc/central.class.php:116
-msgid "Original interface"
-msgstr "Interfața originală"
-
-#: inc/central.class.php:117
-msgid "Original"
+#: inc/cartridgeitem.class.php:127 inc/cartridgeitem.class.php:310
+#, php-format
+msgid "%1$s (%2$s)"
 msgstr ""
 
-#: inc/central.class.php:122 inc/task_dataintegritytest.class.php:22
-msgid "Self test"
+#: inc/cartridgeitem.class.php:310 inc/html.class.php:838
+#: inc/reminder.class.php:65
+#, php-format
+msgid "%1$s - %2$s"
 msgstr ""
 
-#: inc/central.class.php:158
-msgid "Welcome to the Expert Line copy device reporting system"
-msgstr "Bine ați venit in sistemul de raportare on-line al echipamentelor de copiere"
+#: inc/cartridgeverifier.class.php:25
+#, fuzzy
+#| msgid "Cartridges available"
+msgid "Cartridge verifier"
+msgstr "Cartușe neinstalate"
 
-#: inc/consumable_ticket.class.php:126 inc/consumable_ticket.class.php:174
+#: inc/cartridgeverifier.class.php:34 inc/stockverifier.class.php:32
+#: inc/views/emaintenance.class.php:207
+msgid "Number of emails to retrieve"
+msgstr ""
+
+#: inc/config.class.php:31
+#, fuzzy
+#| msgid "Generate"
+msgid "General setup"
+msgstr "Generează"
+
+#: inc/config.class.php:32
+msgid "Import"
+msgstr ""
+
+#: inc/consumable.class.php:13 inc/consumable_ticket.class.php:418
+#: inc/hmarfa.class.php:1333 inc/intorder.class.php:171
+#: inc/intorder_extorder.class.php:186 inc/views/extorders.class.php:151
+#: inc/views/intorders.class.php:346
+#, fuzzy
+#| msgid "Consumed ink"
+msgid "Consumable"
+msgstr "Cerneală consumată"
+
+#: inc/consumable_ticket.class.php:128 inc/consumable_ticket.class.php:202
+#: inc/intorder.class.php:174 inc/intorder_extorder.class.php:187
+msgid "Amount"
+msgstr "Cantitate"
+
+#: inc/consumable_ticket.class.php:139 inc/consumable_ticket.class.php:196
 msgid "Price"
 msgstr "Preț"
 
-#: inc/consumable_ticket.class.php:175
+#: inc/consumable_ticket.class.php:150
+msgid "Full list"
+msgstr "Lista completă"
+
+#: inc/consumable_ticket.class.php:169
+msgid "Compatible cartridges list"
+msgstr "Listă cartușe compatibile"
+
+#: inc/consumable_ticket.class.php:199
 msgid "in €"
 msgstr ""
 
-#: inc/consumable_ticket.class.php:515
+#: inc/consumable_ticket.class.php:634
 #, php-format
 msgid "Consumabil - ID %2$d"
 msgstr ""
 
-#: inc/consumable_ticket.class.php:522
+#: inc/consumable_ticket.class.php:641
 msgid "Consumable successfully added"
 msgstr ""
 
-#: inc/contract.class.php:92 inc/movement.class.php:162
-#: inc/movement.class.php:329 inc/printer.class.php:423
-#: inc/printer.class.php:518
-msgid "Modify"
-msgstr "Modifică"
-
-#: inc/emaintenance.class.php:23 inc/menu.class.php:42
+#: inc/emaintenance.class.php:23
+#, fuzzy
+#| msgid "E-maintenance"
+#| msgid_plural "E-maintenance"
 msgid "E-maintenance"
-msgid_plural "E-maintenance"
-msgstr[0] "E-maintenance"
-msgstr[1] "E-maintenance"
-msgstr[2] "E-maintenance"
+msgstr "E-maintenance"
 
-#: inc/emaintenance.class.php:452 inc/menu.class.php:117
+#: inc/emaintenance.class.php:545
+#, fuzzy, php-format
+#| msgid "Could not send ticketreport to"
+msgid "Could not find mailgate %d"
+msgstr "Eroare la trimiterea raportului de intervenții la"
+
+#: inc/emaintenance.class.php:550
 msgid "MailCollector has to be inactive to use it for E-maintenance"
-msgstr "Receiverul trebuie să fie inactiv pentru a-l folosi pentru E-maintenance"
+msgstr ""
+"Receiverul trebuie să fie inactiv pentru a-l folosi pentru E-maintenance"
 
-#: inc/emaintenance.class.php:463
+#: inc/emaintenance.class.php:561
 msgid "Could not connect to mailgate server"
 msgstr ""
 
-#: inc/emaintenance.class.php:485
+#: inc/emaintenance.class.php:590
 #, php-format
-msgid "Message is invalid: %1$s"
+msgid ""
+"Number of messages: available=%1$d, already imported=%2$d, retrieved=%3$d, "
+"refused=%4$d, errors=%5$d, blacklisted=%6$d"
 msgstr ""
 
-#: inc/emaintenance.class.php:493
-#, php-format
-msgid "Number of messages: available=%1$d, already imported=%2$d, retrieved=%3$d, refused=%4$d, errors=%5$d, blacklisted=%6$d"
-msgstr ""
-
-#: inc/emaintenance.class.php:573
+#: inc/emaintenance.class.php:679
 #, php-format
 msgid "Email rejected from %s"
 msgstr "Adresa %s rejectată"
 
-#: inc/extorder.class.php:17 inc/extorder.class.php:21
-#: inc/views/Extorders.php:10 inc/views/Extorders.php:33
-#: inc/views/Intorders.php:52 inc/views/Intorders.php:55
+#: inc/emaintenance.class.php:683
+#, php-format
+msgid "Email with subject \"%s\" rejected"
+msgstr ""
+
+#: inc/emaintenance.class.php:1000
+#, php-format
+msgid "Unsupported mail server type:%s."
+msgstr ""
+
+#: inc/emaintenance.class.php:1042
+#, php-format
+msgid "Invalid configuration for %1$s folder in receiver %2$s"
+msgstr ""
+
+#: inc/extorder.class.php:22 inc/extorder.class.php:27
+#: inc/views/extorders.class.php:19 inc/views/extorders.class.php:28
+#: inc/views/extorders.class.php:53 inc/views/intorders.class.php:83
+#, fuzzy
+#| msgid "External order"
+#| msgid_plural "External orders"
 msgid "External order"
-msgid_plural "External orders"
-msgstr[0] "Comandă externă"
-msgstr[1] "Comenzi externe"
-msgstr[2] "Comenzi externe"
+msgstr "Comandă externă"
 
-#: inc/extorder.class.php:106 inc/intorder.class.php:18
-#: inc/intorder.class.php:23 inc/intorder_extorder.class.php:166
-#: inc/intorder_view.class.php:20 inc/views/Extorders.php:13
-#: inc/views/Intorders.php:49 inc/views/Intorders.php:75
+#: inc/extorder.class.php:125 inc/intorder.class.php:22
+#: inc/intorder.class.php:27 inc/intorder_extorder.class.php:184
+#: inc/intorder_view.class.php:21 inc/views/extorders.class.php:33
+#: inc/views/intorders.class.php:22 inc/views/intorders.class.php:79
+#: inc/views/intorders.class.php:107
+#, fuzzy
+#| msgid "Internal order"
+#| msgid_plural "Internal orders"
 msgid "Internal order"
-msgid_plural "Internal orders"
-msgstr[0] "Comandă internă"
-msgstr[1] "Comenzi interne"
-msgstr[2] "Comenzi interne"
+msgstr "Comandă internă"
 
-#: inc/extorder.class.php:155 inc/intorder.class.php:186
-#: inc/orderstatus.class.php:26
+#: inc/extorder.class.php:173 inc/intorder.class.php:197
+#: inc/orderstatus.class.php:29
+#, fuzzy
+#| msgid "Order status"
+#| msgid_plural "Order statuses"
 msgid "Order status"
-msgid_plural "Order statuses"
-msgstr[0] "Stare comandă"
-msgstr[1] "Stări comandă"
-msgstr[2] "Stări comandă"
+msgstr "Stare comandă"
 
-#: inc/hmarfa.class.php:470 inc/hmarfa.class.php:477
+#: inc/extorder.class.php:176 inc/intorder.class.php:200
+#: inc/monthlyplan.class.php:218 inc/printer.class.php:431
+#: inc/printer.class.php:529 inc/printer.class.php:636
+#: inc/views/clientinvoices.class.php:122
+#, fuzzy
+#| msgid "Command status"
+#| msgid_plural "Command statuses"
+msgid "Comments"
+msgstr "Stare comandă"
+
+#: inc/hmarfa.class.php:522 inc/hmarfa.class.php:533
 #, php-format
 msgid "Error updating %s custom fields"
 msgstr ""
 
-#: inc/hmarfa.class.php:861
+#: inc/hmarfa.class.php:930
 msgid "Ticket has an invalid export type"
 msgstr "Tichetul are tip export invalid"
 
-#: inc/hmarfa.class.php:867
+#: inc/hmarfa.class.php:936
 msgid "Ticket has no consumables"
 msgstr "Tichetul nu are consumabile"
 
-#: inc/hmarfa.class.php:872
+#: inc/hmarfa.class.php:941
 msgid "Ticket has no partner"
 msgstr "Tichetul nu are partener"
 
-#: inc/hmarfa.class.php:907
+#: inc/hmarfa.class.php:981
 msgid "Partner information"
 msgstr "Informații partener"
 
-#: inc/hmarfa.class.php:953
+#: inc/hmarfa.class.php:1032
 msgid "Average percent"
 msgstr "Procent mediu"
 
-#: inc/hmarfa.class.php:959
+#: inc/hmarfa.class.php:1038
 msgid "Last sales to the partner"
 msgstr "Ultimele vânzări către partener"
 
-#: inc/hmarfa.class.php:1301
-msgid "Invoice information"
-msgstr "Informații document"
+#: inc/hmarfa.class.php:1173
+#, fuzzy
+#| msgid "Average percent"
+msgid "Average"
+msgstr "Procent mediu"
 
-#: inc/hmarfaimporter.class.php:20
+#: inc/hmarfa.class.php:1341 inc/views/tickets.class.php:25
+msgid "Ticket list"
+msgstr "Lista tichete"
+
+#: inc/hmarfa.class.php:1349 inc/ticket.class.php:269
+msgid "Pending"
+msgstr "In lucrare"
+
+#: inc/hmarfa_invoicer.class.php:207
+#, fuzzy
+#| msgid " warnings"
+msgid "Warning"
+msgstr " avertismente"
+
+#: inc/hmarfa_invoicer.class.php:1037
+msgid "Sum of unpaid invoices"
+msgstr "Suma facturilor neplătite"
+
+#: inc/hmarfaimporter.class.php:22
+#, fuzzy
+#| msgid "hMarfa importer"
+#| msgid_plural "hMarfa importers"
 msgid "hMarfa importer"
-msgid_plural "hMarfa importers"
-msgstr[0] "hMarfa importer"
-msgstr[1] "hMarfa importers"
-msgstr[2] "hMarfa importers"
+msgstr "hMarfa importer"
 
-#: inc/html.class.php:470
-#, php-format
-msgid "Debug mode %1$s"
+#: inc/html.class.php:542
+msgid "Home"
 msgstr ""
 
-#: inc/html.class.php:470
+#: inc/html.class.php:591
 msgid "on"
 msgstr ""
 
-#: inc/html.class.php:470
+#: inc/html.class.php:591
 msgid "off"
 msgstr ""
 
-#: inc/html.class.php:499 inc/html.class.php:508
+#: inc/html.class.php:596
+#, fuzzy
+#| msgid "Change date"
+msgid "Change mode"
+msgstr "Data instalării"
+
+#: inc/html.class.php:641 inc/html.class.php:650
 msgid "Saved searches"
 msgstr ""
 
-#: inc/html.class.php:503
+#: inc/html.class.php:645
 msgid "Manage saved searches"
 msgstr ""
 
-#: inc/html.class.php:507
-msgid "Load a bookmark"
-msgstr ""
-
-#: inc/html.class.php:554
+#: inc/html.class.php:696
 msgid "MySQL replica: read only"
 msgstr ""
 
-#: inc/html.class.php:578
-msgid "Display iService debug informations"
-msgstr "Afișează informați de depanare"
+#: inc/html.class.php:835
+#, php-format
+msgid "%s second"
+msgstr ""
 
-#: inc/intorder.class.php:175
+#: inc/html.class.php:882
+msgid "Access denied"
+msgstr ""
+
+#: inc/installsteps/addcustomfieldsinstallstep.class.php:98
+msgid "Custom fields updated"
+msgstr ""
+
+#: inc/installsteps/addcustomfieldsinstallstep.class.php:100
+#, fuzzy
+#| msgid "Error deleting cartridges"
+msgid "Error while updating custom fields"
+msgstr "Eroare la ștergerea cartușelor"
+
+#: inc/intorder.class.php:186
 msgid "Deadline"
 msgstr "Termen livrare"
 
-#: inc/menu.class.php:18 inc/menu.class.php:28 inc/menu.class.php:39
-msgid "iService"
-msgstr "iService"
+#: inc/monthlyplan.class.php:14
+msgid "Monthly plan"
+msgstr "Plan lunar"
 
-#: inc/menu.class.php:82
-msgid "Generate new magic link"
-msgstr "Generează link magic nou"
+#: inc/monthlyplan.class.php:175 inc/views/clientinvoices.class.php:242
+#: inc/views/unpaidinvoices.class.php:182
+msgid "Technician"
+msgstr ""
 
-#: inc/menu.class.php:103
-msgid "Please associate a printer with the ticket to be able to generate a ticket report."
-msgstr "Adăugați o imprimantă la tichet pentru a genera raportul de intervenție."
+#: inc/monthlyplan.class.php:178
+msgid "Year"
+msgstr "Anul"
 
-#: inc/menu.class.php:105 inc/views/Operations.php:29 inc/views/Tickets.php:74
-msgid "Generate"
-msgstr "Generează"
+#: inc/monthlyplan.class.php:179
+msgid "Month"
+msgstr "Luna"
 
-#: inc/menu.class.php:105 inc/ticket.class.php:2386 inc/views/Operations.php:29
-#: inc/views/Tickets.php:74
-msgid "intervention report"
-msgstr "raport de intervenție"
+#: inc/monthlyplan.class.php:180
+msgid "Search"
+msgstr ""
 
-#: inc/movement.class.php:122
+#: inc/monthlyplan.class.php:181
+msgid "This month"
+msgstr "Luna curentă"
+
+#: inc/monthlyplan.class.php:182
+#, fuzzy
+#| msgid "This month"
+msgid "Last month"
+msgstr "Luna curentă"
+
+#: inc/monthlyplan.class.php:183
+msgid "2 month ago"
+msgstr "Acum 2 luni"
+
+#: inc/monthlyplan.class.php:212 inc/views/globalreadcounter.class.php:180
+msgid "Global read counter"
+msgstr "Citire globală"
+
+#: inc/monthlyplan.class.php:212
+msgid "Week"
+msgstr "Săptămâna"
+
+#: inc/monthlyplan.class.php:218 inc/printer.class.php:414
+msgid "Inventory number"
+msgstr ""
+
+#: inc/monthlyplan.class.php:219
+msgid "Open tickets"
+msgstr "Tichete deschise"
+
+#: inc/monthlyplan.class.php:220 inc/views/printers.class.php:83
+#: inc/views/tickets.class.php:132 inc/views/unpaidinvoices.class.php:18
+msgid "Unpaid invoices"
+msgstr "Facturi neplătite"
+
+#: inc/monthlyplan.class.php:221
+msgid "Total unpaid"
+msgstr "Total neplătit"
+
+#: inc/movement.class.php:143
 msgid "Old partner"
 msgstr "Partener vechi"
 
-#: inc/movement.class.php:123
+#: inc/movement.class.php:144
 msgid "New partner"
 msgstr "Partener nou"
 
-#: inc/movement.class.php:184
+#: inc/movement.class.php:184 inc/movement.class.php:383
+#: inc/printer.class.php:495 inc/printer.class.php:594
+msgid "Modify"
+msgstr "Modifică"
+
+#: inc/movement.class.php:184 inc/movement.class.php:381
+#: inc/ticket.class.php:1938
+msgid "Close"
+msgstr ""
+
+#: inc/movement.class.php:204
 msgid "Abort movement"
 msgstr "Renunță la mutare"
 
-#: inc/movement.class.php:216
+#: inc/movement.class.php:206 inc/movement.class.php:395
+#, fuzzy
+#| msgid "Close ticket"
+msgid "Create ticket"
+msgstr "Închidere tichet"
+
+#: inc/movement.class.php:236
 msgid "Create the ticket to continue"
 msgstr "Creați tichetul pentru a continua"
 
-#: inc/movement.class.php:303 inc/printer.class.php:354
+#: inc/movement.class.php:272 inc/printer.class.php:392
+#: inc/reminder.class.php:111
+msgid "Status"
+msgstr ""
+
+#: inc/movement.class.php:289 inc/printer.class.php:387
+msgid "Technician in charge of the hardware"
+msgstr ""
+
+#: inc/movement.class.php:293 inc/printer.class.php:378
+msgid "Alternate username number"
+msgstr ""
+
+#: inc/movement.class.php:297 inc/printer.class.php:381
+msgid "Alternate username"
+msgstr ""
+
+#: inc/movement.class.php:357 inc/printer.class.php:420
 msgid "External user"
 msgstr ""
 
-#: inc/movement.class.php:308 inc/printer.class.php:360
+#: inc/movement.class.php:362 inc/printer.class.php:426
 msgid "Supergroup"
 msgstr ""
 
-#: inc/movement.class.php:313
+#: inc/movement.class.php:367
 msgid "Close the ticket and issue the invoice to continue"
 msgstr "Închideți tichetul și emiteți factura pentru a continua"
 
-#: inc/movement.class.php:318
+#: inc/movement.class.php:372
 msgid "Start movement"
 msgstr "Începe mutarea"
 
-#: inc/movement.class.php:360
+#: inc/movement.class.php:412
 msgid "This movement is finalized"
 msgstr "Această mutare este finalizată"
 
-#: inc/movement.class.php:362
+#: inc/movement.class.php:414
 msgid "Close the ticket to finalize movement"
 msgstr "Închideți tichetul pentru a finaliza mutarea"
 
-#: inc/pendingemail.class.php:18 inc/pendingemail.class.php:23
+#: inc/orderstatus.class.php:166 inc/orderstatus.class.php:185
+msgid "Weight"
+msgstr ""
+
+#: inc/pendingemail.class.php:19 inc/pendingemail.class.php:24
+#, fuzzy
+#| msgid "Pending email"
+#| msgid_plural "Pending emails"
 msgid "Pending email"
-msgid_plural "Pending emails"
-msgstr[0] "E-mail în așteptare"
-msgstr[1] "E-mailuri în așteptare"
-msgstr[2] "E-mailuri în așteptare"
+msgstr "E-mail în așteptare"
 
-#: inc/pendingemailupdater.class.php:20
+#: inc/pendingemailupdater.class.php:22
+#, fuzzy
+#| msgid "Pending email updater"
+#| msgid_plural "Pending email updaters"
 msgid "Pending email updater"
-msgid_plural "Pending email updaters"
-msgstr[0] "Actualizator e-mail în așteptare"
-msgstr[1] "Actualizatoare e-mail în așteptare"
-msgstr[2] "Actualizatoare e-mail în așteptare"
+msgstr "Actualizator e-mail în așteptare"
 
-#: inc/printer.class.php:243 inc/views/Emaintenance.php:131
-#: inc/views/Operations.php:17 inc/views/Printers.php:26
+#: inc/printer.class.php:43 inc/views/printers.class.php:295
+#: inc/views/tickets.class.php:223
+msgid "Manage printer"
+msgstr "Administrare aparat"
+
+#: inc/printer.class.php:288 inc/views/emaintenance.class.php:158
+#: inc/views/operations.class.php:39
 msgid "New quick ticket"
 msgstr "Tichet rapid nou"
 
-#: inc/printer.class.php:250 inc/views/Emaintenance.php:17
-#: inc/views/Printers.php:39 inc/views/Tickets.php:80
+#: inc/printer.class.php:299 inc/views/emaintenance.class.php:38
+#: inc/views/printers.class.php:63 inc/views/tickets.class.php:112
 msgid "Operations list"
 msgstr "Lista lucrări"
 
-#: inc/printer.class.php:424
+#: inc/printer.class.php:307 inc/views/clientinvoices.class.php:130
+msgid "Printers of the client"
+msgstr "Aparatele acestui client"
+
+#: inc/printer.class.php:307 inc/views/clientinvoices.class.php:130
+msgid "Client printers"
+msgstr "Aparate client"
+
+#: inc/printer.class.php:396
+#, fuzzy
+#| msgid "Save contract"
+msgid "Global contract"
+msgstr "Salvează contract"
+
+#: inc/printer.class.php:396
+msgid ""
+"Select if the printer is not billed individually, but together with other "
+"printers"
+msgstr ""
+"Bifați aici în cazul în care aparatul NU se factureaza individual, ci este "
+"facturat împreună cu mai multe aparate"
+
+#: inc/printer.class.php:408
+msgid "Model"
+msgstr ""
+
+#: inc/printer.class.php:411
+msgid "Serial number"
+msgstr ""
+
+#: inc/printer.class.php:496
 msgid "Partener"
 msgstr ""
 
-#: inc/stockverifier.class.php:20
-msgid "Stock verifier"
-msgid_plural "Stock verifiers"
-msgstr[0] "Stock verifier"
-msgstr[1] "Stock verifiers"
-msgstr[2] "Stock verifiers"
-
-#: inc/stockverifier.class.php:30 inc/views/Emaintenance.php:172
-msgid "Number of emails to retrieve"
+#: inc/printer.class.php:504 inc/views/clientinvoices.class.php:120
+msgid "Phone"
 msgstr ""
 
-#: inc/task_closetickets.class.php:11
-msgid "Close tickets"
-msgstr "Închide tichete"
+#: inc/printer.class.php:507
+msgid "Fax"
+msgstr ""
 
-#: inc/ticket.class.php:962 inc/ticket.class.php:963
+#: inc/printer.class.php:510 inc/views/clientinvoices.class.php:121
+#, fuzzy
+#| msgid "Usage Address"
+msgid "Address"
+msgstr "Adresa de exploatare"
+
+#: inc/printer.class.php:513
+msgid "Postal code"
+msgstr ""
+
+#: inc/printer.class.php:516
+msgid "City"
+msgstr ""
+
+#: inc/printer.class.php:522
+#, fuzzy
+#| msgid "Amount"
+msgid "Country"
+msgstr "Cantitate"
+
+#: inc/printer.class.php:525
+msgid "Third party type"
+msgstr ""
+
+#: inc/printer.class.php:606
+msgid "Start date"
+msgstr ""
+
+#: inc/printer.class.php:615 inc/printer.class.php:616
+#: inc/printer.class.php:617 inc/printer.class.php:618
+#, fuzzy, php-format
+#| msgid "This month"
+msgid "%d month"
+msgstr "Luna curentă"
+
+#: inc/printer.class.php:622
+msgid "Contract renewal period"
+msgstr ""
+
+#: inc/printer.class.php:629
+msgid "Renewal"
+msgstr ""
+
+#: inc/reminder.class.php:65
+#, fuzzy
+#| msgid "New partner"
+msgid "New item"
+msgstr "Partener nou"
+
+#: inc/reminder.class.php:69
+#, php-format
+msgid "%1$s - ID %2$d"
+msgstr ""
+
+#: inc/reminder.class.php:78
+msgid "Title"
+msgstr ""
+
+#: inc/reminder.class.php:115 inc/ticketfollowup.class.php:49
+#, fuzzy
+#| msgid "Ticket description"
+msgid "Description"
+msgstr "Descriere tichet"
+
+#: inc/stockverifier.class.php:22
+#, fuzzy
+#| msgid "Stock verifier"
+#| msgid_plural "Stock verifiers"
+msgid "Stock verifier"
+msgstr "Stock verifier"
+
+#: inc/task_backup.class.php:43 inc/utils/redefinemenus.class.php:151
+msgid "Backup/restore"
+msgstr ""
+
+#: inc/task_dataintegritytest.class.php:38
+msgid "Self test"
+msgstr ""
+
+#: inc/task_dataintegritytest.class.php:72
+msgid "EM errors"
+msgstr "erori EM"
+
+#: inc/task_dataintegritytest.class.php:77
+msgid "No E-Maintenance errors detected"
+msgstr "Nu s-au detectat erori E-Maintenance"
+
+#: inc/task_dataintegritytest.class.php:81
+msgid "Data integrity test returned"
+msgstr "Testul de integritate a dat"
+
+#: inc/task_dataintegritytest.class.php:87
+msgid " warnings"
+msgstr " avertismente"
+
+#: inc/task_dataintegritytest.class.php:88
+msgid " and "
+msgstr " și "
+
+#: inc/task_dataintegritytest.class.php:89
+msgid " errors"
+msgstr " erori"
+
+#: inc/ticket.class.php:172
+msgid " black and white"
+msgstr " alb-negru"
+
+#: inc/ticket.class.php:277
+msgid "Processing"
+msgstr ""
+
+#: inc/ticket.class.php:279 inc/views/view.class.php:901
+msgid "All"
+msgstr ""
+
+#: inc/ticket.class.php:425 inc/ticket.class.php:426
 msgid "Error saving ticket(s)"
 msgstr "Eroare la salvarea tichetelor"
 
-#: inc/ticket.class.php:962 inc/ticket.class.php:964
+#: inc/ticket.class.php:425 inc/ticket.class.php:427
 #, php-format
 msgid "%d ticket(s) saved."
 msgstr "%d ticket(e) salvat(e)."
 
-#: inc/ticket.class.php:1130 inc/ticket.class.php:1139
+#: inc/ticket.class.php:521
 #, php-format
-msgid "Ticket already exists for movement %d"
-msgstr "Există deja tichet pentru mutarea %d"
+msgid ""
+"Warning. There is a newer ticket %1$d with installed cartridges. First "
+"remove cartridges from that ticket."
+msgstr ""
+"Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi "
+"cartușele de pe acel tichet."
 
-#: inc/ticket.class.php:1148
-#, php-format
-msgid "Ticket already exists for [EM] email %d"
-msgstr "Există deja tichet pentru emailul [EM] %d"
+#: inc/ticket.class.php:538 inc/ticket.class.php:2298
+msgid "Notice"
+msgstr "Aviz"
 
-#: inc/ticket.class.php:1265
-msgid "Send confirmation email"
-msgstr "Trimite e-mail de confirmare"
+#: inc/ticket.class.php:539 inc/ticket.class.php:2299
+#, fuzzy
+#| msgid "Invoice"
+#| msgid_plural "Invoices"
+msgid "Invoice"
+msgstr "Factură"
 
-#: inc/ticket.class.php:1327
-msgid "Sum of unpaid invoices"
-msgstr "Suma facturilor neplătite"
+#: inc/ticket.class.php:562
+msgid "Send email to client"
+msgstr "Trimite email către client"
 
-#: inc/ticket.class.php:1334
-msgid "Last invoice date"
-msgstr "Data ultima factură"
+#: inc/ticket.class.php:695
+msgid "from"
+msgstr "din"
 
-#: inc/ticket.class.php:1335
-msgid "Invoice expiry date"
-msgstr "Data expirare factură"
+#: inc/ticket.class.php:734
+msgid "Estimation"
+msgstr "Estimare"
 
-#: inc/ticket.class.php:1336 inc/ticket.class.php:1337
-#: inc/ticket.class.php:1474 inc/views/Operations.php:235
-msgid "Printed surface"
-msgstr "Suprafața printată"
+#: inc/ticket.class.php:849
+msgid ""
+"You can not install this cartridge because it is already installed with an "
+"other ticket!"
+msgstr ""
+"Nu puteți instala acest cartuș deoarece este deja instalat cu un alt tichet!"
 
-#: inc/ticket.class.php:1336 inc/ticket.class.php:1337
-msgid "Color counter"
-msgstr "Contor color"
+#: inc/ticket.class.php:902
+msgid "You can not add new cartridges while there is a newer closed ticket."
+msgstr "Nu puteți adăuga cartușe cât timp există un tichet închis mai nou."
 
-#: inc/ticket.class.php:1336 inc/ticket.class.php:1338
-msgid "last invoice"
-msgstr "ultima factură"
+#: inc/ticket.class.php:905
+msgid ""
+"You can not add new cartridges while there is a newer ticket with cartridges."
+msgstr "Nu puteți adăuga cartușe cât timp există un tichet mai nou cu cartușe."
 
-#: inc/ticket.class.php:1337 inc/ticket.class.php:1339
-msgid "last closed ticket"
-msgstr "ultimul tichet închis"
+#: inc/ticket.class.php:960
+msgid "Select a cartridge"
+msgstr "Selectați un cartuș"
 
-#: inc/ticket.class.php:1338 inc/ticket.class.php:1339
-msgid "Black counter"
-msgstr "Contor black"
-
-#: inc/ticket.class.php:1350
-msgid "Last invoice and counter information"
-msgstr "Informații ultima factură și contoare"
-
-#: inc/ticket.class.php:1457 inc/ticket.class.php:1460
-#: inc/views/Operations.php:234
-msgid "Consumed ink"
-msgstr "Cerneală consumată"
-
-#: inc/ticket.class.php:1457 inc/ticket.class.php:1463
-msgid "Black counter reading"
-msgstr "Citire contor black"
-
-#: inc/ticket.class.php:1477
-msgid "Color counter reading"
-msgstr "Citire contor color"
-
-#: inc/ticket.class.php:1505
-msgid "Ticket description"
-msgstr "Descriere tichet"
-
-#: inc/ticket.class.php:1505
-msgid "optional"
-msgstr "opțional"
-
-#: inc/ticket.class.php:1519
-msgid "Followup description"
-msgstr "Descriere followup"
-
-#: inc/ticket.class.php:1568
-msgid "Change cartridge"
-msgstr "Instalat cartuș"
-
-#: inc/ticket.class.php:1587
-msgid "Change date"
-msgstr "Data instalării"
-
-#: inc/ticket.class.php:1611
-msgid "Operator reading"
-msgstr "Citire de la distanță"
-
-#: inc/ticket.class.php:1618
-msgid "Without papers"
-msgstr "Fără hârtii"
-
-#: inc/ticket.class.php:1630 inc/ticket.class.php:1875
-msgid "Working"
-msgstr "În lucrare"
-
-#: inc/ticket.class.php:1664
-msgid "Export type"
-msgstr "Tip export"
-
-#: inc/ticket.class.php:1709
-msgid "Delivered"
-msgstr "Livrare finalizată"
-
-#: inc/ticket.class.php:1741
-msgid "Exported in csv and imported in hMarfa"
-msgstr "Exportat in csv și importat in hMarfa"
-
-#: inc/ticket.class.php:1752
-msgid "Services invoice"
-msgstr "Factură servicii"
-
-#: inc/ticket.class.php:1769 inc/ticket.class.php:1771
-msgid "Effective date"
-msgstr "Data efectivă"
-
-#: inc/ticket.class.php:1783
-msgid "Notification e-mail"
-msgstr "E-mail notificare"
-
-#: inc/ticket.class.php:1807
-msgid "Solve"
-msgstr "Soluționează"
-
-#: inc/ticket.class.php:1833 inc/views/Global_ReadCounter.php:135
-msgid "Send data"
-msgstr "Trimite datele"
-
-#: inc/ticket.class.php:1895
-msgid "Generate services invoice"
-msgstr "Generează factură servicii"
-
-#: inc/ticket.class.php:1972
-msgid "Send notification"
-msgstr "Trimite notificare prin e-mail"
-
-#: inc/ticket.class.php:1984
-#, php-format
-msgid "Last %d tickets"
-msgstr "Ultimele %d tichete"
-
-#: inc/ticket.class.php:1994
-#, php-format
-msgid "Last %d tickets with \"%s\" category"
-msgstr "Ultimele %d tichete cu categoria \"%s\""
-
-#: inc/ticket.class.php:2386 inc/ticket.class.php:2396
-msgid "see"
-msgstr "vezi"
-
-#: inc/ticket.class.php:2413
+#: inc/ticket.class.php:1028
 #, php-format
 msgid "Ticket %s saved successfully."
 msgstr "Tichetul %s a fost salvat cu succes."
 
-#: inc/ticket.class.php:2703
+#: inc/ticket.class.php:1388
 msgid "Could not send ticketreport to"
 msgstr "Eroare la trimiterea raportului de intervenții la"
 
-#: inc/ticket.class.php:2705
+#: inc/ticket.class.php:1390
 msgid "Confirmation mail sent to"
 msgstr "E-mail de confirmare trimis la"
 
-#: inc/view.class.php:354
-msgid "Empty"
+#: inc/ticket.class.php:1409
+msgid "Last invoice date"
+msgstr "Data ultima factură"
+
+#: inc/ticket.class.php:1410
+msgid "Invoice expiry date"
+msgstr "Data expirare factură"
+
+#: inc/ticket.class.php:1411 inc/ticket.class.php:1412
+#: inc/views/operations.class.php:262
+msgid "Printed surface"
+msgstr "Suprafața printată"
+
+#: inc/ticket.class.php:1411 inc/ticket.class.php:1412
+msgid "Color counter"
+msgstr "Contor color"
+
+#: inc/ticket.class.php:1411 inc/ticket.class.php:1413
+msgid "last invoice"
+msgstr "ultima factură"
+
+#: inc/ticket.class.php:1412 inc/ticket.class.php:1414
+msgid "last closed ticket"
+msgstr "ultimul tichet închis"
+
+#: inc/ticket.class.php:1413 inc/ticket.class.php:1414
+#: inc/views/operations.class.php:261
+msgid "Consumed ink"
+msgstr "Cerneală consumată"
+
+#: inc/ticket.class.php:1413 inc/ticket.class.php:1414
+msgid "Black counter"
+msgstr "Contor black"
+
+#: inc/ticket.class.php:1773
+msgid "Error restoring cartridges"
+msgstr "Eroare la restaurarea cartușelor"
+
+#: inc/ticket.class.php:1774
+#, fuzzy
+#| msgid "Error restoring cartridges"
+msgid "Error restoring cartridges custom fields"
+msgstr "Eroare la restaurarea cartușelor"
+
+#: inc/ticket.class.php:1813 inc/ticket.class.php:1822
+msgid "Error deleting cartridges"
+msgstr "Eroare la ștergerea cartușelor"
+
+#: inc/ticket.class.php:1814 inc/ticket.class.php:1823
+#, fuzzy
+#| msgid "Error deleting cartridges"
+msgid "Error deleting cartridges custom fields"
+msgstr "Eroare la ștergerea cartușelor"
+
+#: inc/ticket.class.php:1824
+#, fuzzy
+#| msgid "Error deleting cartridges"
+msgid "Error deleting cartridges infocoms"
+msgstr "Eroare la ștergerea cartușelor"
+
+#: inc/ticket.class.php:1848
+#, fuzzy
+#| msgid "\"Assigned to\" field is empty!"
+msgid "\\\"Assigned to\\\" field is empty!"
+msgstr "Câmpul \"Repartizat către\" este gol!"
+
+#: inc/ticket.class.php:1852
+msgid "Category is not selected!"
+msgstr "Categoria nu este selectată!"
+
+#: inc/ticket.class.php:1857
+msgid "Black counter under limit!"
+msgstr "Contor negru sub limită!"
+
+#: inc/ticket.class.php:1861
+msgid "Color counter under limit!"
+msgstr "Contor color sub limită!"
+
+#: inc/ticket.class.php:1869
+msgid "Movement not invoiced!"
+msgstr "Mutare ne-facturată!"
+
+#: inc/ticket.class.php:1874
+msgid "Unfinished delivery!"
+msgstr "Livrare nefinalizată!"
+
+#: inc/ticket.class.php:1878
+msgid "hMarfa export not done!"
+msgstr "Export hMarfa neefectuat!"
+
+#: inc/ticket.class.php:1918
+msgid " closed tickets will be reopened. Are you sure you want to continue?"
+msgstr " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"
+
+#: inc/ticket.class.php:1920
+msgid "Are you sure you want to reopen the ticket?"
+msgstr "Sigur vreți să redeschideți tichetul?"
+
+#: inc/ticket.class.php:1926
+msgid "Reopen"
 msgstr ""
 
-#: inc/view.class.php:775
-msgid "Reset filters"
-msgstr "Șterge filtrele"
+#: inc/ticket.class.php:2205
+msgid "Services invoice"
+msgstr "Factură servicii"
 
-#: inc/view.class.php:944
+#: inc/ticket.class.php:2215
 #, php-format
-msgid "Expires on %s"
-msgstr "Expiră pe %s"
+msgid ""
+"There is an unfinished movement for this printer, please finish movement %s "
+"first!"
+msgstr ""
+"O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați "
+"mutarea %s întâi!"
 
-#: inc/view.class.php:945
-msgid "Refresh"
-msgstr "Reîmprospătează"
-
-#: inc/view.class.php:946
+#: inc/ticket.class.php:2223 inc/ticket.class.php:2227
 #, php-format
-msgid "from cache %s"
-msgstr "din cache %s"
+msgid "Ticket already exists for movement %d"
+msgstr "Există deja tichet pentru mutarea %d"
 
-#: inc/views.class.php:61
-msgid "Archive"
-msgstr "Arhivă"
+#: inc/ticket.class.php:2246
+msgid "Do not check before invoice is issued, operation can not be undone!"
+msgstr ""
+"Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi "
+"revocată!"
 
-#: inc/views/Cartridges.php:30
+#: inc/ticket.class.php:2246
+msgid "To create an invoice, press the link"
+msgstr "Pentru a crea factura, apăsați linkul"
+
+#: inc/ticket.class.php:2246
+msgid "invoicing"
+msgstr "facturare"
+
+#: inc/ticket.class.php:2289
+msgid "At the last verification at"
+msgstr "La ultima verificare din"
+
+#: inc/ticket.class.php:2290
+msgid "Verify when you last installed cartridges on the printer!"
+msgstr "Verificați când ați instalat tonere pe aparat!"
+
+#: inc/ticketfollowup.class.php:41
+msgid "Date"
+msgstr ""
+
+#: inc/ticketfollowup.class.php:45
+msgid "Requester"
+msgstr ""
+
+#: inc/utils/redefinemenus.class.php:108
+msgid "Last execution of hMarfa import"
+msgstr "Ultima execuție hMarfa import"
+
+#: inc/views/cartridges.class.php:57
 msgid "Change location"
 msgstr "Schimbă locația"
 
-#: inc/views/Cartridges.php:37
+#: inc/views/cartridges.class.php:64
 msgid "Add to printer"
 msgstr "Instalează acest cartuș"
 
-#: inc/views/Cartridges.php:42
+#: inc/views/cartridges.class.php:69
 msgid "Delete cartridge"
 msgstr "Șterge acest cartuș"
 
-#: inc/views/Cartridges.php:44
+#: inc/views/cartridges.class.php:71
 msgid "Cartridge deleted from database"
 msgstr "Cartuș șters din baza de date"
 
-#: inc/views/deleteCartridgeFromDb.php:18
-msgid "Could not delete cartridge from the database"
-msgstr "Nu s-a putut șterge cartușul din baza de date"
+#: inc/views/emaintenance.class.php:22
+msgid "E-Maintenance"
+msgstr "E-Maintenance"
 
-#: inc/views/Emaintenance.php:31 inc/views/Printers.php:51
-#: inc/views/Tickets.php:86
+#: inc/views/emaintenance.class.php:52 inc/views/printers.class.php:75
+#: inc/views/tickets.class.php:124
 msgid "Installable cartridges"
 msgstr "Cartușe ce pot fi instalate"
 
-#: inc/views/Emaintenance.php:125 inc/views/Operations.php:23
-#: inc/views/Tickets.php:62
+#: inc/views/emaintenance.class.php:152 inc/views/operations.class.php:45
+#: inc/views/tickets.class.php:100
 msgid "Close ticket"
 msgstr "Închidere tichet"
 
-#: inc/views/Emaintenance.php:127
+#: inc/views/emaintenance.class.php:154
 msgid "Cannot identify printer from email"
 msgstr "Nu se poate identifica aparatul din email"
 
-#: inc/views/Emaintenance.php:150
+#: inc/views/emaintenance.class.php:181
 msgid "Goto link from email"
 msgstr "Vezi linkul din email"
 
-#: inc/views/Emaintenance.php:175
+#: inc/views/emaintenance.class.php:210
 msgid "Get E-maintenance emails"
 msgstr "Obține e-mailurile E-maintenance"
 
-#: inc/views/Emaintenance.php:181
+#: inc/views/emaintenance.class.php:218
 msgid "Processed mail list"
 msgstr "Lista emailuri procesate"
 
-#: inc/views/Operations.php:65
+#: inc/views/evaluation.class.php:18 inc/views/evaluation.class.php:215
+#, fuzzy
+#| msgid "Estimation"
+msgid "Evaluation"
+msgstr "Estimare"
+
+#: inc/views/globalreadcounter.class.php:22
+#, fuzzy
+#| msgid "Global read counter"
+msgid "GlobalReadCounter"
+msgstr "Citire globală"
+
+#: inc/views/globalreadcounter.class.php:181
+msgid "Send data"
+msgstr "Trimite datele"
+
+#: inc/views/inboundlots.class.php:15
+msgid "Inbound Lots"
+msgstr "Loturi de intrare"
+
+#: inc/views/lastntickets.class.php:17
+#, fuzzy
+#| msgid "Last %d tickets"
+msgid "LastNTickets"
+msgstr "Ultimele %d tichete"
+
+#: inc/views/movements.class.php:31
+msgid "Movement list"
+msgstr "Lista mutări"
+
+#: inc/views/operations.class.php:23 inc/views/operations.class.php:94
 msgid "Operations"
 msgstr "Lucrări"
 
-#: inc/views/Pending_Emails.php:70
+#: inc/views/operations.class.php:51 inc/views/tickets.class.php:106
+msgid "Generate"
+msgstr "Generează"
+
+#: inc/views/operations.class.php:51 inc/views/tickets.class.php:106
+msgid "intervention report"
+msgstr "raport de intervenție"
+
+#: inc/views/outboundlots.class.php:15
+msgid "Outbound Lots"
+msgstr "Loturi de ieșire"
+
+#: inc/views/partners.class.php:17
+msgid "Due partners"
+msgstr "Scadențe facturi"
+
+#: inc/views/partners.class.php:30
+msgid "Due partner list"
+msgstr "Scadență parteneri"
+
+#: inc/views/partners.class.php:180 inc/views/skippedpayment.class.php:71
+msgid "See invoice list"
+msgstr "Vezi lista facturi"
+
+#: inc/views/pendingemails.class.php:23
+#, fuzzy
+#| msgid "Pending emails"
+msgid "PendingEmails"
+msgstr "E-mailuri în așteptare"
+
+#: inc/views/pendingemails.class.php:94
 #, php-format
 msgid "%d emails were sent"
 msgstr ""
 
-#: inc/views/Pending_Emails.php:72
+#: inc/views/pendingemails.class.php:96
 #, php-format
 msgid "%d emails were not sent"
 msgstr ""
 
-#: inc/views/Pending_Emails.php:81
+#: inc/views/pendingemails.class.php:105
 msgid "Pending emails"
 msgstr "E-mailuri în așteptare"
 
-#: inc/views/PrinterCounters.php:263 inc/views/PrinterCounters2.php:125
-#: inc/views/Printers.php:45 inc/views/Printers.php:270
-#: inc/views/Printers.php:271
-msgid "Printer counters"
-msgstr "Contoare aparate"
-
-#: inc/views/Printers.php:199
-msgid "You have compatible cartridges at other locations:"
-msgstr "Aveți cartușe compatibile în altă locație:"
-
-msgid "Route Manifest"
-msgstr "Foaie de parcurs"
-
-msgid "Outbound Lots"
-msgstr "Loturi de ieșire"
-
-msgid "Inbound Lots"
-msgstr "Loturi de intrare"
-
-msgid "Stock Lots"
-msgstr "Loturi de stoc"
-
+#: inc/views/pricelist.class.php:17
 msgid "Price List"
 msgstr "Lista de prețuri"
 
+#: inc/views/printercounters.class.php:169 inc/views/printers.class.php:69
+#: inc/views/printers.class.php:334 inc/views/tickets.class.php:118
+msgid "Printer counters"
+msgstr "Contoare aparate"
+
+#: inc/views/printercounters.class.php:175 inc/views/view.class.php:1098
+msgid "Warning! This operation will block the database for 5 minutes! Proceed?"
+msgstr ""
+"Atenție!!! Această operațiune blochează baza de date pentru 5 minute! "
+"Executati?"
+
+#: inc/views/printers.class.php:26
+msgid "Printer list"
+msgstr "Lista aparate"
+
+#: inc/views/printers.class.php:31
+msgid "Printers"
+msgstr "Aparate"
+
+#: inc/views/printers.class.php:48
+msgid "Read counter"
+msgstr "Citire contor"
+
+#: inc/views/printers.class.php:252
+msgid "You have compatible cartridges at other locations:"
+msgstr "Aveți cartușe compatibile în altă locație:"
+
+#: inc/views/reminders.class.php:130 inc/views/reminders.class.php:132
+msgid "To do"
+msgstr ""
+
+#: inc/views/reminders.class.php:131
+#, fuzzy
+#| msgid "Invoice information"
+msgid "Information"
+msgstr "Informații document"
+
+#: inc/views/reminders.class.php:133
+msgid "Done"
+msgstr ""
+
+#: inc/views/routemanifest.class.php:15
+msgid "Route Manifest"
+msgstr "Foaie de parcurs"
+
+#: inc/views/skippedpayment.class.php:15
 msgid "Clients with skipped payment"
 msgstr "Clienți cu facturi omise"
 
+#: inc/views/stock.class.php:19
 msgid "Stock optimization"
 msgstr "Optimizare stoc"
 
-msgid "Invoice"
-msgid_plural "Invoices"
-msgstr[0] "Factură"
-msgstr[1] "Facturi"
-msgstr[2] "Facturi"
+#: inc/views/stocklots.class.php:18
+msgid "Stock Lots"
+msgstr "Loturi de stoc"
 
-msgid "Last execution of hMarfa import"
-msgstr "Ultima execuție hMarfa import"
+#: inc/views/view.class.php:219
+msgid "Error"
+msgstr "Eroare"
 
-msgid "No E-Maintenance errors detected"
-msgstr "Nu s-au detectat erori E-Maintenance"
+#: inc/views/view.class.php:418
+msgid "Empty"
+msgstr ""
 
-msgid "EM errors"
-msgstr "erori EM"
+#: inc/views/view.class.php:898
+#, fuzzy
+#| msgid "Export type"
+msgid "Export"
+msgstr "Tip export"
 
-msgid "Data integrity test returned"
-msgstr "Testul de integritate a dat"
+#: inc/views/view.class.php:900
+msgid "Visible"
+msgstr "Vizibile"
 
-msgid " warnings"
-msgstr " avertismente"
+#: inc/views/view.class.php:906
+msgid "Show"
+msgstr ""
 
-msgid " and "
-msgstr " și "
+#: inc/views/view.class.php:910
+msgid "Filter"
+msgstr ""
 
-msgid " errors"
-msgstr " erori"
+#: inc/views/view.class.php:911
+msgid "Reset filters"
+msgstr "Șterge filtrele"
 
-msgid "Could not create ticket!"
-msgstr "Nu s-a putut crea tichetul!"
+#: inc/views/view.class.php:1097
+#, php-format
+msgid "Expires on %s"
+msgstr "Expiră pe %s"
 
-msgid "Usage Address"
-msgstr "Adresa de exploatare"
+#: inc/views/view.class.php:1098
+msgid "Refresh"
+msgstr "Reîmprospătează"
 
-msgid " black and white"
-msgstr " alb-negru"
+#: inc/views/view.class.php:1099
+#, php-format
+msgid "from cache %s"
+msgstr "din cache %s"
 
-msgid "Full list"
-msgstr "Lista completă"
+#, php-format
+#~ msgid "Could not complete operation %s for %s"
+#~ msgstr "Operația %s nu poate fi efectuată pentru elementul %s"
 
-msgid "Compatible cartridges list"
-msgstr "Listă cartușe compatibile"
+#, php-format
+#~ msgid "Could not complete operation %s for pending email %d"
+#~ msgstr "Operația %s nu poate fi efectuată pentru emailul %d"
 
-msgid "intalled on"
-msgstr "instalat pe"
+#, php-format
+#~ msgid "Could not complete operation %s for ticket %d"
+#~ msgstr "Operația %s nu poate fi efectuată pentru tichetul %d"
 
-msgid "emptied"
-msgstr "golit"
+#~ msgid "Invalid new profile"
+#~ msgstr "Profil nou invalid"
 
-msgid "No cartridges to replace"
-msgstr "Nu există cartuș de golit"
+#~ msgid "Error saving ticket"
+#~ msgstr "Eroare la salvarea tichetului"
 
-msgid "Cartridges available"
-msgstr "Cartușe neinstalate"
+#~ msgid "Select"
+#~ msgstr "Selectează"
 
-msgid "You can not add new cartridges while there is a newer closed ticket."
-msgstr "Nu puteți adăuga cartușe cât timp există un tichet închis mai nou."
+#~ msgid "There are no compatible cartridges on stock!"
+#~ msgstr "Nu sunt cartușe compatibile în stoc!"
 
-msgid "You can not add new cartridges while there is a newer ticket with cartridges."
-msgstr "Nu puteți adăuga cartușe cât timp există un tichet mai nou cu cartușe."
+#~ msgid "Optimized front"
+#~ msgstr "Front optim"
 
-msgid "Select a cartridge"
-msgstr "Selectați un cartuș"
+#~ msgid "Read counter / replace cartridge"
+#~ msgstr "Citire contor / înlocuire toner"
 
-msgid "Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket."
-msgstr "Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet."
+#~ msgid "Create inquiry"
+#~ msgstr "Creare sesizare"
 
-msgid "Notice"
-msgstr "Aviz"
+#~ msgid "Original interface"
+#~ msgstr "Interfața originală"
 
-msgid "Pending"
-msgstr "In lucrare"
+#~ msgid "Welcome to the Expert Line copy device reporting system"
+#~ msgstr ""
+#~ "Bine ați venit in sistemul de raportare on-line al echipamentelor de "
+#~ "copiere"
 
-msgid "Please select an export type"
-msgstr "Selectați tip export"
+#~ msgid "Display iService debug informations"
+#~ msgstr "Afișează informați de depanare"
 
-msgid "Don't forget to press 'Update' button to save your changes"
-msgstr "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificările"
+#~ msgid "Generate new magic link"
+#~ msgstr "Generează link magic nou"
 
-msgid "Are you sure you want to reopen the ticket?"
-msgstr "Sigur vreți să redeschideți tichetul?"
+#~ msgid ""
+#~ "Please associate a printer with the ticket to be able to generate a "
+#~ "ticket report."
+#~ msgstr ""
+#~ "Adăugați o imprimantă la tichet pentru a genera raportul de intervenție."
 
-msgid " closed tickets will be reopened. Are you sure you want to continue?"
-msgstr " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"
+#~ msgid "Close tickets"
+#~ msgstr "Închide tichete"
 
-msgid "There is an unfinished movement for this printer, please finish movement %s first!"
-msgstr "O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea %s întâi!"
+#, php-format
+#~ msgid "Ticket already exists for [EM] email %d"
+#~ msgstr "Există deja tichet pentru emailul [EM] %d"
 
-msgid "Do not check before invoice is issued, operation can not be undone!"
-msgstr "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi revocată!"
+#~ msgid "Send confirmation email"
+#~ msgstr "Trimite e-mail de confirmare"
 
-msgid "To create an invoice, press the link"
-msgstr "Pentru a crea factura, apăsați linkul"
+#~ msgid "Last invoice and counter information"
+#~ msgstr "Informații ultima factură și contoare"
 
-msgid "invoicing"
-msgstr "facturare"
+#~ msgid "Black counter reading"
+#~ msgstr "Citire contor black"
 
-msgid "Profile rights have been reset to default settings"
-msgstr "Drepturile au fost resetate la setările implicite"
+#~ msgid "Color counter reading"
+#~ msgstr "Citire contor color"
 
-msgid "Profile rights for custom fields have been reset to default settings"
-msgstr "Drepturile pentru câmpurile adiționale au fost resetate la setările implicite"
+#~ msgid "optional"
+#~ msgstr "opțional"
 
-msgid "An error occurred while resetting profile rights to default settings"
-msgstr "A apărut o eroare în timpul resetării drepturilor la setările implicite"
+#~ msgid "Followup description"
+#~ msgstr "Descriere followup"
 
-msgid "An error occurred while resetting custom fields profile rights to default settings"
-msgstr "A apărut o eroare în timpul resetării drepturilor pentru câmpurile adiționale la setările implicite"
+#~ msgid "Operator reading"
+#~ msgstr "Citire de la distanță"
 
-msgid "Are you sure you want to reset profile rights to default settings?"
-msgstr "Sigur vreți să resetați drepturile la setările implicite?"
+#~ msgid "Without papers"
+#~ msgstr "Fără hârtii"
 
-msgid "(Re)Set default profile rights"
-msgstr "(Re)Setează drepturile implicite ale profilului"
+#~ msgid "Working"
+#~ msgstr "În lucrare"
 
-msgid "Send email to client"
-msgstr "Trimite email către client"
+#~ msgid "Delivered"
+#~ msgstr "Livrare finalizată"
 
-msgid "Estimation"
-msgstr "Estimare"
+#~ msgid "Exported in csv and imported in hMarfa"
+#~ msgstr "Exportat in csv și importat in hMarfa"
 
-msgid "from"
-msgstr "din"
+#~ msgid "Effective date"
+#~ msgstr "Data efectivă"
 
-msgid "See invoice list"
-msgstr "Vezi lista facturi"
+#~ msgid "Notification e-mail"
+#~ msgstr "E-mail notificare"
 
-msgid "Client printers"
-msgstr "Aparate client"
+#~ msgid "Solve"
+#~ msgstr "Soluționează"
 
-msgid "Printers of the client"
-msgstr "Aparatele acestui client"
+#~ msgid "Generate services invoice"
+#~ msgstr "Generează factură servicii"
 
-msgid "Select if the printer is not billed individually, but together with other printers"
-msgstr "Bifați aici în cazul în care aparatul NU se factureaza individual, ci este facturat împreună cu mai multe aparate"
+#~ msgid "Send notification"
+#~ msgstr "Trimite notificare prin e-mail"
 
-msgid "Are you sure you want to reset custom fields to default settings?"
-msgstr "Sigur vreți să resetați câmpurile adiționale la setările implicite?"
+#, php-format
+#~ msgid "Last %d tickets with \"%s\" category"
+#~ msgstr "Ultimele %d tichete cu categoria \"%s\""
 
-msgid "Custom fields have been reset to default settings"
-msgstr "Câmpurile adiționale au fost resetate la setările implicite"
+#~ msgid "see"
+#~ msgstr "vezi"
 
-msgid "An error occurred while resetting custom fields to default settings"
-msgstr "A apărut o eroare în timpul resetării câmpurilor adiționale la setările implicite"
+#~ msgid "Archive"
+#~ msgstr "Arhivă"
 
-msgid "You can not install this cartridge because it is already installed with an other ticket!"
-msgstr "Nu puteți instala acest cartuș deoarece este deja instalat cu un alt tichet!"
+#~ msgid "Please select an export type"
+#~ msgstr "Selectați tip export"
 
-msgid "\"Assigned to\" field is empty!"
-msgstr "Câmpul \"Repartizat către\" este gol!"
+#~ msgid "Don't forget to press 'Update' button to save your changes"
+#~ msgstr ""
+#~ "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificările"
 
-msgid "Category is not selected!"
-msgstr "Categoria nu este selectată!"
+#~ msgid "Are you sure you want to reset profile rights to default settings?"
+#~ msgstr "Sigur vreți să resetați drepturile la setările implicite?"
 
-msgid "Black counter under limit!"
-msgstr "Contor negru sub limită!"
+#~ msgid "(Re)Set default profile rights"
+#~ msgstr "(Re)Setează drepturile implicite ale profilului"
 
-msgid "Color counter under limit!"
-msgstr "Contor color sub limită!"
+#~ msgid "Are you sure you want to reset custom fields to default settings?"
+#~ msgstr "Sigur vreți să resetați câmpurile adiționale la setările implicite?"
 
-msgid "Movement not invoiced!"
-msgstr "Mutare ne-facturată!"
-
-msgid "Unfinished delivery!"
-msgstr "Livrare nefinalizată!"
-
-msgid "hMarfa export not done!"
-msgstr "Export hMarfa neefectuat!"
-
-msgid "Warning! This operation will block the database for 5 minutes! Proceed?"
-msgstr "Atenție!!! Această operațiune blochează baza de date pentru 5 minute! Executati?"
-
-#~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
-#~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
+#~ msgid ""
+#~ "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported "
+#~ "for manual processing, %5$d refused, %6$d errors."
+#~ msgstr ""
+#~ "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate "
+#~ "pentru procesare manuală, %5$d refuzate, %6$d eronate."
 
 #~ msgid "last intervention"
 #~ msgstr "ultima intervenție"
@@ -1077,12 +1834,6 @@ msgstr "Atenție!!! Această operațiune blochează baza de date pentru 5 minute
 
 #~ msgid "Redistribute cartridges"
 #~ msgstr "Redistribuire Cartușe"
-
-#~ msgid "Cartridge deleted from evidence"
-#~ msgstr "Cartuș șters din evidență"
-
-#~ msgid "Delete from partner"
-#~ msgstr "Șterge de la partener"
 
 #~ msgid "Open all of them"
 #~ msgstr "Deschide toate"
@@ -1113,9 +1864,6 @@ msgstr "Atenție!!! Această operațiune blochează baza de date pentru 5 minute
 #~ msgid "Other printer"
 #~ msgstr "Alt aparat"
 
-#~ msgid "Other location"
-#~ msgstr "Altă locație"
-
 #~ msgid "Movement already exist for item %d (%s)."
 #~ msgstr "Exită deja mutare pentru articolul %d (%s)."
 
@@ -1124,12 +1872,6 @@ msgstr "Atenție!!! Această operațiune blochează baza de date pentru 5 minute
 
 #~ msgid "Apache restart"
 #~ msgstr "Restartează Apache"
-
-#~ msgid "Command status"
-#~ msgid_plural "Command statuses"
-#~ msgstr[0] "Stare comandă"
-#~ msgstr[1] "Stări comandă"
-#~ msgstr[2] "Stări comandă"
 
 #~ msgid "Internal command"
 #~ msgid_plural "Internal commands"
@@ -1152,14 +1894,8 @@ msgstr "Atenție!!! Această operațiune blochează baza de date pentru 5 minute
 #~ msgid "Modify supplier"
 #~ msgstr "Modifică partener"
 
-#~ msgid "Save supplier"
-#~ msgstr "Salvează partener"
-
 #~ msgid "Modify contract"
 #~ msgstr "Modifică contract"
-
-#~ msgid "Save contract"
-#~ msgstr "Salvează contract"
 
 #~ msgid "Modify printer supplier"
 #~ msgstr "Modifică partener aparat"
