@@ -5,8 +5,9 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\Views as IserviceViews;
 
 class PluginIserviceTicket extends Ticket
 {
@@ -568,6 +569,8 @@ class PluginIserviceTicket extends Ticket
             $templateParams['estimateButtonConfig']   = !IserviceToolBox::inProfileArray(['client', 'superclient']) ? $this->getEstimateButtonConfig($this, $isClosed, $printerId, $this->printer ?? null, $lastTicket, $lastClosedTicket, $isColorPrinter, $isPlotterPrinter) : null;
 
             $templateParams['ticketDocuments'] = $this->getAttachedDocuments();
+
+            $templateParams['verifyLastTonerInstalation'] = $this->getLastTonerInstallationData($printerId);
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
@@ -2253,16 +2256,48 @@ class PluginIserviceTicket extends Ticket
 
     }
 
-    public static function getExportType($ticketExportTypeDropdownsId): string
+    private function getLastTonerInstallationData(?int $printerId): bool|array
     {
-        switch (true) {
-        case self::isNotice($ticketExportTypeDropdownsId):
-            return __('Notice', 'iservice');
-        case self::isInvoice($ticketExportTypeDropdownsId):
-            return __('Invoice', 'iservice');
-        default:
-            return '';
+        if (($printerId ?? 0) <= 0) {
+            return false;
         }
+
+        $printerMinPercentage = PluginIserviceDB::getQueryResult("SELECT consumable_code, min_estimate_percentage, cfci.mercury_code_field
+                                                                           FROM glpi_plugin_iservice_cachetable_printercounters  cp
+                                                                           INNER JOIN
+                                                                               (
+                                                                                   SELECT MIN(min_estimate_percentage) min_percentage, printer_id
+                                                                                   FROM glpi_plugin_iservice_cachetable_printercounters
+                                                                                   WHERE printer_id=$printerId
+                                                                               ) cp2 on cp2.printer_id = cp.printer_id
+                                                                           LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfci on cfci.items_id = cp.ciid and cfci.itemtype = 'CartridgeItem'
+                                                                           WHERE cp.min_estimate_percentage = cp2.min_percentage 
+                                                                             AND cp.cm_field = 1
+                                                                             AND cp.consumable_type = 'cartridge'
+                                                                             AND cp.printer_types_id in (SELECT id FROM glpi_printertypes WHERE name in ('alb-negru', 'color'))
+                                                                             AND cp.printer_states_id in (SELECT id FROM glpi_states WHERE name like 'CO%' OR name like 'Gar%' OR name like 'Pro%')"
+        );
+
+        if (($printerMinPercentage[0]['min_estimate_percentage'] ?? 0) >= 0) {
+             return false;
+        }
+
+        $formatedPercentage = number_format($printerMinPercentage[0]['min_estimate_percentage'] * 100, 2, '.', '');
+        $printerCountersLastCacheData = IserviceViews::getView('printercounters', false)->getCachedData();
+
+        return [
+            'title' => "La ultima verificare din {$printerCountersLastCacheData['data_cached']}:\n{$printerMinPercentage[0]['consumable_code']} $formatedPercentage%",
+            'text' => "Verificați când ați instalat tonere pe aparat!",
+            'class' => 'text-danger'
+        ];
     }
 
+    public static function getExportType($ticketExportTypeDropdownsId): string
+    {
+        return match (true) {
+            self::isNotice($ticketExportTypeDropdownsId) => __('Notice', 'iservice'),
+            self::isInvoice($ticketExportTypeDropdownsId) => __('Invoice', 'iservice'),
+            default => '',
+        };
+    }
 }

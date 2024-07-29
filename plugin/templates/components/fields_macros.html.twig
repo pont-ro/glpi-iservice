@@ -31,7 +31,7 @@
          <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
             {{ label }}
          </label>
-         <div class="col-xxl-8 field-container {{ options.valueClass }}">
+         <div class="col-xxl-8 field-container {{ options.valueClass }}"{% if options.title %} title=" {{ options.title }}"{% endif %}>
             {{ value|raw }}
          </div>
       </div>

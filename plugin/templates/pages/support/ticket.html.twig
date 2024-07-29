@@ -243,8 +243,20 @@
                                     })
                                 ) }}
                             {% endif %}
+
                             {{ include('@iservice/pages/support/components/ticket_documents.html.twig') }}
 
+                            {% if verifyLastTonerInstalation %}
+                                {{ fieldsIservice.customFormRow(
+                                    'verifyLastTonerInstalation',
+                                    '',
+                                    verifyLastTonerInstalation.text,
+                                    field_options|merge({
+                                        'title': verifyLastTonerInstalation.title,
+                                        'valueClass': verifyLastTonerInstalation.class
+                                    })
+                                ) }}
+                            {% endif %}
                         {% endblock %}
                     </div>
                 </div>
