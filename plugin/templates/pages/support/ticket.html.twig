@@ -162,7 +162,8 @@
                                     item.getID() > 0 ? item.customfields.fields['delivered_field'] : deliveredDefaultValue,
                                     __('Delivered', 'iservice'),
                                     field_options|merge({
-                                        'disabled': item.customfields.fields['exported_field']
+                                        'disabled': item.customfields.fields['exported_field'],
+                                        'on_change': 'if ($(this).is(":checked")) { $("[name=export]").prop("disabled", false).removeClass("disabled");} else {$("[name=export]").prop("disabled", true).addClass("disabled");}',
                                     })
                                 ) }}
 
