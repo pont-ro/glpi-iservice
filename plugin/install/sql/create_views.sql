@@ -98,7 +98,18 @@ from (
 create or replace view glpi_plugin_iservice_printers as
 select
     `p`.`id` as `id`,
-    concat(coalesce(concat(`p`.`serial`,' '),''),'(',`p`.`name`,')', coalesce(concat(' - ',`l`.`completename`),'')) as `name`,
+    concat(
+            coalesce(concat(`p`.`serial`, ' '), ''),
+            '(', `p`.`name`,')',
+            coalesce(concat(' - ', `l`.`completename`), ''),
+            case
+                when `l`.`completename` = `cfp`.`usage_address_field` then ''
+                else case
+                         when coalesce(`cfp`.`usage_address_field`, '') = '' then ''
+                         else concat(' | ', `cfp`.`usage_address_field`)
+                     end
+            end
+    ) as `name`,
     `p`.`name` as `original_name`,
     `p`.`contact` as `contact`,
     `p`.`contact_num` as `contact_num`,
@@ -143,7 +154,7 @@ select
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
     `cfp`.`no_invoice_field` as `no_invoice_field`,
-    `cfp`.`global_contract_field` as `no_invoice_field`
+    `cfp`.`global_contract_field` as `global_contract_field`
 from (((`glpi_printers` `p`
     left join `glpi_infocoms` `i` on(`i`.`items_id` = `p`.`id` and `i`.`itemtype` = 'printer'))
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
@@ -153,7 +164,18 @@ from (((`glpi_printers` `p`
 create or replace view glpi_plugin_iservice_printers_with_last_closed_ticket_data as
 select
     `p`.`id` as `id`,
-    concat(coalesce(concat(`p`.`serial`,' '),''),'(',`p`.`name`,')', coalesce(concat(' - ',`l`.`completename`),'')) as `name`,
+    concat(
+            coalesce(concat(`p`.`serial`, ' '), ''),
+            '(', `p`.`name`,')',
+            coalesce(concat(' - ', `l`.`completename`), ''),
+            case
+                 when `l`.`completename` = `cfp`.`usage_address_field` then ''
+                 else case
+                          when coalesce(`cfp`.`usage_address_field`, '') = '' then ''
+                          else concat(' | ', `cfp`.`usage_address_field`)
+                      end
+            end
+    ) as `name`,
     `p`.`name` as `original_name`,
     `p`.`contact` as `contact`,
     `p`.`contact_num` as `contact_num`,
@@ -198,7 +220,7 @@ select
     `cfp`.`cost_center_field` as `cost_center_field`,
     `cfp`.`usage_address_field` as `usage_address_field`,
     `cfp`.`no_invoice_field` as `no_invoice_field`,
-    `cfp`.`global_contract_field` as `no_invoice_field`,
+    `cfp`.`global_contract_field` as `global_contract_field`,
     `plct`.`effective_date_field` as last_effective_date,
     `plct`.`total2_black_field` as last_total2_black,
     `plct`.`total2_color_field` as last_total2_color,
@@ -208,7 +230,7 @@ from (((`glpi_printers` `p`
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
     left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
-    left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id;
+    left join `glpi_plugin_iservice_printers_last_closed_tickets` plct on plct.printers_id = p.id;
 
 
 create or replace view glpi_plugin_iservice_printers_last_tickets as
