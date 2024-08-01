@@ -19,7 +19,7 @@ $operations = [
     'set_ucc' => 'set_ucc',
     'set_ucm' => 'set_ucm',
     'set_ucy' => 'set_ucy',
-    'set_usageaddressfield' => 'set_usageaddressfield',
+    'set_usage_address_field' => 'set_usage_address_field',
     'enable_em' => 'enable_em',
     'exclude_from_em' => 'exclude_from_em',
     'snooze_read_check' => 'snooze_read_check',
@@ -110,7 +110,7 @@ case 'set_color_coefficients':
         die(IserviceToolBox::RESPONSE_OK);
     }
     break;
-case 'set_usageaddressfield':
+case 'set_usage_address_field':
     if ($printer_customfields->update(
         [
             $printer_customfields->getIndexName() => $printer_customfields->getID(),
