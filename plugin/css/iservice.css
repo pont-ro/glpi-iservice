@@ -187,3 +187,12 @@ div.actions-wrap {
 .submit.disabled {
     pointer-events: auto !important;
 }
+
+.floating-buttons.right {
+    left: auto;
+    right: 10px;
+}
+
+.floating-buttons.left {
+    left: auto;
+}

@@ -447,6 +447,9 @@ class PluginIserviceTicket extends Ticket
         }
 
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
+        $supplier = new PluginIservicePartner();
+        $supplier->getFromDB($partnerId);
+
         $location                             = $this->getLocation();
         $this->setTicketUsersFields($ID, $options);
         $canUpdate                       = !$ID || (Session::getCurrentInterface() == "central" && $this->canUpdateItem());
@@ -554,8 +557,6 @@ class PluginIserviceTicket extends Ticket
                     11 => 'noiembrie',
                     12 => 'decembrie',
                 ];
-                $supplier = new PluginIservicePartner();
-                $supplier->getFromDB($partnerId);
                 $mailSubject                            = "Factura ExpertLine - {$supplier->fields['name']} - " . $months[date("n")] . ", " . date("Y");
                 $mailBody                               = $supplier->getMailBody();
                 $templateParams['sendMailButtonConfig'] = [
@@ -579,6 +580,7 @@ class PluginIserviceTicket extends Ticket
 
         $options['ticketHasConsumables'] = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
         $templateParams['submitButtons'] = $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
+        $templateParams['floatingButtons'] = $this->getFloatingButtonsConfig($supplier, $this->printer);
 
         if ($renderExtendedForm) {
             TemplateRenderer::getInstance()->display("@iservice/pages/support/ticket.html.twig", $templateParams);
@@ -2006,6 +2008,51 @@ class PluginIserviceTicket extends Ticket
         }
 
         return $buttons;
+    }
+
+    public function getFloatingButtonsConfig(?PluginIservicePartner $supplier, ?PluginIservicePrinter $printer): array
+    {
+        if (empty($supplier) || $supplier->isNewItem()) {
+            return [];
+        }
+
+        global $CFG_PLUGIN_ISERVICE;
+        $result = [
+            [
+                'type' => 'link',
+                'name' => 'all_printers',
+                'label' => __('Client printers', 'iservice'),
+                'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers&printers0[supplier_name]=" . urlencode($supplier->fields['name']) . "&printers0[filter_description]=" . urlencode($supplier->fields['name']),
+                'options' => [
+                    'target' => '_blank',
+                ]
+            ]
+        ];
+
+        if (empty($printer) || $printer->isNewItem()) {
+            return $result;
+        }
+
+        return array_merge($result, [
+            [
+                'type' => 'link',
+                'name' => 'operations_list',
+                'label' => __('Operations list', 'iservice'),
+                'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Operations&operations0[printer_id]={$printer->getID()}&operations0[filter_description]=" . urlencode("{$printer->fields['name']} - {$supplier->fields['name']}"),
+                'options' => [
+                    'target' => '_blank',
+                ]
+            ],
+            [
+                'type' => 'link',
+                'name' => 'aa',
+                'label' => __('Manage printer', 'iservice'),
+                'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id={$printer->getID()}",
+                'options' => [
+                    'target' => '_blank',
+                ]
+            ],
+        ]);
     }
 
     public static function moveCartridges(Ticket $item): void

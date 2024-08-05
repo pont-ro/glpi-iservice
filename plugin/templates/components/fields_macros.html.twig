@@ -90,38 +90,47 @@
 {% endmacro %}
 
 {% macro button(type, name, value, label = '', options = {}) %}
-   <button
-      data-bs-toggle="tooltip"
-      data-bs-html="true"
-      class="btn {{ options.buttonClass ?? '' }}"
-      {% if type %}
-         type="{{ type }}"
-      {% endif %}
-      {% if name %}
-         name="{{ name }}"
-      {% endif %}
-      value="{{ value }}"
-      {% if options.data-required %}
-         data-required="{{ options.data-required }}"
-      {% endif %}
-      {% if options.on_click %}
-         onclick="{{ options.on_click }}"
-      {% endif %}
-      {% if options.style %}
-         style="{{ options.style }}"
-      {% endif %}
-      {% if options.title %}
-        title="{{ options.title }}"
-      {% endif %}
-      {% if options.disabled %}
-           disabled="disabled"
-      {% endif %}
-   >
-      {% if options.buttonIconClass %}
-         <i class="{{ options.buttonIconClass }}"></i>
-      {% endif %}
-      <span>{{ label ?? value }}</span>
-   </button>
+   {% if type == 'link' %}
+      <a class="btn vsubmit {{ options.buttonClass ?? '' }}" href="{{ value }}"
+         {% if options.target %}
+            target="{{ options.target }}"
+         {% endif %}>
+         {{ label ?? name }}
+      </a>
+   {% else %}
+      <button
+         data-bs-toggle="tooltip"
+         data-bs-html="true"
+         class="btn {{ options.buttonClass ?? '' }}"
+         {% if type %}
+            type="{{ type }}"
+         {% endif %}
+         {% if name %}
+            name="{{ name }}"
+         {% endif %}
+         value="{{ value }}"
+         {% if options.data-required %}
+            data-required="{{ options.data-required }}"
+         {% endif %}
+         {% if options.on_click %}
+            onclick="{{ options.on_click }}"
+         {% endif %}
+         {% if options.style %}
+            style="{{ options.style }}"
+         {% endif %}
+         {% if options.title %}
+           title="{{ options.title }}"
+         {% endif %}
+         {% if options.disabled %}
+              disabled="disabled"
+         {% endif %}
+      >
+         {% if options.buttonIconClass %}
+            <i class="{{ options.buttonIconClass }}"></i>
+         {% endif %}
+         <span>{{ label ?? value }}</span>
+      </button>
+   {% endif %}
 {% endmacro %}
 
 {% macro checkboxFieldExtended(name, value, label = '', options = {}) %}

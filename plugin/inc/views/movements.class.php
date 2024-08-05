@@ -132,7 +132,7 @@ class Movements extends View
                     'link' => [
                         'type' => 'normal',
                         'href' => 'printer.form.php?id=[printer_id]',
-                        'title' => 'Administrare aparat',
+                        'title' => __('Manage printer', 'iservice'), //'Administrare aparat',
                         'target' => '_blank',
                     ],
                 ],
