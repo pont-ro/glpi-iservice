@@ -322,8 +322,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $printer->tableData['equalizer_coefficient'] = 0;
         $printer->tableData['cop_bk_echiv']          = 0;
         $printer->tableData['cop_col_echiv']         = 0;
-        // If echivalent calculation.
-        if (stripos($printer->tableData['contract_type'], 'coie') === 0) {
+        // If echivalent calculation. Only for color printers!
+        if (stripos($printer->tableData['contract_type'], 'coie') === 0 && ($printer->isColor() || $printer->isPlotter())) {
             // If color copies are included but not used.
             if ($printer->tableData['included_copies_col_field'] && $printer->tableData['contor_col_ui'] < $allowedCounterColor) {
                 $printer->tableData['equalizer_coefficient'] = round($printer->tableData['tarif_cop_col'] / $printer->tableData['copy_price_bk_field'], 2);
