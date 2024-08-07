@@ -196,3 +196,9 @@ div.actions-wrap {
 .floating-buttons.left {
     left: auto;
 }
+
+#change-cartridges-anchor {
+    display: block;
+    position: relative;
+    bottom: 65px;
+}

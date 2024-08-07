@@ -6,7 +6,7 @@ use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
-define('ISERVICE_VERSION', '3.0.2');
+define('ISERVICE_VERSION', '3.0.3');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
@@ -226,5 +226,18 @@ function plugin_iservice_check_status(): void
             Session::addMessageAfterRedirect('iService plugin must be activated or upgraded, please contact the administrator!', true, ERROR);
             Html::redirect($CFG_GLPI['root_doc'] . '/front/central.php');
         }
+    }
+}
+
+function _t(string $string, string $plural=null, int $nb=null): string
+{
+    if (!function_exists('__')) {
+        return $nb > 1 ? $plural : $string;
+    }
+
+    if ($plural !== null && $nb !== null) {
+        return _n($string, $plural, $nb, 'iservice');
+    } else {
+        return __($string, 'iservice');
     }
 }

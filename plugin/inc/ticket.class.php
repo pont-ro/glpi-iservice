@@ -2021,7 +2021,7 @@ class PluginIserviceTicket extends Ticket
             [
                 'type' => 'link',
                 'name' => 'all_printers',
-                'label' => __('Client printers', 'iservice'),
+                'label' => _t('Client printers'),
                 'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers&printers0[supplier_name]=" . urlencode($supplier->fields['name']) . "&printers0[filter_description]=" . urlencode($supplier->fields['name']),
                 'options' => [
                     'target' => '_blank',
@@ -2033,26 +2033,37 @@ class PluginIserviceTicket extends Ticket
             return $result;
         }
 
-        return array_merge($result, [
+        return array_merge(
             [
-                'type' => 'link',
-                'name' => 'operations_list',
-                'label' => __('Operations list', 'iservice'),
-                'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Operations&operations0[printer_id]={$printer->getID()}&operations0[filter_description]=" . urlencode("{$printer->fields['name']} - {$supplier->fields['name']}"),
-                'options' => [
-                    'target' => '_blank',
-                ]
+                [
+                    'type' => 'link',
+                    'name' => 'scroll_to_change_cartridges',
+                    'label' => _t('Delivery/change'),
+                    'value' => "#change-cartridges-anchor",
+                ],
             ],
+            $result,
             [
-                'type' => 'link',
-                'name' => 'aa',
-                'label' => __('Manage printer', 'iservice'),
-                'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id={$printer->getID()}",
-                'options' => [
-                    'target' => '_blank',
-                ]
-            ],
-        ]);
+                [
+                    'type' => 'link',
+                    'name' => 'operations_list',
+                    'label' => _t('Operations list'),
+                    'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Operations&operations0[printer_id]={$printer->getID()}&operations0[filter_description]=" . urlencode("{$printer->fields['name']} - {$supplier->fields['name']}"),
+                    'options' => [
+                        'target' => '_blank',
+                    ]
+                ],
+                [
+                    'type' => 'link',
+                    'name' => 'aa',
+                    'label' => _t('Manage printer'),
+                    'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id={$printer->getID()}",
+                    'options' => [
+                        'target' => '_blank',
+                    ]
+                ],
+            ]
+        );
     }
 
     public static function moveCartridges(Ticket $item): void

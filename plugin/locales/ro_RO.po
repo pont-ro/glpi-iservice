@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
-"POT-Creation-Date: 2024-07-29 10:15+0300\n"
-"PO-Revision-Date: 2024-07-29 10:18+0300\n"
+"POT-Creation-Date: 2024-08-07 13:35+0300\n"
+"PO-Revision-Date: 2024-08-07 13:37+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro_RO\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
 "2:1));\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-KeywordsList: __;_n\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -23,7 +23,7 @@ msgstr "Dezinstalează de pe aparat"
 #: ajax/getLocationDropdown.php:57 inc/hmarfa.class.php:1352
 #: inc/printer.class.php:681 inc/printer.class.php:699
 #: inc/printer.class.php:720 inc/reminder.class.php:71
-#: inc/ticket.class.php:1993 inc/views/clientinvoices.class.php:126
+#: inc/ticket.class.php:1995 inc/views/clientinvoices.class.php:126
 msgid "Save"
 msgstr ""
 
@@ -484,7 +484,7 @@ msgid "%1$s adds the item %2$s"
 msgstr ""
 
 #: front/hmarfaexport.form.php:17 inc/printer.class.php:292
-#: inc/ticket.class.php:1993 inc/views/printers.class.php:57
+#: inc/ticket.class.php:1995 inc/views/printers.class.php:57
 msgid "hMarfa export"
 msgstr "export hMarfa"
 
@@ -977,7 +977,7 @@ msgid "Modify"
 msgstr "Modifică"
 
 #: inc/movement.class.php:184 inc/movement.class.php:381
-#: inc/ticket.class.php:1938
+#: inc/ticket.class.php:1940
 msgid "Close"
 msgstr ""
 
@@ -1054,7 +1054,8 @@ msgstr "E-mail în așteptare"
 msgid "Pending email updater"
 msgstr "Actualizator e-mail în așteptare"
 
-#: inc/printer.class.php:43 inc/views/printers.class.php:295
+#: inc/printer.class.php:43 inc/ticket.class.php:2059
+#: inc/views/movements.class.php:135 inc/views/printers.class.php:295
 #: inc/views/tickets.class.php:223
 msgid "Manage printer"
 msgstr "Administrare aparat"
@@ -1064,8 +1065,9 @@ msgstr "Administrare aparat"
 msgid "New quick ticket"
 msgstr "Tichet rapid nou"
 
-#: inc/printer.class.php:299 inc/views/emaintenance.class.php:38
-#: inc/views/printers.class.php:63 inc/views/tickets.class.php:112
+#: inc/printer.class.php:299 inc/ticket.class.php:2050
+#: inc/views/emaintenance.class.php:38 inc/views/printers.class.php:63
+#: inc/views/tickets.class.php:112
 msgid "Operations list"
 msgstr "Lista lucrări"
 
@@ -1073,7 +1075,8 @@ msgstr "Lista lucrări"
 msgid "Printers of the client"
 msgstr "Aparatele acestui client"
 
-#: inc/printer.class.php:307 inc/views/clientinvoices.class.php:130
+#: inc/printer.class.php:307 inc/ticket.class.php:2024
+#: inc/views/clientinvoices.class.php:130
 msgid "Client printers"
 msgstr "Aparate client"
 
@@ -1235,7 +1238,7 @@ msgstr "Eroare la salvarea tichetelor"
 msgid "%d ticket(s) saved."
 msgstr "%d ticket(e) salvat(e)."
 
-#: inc/ticket.class.php:521
+#: inc/ticket.class.php:524
 #, php-format
 msgid ""
 "Warning. There is a newer ticket %1$d with installed cartridges. First "
@@ -1244,169 +1247,173 @@ msgstr ""
 "Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi "
 "cartușele de pe acel tichet."
 
-#: inc/ticket.class.php:538 inc/ticket.class.php:2298
+#: inc/ticket.class.php:541 inc/ticket.class.php:2356
 msgid "Notice"
 msgstr "Aviz"
 
-#: inc/ticket.class.php:539 inc/ticket.class.php:2299
+#: inc/ticket.class.php:542 inc/ticket.class.php:2357
 #, fuzzy
 #| msgid "Invoice"
 #| msgid_plural "Invoices"
 msgid "Invoice"
 msgstr "Factură"
 
-#: inc/ticket.class.php:562
+#: inc/ticket.class.php:563
 msgid "Send email to client"
 msgstr "Trimite email către client"
 
-#: inc/ticket.class.php:695
+#: inc/ticket.class.php:697
 msgid "from"
 msgstr "din"
 
-#: inc/ticket.class.php:734
+#: inc/ticket.class.php:736
 msgid "Estimation"
 msgstr "Estimare"
 
-#: inc/ticket.class.php:849
+#: inc/ticket.class.php:851
 msgid ""
 "You can not install this cartridge because it is already installed with an "
 "other ticket!"
 msgstr ""
 "Nu puteți instala acest cartuș deoarece este deja instalat cu un alt tichet!"
 
-#: inc/ticket.class.php:902
+#: inc/ticket.class.php:904
 msgid "You can not add new cartridges while there is a newer closed ticket."
 msgstr "Nu puteți adăuga cartușe cât timp există un tichet închis mai nou."
 
-#: inc/ticket.class.php:905
+#: inc/ticket.class.php:907
 msgid ""
 "You can not add new cartridges while there is a newer ticket with cartridges."
 msgstr "Nu puteți adăuga cartușe cât timp există un tichet mai nou cu cartușe."
 
-#: inc/ticket.class.php:960
+#: inc/ticket.class.php:962
 msgid "Select a cartridge"
 msgstr "Selectați un cartuș"
 
-#: inc/ticket.class.php:1028
+#: inc/ticket.class.php:1030
 #, php-format
 msgid "Ticket %s saved successfully."
 msgstr "Tichetul %s a fost salvat cu succes."
 
-#: inc/ticket.class.php:1388
+#: inc/ticket.class.php:1390
 msgid "Could not send ticketreport to"
 msgstr "Eroare la trimiterea raportului de intervenții la"
 
-#: inc/ticket.class.php:1390
+#: inc/ticket.class.php:1392
 msgid "Confirmation mail sent to"
 msgstr "E-mail de confirmare trimis la"
 
-#: inc/ticket.class.php:1409
+#: inc/ticket.class.php:1411
 msgid "Last invoice date"
 msgstr "Data ultima factură"
 
-#: inc/ticket.class.php:1410
+#: inc/ticket.class.php:1412
 msgid "Invoice expiry date"
 msgstr "Data expirare factură"
 
-#: inc/ticket.class.php:1411 inc/ticket.class.php:1412
+#: inc/ticket.class.php:1413 inc/ticket.class.php:1414
 #: inc/views/operations.class.php:262
 msgid "Printed surface"
 msgstr "Suprafața printată"
 
-#: inc/ticket.class.php:1411 inc/ticket.class.php:1412
+#: inc/ticket.class.php:1413 inc/ticket.class.php:1414
 msgid "Color counter"
 msgstr "Contor color"
 
-#: inc/ticket.class.php:1411 inc/ticket.class.php:1413
+#: inc/ticket.class.php:1413 inc/ticket.class.php:1415
 msgid "last invoice"
 msgstr "ultima factură"
 
-#: inc/ticket.class.php:1412 inc/ticket.class.php:1414
+#: inc/ticket.class.php:1414 inc/ticket.class.php:1416
 msgid "last closed ticket"
 msgstr "ultimul tichet închis"
 
-#: inc/ticket.class.php:1413 inc/ticket.class.php:1414
+#: inc/ticket.class.php:1415 inc/ticket.class.php:1416
 #: inc/views/operations.class.php:261
 msgid "Consumed ink"
 msgstr "Cerneală consumată"
 
-#: inc/ticket.class.php:1413 inc/ticket.class.php:1414
+#: inc/ticket.class.php:1415 inc/ticket.class.php:1416
 msgid "Black counter"
 msgstr "Contor black"
 
-#: inc/ticket.class.php:1773
+#: inc/ticket.class.php:1775
 msgid "Error restoring cartridges"
 msgstr "Eroare la restaurarea cartușelor"
 
-#: inc/ticket.class.php:1774
+#: inc/ticket.class.php:1776
 #, fuzzy
 #| msgid "Error restoring cartridges"
 msgid "Error restoring cartridges custom fields"
 msgstr "Eroare la restaurarea cartușelor"
 
-#: inc/ticket.class.php:1813 inc/ticket.class.php:1822
+#: inc/ticket.class.php:1815 inc/ticket.class.php:1824
 msgid "Error deleting cartridges"
 msgstr "Eroare la ștergerea cartușelor"
 
-#: inc/ticket.class.php:1814 inc/ticket.class.php:1823
+#: inc/ticket.class.php:1816 inc/ticket.class.php:1825
 #, fuzzy
 #| msgid "Error deleting cartridges"
 msgid "Error deleting cartridges custom fields"
 msgstr "Eroare la ștergerea cartușelor"
 
-#: inc/ticket.class.php:1824
+#: inc/ticket.class.php:1826
 #, fuzzy
 #| msgid "Error deleting cartridges"
 msgid "Error deleting cartridges infocoms"
 msgstr "Eroare la ștergerea cartușelor"
 
-#: inc/ticket.class.php:1848
+#: inc/ticket.class.php:1850
 #, fuzzy
 #| msgid "\"Assigned to\" field is empty!"
 msgid "\\\"Assigned to\\\" field is empty!"
 msgstr "Câmpul \"Repartizat către\" este gol!"
 
-#: inc/ticket.class.php:1852
+#: inc/ticket.class.php:1854
 msgid "Category is not selected!"
 msgstr "Categoria nu este selectată!"
 
-#: inc/ticket.class.php:1857
+#: inc/ticket.class.php:1859
 msgid "Black counter under limit!"
 msgstr "Contor negru sub limită!"
 
-#: inc/ticket.class.php:1861
+#: inc/ticket.class.php:1863
 msgid "Color counter under limit!"
 msgstr "Contor color sub limită!"
 
-#: inc/ticket.class.php:1869
+#: inc/ticket.class.php:1871
 msgid "Movement not invoiced!"
 msgstr "Mutare ne-facturată!"
 
-#: inc/ticket.class.php:1874
+#: inc/ticket.class.php:1876
 msgid "Unfinished delivery!"
 msgstr "Livrare nefinalizată!"
 
-#: inc/ticket.class.php:1878
+#: inc/ticket.class.php:1880
 msgid "hMarfa export not done!"
 msgstr "Export hMarfa neefectuat!"
 
-#: inc/ticket.class.php:1918
+#: inc/ticket.class.php:1920
 msgid " closed tickets will be reopened. Are you sure you want to continue?"
 msgstr " tichete închise mai noi vor fi redeschise. Sigur vreți să continuați?"
 
-#: inc/ticket.class.php:1920
+#: inc/ticket.class.php:1922
 msgid "Are you sure you want to reopen the ticket?"
 msgstr "Sigur vreți să redeschideți tichetul?"
 
-#: inc/ticket.class.php:1926
+#: inc/ticket.class.php:1928
 msgid "Reopen"
 msgstr ""
 
-#: inc/ticket.class.php:2205
+#: inc/ticket.class.php:2041
+msgid "Delivery/change"
+msgstr "Livrare/înlocuire"
+
+#: inc/ticket.class.php:2263
 msgid "Services invoice"
 msgstr "Factură servicii"
 
-#: inc/ticket.class.php:2215
+#: inc/ticket.class.php:2273
 #, php-format
 msgid ""
 "There is an unfinished movement for this printer, please finish movement %s "
@@ -1415,30 +1422,30 @@ msgstr ""
 "O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați "
 "mutarea %s întâi!"
 
-#: inc/ticket.class.php:2223 inc/ticket.class.php:2227
+#: inc/ticket.class.php:2281 inc/ticket.class.php:2285
 #, php-format
 msgid "Ticket already exists for movement %d"
 msgstr "Există deja tichet pentru mutarea %d"
 
-#: inc/ticket.class.php:2246
+#: inc/ticket.class.php:2304
 msgid "Do not check before invoice is issued, operation can not be undone!"
 msgstr ""
 "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi "
 "revocată!"
 
-#: inc/ticket.class.php:2246
+#: inc/ticket.class.php:2304
 msgid "To create an invoice, press the link"
 msgstr "Pentru a crea factura, apăsați linkul"
 
-#: inc/ticket.class.php:2246
+#: inc/ticket.class.php:2304
 msgid "invoicing"
 msgstr "facturare"
 
-#: inc/ticket.class.php:2289
+#: inc/ticket.class.php:2347
 msgid "At the last verification at"
 msgstr "La ultima verificare din"
 
-#: inc/ticket.class.php:2290
+#: inc/ticket.class.php:2348
 msgid "Verify when you last installed cartridges on the printer!"
 msgstr "Verificați când ați instalat tonere pe aparat!"
 
@@ -1683,15 +1690,12 @@ msgstr "Reîmprospătează"
 msgid "from cache %s"
 msgstr "din cache %s"
 
-#, php-format
 #~ msgid "Could not complete operation %s for %s"
 #~ msgstr "Operația %s nu poate fi efectuată pentru elementul %s"
 
-#, php-format
 #~ msgid "Could not complete operation %s for pending email %d"
 #~ msgstr "Operația %s nu poate fi efectuată pentru emailul %d"
 
-#, php-format
 #~ msgid "Could not complete operation %s for ticket %d"
 #~ msgstr "Operația %s nu poate fi efectuată pentru tichetul %d"
 
@@ -1739,7 +1743,6 @@ msgstr "din cache %s"
 #~ msgid "Close tickets"
 #~ msgstr "Închide tichete"
 
-#, php-format
 #~ msgid "Ticket already exists for [EM] email %d"
 #~ msgstr "Există deja tichet pentru emailul [EM] %d"
 
@@ -1770,9 +1773,6 @@ msgstr "din cache %s"
 #~ msgid "Working"
 #~ msgstr "În lucrare"
 
-#~ msgid "Delivered"
-#~ msgstr "Livrare finalizată"
-
 #~ msgid "Exported in csv and imported in hMarfa"
 #~ msgstr "Exportat in csv și importat in hMarfa"
 
@@ -1791,7 +1791,6 @@ msgstr "din cache %s"
 #~ msgid "Send notification"
 #~ msgstr "Trimite notificare prin e-mail"
 
-#, php-format
 #~ msgid "Last %d tickets with \"%s\" category"
 #~ msgstr "Ultimele %d tichete cu categoria \"%s\""
 
