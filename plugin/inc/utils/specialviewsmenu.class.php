@@ -12,7 +12,7 @@ class SpecialViewsMenu
     {
         $menuConfig = Toolbox::getMenuConfig();
 
-        $menus['specialViews']['title'] = $menuConfig['specialViews']['title'] ?? _n('Special View', 'Special Views', Session::getPluralNumber());
+        $menus['specialViews']['title'] = $menuConfig['specialViews']['title'] ?? _tn('Special View', 'Special Views', Session::getPluralNumber());
         $menus['specialViews']['icon']  = $menuConfig['specialViews']['icon'] ?? 'ti ti-columns';
     }
 

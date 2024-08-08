@@ -1,5 +1,5 @@
 $(document).ready(
     function () {
-        window.moveMenuContent('Special Views');
+        window.moveMenuContent('Liste speciale');
     }
 );
