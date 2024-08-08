@@ -14,7 +14,7 @@ class PriceList extends View
 
     public static function getName(): string
     {
-        return __('Price List', 'iservice');
+        return _t('Price List');
     }
 
     protected function getSettings(): array

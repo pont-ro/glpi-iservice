@@ -3,7 +3,7 @@
 
 <div class="form-field row col-12 mb-2">
     <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
-        {{ _n('Consumable', 'Consumables', 2, 'iservice') }}
+        {{ _tn('Consumable', 'Consumables', 2) }}
     </label>
     <div class="col-xxl-8 field-container {{ options.valueClass }}">
         {% if consumablesTableData.addConsumablesSection %}
@@ -167,7 +167,7 @@
 
             if ($('.consumables-update-section-changed-alert').length === 0) {
                 $('.consumables-update-section')
-                    .append('<div class="p-2 text-danger text-end consumables-update-section-changed-alert">' + __("Don't forget to press 'Update' button to save your changes", 'iservice') + '</div>');
+                    .append('<div class="p-2 text-danger text-end consumables-update-section-changed-alert">' + _t("Don't forget to press 'Update' button to save your changes") + '</div>');
             }
         });
     });

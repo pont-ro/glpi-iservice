@@ -9,13 +9,13 @@ $images_source = "$CFG_PLUGIN_ISERVICE[root_doc]/images";
 $ticket_id = filter_input(INPUT_GET, 'id');
 
 if (!Session::haveRight('plugin_iservice_docgenerator', READ)) {
-    Html::header(__('Intervention report', 'iservice'), $_SERVER['PHP_SELF']);
+    Html::header(_t('Intervention report'), $_SERVER['PHP_SELF']);
     Html::displayRightError();
 }
 
 if (empty($ticket_id)) {
-    Html::header(__('Intervention report', 'iservice'), $_SERVER['PHP_SELF']);
-    Html::displayErrorAndDie(__('Ticket Id is missing!', 'iservice'));
+    Html::header(_t('Intervention report'), $_SERVER['PHP_SELF']);
+    Html::displayErrorAndDie(_t('Ticket Id is missing!'));
 }
 
 $ticket = new PluginIserviceTicket();

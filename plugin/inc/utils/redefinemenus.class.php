@@ -105,7 +105,7 @@ class RedefineMenus
         }
 
         return [
-            'title' => __('Last execution of hMarfa import', 'iservice') . ': ' . $hmarfa_import_lastrun,
+            'title' => _t('Last execution of hMarfa import') . ': ' . $hmarfa_import_lastrun,
             'icon'  => "fa fa-upload header-icon me-1 hMarfaImport $hmarfa_button_color_class",
             'page'   => $serializedParams,
         ];
@@ -148,7 +148,7 @@ class RedefineMenus
         // $menus['helpdesk']['content']['ticket']['page']        = "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets";
         // $menus['helpdesk']['content']['create_ticket']['page'] = "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php";
         $menus['admin']['content']['backups'] = [
-            'title' => __('Backup/restore', 'iservice'),
+            'title' => _t('Backup/restore'),
             'icon'  => 'fa fa-database',
             'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/admintask.php?task=Backup",
         ];

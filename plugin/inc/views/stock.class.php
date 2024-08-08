@@ -16,7 +16,7 @@ class Stock extends View
 
     public static function getName(): string
     {
-        return __('Stock optimization', 'iservice');
+        return _t('Stock optimization');
     }
 
     public static function getModelNamesDisplay($row_data): string

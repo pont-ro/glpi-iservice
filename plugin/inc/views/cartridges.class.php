@@ -44,9 +44,9 @@ class Cartridges extends View
             /**
             'remove_from_partner' => [
                 'link' => "$ajax_link&operation=remove_from_partner",
-                'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {alert("' . __("Cartridge deleted from evidence", "iservice") . '");$("#row_actions_' . $row_data['id'] . '").closest("tr").remove();}}',
+                'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {alert("' . _t('Cartridge deleted from evidence') . '");$("#row_actions_' . $row_data['id'] . '").closest("tr").remove();}}',
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/bin_closed.png',
-                'title' => __('Delete from partner', 'iservice'),
+                'title' => _t('Delete from partner'),
                 'confirm' => "Sigur vreți să ștergeți cartușul $row_data[id]? Toate date legate de acest cartuș se vor pierde!",
                 'visible' => self::inProfileArray('admin', 'super-admin'),
                 'onclick' => 'ajaxCall',
@@ -54,28 +54,28 @@ class Cartridges extends View
             /**/
             'change_location' => [
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_down.png',
-                'title' => __('Change location', 'iservice'),
+                'title' => _t('Change location'),
                 'visible' => self::inProfileArray('client', 'superclient', 'tehnician', 'admin', 'super-admin'),
                 'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getLocationDropdown.php?supplier_id=$row_data[partner_id]&cartridge_id=$row_data[id]&location_id=$row_data[location_id]\", \"\", function(message) {\$(\"#popup_$row_data[id]_\").html(message);});",
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[id]_'></div>",
             ],
             'add_to_printer' => [
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_add.png',
-                'title' => __('Add to printer', 'iservice'),
+                'title' => _t('Add to printer'),
                 'onclick' => ($row_data['printer_name']) ? "alert(\"Cartuș instalat deja\");" : "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getPrinterDropdown.php?supplier_id=$row_data[partner_id]&cartridge_id=$row_data[id]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});",
             ],
             'delete_cartridge' => [
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/bin_closed.png',
-                'title' => __('Delete cartridge', 'iservice'),
+                'title' => _t('Delete cartridge'),
                 'visible' => $_SESSION['glpiID'] == 8 && $row_data['ticket_id'] == null,
-                'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=$row_data[id]&operation=delete_cartridge\", \"Sigur vreți să ștergeți cartușul $row_data[id]?\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"" . __("Cartridge deleted from database", "iservice") . "\");\$(\"#row_actions_$row_data[id]\").closest(\"tr\").remove();}});",
+                'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=$row_data[id]&operation=delete_cartridge\", \"Sigur vreți să ștergeți cartușul $row_data[id]?\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"" . _t('Cartridge deleted from database') . "\");\$(\"#row_actions_$row_data[id]\").closest(\"tr\").remove();}});",
             ],
             /**
             'remove_from_printer' => [
                 'link' => "$ajax_link&operation=remove_from_printer",
                 'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {$("form").submit();}}',
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_delete.png',
-                'title' => __('Uninstall from printer', 'iservice'),
+                'title' => _t('Uninstall from printer'),
                 'confirm' => "Cartușul va fi șters de pe tichetul de instalare!\\n\\nSigur vreți să dezinstalați acest cartuș de pe imprimanta $row_data[printer_name]?",
                 'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
                 'onclick' => 'ajaxCall',
@@ -84,7 +84,7 @@ class Cartridges extends View
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => "Marchează golit",
                 'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
-                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use_field=$row_data[pages_use_field]&pages_color_use_field=$row_data[pages_color_use_field]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $row_data['id']) . "\");",
+                'onclick' => ($row_data['printer_name']) ? "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getCounters.php?cartridge_id=$row_data[id]&pages_use_field=$row_data[pages_use_field]&pages_color_use_field=$row_data[pages_color_use_field]\", \"\", function(message) {\$(\"#ajax_selector_$row_data[id]\").html(message);});" : "alert(\"" . sprintf(_t('Cartridge %d is not installed on a printer'), $row_data['id']) . "\");",
             ],
             /**/
         ];

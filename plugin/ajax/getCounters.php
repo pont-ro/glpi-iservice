@@ -30,6 +30,6 @@ $ajax_call       .= "&counter_black=\" + counter_black + \"";
 $ajax_call       .= "&counter_color=\" + counter_color + \"";
 $ajax_call       .= "&install_date=\" + install_date";
 $ajax_call       .= ", \"\", $success_function)";
-echo " <a href='#'><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_go_green.png' title='" . __('Uninstall from printer', 'iservice') . "' onclick='$gather_data;$ajax_call;return false;'/></a><br>";
+echo " <a href='#'><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_go_green.png' title='" . _t('Uninstall from printer') . "' onclick='$gather_data;$ajax_call;return false;'/></a><br>";
 echo " <a href='#' onclick='$(\"#ajax_selector_$cartridge_id\").html(\"\");' title='Renunță'><img src='$CFG_GLPI[root_doc]/pics/delete.png' style='width:inherit'></a>&nbsp;";
 echo "</td></tr></table>";

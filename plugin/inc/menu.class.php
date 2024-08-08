@@ -11,7 +11,7 @@ class PluginIserviceMenu extends CommonGLPI
 
     public static function getMenuName(): string
     {
-        return __('iService', 'iservice');
+        return _t('iService');
     }
 
     public static function getMenuContent(): array

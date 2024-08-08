@@ -18,7 +18,7 @@ class PluginIserviceIntorder_View extends CommonDBTM
 
     static function getTypeName($nb = 0)
     {
-        return _n('Internal order', 'Internal orders', $nb, 'iservice');
+        return _tn('Internal order', 'Internal orders', $nb);
     }
 
     public static function getTable($classname = null)

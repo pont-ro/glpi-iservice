@@ -43,7 +43,7 @@ class PluginIserviceCartridge extends Cartridge
         }
 
         foreach ($emptyables as $cartridge) {
-            $emptyableCartridges[$cartridge['id']] = "$cartridge[id] - $cartridge[name] ($cartridge[type_name]) [" . __('intalled on', 'iservice') . " $cartridge[date_use]]";
+            $emptyableCartridges[$cartridge['id']] = "$cartridge[id] - $cartridge[name] ($cartridge[type_name]) [" . _t('installed on') . " $cartridge[date_use]]";
         }
 
         return $emptyableCartridges ?? [];

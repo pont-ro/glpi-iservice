@@ -15,7 +15,7 @@ class StockLots extends View
 
     public static function getName(): string
     {
-        return __('Stock Lots', 'iservice');
+        return _t('Stock Lots');
     }
 
     public static function getModelNamesDisplay($row_data): string

@@ -166,10 +166,10 @@ class PluginIserviceTicket extends Ticket
 
     public function getPrinterFieldLabel(): string
     {
-        $label = __('Printer', 'iservice');
+        $label = _t('Printer');
 
         if (!empty($this->printer)) {
-            $label .= $this->printer->isNewItem() ? '' : ($this->printer->isColor() ? ' color' : __(' black and white', 'iservice'));
+            $label .= $this->printer->isNewItem() ? '' : ($this->printer->isColor() ? ' color' : _t(' black and white'));
         }
 
         return $label;
@@ -265,7 +265,7 @@ class PluginIserviceTicket extends Ticket
             self::INCOMING => _x('status', 'New'),
             self::ASSIGNED => _x('status', 'Processing (assigned)'),
             self::PLANNED => _x('status', 'Processing (planned)'),
-            self::EVALUATION => __('Order', 'iservice'),
+            self::EVALUATION => _t('Order'),
             self::WAITING => __('Pending'),
             self::SOLVED => _x('status', 'Solved'),
             self::CLOSED => _x('status', 'Closed')
@@ -422,9 +422,9 @@ class PluginIserviceTicket extends Ticket
     {
         $result_texts = [
             'global_readcounter' => [
-                -1 => __('Error saving ticket(s)', 'iservice') . ', ' . sprintf(__("%d ticket(s) saved.", 'iservice'), $result),
-                0 => __('Error saving ticket(s)', 'iservice') . '.',
-                1 => sprintf(__("%d ticket(s) saved.", 'iservice'), $result),
+                -1 => _t('Error saving ticket(s)') . ', ' . sprintf(_t('%d ticket(s) saved.'), $result),
+                0 => _t('Error saving ticket(s)') . '.',
+                1 => sprintf(_t('%d ticket(s) saved.'), $result),
             ]
         ];
 
@@ -521,7 +521,7 @@ class PluginIserviceTicket extends Ticket
             $lastTicketWithCartridge         = self::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
             $newerTicketsWithCartridgeExists = ($lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '') > ($this->customfields->fields['effective_date_field'] ?? date('Y-m-d H:i:s'));
             if ($ID > 0 && $newerTicketsWithCartridgeExists) {
-                $warning = sprintf(__('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.', 'iservice'), $lastTicketWithCartridge->getID());
+                $warning = sprintf(_t('Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket.'), $lastTicketWithCartridge->getID());
             }
 
             $templateParams['changeablesTableData'] = array_merge(
@@ -538,8 +538,8 @@ class PluginIserviceTicket extends Ticket
 
             $templateParams['exportTypeOptions'] = [
                 '' => Dropdown::EMPTY_VALUE,
-                self::EXPORT_TYPE_NOTICE_ID => __('Notice', 'iservice'),
-                self::EXPORT_TYPE_INVOICE_ID => _n('Invoice', 'Invoices', 1, 'iservice'),
+                self::EXPORT_TYPE_NOTICE_ID => _t('Notice'),
+                self::EXPORT_TYPE_INVOICE_ID => _tn('Invoice', 'Invoices', 1),
             ];
 
             if ($this->customfields->fields['exported_field'] ?? false) {
@@ -560,7 +560,7 @@ class PluginIserviceTicket extends Ticket
                 $mailSubject                            = "Factura ExpertLine - {$supplier->fields['name']} - " . $months[date("n")] . ", " . date("Y");
                 $mailBody                               = $supplier->getMailBody();
                 $templateParams['sendMailButtonConfig'] = [
-                    'label' => __('Send email to client', 'iservice'),
+                    'label' => _t('Send email to client'),
                     'href' => "mailto:{$supplier->customfields->fields['email_for_invoices_field']}?subject=$mailSubject&body=$mailBody",
                     'class' => 'vsubmit',
                 ];
@@ -694,7 +694,7 @@ class PluginIserviceTicket extends Ticket
                     'style' => $style,
                     'title' => $title,
                 ],
-                'value' => __('from', 'iservice') . ' CSV',
+                'value' => _t('from') . ' CSV',
             ];
         }
 
@@ -733,7 +733,7 @@ class PluginIserviceTicket extends Ticket
                     'on_click' => $onclick,
                     'title' => $title,
                 ],
-                'value' => __('Estimation', 'iservice'),
+                'value' => _t('Estimation'),
             ];
         }
 
@@ -848,7 +848,7 @@ class PluginIserviceTicket extends Ticket
 
         $cartridge->getFromDB($cartridgeIdToInstall);
         if ($cartridge->fields['printers_id'] > 0) {
-            Session::addMessageAfterRedirect(__('You can not install this cartridge because it is already installed with an other ticket!', 'iservice'), false, WARNING);
+            Session::addMessageAfterRedirect(_t('You can not install this cartridge because it is already installed with an other ticket!'), false, WARNING);
             return false;
         }
 
@@ -901,10 +901,10 @@ class PluginIserviceTicket extends Ticket
     public function preCartridgeAddChecks($post, $supplierId, $printerId): bool
     {
         if ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, false)->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
-            Session::addMessageAfterRedirect(__('You can not add new cartridges while there is a newer closed ticket.', 'iservice'), false, WARNING);
+            Session::addMessageAfterRedirect(_t('You can not add new cartridges while there is a newer closed ticket.'), false, WARNING);
             return false;
         } elseif ((PluginIserviceTicket::getLastForPrinterOrSupplier($supplierId, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id')->customfields->fields['effective_date_field'] ?? '') > $post['effective_date_field']) {
-            Session::addMessageAfterRedirect(__('You can not add new cartridges while there is a newer ticket with cartridges.', 'iservice'), false, WARNING);
+            Session::addMessageAfterRedirect(_t('You can not add new cartridges while there is a newer ticket with cartridges.'), false, WARNING);
             return false;
         }
 
@@ -959,7 +959,7 @@ class PluginIserviceTicket extends Ticket
                 $success &= $pluginIserviceCartridgesTickets->delete(['id' => $idToDelete]);
             }
         } else {
-            Session::addMessageAfterRedirect(__('Select a cartridge', 'iservice'), false, ERROR);
+            Session::addMessageAfterRedirect(_t('Select a cartridge'), false, ERROR);
         }
 
         return true;
@@ -1027,7 +1027,7 @@ class PluginIserviceTicket extends Ticket
 
         IserviceToolBox::clearAfterRedirectMessages(INFO);
 
-        Session::addMessageAfterRedirect(sprintf(__('Ticket %s saved successfully.', 'iservice'), stripslashes($ticket_name)));
+        Session::addMessageAfterRedirect(sprintf(_t('Ticket %s saved successfully.'), stripslashes($ticket_name)));
     }
 
     public function getLink($options = []): string
@@ -1387,9 +1387,9 @@ class PluginIserviceTicket extends Ticket
         $mmail->Body = $config['body'] . "\n\n--\n$CFG_GLPI[mailing_signature]";
 
         if (!$mmail->Send()) {
-            Session::addMessageAfterRedirect(__('Could not send ticketreport to', 'iservice') . " {$config['to_addresses']}: $mmail->ErrorInfo", false, ERROR);
+            Session::addMessageAfterRedirect(_t('Could not send ticketreport to') . " {$config['to_addresses']}: $mmail->ErrorInfo", false, ERROR);
         } else {
-            Session::addMessageAfterRedirect(__('Confirmation mail sent to', 'iservice') . " {$config['to_addresses']}");
+            Session::addMessageAfterRedirect(_t('Confirmation mail sent to') . " {$config['to_addresses']}");
         }
 
         return true;
@@ -1408,12 +1408,12 @@ class PluginIserviceTicket extends Ticket
         $infoTableHeader = new PluginIserviceHtml_table_row();
         $infoTableHeader->populateCells(
             [
-                __('Last invoice date', 'iservice'),
-                __('Invoice expiry date', 'iservice'),
-                ($plotterPrinter ? __('Printed surface', 'iservice') : __('Color counter', 'iservice')) . ' ' . __('last invoice', 'iservice'),
-                ($plotterPrinter ? __('Printed surface', 'iservice') : __('Color counter', 'iservice')) . ' ' . __('last closed ticket', 'iservice'),
-                ($plotterPrinter ? __('Consumed ink', 'iservice') : __('Black counter', 'iservice')) . ' ' . __('last invoice', 'iservice'),
-                ($plotterPrinter ? __('Consumed ink', 'iservice') : __('Black counter', 'iservice')) . ' ' . __('last closed ticket', 'iservice'),
+                _t('Last invoice date'),
+                _t('Invoice expiry date'),
+                ($plotterPrinter ? _t('Printed surface') : _t('Color counter')) . ' ' . _t('last invoice'),
+                ($plotterPrinter ? _t('Printed surface') : _t('Color counter')) . ' ' . _t('last closed ticket'),
+                ($plotterPrinter ? _t('Consumed ink') : _t('Black counter')) . ' ' . _t('last invoice'),
+                ($plotterPrinter ? _t('Consumed ink') : _t('Black counter')) . ' ' . _t('last closed ticket'),
             ], '', '', 'th'
         );
         return new PluginIserviceHtml_table(
@@ -1772,8 +1772,8 @@ class PluginIserviceTicket extends Ticket
             if ($add_cartridges) {
                 $new_cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']) ?: [];
                 if (!empty($new_cartridge_ids)) {
-                    $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = null WHERE id IN ($new_cartridge_ids)", __('Error restoring cartridges', 'iservice'));
-                    $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = null WHERE items_id IN ($new_cartridge_ids) AND itemtype='Cartridge'", __('Error restoring cartridges custom fields', 'iservice'));
+                    $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = null WHERE id IN ($new_cartridge_ids)", _t('Error restoring cartridges'));
+                    $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = null WHERE items_id IN ($new_cartridge_ids) AND itemtype='Cartridge'", _t('Error restoring cartridges custom fields'));
                 } else {
                     for ($i = 0; $i < abs($consumable['amount']); $i++) {
                         $new_cartridge_ids[] = $cartridge->add(
@@ -1812,8 +1812,8 @@ class PluginIserviceTicket extends Ticket
                     $DB->queryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['deliveredfield'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
                 } else {
                     if ($item->input['delivered_field']) {
-                        $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", __('Error deleting cartridges', 'iservice'));
-                        $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = {$ticket->fields['id']} WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", __('Error deleting cartridges custom fields', 'iservice'));
+                        $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
+                        $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = {$ticket->fields['id']} WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
                     } else {
                         $consumable_ticket->update(
                             [
@@ -1821,9 +1821,9 @@ class PluginIserviceTicket extends Ticket
                                 'new_cartridge_ids' => 'NULL',
                             ]
                         );
-                        $DB->queryOrDie("DELETE FROM glpi_cartridges WHERE id IN ($ids_to_revoke)", __('Error deleting cartridges', 'iservice'));
-                        $DB->queryOrDie("DELETE FROM glpi_plugin_fields_cartridgecartridgecustomfields WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", __('Error deleting cartridges custom fields', 'iservice'));
-                        $DB->queryOrDie("DELETE FROM glpi_infocoms WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", __('Error deleting cartridges infocoms', 'iservice'));
+                        $DB->queryOrDie("DELETE FROM glpi_cartridges WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
+                        $DB->queryOrDie("DELETE FROM glpi_plugin_fields_cartridgecartridgecustomfields WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
+                        $DB->queryOrDie("DELETE FROM glpi_infocoms WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges infocoms'));
                     }
                 }
             }
@@ -1847,20 +1847,20 @@ class PluginIserviceTicket extends Ticket
         $reasons = [];
 
         if (empty($this->fields['_users_id_assign'])) {
-            $reasons[] = __('\"Assigned to\" field is empty!', 'iservice');
+            $reasons[] = _t('\"Assigned to\" field is empty!');
         }
 
         if (empty($this->fields['itilcategories_id'])) {
-            $reasons[] = __("Category is not selected!", 'iservice');
+            $reasons[] = _t('Category is not selected!');
         }
 
         if (!empty($this->getPrinterId())) {
             if ($this->customfields->fields['total2_black_field'] < $this->total2BlackRequiredMinimum) {
-                $reasons[] = __('Black counter under limit!', 'iservice');
+                $reasons[] = _t('Black counter under limit!');
             }
 
             if ($this->printer?->isColor() && $this->customfields->fields['total2_color_field'] < $this->total2ColorRequiredMinimum) {
-                $reasons[] = __('Color counter under limit!', 'iservice');
+                $reasons[] = _t('Color counter under limit!');
             }
         }
 
@@ -1868,16 +1868,16 @@ class PluginIserviceTicket extends Ticket
             && empty($movement->fields['invoice'])
             && empty($this->customfields->fields['movement2_id_field'])  // Do not show the message if it is a delivery ticket, from ExpertLine to Client.
         ) {
-            $reasons[] = __('Movement not invoiced!', 'iservice');
+            $reasons[] = _t('Movement not invoiced!');
         }
 
         if ($this->hasConsumables()) {
             if (empty($this->customfields->fields['delivered_field'])) {
-                $reasons[] = __('Unfinished delivery!', 'iservice');
+                $reasons[] = _t('Unfinished delivery!');
             }
 
             if (empty($this->customfields->fields['exported_field'])) {
-                $reasons[] = __('hMarfa export not done!', 'iservice');
+                $reasons[] = _t('hMarfa export not done!');
             }
         }
 
@@ -1917,9 +1917,9 @@ class PluginIserviceTicket extends Ticket
             if ($closed && IserviceToolBox::inProfileArray(['super-admin', 'admin', 'tehnician'])) {
                 $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->customfields->fields['effective_date_field'], $this->getPartnerId(), $this->getPrinterId());
                 if (count($newer_closed_ticket_ids)) {
-                    $confirm = count($newer_closed_ticket_ids) . __(" closed tickets will be reopened. Are you sure you want to continue?", 'iservice');
+                    $confirm = count($newer_closed_ticket_ids) . _t(' closed tickets will be reopened. Are you sure you want to continue?');
                 } else {
-                    $confirm = __('Are you sure you want to reopen the ticket?', 'iservice');
+                    $confirm = _t('Are you sure you want to reopen the ticket?');
                 }
 
                 $buttons['reopen'] = [
@@ -1992,7 +1992,7 @@ class PluginIserviceTicket extends Ticket
                     $buttons['export'] = [
                         'type'    => 'submit',
                         'name'    => 'export',
-                        'value'   => __('Save') . ' + ' . __('hMarfa export', 'iservice'),
+                        'value'   => __('Save') . ' + ' . _t('hMarfa export'),
                         'options' => $exportButtonOptions,
                     ];
                 }
@@ -2260,7 +2260,7 @@ class PluginIserviceTicket extends Ticket
             '_services_invoiced' => [
                 'render' => false,
                 'type' => 'checkboxExtended' ,
-                'label' => __('Services invoice', 'iservice'),
+                'label' => _t('Services invoice'),
                 'name' => '_services_invoiced',
                 'disabled' => !$canEdit,
             ],
@@ -2270,7 +2270,7 @@ class PluginIserviceTicket extends Ticket
         $movement2_id = IserviceToolBox::getInputVariable('_movement2_id') ?? $this->customfields->fields['movement2_id_field'] ?? '';
 
         if (empty($id) && ($movement = PluginIserviceMovement::getOpenFor('Printer', $printerId)) !== false && empty($movement_id) && empty($movement2_id)) {
-            PluginIserviceHtml::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>" . sprintf(__('There is an unfinished movement for this printer, please finish movement %s first!', 'iservice'), $movement) . "</a>");
+            PluginIserviceHtml::displayErrorAndDie("<a href='movement.form.php?id=$movement' target='_blank'>" . sprintf(_t('There is an unfinished movement for this printer, please finish movement %s first!'), $movement) . "</a>");
         } else {
             $movement = new PluginIserviceMovement();
             $movement->getFromDB($this?->customfields?->fields['movement_id_field'] ?: $this?->customfields?->fields['movement2_id_field'] ?: -1);
@@ -2278,11 +2278,11 @@ class PluginIserviceTicket extends Ticket
 
         $customFields = new PluginFieldsTicketticketcustomfield();
         if (PluginIserviceDB::populateByQuery($customFields, "WHERE movement_id_field = " . IserviceToolBox::getInputVariable('_movement_id', -2) . " LIMIT 1")) {
-            Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('_movement_id')));
+            Html::displayErrorAndDie(sprintf(_t('Ticket already exists for movement %d'), IserviceToolBox::getInputVariable('_movement_id')));
         }
 
         if (PluginIserviceDB::populateByQuery($customFields, "WHERE movement2_id_field = " . IserviceToolBox::getInputVariable('_movement2_id', -2) . " LIMIT 1")) {
-            Html::displayErrorAndDie(sprintf(__("Ticket already exists for movement %d", "iservice"), IserviceToolBox::getInputVariable('_movement2_id')));
+            Html::displayErrorAndDie(sprintf(_t('Ticket already exists for movement %d'), IserviceToolBox::getInputVariable('_movement2_id')));
         }
 
         if (empty($movement_id) && empty($movement2_id)) {
@@ -2301,7 +2301,7 @@ class PluginIserviceTicket extends Ticket
             $fields['_services_invoiced']['value']  = $movement->fields['invoice'] ?? false;
 
             if (!$fields['_services_invoiced']['value']) {
-                $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . __('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?mode=3&kcsrft=1&item[printer][{$printerId}]=1' target='_blank'>" . __("invoicing", "iservice") . "</a></div>";
+                $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . __('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?mode=3&kcsrft=1&item[printer][{$printerId}]=1' target='_blank'>" . _t('invoicing') . "</a></div>";
             }
 
             $fields['_services_invoiced']['disabled'] = !$canEdit || $fields['_services_invoiced']['value'];
@@ -2344,8 +2344,8 @@ class PluginIserviceTicket extends Ticket
         $printerCountersLastCacheData = IserviceViews::getView('printercounters', false)->getCachedData();
 
         return [
-            'title' => __('At the last verification at', 'iservice') . $printerCountersLastCacheData['data_cached'] . ":\n{$printerMinPercentage[0]['consumable_code']} $formatedPercentage%",
-            'text' => __('Verify when you last installed cartridges on the printer!', 'iservice'), // "Verificați când ați instalat tonere pe aparat!",
+            'title' => _t('At the last verification at') . $printerCountersLastCacheData['data_cached'] . ":\n{$printerMinPercentage[0]['consumable_code']} $formatedPercentage%",
+            'text' => _t('Verify when you last installed cartridges on the printer!'), // "Verificați când ați instalat tonere pe aparat!",
             'class' => 'text-danger'
         ];
     }
@@ -2353,8 +2353,8 @@ class PluginIserviceTicket extends Ticket
     public static function getExportType($ticketExportTypeDropdownsId): string
     {
         return match (true) {
-            self::isNotice($ticketExportTypeDropdownsId) => __('Notice', 'iservice'),
-            self::isInvoice($ticketExportTypeDropdownsId) => __('Invoice', 'iservice'),
+            self::isNotice($ticketExportTypeDropdownsId) => _t('Notice'),
+            self::isInvoice($ticketExportTypeDropdownsId) => _t('Invoice', 'Invoices', 1),
             default => '',
         };
     }

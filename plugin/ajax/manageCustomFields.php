@@ -12,4 +12,4 @@ function setDefaultCustomFields(): bool
     return AddCustomFieldsInstallStep::do();
 }
 
-echo setDefaultCustomFields() ? __('Custom fields have been reset to default settings', 'iservice') : __('An error occurred while resetting custom fields to default settings', 'iservice');
+echo setDefaultCustomFields() ? _t('Custom fields have been reset to default settings') : _t('An error occurred while resetting custom fields to default settings');

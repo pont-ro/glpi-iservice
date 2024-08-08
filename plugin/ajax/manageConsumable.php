@@ -24,7 +24,7 @@ $value     = IserviceToolBox::getInputVariable('value');
 $operation = IserviceToolBox::getInputVariable('operation');
 
 if (!array_key_exists($operation, $operations)) {
-    die(sprintf(__("Invalid operation: %s", "iservice"), $operation));
+    die(sprintf(_t('Invalid operation: %s'), $operation));
 }
 
 switch ($operations[$operation]) {
@@ -65,7 +65,7 @@ case 'remove_printer_model':
     }
     break;
 default:
-    die(sprintf(__("Operation not implemented: %s", "iservice"), $operations[$operation]));
+    die(sprintf(_t('Operation not implemented: %s'), $operations[$operation]));
 }
 
-die(sprintf(__("Could not complete operation %s for consumable %d", "iservice"), $operations[$operation], $id));
+die(sprintf(_t('Could not complete operation %s for consumable %d'), $operations[$operation], $id));

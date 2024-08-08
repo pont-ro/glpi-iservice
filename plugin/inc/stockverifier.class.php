@@ -19,7 +19,7 @@ class PluginIserviceStockVerifier extends CommonDBTM
 
     public static function getTypeName($nb = 0): string
     {
-        return _n('Stock verifier', 'Stock verifiers', $nb, 'iservice');
+        return _tn('Stock verifier', 'Stock verifiers', $nb);
     }
 
     public static function cronInfo($name): ?array

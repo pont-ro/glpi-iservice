@@ -14,7 +14,7 @@ if (empty($mode)) {
 $self = filter_input(INPUT_SERVER, 'PHP_SELF');
 
 Html::header(
-    __("hMarfa export", "iservice"),
+    _t('hMarfa export'),
     $_SERVER['PHP_SELF']
 );
 

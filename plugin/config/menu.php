@@ -18,7 +18,7 @@ return [
         ],
     ],
     'specialViews' => [
-        'title' => _n('Special View', 'Special Views', Session::getPluralNumber(), 'iservice'),
+        'title' => _tn('Special View', 'Special Views', Session::getPluralNumber()),
         'icon'  => 'ti ti-eye',
         'classes' => [
             'GlpiPlugin\Iservice\Views\Emaintenance',
@@ -32,11 +32,11 @@ return [
         ],
     ],
     'iService' => [
-        'title'   => __('iService', 'iservice'),
+        'title'   => _t('iService'),
         'icon'    => 'fas fa-cogs',
         'content' => [
             'printer' => [
-                'title' => __('Inquiry', 'iservice'),
+                'title' => _t('Inquiry'),
                 'icon'  => 'fa-fw ti ti-plus',
                 'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php",
                 'roles' => ['super-admin','admin', 'tehnician', 'subtehnician'],

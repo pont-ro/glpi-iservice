@@ -41,7 +41,7 @@
                                 {{ fieldsIservice.numberField(
                                     'total2_black_field',
                                     item.customfields.fields['total2_black_field'],
-                                    printer.isPlotter() ? __('Consumed ink', 'iservice') : __('Black counter reading', 'iservice'),
+                                    printer.isPlotter() ? _t('Consumed ink') : _t('Black counter reading'),
                                     field_options|merge({
                                         'min': total2BlackRequiredMinimum,
                                         'disabled': total2BlackDisabled or isClosed,
@@ -63,7 +63,7 @@
                                 {{ fields.numberField(
                                     'total2_color_field',
                                     item.customfields.fields['total2_color_field'],
-                                    printer.isPlotter() ? __('Printed surface', 'iservice') : __('Color counter reading', 'iservice'),
+                                    printer.isPlotter() ? _t('Printed surface') : _t('Color counter reading'),
                                     field_options|merge({
                                         'min': total2ColorRequiredMinimum,
                                         'disabled': total2ColorDisabled or isClosed,
@@ -112,21 +112,21 @@
                             {{ fields.checkboxField(
                                 '_operator_reading',
                                 item.fields['_operator_reading'],
-                                __('Operator reading', 'iservice'),
+                                _t('Operator reading'),
                                 field_options
                             ) }}
 
                             {{ fields.checkboxField(
                                 'without_paper_field',
                                 item.customfields.fields['without_paper_field'],
-                                __('Without papers', 'iservice'),
+                                _t('Without papers'),
                                 field_options
                             ) }}
 
                             {{ fields.checkboxField(
                                 'no_travel_field',
                                 item.customfields.fields['no_travel_field'],
-                                __('Without moving', 'iservice'),
+                                _t('Without moving'),
                                 field_options
                             ) }}
 
@@ -135,7 +135,7 @@
                                     '_export_type',
                                     item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
                                     exportTypeOptions,
-                                    __('Export type', 'iservice'),
+                                    _t('Export type'),
                                     field_options|merge({
                                         'required': item.hasConsumables(),
                                         'on_change': 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}',
@@ -160,7 +160,7 @@
                                 {{ fieldsIservice.checkboxFieldExtended(
                                     'delivered_field',
                                     item.getID() > 0 ? item.customfields.fields['delivered_field'] : deliveredDefaultValue,
-                                    __('Delivered', 'iservice'),
+                                    _t('Delivered'),
                                     field_options|merge({
                                         'disabled': item.customfields.fields['exported_field'],
                                         'on_change': 'if ($(this).is(":checked")) { $("[name=export]").prop("disabled", false).removeClass("disabled");} else {$("[name=export]").prop("disabled", true).addClass("disabled");}',
@@ -170,7 +170,7 @@
                                 {{ fieldsIservice.checkboxFieldExtended(
                                     'exported_field',
                                     item.customfields.fields['exported_field'],
-                                    __('Exported in csv and imported in hMarfa', 'iservice'),
+                                    _t('Exported in csv and imported in hMarfa'),
                                     field_options|merge({
                                         'disabled': true,
                                         'buttons': [sendMailButtonConfig],
@@ -181,7 +181,7 @@
                             {{ fieldsIservice.datetimeField(
                                 'effective_date_field',
                                 effectiveDate,
-                                __('Effective date', 'iservice'),
+                                _t('Effective date'),
                                 field_options|merge({
                                     'minDate': minEffectiveDate,
                                     'readonly': effectiveDateFieldReadonly,

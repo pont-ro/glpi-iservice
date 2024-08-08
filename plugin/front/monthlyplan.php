@@ -8,7 +8,7 @@ Session::checkRight("plugin_iservice_monthly_plan", READ);
 $monthlyPlan = new PluginIserviceMonthlyPlan();
 
 Html::header(
-    $monthlyPlan->getMenuName() . ' - ' . __("iService", "iservice"),
+    $monthlyPlan->getMenuName() . ' - ' . _t('iService'),
     $_SERVER['PHP_SELF'],
     "plugin_iservice_views",
     'monthly_plan',

@@ -95,9 +95,9 @@ class AddCustomFieldsInstallStep
         }
 
         if ($result) {
-            Session::addMessageAfterRedirect(__('Custom fields updated', 'iservice'), true, INFO, true);
+            Session::addMessageAfterRedirect(_t('Custom fields updated'), true, INFO, true);
         } else {
-            Session::addMessageAfterRedirect(__('Error while updating custom fields', 'iservice'), true, ERROR, true);
+            Session::addMessageAfterRedirect(_t('Error while updating custom fields'), true, ERROR, true);
         }
 
         return $result;

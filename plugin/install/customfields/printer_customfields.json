@@ -347,7 +347,7 @@
         "old_name": "usageaddressfield",
         "label": [
             "Usage address",
-            "Adresa de folosire"
+            "Adresa de exploatare"
         ],
         "type": "textarea",
         "ranking": "260",

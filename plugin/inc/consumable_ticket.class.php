@@ -125,7 +125,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 'inputs' => [
                     'amount'                 => [
                         'order' => 1,
-                        'label' => __('Amount', 'iservice'),
+                        'label' => _t('Amount'),
                         'type'  => 'textField',
                         'name'  => '_plugin_iservice_consumable[amount]',
                         'class' => 'consumables-amount',
@@ -136,7 +136,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     ],
                     'price'                  => [
                         'order' => 2,
-                        'label' => __('Price', 'iservice'),
+                        'label' => _t('Price'),
                         'type'  => 'textField',
                         'name'  => '_plugin_iservice_consumable[price]',
                         'class' => 'consumables-price',
@@ -147,7 +147,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     ],
                     'allConsumablesDropdown' => [
                         'order'    => 3,
-                        'label'    => __('Full list', 'iservice'),
+                        'label'    => _t('Full list'),
                         'name'     => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
                         'type'     => 'dropdown',
                         'itemType' => 'PluginIserviceConsumable',
@@ -166,7 +166,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
                 $data['addConsumablesSection']['inputs']['compatibleConsumablesDropdown'] = [
                     'order'    => 4,
-                    'label'    => __('Compatible cartridges list', 'iservice'),
+                    'label'    => _t('Compatible cartridges list'),
                     'name'     => '_plugin_iservice_consumable[plugin_iservice_cartridge_consumables_id]',
                     'type'     => 'dropdown',
                     'itemType' => 'PluginIserviceConsumable',
@@ -193,13 +193,13 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     'value' => _n('Location', 'Locations', 1),
                 ],
                 'price' => [
-                    'value' => __('Price', 'iservice'),
+                    'value' => _t('Price'),
                 ],
                 'inEur' => [
-                    'value' => __('in €', 'iservice'),
+                    'value' => _t('in €'),
                 ],
                 'amount' => [
-                    'value' => __('Amount', 'iservice'),
+                    'value' => _t('Amount'),
                 ],
             ],
         ];

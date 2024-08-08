@@ -19,7 +19,7 @@ class GlobalReadCounter extends View
 
     public static function getName(): string
     {
-        return __('GlobalReadCounter', 'iService');
+        return _t('Global read counter');
     }
 
     public static function getPrinterDisplay($row_data, $import_data): string
@@ -177,8 +177,8 @@ class GlobalReadCounter extends View
         $import_button_AVITUM = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getAvitumImportControl('Importă din CSV AVITUM') : '';
 
         return [
-            'name' => __('Global read counter', 'iservice'),
-            'postfix' => "<div style='text-align: center'><input type='submit' class='submit' name='global_readcounter' onclick='$(this).closest(\"form\").attr(\"action\", \"ticket.form.php\");' value='" . __('Send data', 'iservice') . "' /></div>",
+            'name' => _t('Global read counter'),
+            'postfix' => "<div style='text-align: center'><input type='submit' class='submit' name='global_readcounter' onclick='$(this).closest(\"form\").attr(\"action\", \"ticket.form.php\");' value='" . _t('Send data') . "' /></div>",
             'query' => "
                         SELECT p.id 
                             , p.original_name printer_name
@@ -232,7 +232,7 @@ class GlobalReadCounter extends View
                     'format' => 'function:\GlpiPlugin\Iservice\Views\GlobalReadCounter::getOtherSerialDisplay($row);',
                 ],
                 'usage_address_field' => [
-                    'title' => 'Adresa de exploatare',
+                    'title' => _t('Usage address'),
                     'default_sort' => 'ASC',
                     'editable' => true,
                     'edit_settings' => [

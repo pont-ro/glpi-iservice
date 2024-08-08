@@ -11,7 +11,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
 
     public static function getMenuName(): string
     {
-        return __('Monthly plan', 'iservice');
+        return _t('Monthly plan');
     }
 
     public static function getAdditionalMenuOptions()
@@ -175,12 +175,12 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
         echo __('Technician') . ': <div class="dropdown_wrapper fixed-15">';
         User::dropdown(['name' => 'tech_id', 'value' => $tech_id, 'right' => 'interface']);
         echo '</div>&nbsp;&nbsp;&nbsp;&nbsp';
-        echo __('Year', 'iservice') . ": <input type='text' id='year' name='year' value='$year' style='width: 4em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
-        echo __('Month', 'iservice') . ": <input type='text' id='month' name='month' value='$month' style='width: 2em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
+        echo _t('Year') . ": <input type='text' id='year' name='year' value='$year' style='width: 4em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
+        echo _t('Month') . ": <input type='text' id='month' name='month' value='$month' style='width: 2em; text-align: center;'>&nbsp;&nbsp;&nbsp;&nbsp;";
         echo "<input type='submit' class='submit' value='" . __('Search') . "'>&nbsp;&nbsp;&nbsp;&nbsp;";
-        echo "<input type='submit' class='submit' value='" . __('This month', 'iservice') . "' onclick='return setPreviousMonth(0);'>&nbsp;&nbsp;&nbsp;&nbsp;";
-        echo "<input type='submit' class='submit' value='" . __('Last month', 'iservice') . "' onclick='return setPreviousMonth(1);'>&nbsp;&nbsp;&nbsp;&nbsp;";
-        echo "<input type='submit' class='submit' value='" . __('2 month ago', 'iservice') . "' onclick='return setPreviousMonth(2);'>";
+        echo "<input type='submit' class='submit' value='" . _t('This month') . "' onclick='return setPreviousMonth(0);'>&nbsp;&nbsp;&nbsp;&nbsp;";
+        echo "<input type='submit' class='submit' value='" . _t('Last month') . "' onclick='return setPreviousMonth(1);'>&nbsp;&nbsp;&nbsp;&nbsp;";
+        echo "<input type='submit' class='submit' value='" . _t('2 month ago') . "' onclick='return setPreviousMonth(2);'>";
         $form->closeForm();
         ?>
 <script>
@@ -209,16 +209,16 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                     <tr>
                         <?php
                         echo "<th colspan=5>";
-                        echo $form->generateSubmit('mass_action_group_read', __('Global read counter', 'iservice') . " " . __('Week', 'iservice') . " $column ");
+                        echo $form->generateSubmit('mass_action_group_read', _t('Global read counter') . " " . _t('Week') . " $column ");
                         echo "</th>";
                         ?>
                     </tr>
                     <tr>
                         <th style="width:10%; min-width: 32px;"></th>
                         <th><?php echo __('Supplier') . ' (' . __('Comments') . ') - ' . __('Inventory number'); ?></th>
-                        <th style="width:10%; min-width: 60px;"><?php echo __('Open tickets', 'iservice'); ?></th>
-                        <th style="width:10%; min-width: 60px;"><?php echo __('Unpaid invoices', 'iservice'); ?></th>
-                        <th style="width:10%; min-width: 60px;"><?php echo __('Total unpaid', 'iservice'); ?></th>
+                        <th style="width:10%; min-width: 60px;"><?php echo _t('Open tickets'); ?></th>
+                        <th style="width:10%; min-width: 60px;"><?php echo _t('Unpaid invoices'); ?></th>
+                        <th style="width:10%; min-width: 60px;"><?php echo _t('Total unpaid'); ?></th>
                     </tr>
                     </thead>
                     <tbody>

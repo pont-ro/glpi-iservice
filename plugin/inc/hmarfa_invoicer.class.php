@@ -1034,7 +1034,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $form->openTable(['class' => 'no-border']);
 
-        $form->displayFieldTableRow(__('Sum of unpaid invoices', 'iservice') . ':', IserviceToolBox::getSumOfUnpaidInvoicesLink($items['first']['supplier']->getID(), $items['first']['supplier']->customfields->fields['hmarfa_code_field']));
+        $form->displayFieldTableRow(_t('Sum of unpaid invoices') . ':', IserviceToolBox::getSumOfUnpaidInvoicesLink($items['first']['supplier']->getID(), $items['first']['supplier']->customfields->fields['hmarfa_code_field']));
         $form->displayFieldTableRow(
             "Nume " . $form->generateNewTabLink('partener', "$CFG_GLPI[root_doc]/front/supplier.form.php?id={$items['first']['supplier']->getID()}") . ':',
             $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['supplier']->fields["name"])

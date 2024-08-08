@@ -12,7 +12,7 @@ class SkippedPayment extends View
 
     public static function getName(): string
     {
-        return __('Clients with skipped payment', 'iservice');
+        return _t('Clients with skipped payment');
     }
 
     protected function getSettings(): array
@@ -68,7 +68,7 @@ class SkippedPayment extends View
                     'title' => 'Nume partener',
                     'link' => [
                         'href' => 'views.php?view=ClientInvoices&clientinvoices0[partner_id]=[supplier_id]',
-                        'title' => __('See invoice list', 'iservice'),
+                        'title' => _t('See invoice list'),
                         'target' => '_blank',
                     ],
                 ],

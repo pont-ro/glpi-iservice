@@ -19,12 +19,12 @@ class PluginIserviceIntOrder extends CommonDBTM
 
     public static function getTypeName($nb = 0)
     {
-        return _n('Internal order', 'Internal orders', $nb, 'iservice');
+        return _tn('Internal order', 'Internal orders', $nb);
     }
 
     public function getRawName()
     {
-        return __('Internal order', 'iservice') . " #" . $this->getID();
+        return _tn('Internal order', 'Internal orders', 1) . " #" . $this->getID();
     }
 
     public function prepareInputForAdd($input)
@@ -168,10 +168,10 @@ class PluginIserviceIntOrder extends CommonDBTM
                 'on_change' => '$(this).closest("form").submit();',
             ],
         ];
-        $form->displayFieldTableRow(__('Consumable', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'plugin_iservice_consumables_id', $this->fields['plugin_iservice_consumables_id'], !empty($this->fields['plugin_iservice_consumables_id']), $consumables_dropdown_options) . $stock_and_other_orders);
+        $form->displayFieldTableRow(_tn('Consumable', 'Consumables', 1), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'plugin_iservice_consumables_id', $this->fields['plugin_iservice_consumables_id'], !empty($this->fields['plugin_iservice_consumables_id']), $consumables_dropdown_options) . $stock_and_other_orders);
 
         // Amount
-        $form->displayFieldTableRow(__('Amount', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'amount', $this->fields['amount'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_STARTED));
+        $form->displayFieldTableRow(_t('Amount'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'amount', $this->fields['amount'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_STARTED));
 
         // User
         $user_dropdown_options = [
@@ -183,7 +183,7 @@ class PluginIserviceIntOrder extends CommonDBTM
         $form->displayFieldTableRow('Solicitant', $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id', $this->fields['users_id'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_STARTED, $user_dropdown_options));
 
         // Deadline
-        $form->displayFieldTableRow(__('Deadline', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, 'deadline', $this->fields['deadline'], false, ['class' => 'full']));
+        $form->displayFieldTableRow(_t('Deadline'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, 'deadline', $this->fields['deadline'], false, ['class' => 'full']));
 
         // Order status
         $orderstatus_dropdown_options = [
@@ -194,7 +194,7 @@ class PluginIserviceIntOrder extends CommonDBTM
             ],
             'class' => 'full',
         ];
-        $form->displayFieldTableRow(_n('Order status', 'Order statuses', Session::getPluralNumber(), 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'plugin_iservice_orderstatuses_id', $this->fields['plugin_iservice_orderstatuses_id'], $this->isNewItem(), $orderstatus_dropdown_options));
+        $form->displayFieldTableRow(_tn('Order status', 'Order statuses', Session::getPluralNumber()), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'plugin_iservice_orderstatuses_id', $this->fields['plugin_iservice_orderstatuses_id'], $this->isNewItem(), $orderstatus_dropdown_options));
 
         // Comments
         $form->displayFieldTableRow(__('Comments'), $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, 'content', $this->fields['content']));

@@ -59,7 +59,7 @@ if (!empty($add)) {
     $id                              = $ticket->add($input);
 
     if (empty($id)) {
-        Session::addMessageAfterRedirect(__('Could not create ticket!', 'iservice'), true, ERROR);
+        Session::addMessageAfterRedirect(_t('Could not create ticket!'), true, ERROR);
         Html::back();
     }
 

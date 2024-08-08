@@ -166,13 +166,13 @@ class PrinterCounters extends PluginIserviceViewPrinter
 
         $this->enable_emaintenance_data_import = false;
         $settings                              = parent::getSettings();
-        $settings['name']                      = __('Printer counters', 'iservice') . " care " . PluginIservicePrinter::getCMConditionForDisplay();
+        $settings['name']                      = _t('Printer counters') . " care " . PluginIservicePrinter::getCMConditionForDisplay();
         $settings['enable_refresh']            = true;
         $settings['mass_actions']              = [
             'update_daily_averages' => [
                 'caption' => 'Modifică mediile zilnice + reîmprospătează',
                 'action' => 'views.php?view=PrinterCounters',
-                'onClick' => 'if (confirm("' . __('Warning! This operation will block the database for 5 minutes! Proceed?', 'iservice') . '") !== true) { return false; }',
+                'onClick' => 'if (confirm("' . _t('Warning! This operation will block the database for 5 minutes! Proceed?') . '") !== true) { return false; }',
             ],
         ];
         foreach (array_keys($settings['filters']) as $filter_id) {

@@ -19,7 +19,7 @@ class Intorders extends View
 
     public static function getName(): string
     {
-        return _n('Internal order', 'Internal orders', SESSION::getPluralNumber(), 'iservice');
+        return _tn('Internal order', 'Internal orders', SESSION::getPluralNumber());
     }
 
     public static function getModelNamesDisplay($row_data): string
@@ -76,16 +76,12 @@ class Intorders extends View
         $iservice_front = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";
         $order_buttons  = [];
         if (Session::haveRight('plugin_iservice_intorder', CREATE)) {
-            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}intorder.form.php'>" . __('Add') . " " . _n('Internal order', 'Internal orders', 1, 'iservice') . "</a>";
+            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}intorder.form.php'>" . __('Add') . " " . _tn('Internal order', 'Internal orders', 1) . "</a>";
         }
 
         if (Session::haveRight('plugin_iservice_extorder', CREATE)) {
-            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}extorder.form.php'>" . __('Add') . " " . _n('External order', 'External orders', 1, 'iservice') . "</a>";
+            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}extorder.form.php'>" . __('Add') . " " . _tn('External order', 'External orders', 1) . "</a>";
         }
-
-//        if (Session::haveRight('plugin_iservice_view_extorders', READ)) {
-//            $order_buttons[] = "<a class='vsubmit noprint' href='{$iservice_front}views.php?view=Extorders'>" . _n('External order', 'External orders', Session::getPluralNumber(), 'iservice') . "</a>";
-//        }
 
         $order_status_options                            = PluginIserviceOrderStatus::getAllForDropdown();
         $order_status_all_options                        = implode(',', array_keys($order_status_options));
@@ -104,7 +100,7 @@ class Intorders extends View
         $new_order_status_dropdown    = $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'intorder[new_status]', 0, false, $orderstatus_dropdown_options);
 
         return [
-            'name' => _n('Internal order', 'Internal orders', Session::getPluralNumber(), 'iservice'),
+            'name' => _tn('Internal order', 'Internal orders', Session::getPluralNumber()),
             'prefix' => implode('&nbsp;&nbsp;&nbsp;', $order_buttons),
             'query' => "
                 SELECT * FROM
@@ -343,7 +339,7 @@ class Intorders extends View
                     'title' => 'Cod',
                 ],
                 'consumable_name' => [
-                    'title' => __('Consumable', 'iservice'),
+                    'title' => _tn('Consumable', 'Consumables', 1),
                 ],
                 'model_names' => [
                     'title' => 'Modele compatibile',

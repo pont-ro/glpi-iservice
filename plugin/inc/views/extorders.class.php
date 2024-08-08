@@ -16,7 +16,7 @@ class Extorders extends View
 
     public static function getName(): string
     {
-        return _n('External order', 'External orders', Session::getPluralNumber(), 'iservice');
+        return _tn('External order', 'External orders', Session::getPluralNumber());
     }
 
     protected function getSettings(): array
@@ -25,12 +25,12 @@ class Extorders extends View
         $iservice_front = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";
         $order_buttons  = [];
         if (Session::haveRight('plugin_iservice_extorder', CREATE)) {
-            $order_buttons[] = "<a class='submit noprint' href='{$iservice_front}extorder.form.php'>" . __('Add') . " " . _n('External order', 'External orders', 1, 'iservice') . "</a>";
+            $order_buttons[] = "<a class='submit noprint' href='{$iservice_front}extorder.form.php'>" . __('Add') . " " . _tn('External order', 'External orders', 1) . "</a>";
         }
 
         if (Session::haveRight('plugin_iservice_view_intorders', READ)) {
             $order_buttons[] = "<a class='submit noprint' href='{$iservice_front}views.php?view=Intorders'>"
-                . _n('Internal order', 'Internal orders', Session::getPluralNumber(), 'iservice') . "</a>";
+                . _tn('Internal order', 'Internal orders', Session::getPluralNumber()) . "</a>";
         }
 
         $order_status_options                            = PluginIserviceOrderStatus::getAllForDropdown();
@@ -50,7 +50,7 @@ class Extorders extends View
         $new_order_status_dropdown    = $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'extorder[new_status]', 0, false, $orderstatus_dropdown_options);
 
         return [
-            'name' => _n('External order', 'External orders', Session::getPluralNumber(), 'iservice'),
+            'name' => _tn('External order', 'External orders', Session::getPluralNumber()),
             'prefix' => implode('&nbsp;&nbsp;&nbsp;', $order_buttons),
             'query' => "
 						SELECT * FROM
@@ -148,10 +148,10 @@ class Extorders extends View
                     'default_sort' => 'DESC',
                 ],
                 'intorders' => [
-                    'title' => _n('Consumable', 'Consumables', Session::getPluralNumber(), 'iservice'),
+                    'title' => _tn('Consumable', 'Consumables', Session::getPluralNumber()),
                 ],
                 'supplier_name' => [
-                    'title' => _n('Supplier', 'Suppliers', 1, 'iservice'),
+                    'title' => _tn('Supplier', 'Suppliers', 1),
                 ],
                 'order_comment' => [
                     'title' => 'Observații',

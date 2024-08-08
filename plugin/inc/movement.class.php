@@ -20,7 +20,7 @@ class PluginIserviceMovement extends CommonDBTM
     {
         // This function is to declare translations.
         return [
-            __('Printer', 'iservice'),
+            _t('Printer'),
         ];
     }
 
@@ -113,7 +113,7 @@ class PluginIserviceMovement extends CommonDBTM
 
         $form = new PluginIserviceHtml();
 
-        $title        = "<h1>" . __('Move', 'iservice') . " " . (isset($item->fields['name']) ? $item->fields['name'] : __($itemtype, 'iservice')) . "</h1>";
+        $title        = "<h1>" . _t('Move') . " " . (isset($item->fields['name']) ? $item->fields['name'] : __($itemtype, 'iservice')) . "</h1>";
         $table_rows[] = new PluginIserviceHtml_table_row('', new PluginIserviceHtml_table_cell($title, '', '', 2));
 
         if (isset($this->fields['ticket_id']) && !empty($this->fields['ticket_id'])) {
@@ -140,8 +140,8 @@ class PluginIserviceMovement extends CommonDBTM
         }
 
         $table_rows[] = $form->generateFieldTableRow(__($itemtype, 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'items_id', $this->fields['items_id'], true, ['type' => "PluginIservice$itemtype"]));
-        $table_rows[] = $form->generateFieldTableRow(__("Old partner", 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id_old', $this->fields['suppliers_id_old'], true, ['type' => "Supplier"]));
-        $table_rows[] = $form->generateFieldTableRow(__("New partner", 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id', empty($this->fields['suppliers_id']) ? '' : $this->fields['suppliers_id'], $id > 0, ['type' => "Supplier", 'class' => 'full']));
+        $table_rows[] = $form->generateFieldTableRow(_t('Old partner'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id_old', $this->fields['suppliers_id_old'], true, ['type' => "Supplier"]));
+        $table_rows[] = $form->generateFieldTableRow(_t('New partner'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id', empty($this->fields['suppliers_id']) ? '' : $this->fields['suppliers_id'], $id > 0, ['type' => "Supplier", 'class' => 'full']));
 
         $moved   = false;
         $printer = new PluginIservicePrinter();
@@ -181,7 +181,7 @@ class PluginIserviceMovement extends CommonDBTM
             if (PluginIserviceDB::populateByQuery($ticket_in_customfields, "WHERE movement_id_field = $id LIMIT 1") && $ticket_in->getFromDB($ticket_in_customfields->fields['items_id'])) {
                 $ticket_in_exists = true;
                 $ticket_in_closed = $ticket_in->fields['status'] == Ticket::CLOSED;
-                $ticket_actions   = "<a href='ticket.form.php?id={$ticket_in->getID()}&_close_on_success=1' class='vsubmit' target='_blank'>" . ($ticket_in_closed ? __("View", "iservice") : (__("Modify", "iservice") . " / " . __("Close", "iservice"))) . "</a>";
+                $ticket_actions   = "<a href='ticket.form.php?id={$ticket_in->getID()}&_close_on_success=1' class='vsubmit' target='_blank'>" . ($ticket_in_closed ? _t('View') : (_t('Modify') . " / " . _t('Close'))) . "</a>";
             } else {
                 $ticket_in_exists                         = false;
                 $ticket_in_closed                         = false;
@@ -201,7 +201,7 @@ class PluginIserviceMovement extends CommonDBTM
                 $ticket->fields['_suppliers_id_assign']   = $this->fields['suppliers_id_old'];
                 $ticket_actions                           = PluginIserviceCartridgeItem::tableChangeablesForTicket($ticket);
                 $ticket_actions                          .= "<br><span id='ticket-actions'>";
-                $ticket_actions                          .= "<a href='movement.form.php?delete=$id' class='vsubmit'>" . __("Abort movement", "iservice") . "</a>";
+                $ticket_actions                          .= "<a href='movement.form.php?delete=$id' class='vsubmit'>" . _t('Abort movement') . "</a>";
                 $ticket_actions                          .= "&nbsp;<span id='ticket-creation-allowed'>";
                 $ticket_actions                          .= "<a href='ticket.form.php?$params' class='vsubmit' target='_blank' onclick='$(\"#ticket-actions\").hide();addHrefParams(this, document.getElementById(\"printer-changeable-cartridges\"));'>" . __("Create ticket") . "</a>";
                 $ticket_actions                          .= "<i class='fa fa-exclamation-triangle' style='color:orange'></i>Creând tichetul, nu mai puteți renunța la mutare!";
@@ -233,7 +233,7 @@ class PluginIserviceMovement extends CommonDBTM
             if ($ticket_in_exists) {
                 $invoice_exists = $this->fields['invoice'];
             } elseif (!$ticket_in_closed) {
-                $table_rows[]   = "<tr><td colspan=2><h3>" . __("Create the ticket to continue", "iservice") . "</h3></td></tr>";
+                $table_rows[]   = "<tr><td colspan=2><h3>" . _t('Create the ticket to continue') . "</h3></td></tr>";
                 $invoice_exists = false;
             }
 
@@ -261,7 +261,7 @@ class PluginIserviceMovement extends CommonDBTM
                 }
 
                 // Update item button.
-                $buttons[] = $form->generateSubmit('move', __('Move', 'iservice') . " " . __($this->fields['itemtype'], 'iservice'), ['data-required' => 'items_id,suppliers_id,states_id,users_id_tech', 'class' => "submit $move_button_disabled", 'disabled' => $move_button_disabled]);
+                $buttons[] = $form->generateSubmit('move', _t('Move') . " " . __($this->fields['itemtype'], 'iservice'), ['data-required' => 'items_id,suppliers_id,states_id,users_id_tech', 'class' => "submit $move_button_disabled", 'disabled' => $move_button_disabled]);
 
                 // Item properties to update.
                 $table_rows[] = "<tr><td colspan=2><h3>Date noi pentru " . __($itemtype, 'iservice') . "</h3></td></tr>";
@@ -277,7 +277,7 @@ class PluginIserviceMovement extends CommonDBTM
 
                 // Usage address.
                 $usage_address = empty($this->fields['usage_address']) ? $item_customfields->fields['usage_address_field'] : $this->fields['usage_address'];
-                $table_rows[]  = $form->generateFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'usage_address', $usage_address));
+                $table_rows[]  = $form->generateFieldTableRow(_t('Usage address'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'usage_address', $usage_address));
 
                 // Week number.
                 $week_number  = empty($this->fields['week_number']) ? $item_customfields->fields['week_nr_field'] : $this->fields['week_number'];
@@ -364,12 +364,12 @@ class PluginIserviceMovement extends CommonDBTM
                 $moved = $this->fields['moved'];
             } else {
                 if ($ticket_in_exists) {
-                    $table_rows[] = "<tr><td colspan=2><h3>" . __("Close the ticket and issue the invoice to continue", "iservice") . "</h3></td></tr>";
+                    $table_rows[] = "<tr><td colspan=2><h3>" . _t('Close the ticket and issue the invoice to continue') . "</h3></td></tr>";
                 }
             }
         } else {
             // Add button.
-            $buttons[] = $form->generateSubmit('add', __('Start movement', 'iservice'), ['data-required' => 'items_id,suppliers_id,week_number']);
+            $buttons[] = $form->generateSubmit('add', _t('Start movement'), ['data-required' => 'items_id,suppliers_id,week_number']);
         }
 
         // Out Ticket.
@@ -378,9 +378,9 @@ class PluginIserviceMovement extends CommonDBTM
         if (PluginIserviceDB::populateByQuery($ticket_out_customfields, "WHERE movement2_id_field = $id LIMIT 1") && $ticket_out->getFromDB($ticket_out_customfields->fields['items_id'])) {
             $ticket_out_exists = true;
             $ticket_out_closed = $ticket_out->fields['status'] == Ticket::CLOSED;
-            $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? __("View", "iservice") : __("Close", "iservice")) . "</a>";
+            $ticket_actions    = "<a href='ticket.form.php?id={$ticket_out->getID()}' class='vsubmit' target='_blank'>" . ($ticket_out_closed ? _t('View') : _t('Close')) . "</a>";
             if (!$ticket_out_closed) {
-                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}' class='vsubmit' target='_blank'>" . __("Modify", "iservice") . "</a>";
+                $ticket_actions .= "&nbsp;&nbsp;<a href='ticket.form.php?id={$ticket_out->getID()}' class='vsubmit' target='_blank'>" . _t('Modify') . "</a>";
             }
         } else {
             $ticket_out_exists = false;
@@ -409,9 +409,9 @@ class PluginIserviceMovement extends CommonDBTM
             }
 
             if ($ticket_out_closed) {
-                $table_rows[] = "<tr><td colspan=2><h3>" . __("This movement is finalized", "iservice") . "</h3></td></tr>";
+                $table_rows[] = "<tr><td colspan=2><h3>" . _t('This movement is finalized') . "</h3></td></tr>";
             } else {
-                $table_rows[] = "<tr><td colspan=2><h3>" . __("Close the ticket to finalize movement", "iservice") . "&nbsp;&nbsp;<a href='' class='vsubmit'>" . __("Update") . "</a></h3></td></tr>";
+                $table_rows[] = "<tr><td colspan=2><h3>" . _t('Close the ticket to finalize movement') . "&nbsp;&nbsp;<a href='' class='vsubmit'>" . __("Update") . "</a></h3></td></tr>";
             }
         } else {
             $table_rows[] = $form->generateButtonsTableRow($buttons);

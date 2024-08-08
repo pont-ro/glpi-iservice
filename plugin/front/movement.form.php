@@ -15,8 +15,8 @@ $delete   = IserviceToolBox::getInputVariable('delete');
 $itemtype = IserviceToolBox::getInputVariable('itemtype', 'Printer');
 
 if (empty($id) && (empty($itemtype) || !class_exists("PluginIservice$itemtype"))) {
-    PluginIserviceHtml::header(__('Move', 'iservice') . " " . __($itemtype, 'iservice'));
-    Html::displayErrorAndDie(__('Invalid movement type', 'iservice') . ": $itemtype");
+    PluginIserviceHtml::header(_t('Move') . " " . __($itemtype, 'iservice'));
+    Html::displayErrorAndDie(_t('Invalid movement type') . ": $itemtype");
 }
 
 $movement = new PluginIserviceMovement($itemtype);
@@ -133,7 +133,7 @@ if (!empty($add)) {
             $contract_supplier->add(['add' => 'add','contracts_id' => $post['contracts_id'],'suppliers_id' => $post['suppliers_id']]);
         }
 
-        Session::addMessageAfterRedirect(__("Movement completed successfully", "iservice"), true, INFO, true);
+        Session::addMessageAfterRedirect(_t('Movement completed successfully'), true, INFO, true);
 
         if (!$post['ticket_out_exists'] && in_array($post['type'], [PluginIserviceMovement::TYPE_OUT, PluginIserviceMovement::TYPE_MOVE])) {
             $ticket = new PluginIserviceTicket();
@@ -180,7 +180,7 @@ if (!empty($add)) {
 
 Session::checkRight('plugin_iservice_movement', UPDATE);
 
-Html::header(__('Move', 'iservice') . " " . __($itemtype, 'iservice'));
+Html::header(_t('Move') . " " . __($itemtype, 'iservice'));
 
 $movement->ShowForm(null,[]);
 

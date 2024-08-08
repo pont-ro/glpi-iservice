@@ -31,18 +31,18 @@ $supplier_id = IserviceToolBox::getInputVariable('supplier_id');
 
 $cartridge = new PluginIserviceCartridge();
 if (!$cartridge->getFromDB($id)) {
-    die(sprintf(__("Invalid cartridge id: %d", "iservice"), $id));
+    die(sprintf(_t('Invalid cartridge id: %d'), $id));
 }
 
 $operation = IserviceToolBox::getInputVariable('operation');
 if (!array_key_exists($operation, $operations)) {
-    die(sprintf(__("Invalid operation: %s", "iservice"), $operation));
+    die(sprintf(_t('Invalid operation: %s'), $operation));
 }
 
 switch ($operations[$operation]) {
 case 'remove_from_supplier':
     if ($cartridge->fields['printers_id'] > 0) {
-        die(sprintf(__("Cartridge %d is already installed on a printer", "iservice"), $id));
+        die(sprintf(_t('Cartridge %d is already installed on a printer'), $id));
     }
 
     if ($cartridge->delete(['id' => $id])) {
@@ -69,7 +69,7 @@ case 'force_supplier':
     break;
 case 'change_location':
     if ($cartridge->fields['printers_id'] > 0) {
-        die(sprintf(__("Cartridge %d is already installed on a printer", "iservice"), $id));
+        die(sprintf(_t('Cartridge %d is already installed on a printer'), $id));
     }
 
 case 'force_location':
@@ -84,11 +84,11 @@ case 'force_location':
     break;
 case 'remove_from_printer':
     if ($cartridge->fields['printers_id'] < 1) {
-        die(sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $id));
+        die(sprintf(_t('Cartridge %d is not installed on a printer'), $id));
     }
 
     if (!empty($cartridge->fields['date_out'])) {
-        die(sprintf(__("Cartridge %d is empty, it is not installed on a printer", "iservice"), $id));
+        die(sprintf(_t('Cartridge %d is empty, it is not installed on a printer'), $id));
     }
 
     if ($cartridge->update(['id' => $id, 'printers_id' => '0', 'date_use' => 'NULL', 'date_out' => 'NULL', 'pages_use_field' => 0, 'pages_color_use_field' => 0])) {
@@ -102,11 +102,11 @@ case 'remove_from_printer':
     break;
 case 'use':
     if ($cartridge->fields['printers_id'] < 1) {
-        die(sprintf(__("Cartridge %d is not installed on a printer", "iservice"), $id));
+        die(sprintf(_t('Cartridge %d is not installed on a printer'), $id));
     }
 
     if (!empty($cartridge->fields['date_out'])) {
-        die(sprintf(__("Cartridge %d is empty, it is not installed on a printer", "iservice"), $id));
+        die(sprintf(_t('Cartridge %d is empty, it is not installed on a printer'), $id));
     }
 
     $counter_black = IserviceToolBox::getInputVariable('counter_black');
@@ -134,11 +134,11 @@ case 'force_type':
     break;
 case 'delete_cartridge':
     if (!$cartridge->delete(['id' => $id])) {
-        die(printf(__("Could not delete cartridge from the database.", "iservice")));
+        die(printf(_t('Could not delete cartridge from the database.')));
     }
     die(IserviceToolBox::RESPONSE_OK);
 default:
-    die(sprintf(__("Operation not implemented: %s", "iservice"), $operations[$operation]));
+    die(sprintf(_t('Operation not implemented: %s'), $operations[$operation]));
 }
 
-die(sprintf(__("Could not complete operation %s for cartridge %d", "iservice"), $operations[$operation], $id));
+die(sprintf(_t('Could not complete operation %s for cartridge %d'), $operations[$operation], $id));

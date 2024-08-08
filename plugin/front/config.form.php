@@ -2,7 +2,7 @@
 require "../inc/includes.php";
 
 Html::header(
-    __("iService", "iservice"),
+    _t('iService'),
     $_SERVER['PHP_SELF'],
     "config",
     "pluginiservicemenu",

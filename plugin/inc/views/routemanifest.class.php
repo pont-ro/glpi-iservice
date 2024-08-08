@@ -12,7 +12,7 @@ class RouteManifest extends View
 
     public static function getName(): string
     {
-        return __('Route Manifest', 'iservice');
+        return _t('Route Manifest');
     }
 
     protected function getSettings(): array

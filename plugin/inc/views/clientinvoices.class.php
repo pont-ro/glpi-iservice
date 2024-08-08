@@ -127,7 +127,7 @@ class ClientInvoices extends View
                         $form->generateButton('generate_magic_link', 'Generează link magic' . (empty($magic_link) ? '' : ' nou'), $generate_magic_link_button_options),
                         empty($magic_link) ? '' : "<a href='mailto:$mail_recipient?subject=$mail_subject&body=$mail_body' class='vsubmit' style='margin:1em;'>Trimite email</a>",
                         "<a href='$contact_partner_link' class='vsubmit' style='margin:1em;' target='_blank'>Ticket plăți</a>",
-                        "<a href='$partnerPrintersLink' class='vsubmit'  target='_blank' title=\"" . __('Printers of the client', 'iservice') . "\">" . __('Client printers', 'iservice') . "</a>"
+                        "<a href='$partnerPrintersLink' class='vsubmit'  target='_blank' title=\"" . _t('Printers of the client') . "\">" . _t('Client printers') . "</a>"
                     ]
                 ),
             ]
@@ -147,7 +147,7 @@ class ClientInvoices extends View
         }
 
         ob_start();
-        echo '<br/><h1>Ultimele 5 tichete cu categoria "Plati" pentru clientul ' . self::getName($partner, $client_access) . '</h1>';
+        echo '<br/><h1>Ultimele 10 tichete cu categoria "Plati" pentru clientul ' . self::getName($partner, $client_access) . '</h1>';
         $view = Views::getView('LastNTickets', false);
         $view->customize(['type' => LastNTickets::TYPE_PLATI, 'n' => 10, 'supplier_id' => $partner->getID()]);
         $view->display(true, false, 0, false);

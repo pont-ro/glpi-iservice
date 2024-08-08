@@ -14,7 +14,7 @@ class Partners extends View
 
     public static function getName(): string
     {
-        return __('Due partners', 'iservice');
+        return _t('Due partners');
     }
 
     public static function getAdditionalMenuOptions()
@@ -27,7 +27,7 @@ class Partners extends View
     protected function getSettings(): array
     {
         return [
-            'name' => __('Due partner list', 'iservice'),
+            'name' => _t('Due partner list'),
             'query' => "
 				SELECT 
 				    s.id id
@@ -177,7 +177,7 @@ class Partners extends View
                 'Nume_Partener' => [
                     'title' => 'Partener',
                     'sort_default_dir' => 'DESC',
-                    'tooltip' => __('See invoice list', 'iservice'),
+                    'tooltip' => _t('See invoice list'),
                     'link' => [
                         'href' => 'views.php?view=ClientInvoices&clientinvoices0[partner_id]=[id]',
                         'target' => '_blank',

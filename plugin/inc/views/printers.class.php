@@ -23,12 +23,12 @@ class Printers extends View
 
     public static function getName(): string
     {
-        return __('Printer list', 'iservice');
+        return _t('Printer list');
     }
 
     public static function getMenuName(): string
     {
-        return __('Printers', 'iservice');
+        return _t('Printers');
     }
 
     public static function getAdditionalMenuOptions()
@@ -45,7 +45,7 @@ class Printers extends View
         $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
         $actions                       = [
             'add' => [
-                'link' => "ticket.form.php?items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&_users_id_assign=" . (IserviceToolBox::inProfileArray(['client', 'superclient']) ? IserviceToolBox::getUserIdByName('Cititor') : $row_data['tech_id']) . (IserviceToolBox::inProfileArray(['client', 'superclient']) ? ('&title=' . __('Read counter', 'iservice') . '&content=' . __('Read counter', 'iservice') . "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('Sesizare externa')) : ''),
+                'link' => "ticket.form.php?items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&_users_id_assign=" . (IserviceToolBox::inProfileArray(['client', 'superclient']) ? IserviceToolBox::getUserIdByName('Cititor') : $row_data['tech_id']) . (IserviceToolBox::inProfileArray(['client', 'superclient']) ? ('&title=' . _t('Read counter') . '&content=' . _t('Read counter') . "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('Sesizare externa')) : ''),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_add.png',
                 'title' => __('New ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, CREATE) || Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_READCOUNTER, CREATE),
@@ -54,25 +54,25 @@ class Printers extends View
             'hMarfa' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/hmarfaexport.form.php?id=$row_data[printer_id]",
                 'icon' => $CFG_GLPI['root_doc'] . "/plugins/iservice/pics/app_go$export_color.png",
-                'title' => __('hMarfa export', 'iservice'),
+                'title' => _t('hMarfa export'),
                 'visible' => Session::haveRight('plugin_iservice_hmarfa', READ),
             ],
             'list_ticket' => [
                 'link' => "views.php?view=Operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$operations_filter_description",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_detail.png',
-                'title' => __('Operations list', 'iservice'),
+                'title' => _t('Operations list'),
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'counters' => [
                 'link' => "views.php?view=PrinterCounters&printercounters0[supplier_name]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
-                'title' => __('Printer counters', 'iservice'),
+                'title' => _t('Printer counters'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
             ],
             'cartridges' => [
                 'link' => "views.php?view=Cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
-                'title' => __('Installable cartridges', 'iservice'),
+                'title' => _t('Installable cartridges'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
                 'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[supplier_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printer_id]\", \"\", function(message) {\$(\"#popup_$row_data[printer_id]_\").html(message);});",
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_'></div>",
@@ -80,7 +80,7 @@ class Printers extends View
             'invoices' => [
                 'link' => "views.php?view=Partners&partners0[partener]=" . urlencode($row_data['supplier_name']) . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1&partners0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/price_alert.png',
-                'title' => __('Unpaid invoices', 'iservice'),
+                'title' => _t('Unpaid invoices'),
                 'visible' => Session::haveRight('plugin_iservice_view_partners', READ),
             ],
         ];
@@ -104,7 +104,7 @@ class Printers extends View
             $actions['move'] = [
                 'link' => "movement.form.php?itemtype=Printer&items_id=$row_data[printer_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/cog.png',
-                'title' => __('Move', 'iservice') . " " . __('Printer', 'iservice'),
+                'title' => _t('Move') . " " . _t('Printer'),
                 'visible' => Session::haveRight('plugin_iservice_movement', READ),
             ];
         }
@@ -249,7 +249,7 @@ class Printers extends View
             }
         } else {
             if (!empty($row_data['location_parent_id']) && 0 < count($compatible_cartridges = PluginIserviceCartridgeItem::getChangeablesForTicket($ticket, ['ignore_location' => true]))) {
-                $title = __('You have compatible cartridges at other locations:', 'iservice') . "\n";
+                $title = _t('You have compatible cartridges at other locations:') . "\n";
                 foreach ($compatible_cartridges as $cartridge) {
                     $title .= $cartridge["name"];
                     if (!empty($cartridge['location_name'])) {
@@ -261,7 +261,7 @@ class Printers extends View
 
                 $style = "style='color: orange'";
             } else {
-                $title = __('You have no compatible cartridges!', 'iservice');
+                $title = _t('You have no compatible cartridges!');
                 $style = "style='color: red'";
             }
         }
@@ -292,7 +292,7 @@ class Printers extends View
             $style = "";
         }
 
-        $link = "<a href='printer.form.php?id=$row_data[printer_id]' title='" . __('Manage printer', 'iservice') . "$gps' $style>$row_data[serial]</a>";
+        $link = "<a href='printer.form.php?id=$row_data[printer_id]' title='" . _t('Manage printer') . "$gps' $style>$row_data[serial]</a>";
         return $link;
     }
 
@@ -331,7 +331,7 @@ class Printers extends View
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
         $printer_counters_button = IserviceToolBox::inProfileArray('client') ? '' :
-            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . __('Printer counters', 'iservice') . " v2</a>";
+            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . _t('Printer counters') . " v2</a>";
 
         $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
         if ($this->enable_emaintenance_data_import) {
@@ -477,7 +477,7 @@ class Printers extends View
             'itemtype' => 'printer',
             'mass_actions' => [
                 'group_read' => [
-                    'caption' => 'Citire globală',
+                    'caption' => _t('Global read counter'),
                     'action' => 'views.php?view=GlobalReadCounter',
                 ],
                 'mass_invoice' => [
@@ -486,7 +486,7 @@ class Printers extends View
                     'visible' => !self::inProfileArray('superclient', 'client'),
                 ],
                 'available_cartridges' => [
-                    'caption' => __('Cartridges available', 'iservice'),
+                    'caption' => _t('Cartridges available'),
                     'action' => $CFG_GLPI['root_doc'] . '/plugins/iservice/front/views.php?view=Cartridges',
                     'visible' => self::inProfileArray('superclient', 'client'),
                 ],
@@ -544,7 +544,7 @@ class Printers extends View
                 ],
                 'usage_address_field' => [
                     'type' => self::FILTERTYPE_TEXT,
-                    'caption' => 'Adresa de exploatare',
+                    'caption' => _t('Usage address'),
                     'format' => '%%%s%%',
                     'header' => 'usage_address_field',
                 ],
@@ -588,7 +588,7 @@ class Printers extends View
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'usage_address_field' => [
-                    'title' => 'Adresa de exploatare',
+                    'title' => _t('Usage address'),
                     'editable' => true,
                     'edit_settings' => [
                         'callback' => 'managePrinter',

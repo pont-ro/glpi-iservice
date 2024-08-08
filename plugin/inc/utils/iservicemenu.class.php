@@ -12,7 +12,7 @@ class IserviceMenu
     {
         $menuConfig = Toolbox::getMenuConfig();
 
-        $menus['iService']['title'] = $menuConfig['iService']['title'] ?? __('iService', 'iservice');
+        $menus['iService']['title'] = $menuConfig['iService']['title'] ?? _t('iService');
         $menus['iService']['icon']  = $menuConfig['iService']['icon'] ?? 'ti ti-columns';
     }
 

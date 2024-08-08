@@ -69,13 +69,13 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             if ($dropdownOptions['used']) {
                 $unusedChangeableCartridges = self::getChangeablesForTicket($ticket);
                 if (empty($unusedChangeableCartridges)) {
-                    $data['warning'] = __('You have no more compatible cartridges', 'iservice');
+                    $data['warning'] = _t('You have no more compatible cartridges');
                 } else {
                     $data['notInstalledCartridgesTable'] = [
                         'header' => [
                             'notInstalledCartridges' =>
                                 [
-                                    'value' => __('Cartridges available', 'iservice'),
+                                    'value' => _t('Cartridges available'),
                                 ],
                         ]
                     ];
@@ -93,11 +93,11 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                     }
                 }
             } else {
-                $data['warning'] = __('You have no compatible cartridges', 'iservice');
+                $data['warning'] = _t('You have no compatible cartridges');
             }
 
             if (!empty($ticket->customfields->fields['cartridge_install_date_field'])) {
-                $data['warning'] .= ' (' . sprintf(__('delivered before %s and not installed', 'iservice'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))) . ')';
+                $data['warning'] .= ' (' . sprintf(_t('delivered before %s and not installed'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))) . ')';
             }
 
             return $data;

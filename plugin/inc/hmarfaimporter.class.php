@@ -19,7 +19,7 @@ class PluginIserviceHMarfaImporter extends CommonDBTM
 
     static function getTypeName($nb = 0)
     {
-        return _n('hMarfa importer', 'hMarfa importers', $nb, 'iservice');
+        return _tn('hMarfa importer', 'hMarfa importers', $nb);
     }
 
     static function cronInfo($name)

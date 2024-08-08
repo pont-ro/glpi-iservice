@@ -40,7 +40,7 @@ class PluginIservicePrinter extends Printer
 
     public static function getTypeName($nb = 0): string
     {
-        return __('Manage printer', 'iservice');
+        return _t('Manage printer');
     }
 
     public function isColor(): bool
@@ -241,8 +241,8 @@ class PluginIservicePrinter extends Printer
         echo "<table class='tab_cadre_fixe wide iservice_printer_table' id='mainformtable'>";
 
         echo "<tr class='headerRow'>";
-        echo "<th class=text-center '>" . __('Printer', 'iservice') . "</th>";
-        echo "<th class='bg-white text-center'>" . __('Supplier') . "</th>";
+        echo "<th class=text-center '>" . _t('Printer') . "</th>";
+        echo "<th class='bg-white text-center'>" . _tn('Supplier', 'Suppliers', 1) . "</th>";
         if (Session::haveRight('plugin_iservice_printer_full', UPDATE)) {
             echo "<th  class='text-center'>" . __('Contract') . "</th>";
         }
@@ -285,26 +285,26 @@ class PluginIservicePrinter extends Printer
         }
 
         if (Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, CREATE)) {
-            $buttons[] = "<a class='vsubmit' href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$printer_id&_users_id_assign={$printer->fields['users_id_tech']}'>" . __('New quick ticket', 'iservice') . "</a>";
+            $buttons[] = "<a class='vsubmit' href='ticket.form.php?mode=" . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$printer_id&_users_id_assign={$printer->fields['users_id_tech']}'>" . _t('New quick ticket') . "</a>";
         }
 
         if (Session::haveRight('plugin_iservice_hmarfa', READ)) {
-            $buttons[] = "<a class='vsubmit' href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/hmarfaexport.form.php?item[printer][$printer_id]=1&mode=3&kcsrft=1'>" . __('hMarfa export', 'iservice') . "</a>";
+            $buttons[] = "<a class='vsubmit' href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/hmarfaexport.form.php?item[printer][$printer_id]=1&mode=3&kcsrft=1'>" . _t('hMarfa export') . "</a>";
         }
 
         $supplierName       = $supplier->fields['name'] ?? '';
         if (Session::haveRight('plugin_iservice_view_operations', READ)) {
             $usageAddress       = $printer_customfields->fields['usage_address_field'] ?? '';
             $filter_description = urlencode("{$printer->fields['name']} ({$printer->fields['serial']}) - {$usageAddress} - {$supplierName}");
-            $buttons[]          = "<a class='vsubmit' href='views.php?view=Operations&operations0[printer_id]=$printer_id&operations0[filter_description]=$filter_description'>" . __('Operations list', 'iservice') . "</a>";
+            $buttons[]          = "<a class='vsubmit' href='views.php?view=Operations&operations0[printer_id]=$printer_id&operations0[filter_description]=$filter_description'>" . _t('Operations list') . "</a>";
         }
 
         if (Session::haveRight('plugin_iservice_movement', CREATE)) {
-            $buttons[] = "<a class='vsubmit' href='movement.form.php?itemtype=Printer&items_id=$printer_id'>" . __('Move', 'iservice') . " " . __("Printer", "iservice") . "</a>";
+            $buttons[] = "<a class='vsubmit' href='movement.form.php?itemtype=Printer&items_id=$printer_id'>" . _t('Move') . " " . _t('Printer') . "</a>";
         }
 
         if (Session::haveRight('plugin_iservice_view_printers', READ) && !empty($supplierName)) {
-            $buttons[] = "<a class='vsubmit' href='views.php?view=Printers&printers0[supplier_name]=$supplierName' target='_blank' title=\"" . __('Printers of the client', 'iservice') . "\">" . __('Client printers', 'iservice') . "</a>";
+            $buttons[] = "<a class='vsubmit' href='views.php?view=Printers&printers0[supplier_name]=$supplierName' target='_blank' title=\"" . _t('Printers of the client') . "\">" . _t('Client printers') . "</a>";
         }
 
         echo implode('&nbsp;&nbsp;', $buttons);
@@ -352,7 +352,7 @@ class PluginIservicePrinter extends Printer
             $selector_options['options']['condition'] = ["id IN (" . join(',', $accessible_printer_ids) . ")"];
         }
 
-        $output .= $form->generateFieldTableRow(__('Printer', 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[id]', $printer->getID(), $readonly, $selector_options), $no_wrap_options);
+        $output .= $form->generateFieldTableRow(_t('Printer'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[id]', $printer->getID(), $readonly, $selector_options), $no_wrap_options);
 
         // Name.
         $output .= $form->generateFieldTableRow(__('Name'), $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'printer[name]', $printer->fields['name'], $readonly || !$has_full_rights));
@@ -361,7 +361,7 @@ class PluginIservicePrinter extends Printer
         $output .= $form->generateFieldTableRow(__('Location'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[locations_id]', $printer->fields['locations_id'], $readonly || !$has_full_rights, ['type' => 'Location']), $no_wrap_options);
 
         // Usage address.
-        $output .= $form->generateFieldTableRow('Adresa de exploatare', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[printer][usage_address_field]', $printer_customfields->fields['usage_address_field'], $readonly));
+        $output .= $form->generateFieldTableRow(_t('Usage address'), $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[printer][usage_address_field]', $printer_customfields->fields['usage_address_field'], $readonly));
 
         // Cost center.
         $output .= $form->generateFieldTableRow('Centru de cost', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[printer][cost_center_field]', $printer_customfields->fields['cost_center_field'], $readonly));
@@ -393,7 +393,7 @@ class PluginIservicePrinter extends Printer
             $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[states_id]', $printer->fields['states_id'], $readonly || !$has_full_rights, ['type' => 'State', 'class' => 'width-auto'])
             . '<div class="checkbox-after-input">' . $form->generateField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX, 'global_contract_field', $printer_customfields->fields['global_contract_field'],
-                $readonly || !$has_full_rights, ['postfix' => __('Global contract', 'iservice'), 'title' => __('Select if the printer is not billed individually, but together with other printers', 'iservice')]
+                $readonly || !$has_full_rights, ['postfix' => _t('Global contract'), 'title' => _t('Select if the printer is not billed individually, but together with other printers')]
             ) . '</div>',
             $no_wrap_options
         );
@@ -492,7 +492,7 @@ class PluginIservicePrinter extends Printer
             $selector_options['options']['on_change'] = "redirect_to('supplier');";
         }
 
-        $selector_options['prefix'] = $form->generateSubmit('modify_supplier', '&nbsp;', ['class' => 'grear-icon modify-supplier', 'title' => __('Modify', 'iservice') . ' ' . __('Supplier'), 'style' => 'display:none;']);
+        $selector_options['prefix'] = $form->generateSubmit('modify_supplier', '&nbsp;', ['class' => 'grear-icon modify-supplier', 'title' => _t('Modify') . ' ' . __('Supplier'), 'style' => 'display:none;']);
         $output                    .= $form->generateFieldTableRow(__('Partener'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'supplier[id]', $supplier->getID(), $readonly, $selector_options), ['field_class' => 'nowrap'], $no_wrap_options);
 
         // Name.
@@ -591,7 +591,7 @@ class PluginIservicePrinter extends Printer
 
         $selector_options['options']['nochecklimit'] = true;
         $selector_options['options']['expired']      = true;
-        $selector_options['prefix']                  = $form->generateSubmit('modify_contract', '&nbsp;', ['class' => 'grear-icon modify-contract', 'title' => __('Modify', 'iservice') . ' ' . __('Contract'), 'style' => 'display:none;']);
+        $selector_options['prefix']                  = $form->generateSubmit('modify_contract', '&nbsp;', ['class' => 'grear-icon modify-contract', 'title' => _t('Modify') . ' ' . __('Contract'), 'style' => 'display:none;']);
         $output                                     .= $form->generateFieldTableRow(__('Contract'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[id]', $contract_id, $readonly, $selector_options));
 
         // Name.
@@ -673,12 +673,12 @@ class PluginIservicePrinter extends Printer
         $form = new PluginIserviceHtml();
         if ($printer->isNewItem()) {
             if (Session::haveRight('plugin_iservice_printer_full', CREATE)) {
-                return $form->generateSubmit('add', __('Add') . ' ' . __('Printer', 'iservice'));
+                return $form->generateSubmit('add', __('Add') . ' ' . _t('Printer'));
             } else {
                 return "&nbsp;";
             }
         } else {
-            return $form->generateSubmit('update', __('Save') . ' ' . __('Printer', 'iservice'));
+            return $form->generateSubmit('update', __('Save') . ' ' . _t('Printer'));
         }
     }
 

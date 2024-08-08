@@ -41,7 +41,7 @@ if (count($cartridges) > 0) {
         echo sprintf("<li>%s (%s)</li>", $cartridge_name, $cartridge['cpt']);
     }
 } else {
-    echo __('You have no compatible cartridges!', 'iservice');
+    echo _t('You have no compatible cartridges!');
 }
 
 echo '</ul>';

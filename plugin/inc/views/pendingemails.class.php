@@ -20,7 +20,7 @@ class PendingEmails extends View
 
     public static function getName(): string
     {
-        return __('PendingEmails', 'iService');
+        return _tn('Pending email', 'Pending emails', 2);
     }
 
     protected function getInvoiceDisplay($row_data)
@@ -91,9 +91,9 @@ class PendingEmails extends View
                 }
             };
 
-            Session::addMessageAfterRedirect(sprintf(__('%d emails were sent', 'iservice'), $result['sent']), true);
+            Session::addMessageAfterRedirect(sprintf(_t('%d emails were sent'), $result['sent']), true);
             if ($result['error']) {
-                Session::addMessageAfterRedirect(sprintf(__('%d emails were not sent', 'iservice'), $result['error']), true, ERROR);
+                Session::addMessageAfterRedirect(sprintf(_t('%d emails were not sent'), $result['error']), true, ERROR);
             }
         } elseif (IserviceToolBox::getInputVariable('mass_action_delete')) {
             global $DB;
@@ -102,7 +102,7 @@ class PendingEmails extends View
         }
 
         return [
-            'name' => __('Pending emails', 'iservice') . " - " . PluginIserviceHmarfa::getNextImportText(),
+            'name' => _tn('Pending email', 'Pending emails', 2) . " - " . PluginIserviceHmarfa::getNextImportText(),
             'query' => "
                 select
                       pem.id 

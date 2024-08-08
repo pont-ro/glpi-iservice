@@ -36,12 +36,12 @@ $average = IserviceToolBox::getInputVariable('average');
 $printer              = new Printer();
 $printer_customfields = new PluginFieldsPrinterprintercustomfield();
 if (!PluginIserviceDB::populateByItemsId($printer_customfields, $id)) {
-    die(sprintf(__("Invalid printer id: %d", "iservice"), $id));
+    die(sprintf(_t('Invalid printer id: %d'), $id));
 }
 
 $operation = IserviceToolBox::getInputVariable('operation');
 if (!array_key_exists($operation, $operations)) {
-    die(sprintf(__("Invalid operation: %s", "iservice"), $operation));
+    die(sprintf(_t('Invalid operation: %s'), $operation));
 }
 
 switch ($operations[$operation]) {
@@ -174,7 +174,7 @@ case 'get_last_invoices_dropdown':
     echo $result;
     die;
 default:
-    die(sprintf(__("Operation not implemented: %s", "iservice"), $operations[$operation]));
+    die(sprintf(_t('Operation not implemented: %s'), $operations[$operation]));
 }
 
-die(sprintf(__("Could not complete operation %s for printer %d", "iservice"), $operations[$operation], $id));
+die(sprintf(_t('Could not complete operation %s for printer %d'), $operations[$operation], $id));

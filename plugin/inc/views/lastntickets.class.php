@@ -14,7 +14,7 @@ class LastNTickets extends View
 
     public static function getName(): string
     {
-        return __('LastNTickets', 'iService');
+        return _t('Last n tickets');
     }
 
     const TYPE_FOR_PRINTER = 'for_printer';
@@ -26,7 +26,7 @@ class LastNTickets extends View
     public function customize($params = [])
     {
         parent::customize($params);
-        $this->type = isset($params['type']) ? $params['type'] : null;
+        $this->type = $params['type'] ?? null;
         switch ($this->type) {
         case self::TYPE_FOR_PRINTER:
             if (!isset($params['printer_id'])) {
@@ -37,14 +37,14 @@ class LastNTickets extends View
             $this->printer_id = $params['printer_id'];
             break;
         case self::TYPE_PLATI:
-            $this->supplier_id = isset($params['supplier_id']) ? $params['supplier_id'] : null;
+            $this->supplier_id = $params['supplier_id'] ?? null;
             break;
         default:
             $this->type = null;
             return false;
         }
 
-        $this->n = isset($params['n']) ? $params['n'] : 5;
+        $this->n = $params['n'] ?? 5;
         return true;
     }
 

@@ -229,15 +229,20 @@ function plugin_iservice_check_status(): void
     }
 }
 
-function _t(string $string, string $plural=null, int $nb=null): string
+function _t(string $string): string
 {
     if (!function_exists('__')) {
+        return $string;
+    }
+
+    return __($string, 'iservice');
+}
+
+function _tn(string $string, string $plural, int $nb): string
+{
+    if (!function_exists('_n')) {
         return $nb > 1 ? $plural : $string;
     }
 
-    if ($plural !== null && $nb !== null) {
-        return _n($string, $plural, $nb, 'iservice');
-    } else {
-        return __($string, 'iservice');
-    }
+    return _n($string, $plural, $nb, 'iservice');
 }

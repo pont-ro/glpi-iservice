@@ -19,12 +19,12 @@ class PluginIserviceExtOrder extends CommonDBTM
 
     static function getTypeName($nb = 0)
     {
-        return _n('External order', 'External orders', $nb, 'iservice');
+        return _tn('External order', 'External orders', $nb);
     }
 
     function getRawName()
     {
-        return __('External order', 'iservice') . " #" . $this->getID();
+        return _t('External order') . " #" . $this->getID();
     }
 
     function prepareInputForAdd($input)
@@ -122,7 +122,7 @@ class PluginIserviceExtOrder extends CommonDBTM
         $this->showFormHeader($options);
 
         echo "<tr>";
-        echo "<td>" . _n('Internal order', 'Internal orders', Session::getPluralNumber(), 'iservice') . "</td>";
+        echo "<td>" . _tn('Internal order', 'Internal orders', Session::getPluralNumber()) . "</td>";
         echo "<td>";
 
         if ($this->isNewItem()) {
@@ -158,7 +158,7 @@ class PluginIserviceExtOrder extends CommonDBTM
                 'addicon' => false,
             ],
         ];
-        $form->displayFieldTableRow(_n('Supplier', 'Suppliers', 1, 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id', $this->fields['suppliers_id'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_PROCESSED, $supplier_dropdown_options));
+        $form->displayFieldTableRow(_tn('Supplier', 'Suppliers', 1), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id', $this->fields['suppliers_id'], $this->getOrderStatusWeight() > PluginIserviceOrderStatus::WEIGHT_PROCESSED, $supplier_dropdown_options));
 
         // Order status
         $orderstatus_dropdown_options = [
@@ -170,7 +170,7 @@ class PluginIserviceExtOrder extends CommonDBTM
                 'used' => [1],
             ],
         ];
-        $form->displayFieldTableRow(_n('Order status', 'Order statuses', Session::getPluralNumber(), 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'plugin_iservice_orderstatuses_id', $this->fields['plugin_iservice_orderstatuses_id'], $this->isNewItem(), $orderstatus_dropdown_options));
+        $form->displayFieldTableRow(_tn('Order status', 'Order statuses', Session::getPluralNumber()), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'plugin_iservice_orderstatuses_id', $this->fields['plugin_iservice_orderstatuses_id'], $this->isNewItem(), $orderstatus_dropdown_options));
 
         // Comments
         $form->displayFieldTableRow(__('Comments'), $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, 'content', $this->fields['content']));

@@ -19,7 +19,7 @@ class Emaintenance extends View
 
     public static function getName(): string
     {
-        return __('E-Maintenance', 'iService');
+        return _t('E-Maintenance');
     }
 
     public static function getIDDisplay($row_data)
@@ -35,7 +35,7 @@ class Emaintenance extends View
             'list_ticket' => [
                 'link' => "views.php?view=Operations&operations0[printer_id]=$row_data[printers_id]&operations0[filter_description]=$operations_filter_description",
                 'icon' => "$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_detail.png",
-                'title' => __('Operations list', 'iservice'),
+                'title' => _t('Operations list'),
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'invalidate' => [
@@ -49,7 +49,7 @@ class Emaintenance extends View
             'cartridge' => [
                 'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[suppliers_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printers_id]&uid=$row_data[id]",
                 'icon' => "$CFG_PLUGIN_ISERVICE[root_doc]/pics/toolbox.png",
-                'title' => __('Installable cartridges', 'iservice'),
+                'title' => _t('Installable cartridges'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
                 'onclick' => "ajaxCall",
                 'success' => "function(message) {\$(\"#popup_$row_data[printers_id]_$row_data[id]\").html(message);}",
@@ -149,13 +149,13 @@ class Emaintenance extends View
         global $CFG_PLUGIN_ISERVICE;
 
         if (!empty($row_data['ticket_id'])) {
-            $ticket_button = "<a href='ticket.form.php?id=$row_data[ticket_id]' style='vertical-align: middle;' target='_blank' title='" . __('Close ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_check.png' style='vertical-align: middle;'/></a>";
+            $ticket_button = "<a href='ticket.form.php?id=$row_data[ticket_id]' style='vertical-align: middle;' target='_blank' title='" . _t('Close ticket') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_check.png' style='vertical-align: middle;'/></a>";
         } elseif (empty($row_data['printers_id'])) {
-            $ticket_button = "<i class='fa fa-exclamation-circle fa-2x' style='color:red; vertical-align: middle;' title='" . __('Cannot identify printer from email', 'iservice') . "'></i>";
+            $ticket_button = "<i class='fa fa-exclamation-circle fa-2x' style='color:red; vertical-align: middle;' title='" . _t('Cannot identify printer from email') . "'></i>";
         } else {
             $name          = self::getSubjectForDisplay($row_data);
             $content       = urlencode(self::getContentForTicket($row_data));
-            $ticket_button = "<a href='ticket.form.php?items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . __('New quick ticket', 'iservice') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
+            $ticket_button = "<a href='ticket.form.php?items_id[Printer][0]=$row_data[printers_id]&name=$name&content=$content&em_mail_id_field=$row_data[id]&effective_date_field=$row_data[date]' style='vertical-align: middle;' target='_blank' title='" . _t('New quick ticket') . "' /><img src='$CFG_PLUGIN_ISERVICE[root_doc]/pics/app_lightning.png' style='vertical-align: middle;'/></a>";
         }
 
         return $ticket_button;
@@ -178,7 +178,7 @@ class Emaintenance extends View
             return "";
         }
 
-        return "<a href='{$extended_data['body_lines']['link']}' target='_blank' title ='" . __('Goto link from email', 'iservice') . "'><i class='fa fa-link fa-2x' style='vertical-align: middle;'></i></a>";
+        return "<a href='{$extended_data['body_lines']['link']}' target='_blank' title ='" . _t('Goto link from email') . "'><i class='fa fa-link fa-2x' style='vertical-align: middle;'></i></a>";
     }
 
     protected static function getSuggestionText($row_data, $html_format = true)
@@ -207,7 +207,7 @@ class Emaintenance extends View
         echo __('Number of emails to retrieve'), " ";
         $html->displayField(PluginIserviceHtml::FIELDTYPE_TEXT, 'max_emails', $max_emails, false, ['style' => 'width:40px;']);
         echo ' ';
-        $html->displaySubmit('get_mails', __('Get E-maintenance emails', 'iservice'));
+        $html->displaySubmit('get_mails', _t('Get E-maintenance emails'));
         echo " <a href='javascript:none' onclick='$(\"#auto-process-rules\").toggle();'>Reguli de procesare ▼</a>";
         echo "<pre id='auto-process-rules' style='display: none;'>" . print_r(PluginIserviceEmaintenance::getAutoProcessRules(), true) . "</pre>";
         echo "</table>";
@@ -215,7 +215,7 @@ class Emaintenance extends View
         $prefix = ob_get_clean();
 
         return [
-            'name' => __('Processed mail list', 'iservice'),
+            'name' => _t('Processed mail list'),
             'prefix' => $prefix,
             'query' => "
                         SELECT 

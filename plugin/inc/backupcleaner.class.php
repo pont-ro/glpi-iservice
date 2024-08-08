@@ -19,7 +19,7 @@ class PluginIserviceBackupCleaner extends CommonDBTM
 
     public static function getTypeName($nb = 0)
     {
-        return _n('Backup cleaner', 'Backup cleaners', $nb, 'iservice');
+        return _tn('Backup cleaner', 'Backup cleaners', $nb);
     }
 
     public static function cronInfo($name)

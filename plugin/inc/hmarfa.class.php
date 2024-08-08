@@ -616,7 +616,7 @@ class PluginIserviceHmarfa
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $enterprise->fields["name"], true), "Nume <a href='" . GLPI_ROOT . "/front/supplier.form.php?id={$enterprise->getID()}'>partener</a>:");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printerLocation->fields["name"] ?? '', true), "Locatie:", 'se va folosi pentru managementul cartuselor');
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printer->customfields->fields["cost_center_field"], true), "Centru de cost:", 'se va folosi pentru calculul de subtotaluri la clientii cu mai multe centre de cost');
-        echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printer->customfields->fields["usage_address_field"], true), "Adresa de exploatare:", "adresa la care se afla aparatul");
+        echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printer->customfields->fields["usage_address_field"], true), _t('Usage address') . ':', "adresa la care se afla aparatul");
         echo self::generateInputFieldRow($prefix, self::generateInputField("", "", $printerState->fields["name"], true), "Status:");
         echo "        <tr><td>Data ultima factura:</td><td><div class='dropdown_wrapper'>\n";
         Html::showDateField("invoice_date_field", ['value' => date("Y-m-d", $invoice_date_field)]);
@@ -927,18 +927,18 @@ class PluginIserviceHmarfa
             ],
         ];
         if (!in_array($ticket->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'], array_keys($export_types))) {
-            Html::displayErrorAndDie(__('Ticket has an invalid export type', 'iservice'));
+            Html::displayErrorAndDie(_t('Ticket has an invalid export type'));
         }
 
         $consumable_ticket  = new PluginIserviceConsumable_Ticket();
         $ticket_consumables = $consumable_ticket->getForTicket($id);
         if (empty($ticket_consumables)) {
-            Html::displayErrorAndDie(__('Ticket has no consumables', 'iservice'));
+            Html::displayErrorAndDie(_t('Ticket has no consumables'));
         }
 
         $partner = $ticket->getFirstAssignedPartner();
         if ($partner->isNewItem()) {
-            Html::displayErrorAndDie(__('Ticket has no partner', 'iservice'));
+            Html::displayErrorAndDie(_t('Ticket has no partner'));
         }
 
         $printer = $ticket->getFirstPrinter();
@@ -978,7 +978,7 @@ class PluginIserviceHmarfa
         */
         $right_side_header = new PluginIserviceHtml_table_row(
             '', [
-                new PluginIserviceHtml_table_cell(__('Partner information', 'iservice'), '', '', 7, 1, 'th')
+                new PluginIserviceHtml_table_cell(_t('Partner information'), '', '', 7, 1, 'th')
             ]
         );
 
@@ -1029,13 +1029,13 @@ class PluginIserviceHmarfa
 
         $default_sales_average_percent     = count($ticket_partner_sales_rows) == 0 ? 1.3 : number_format($total_gain / count($ticket_partner_sales_rows), 2, '.', '');
         $sales_average_percent             = IserviceToolBox::getInputVariable('sales_average_percent', $default_sales_average_percent);
-        $sales_average                     = __('Average percent', 'iservice') . ": " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'sales_average_percent', $sales_average_percent, false, ['style' => 'width:4em;']);
+        $sales_average                     = _t('Average percent') . ": " . $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'sales_average_percent', $sales_average_percent, false, ['style' => 'width:4em;']);
         $ticket_partner_sales_average_cell = new PluginIserviceHtml_table_cell($sales_average, '', '', count($ticket_partner_sales_columns));
 
         $ticket_partner_sales_rows[] = new PluginIserviceHtml_table_row('tall', $ticket_partner_sales_average_cell, 'padding:1em;');
 
         $partner_info_header = [
-            0 => new PluginIserviceHtml_table_row('tall', new PluginIserviceHtml_table_cell(__('Last sales to the partner', 'iservice'), '', 'font-weight:bold;', count($ticket_partner_sales_columns))),
+            0 => new PluginIserviceHtml_table_row('tall', new PluginIserviceHtml_table_cell(_t('Last sales to the partner'), '', 'font-weight:bold;', count($ticket_partner_sales_columns))),
             1 => new PluginIserviceHtml_table_row('short'),
         ];
         $partner_info_header[1]->populateCells($ticket_partner_sales_columns, '', '', 'th');
@@ -1330,7 +1330,7 @@ class PluginIserviceHmarfa
         }
 
         $consumables_header = [
-            0 => new PluginIserviceHtml_table_row('tall', new PluginIserviceHtml_table_cell(_n('Consumable', 'Consumables', 2, 'iservice'), '', 'font-weight:bold;text-align:left;', count($consumables_columns))),
+            0 => new PluginIserviceHtml_table_row('tall', new PluginIserviceHtml_table_cell(_tn('Consumable', 'Consumables', 2), '', 'font-weight:bold;text-align:left;', count($consumables_columns))),
             1 => new PluginIserviceHtml_table_row('short'),
         ];
         $consumables_header[1]->populateCells($consumables_columns, '', '', 'th');
@@ -1338,15 +1338,15 @@ class PluginIserviceHmarfa
         $consumables_table = new PluginIserviceHtml_table('tab_cadre_fixe wide', $consumables_header, $consumables_rows, 'text-align:center;');
 
         // Action buttons.
-        $action_buttons = " <a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets' target='_blank'>" . __('Ticket list', 'iservice') . "</a>";
+        $action_buttons = " <a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets' target='_blank'>" . _t('Ticket list') . "</a>";
         if ($ticket->getOrderStatus() === 0) {
             $action_buttons .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-            $action_buttons .= "&nbsp;" . $form->generateSubmit('order', __('Order', 'iservice'));
+            $action_buttons .= "&nbsp;" . $form->generateSubmit('order', _t('Order'));
         }
 
         $action_buttons .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         if (Session::haveRight('plugin_iservice_ticket_hmarfa_export_close', CREATE)) {
-            $action_buttons .= '&nbsp;' . $form->generateSubmit('wait', __('Pending', 'iservice'), empty($wait_disabled_reason) ? [ 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }'] : ['class' => 'submit disabled', 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }', 'title' => $wait_disabled_reason]);
+            $action_buttons .= '&nbsp;' . $form->generateSubmit('wait', _t('Pending'), empty($wait_disabled_reason) ? [ 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }'] : ['class' => 'submit disabled', 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }', 'title' => $wait_disabled_reason]);
             $action_buttons .= '&nbsp;' . $form->generateSubmit('finish', 'Finalizează', empty($export_disabled_reason) ? [ 'onclick' => 'if ($(this).hasClass("disabled")) { return false; }'] : ['class' => 'submit disabled', 'onclick' => 'if ($(this).hasClass("disabled")) { return false; };', 'title' => $export_disabled_reason]);
         } else {
             $action_buttons .= '&nbsp;' . $form->generateSubmit('save', __('Save'));

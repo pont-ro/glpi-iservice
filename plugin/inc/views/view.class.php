@@ -897,13 +897,13 @@ class View extends \CommonGLPI
                 if ($this->show_export) {
                     echo " <input type='submit' class='submit noprint' name='export' value='" . __('Export', 'views') . "'/> ";
                     echo "<select name='" . $this->getRequestArrayName() . "[export_type]'>";
-                    echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") . ">" . __('Visible', 'iservice') . "</option> ";
+                    echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") . ">" . _t('Visible') . "</option> ";
                     echo "<option value='full'" . ($this->export_type == 'full' ? " selected" : "") . ">" . __('All') . "</option>";
                     echo "</select>";
                 }
 
                 if ($this->show_limit === true) {
-                    echo " " . __("Show", "iservice") . " <input type='text' name='{$this->getRequestArrayName()}[limit]' value='$this->limit' style='text-align:right;width:40px'/> din $this->query_count";
+                    echo " " . _t('Show') . " <input type='text' name='{$this->getRequestArrayName()}[limit]' value='$this->limit' style='text-align:right;width:40px'/> din $this->query_count";
                 }
 
                 if ($this->show_filter_buttons) {
@@ -1094,9 +1094,9 @@ class View extends \CommonGLPI
             }
 
             $style          = date('Y-m-d H:i:s') > ($this->use_cache['data_expire_warning'] ?? '') ? "style='color:red'" : "";
-            $title          = sprintf(__("Expires on %s", 'iservice'), $this->use_cache['data_expires'] ?? '');
-            $refresh_button = $this->enable_refresh ? " <input class='submit' onclick='if (confirm(\"" . __('Warning! This operation will block the database for 5 minutes! Proceed?', 'iservice') . "\") === true) { $(\"#cache-refresh\").val(1);$(\".refresh-target\").submit(); }' $style type='submit' value='" . __('Refresh', 'iservice') . "'>" : "";
-            $this->name    .= " [<span $style title='$title'>" . sprintf(__('from cache %s', 'iservice'), $this->use_cache['data_cached'] ?? '') . "$refresh_button</span>]";
+            $title          = sprintf(_t('Expires on %s'), $this->use_cache['data_expires'] ?? '');
+            $refresh_button = $this->enable_refresh ? " <input class='submit' onclick='if (confirm(\"" . _t('Warning! This operation will block the database for 5 minutes! Proceed?') . "\") === true) { $(\"#cache-refresh\").val(1);$(\".refresh-target\").submit(); }' $style type='submit' value='" . _t('Refresh') . "'>" : "";
+            $this->name    .= " [<span $style title='$title'>" . sprintf(_t('from cache %s'), $this->use_cache['data_cached'] ?? '') . "$refresh_button</span>]";
         }
 
         $this->adjustQueryOrderBy();

@@ -20,7 +20,7 @@ class Operations extends View
 
     public static function getName(): string
     {
-        return __('Operations', 'iService');
+        return _t('Operations');
     }
 
     public static function getTicketStatusDisplay($row_data): string
@@ -36,19 +36,19 @@ class Operations extends View
             'add_quick' => [
                 'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_lightning.png',
-                'title' => __('New quick ticket', 'iservice'),
+                'title' => _t('New quick ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, UPDATE),
             ],
             'close' => [
                 'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
-                'title' => __('Close ticket', 'iservice'),
+                'title' => _t('Close ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
             ],
             'ticketreport' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.report.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_exp.png',
-                'title' => __('Generate', 'iservice') . ' ' . __('intervention report', 'iservice'),
+                'title' => _t('Generate') . ' ' . _t('intervention report'),
                 'visible' => Session::haveRight('plugin_iservice_docgenerator', READ),
             ],
         ];
@@ -91,7 +91,7 @@ class Operations extends View
         }
 
         $settings = [
-            'name' => __('Operations', 'iservice'),
+            'name' => _t('Operations'),
             'query' => "
                 SELECT * FROM (
                     SELECT
@@ -258,8 +258,8 @@ class Operations extends View
         $params  = IserviceToolBox::getArrayInputVariable('operations0');
         $printer = new PluginIservicePrinter();
         if (!empty($params) && $printer->getFromDB($params['printer_id']) && $printer->isPlotter()) {
-            $settings['columns']['ticket_counter_black']['title'] = __('Consumed ink', 'iservice');
-            $settings['columns']['ticket_counter_color']['title'] = __('Printed surface', 'iservice');
+            $settings['columns']['ticket_counter_black']['title'] = _t('Consumed ink');
+            $settings['columns']['ticket_counter_color']['title'] = _t('Printed surface');
             unset($settings['columns']['ticket_counter_total']);
         }
 

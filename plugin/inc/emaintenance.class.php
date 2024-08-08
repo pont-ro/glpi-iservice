@@ -20,7 +20,7 @@ class PluginIserviceEmaintenance extends MailCollector
 
     public static function getTypeName($nb = 0): string
     {
-        return _n('E-maintenance', 'E-maintenance', $nb, 'iservice');
+        return _tn('E-maintenance', 'E-maintenance', $nb);
     }
 
     /**
@@ -547,7 +547,7 @@ class PluginIserviceEmaintenance extends MailCollector
         }
 
         if (!empty($this->fields['is_active'])) {
-            $msg = __('MailCollector has to be inactive to use it for E-maintenance', 'iservice');
+            $msg = _t('MailCollector has to be inactive to use it for E-maintenance');
             return $display ? Session::addMessageAfterRedirect($msg, false, WARNING) : $msg;
         }
 
@@ -676,11 +676,11 @@ class PluginIserviceEmaintenance extends MailCollector
     protected function refuseMailData($mail_data): bool|string
     {
         if (empty($mail_data['from']) || !strstr(PluginIserviceConfig::getConfigValue('emaintenance.accepted_senders'), $mail_data['from'])) {
-            return sprintf(__('Email rejected from %s', 'iservice'), $mail_data['from']);
+            return sprintf(_t('Email rejected from %s'), $mail_data['from']);
         }
 
         if ($mail_data['subject'] == 'Reminder Notification for Consumable Event') {
-            return sprintf(__('Email with subject "%s" rejected', 'iservice'), $mail_data['subject']);
+            return sprintf(_t('Email with subject "%s" rejected'), $mail_data['subject']);
         }
 
         return false;

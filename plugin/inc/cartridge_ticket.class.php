@@ -357,7 +357,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'value' => __('Type'),
                 ],
                 'empties' => [
-                    'value' => __('Empties', 'iservice'),
+                    'value' => _t('Empties'),
                 ],
             ],
         ];
@@ -379,8 +379,8 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     ],
                     'name' => [
                         'value' => "$cartridge[id] - $cartridge[name] ($cartridge[location_completename])"
-                            . (!empty($cartridge['date_use']) ? " " . __('intalled on', 'iservice') . " $cartridge[date_use]" : '')
-                            . (!empty($cartridge['date_out']) ? " " . __('emptied', 'iservice') . " $cartridge[date_out]" : ''),
+                            . (!empty($cartridge['date_use']) ? " " . _t('installed on') . " $cartridge[date_use]" : '')
+                            . (!empty($cartridge['date_out']) ? " " . _t('emptied') . " $cartridge[date_out]" : ''),
                     ],
                     'mercurycode' => [
                         'hidden' => true,
@@ -460,7 +460,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 $emptyablesByCartridgeDropdownSettings['options']['no_label'] = true;
                 $data['tableSection']['rows'][$key]['cols']['empties']        = [
                     'input' => $emptyablesByCartridgeDropdownSettings,
-                    'value' => __('No cartridges to replace', 'iservice'),
+                    'value' => _t('No cartridges to replace'),
                 ];
             } elseif (count($emptyableCartridges) === 1) {
                 $emptyablesByCartridgeDropdownSettings['type']                = 'hidden';

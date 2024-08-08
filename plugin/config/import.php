@@ -2,7 +2,7 @@
 return [
     'various' => [
         'icon' => 'ti ti-settings',
-        'title' => __('Various data', 'iservice'),
+        'title' => _t('Various data'),
         'items' => [
             'profile' => [
                 'itemtype' => 'Profile',
@@ -60,7 +60,7 @@ return [
             ],
             'supplier_customfields' => [
                 'itemtype' => 'PluginFieldsSuppliersuppliercustomfield',
-                'label' => _n('Supplier Custom Field', 'Supplier Custom Fields', Session::getPluralNumber(), 'iservice'),
+                'label' => _tn('Supplier Custom Field', 'Supplier Custom Fields', Session::getPluralNumber()),
             ],
             'contactSupplier' => [
                 'itemtype' => 'Contact_Supplier',

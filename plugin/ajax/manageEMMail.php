@@ -22,12 +22,12 @@ $operations = [
 $id  = IserviceToolBox::getInputVariable('id');
 $eme = new PluginIserviceEMEmail();
 if (!$eme->getFromDB($id)) {
-    die(sprintf(__("Invalid id: %d", "iservice"), $id));
+    die(sprintf(_t('Invalid id: %d'), $id));
 }
 
 $operation = IserviceToolBox::getInputVariable('operation');
 if (!array_key_exists($operation, $operations)) {
-    die(sprintf(__("Invalid operation: %s", "iservice"), $operation));
+    die(sprintf(_t('Invalid operation: %s'), $operation));
 }
 
 switch ($operations[$operation]) {
@@ -42,5 +42,5 @@ case 'mark_unread':
     die(IserviceToolBox::RESPONSE_OK);
 case 'toggle_read':
 default:
-    die(sprintf(__("Operation not implemented: %s", "iservice"), $operations[$operation]));
+    die(sprintf(_t('Operation not implemented: %s'), $operations[$operation]));
 }

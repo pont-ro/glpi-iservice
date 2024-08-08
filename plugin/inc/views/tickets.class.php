@@ -22,7 +22,7 @@ class Tickets extends View
 
     public static function getName(): string
     {
-        return __('Ticket list', 'iservice');
+        return _t('Ticket list');
     }
 
     public static function getMenuName(): string
@@ -97,31 +97,31 @@ class Tickets extends View
             'close' => [
                 'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
-                'title' => __('Close ticket', 'iservice'),
+                'title' => _t('Close ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
             ],
             'ticketreport' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.report.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_exp.png',
-                'title' => __('Generate', 'iservive') . ' ' . __('intervention report', 'iservice'),
+                'title' => __('Generate', 'iservive') . ' ' . _t('intervention report'),
                 'visible' => Session::haveRight('plugin_iservice_docgenerator', READ),
             ],
             'list_ticket' => [
                 'link' => $row_data['printer_id'] ? "views.php?view=Operations&operations0[printer_id]=$row_data[printer_id]&operations0[filter_description]=$list_ticket_description" : 'javascript:void(0);',
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_detail' . ($row_data['printer_id'] ? '' : '_disabled') . '.png',
-                'title' => $row_data['printer_id'] ? __('Operations list', 'iservice') : 'Tichetul nu are aparat', // Lista lucrari.
+                'title' => $row_data['printer_id'] ? _t('Operations list') : 'Tichetul nu are aparat', // Lista lucrari.
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'counters' => [
                 'link' => "views.php?view=PrinterCounters" . ($row_data['supplier_id'] ? "&printercounters0[supplier_name]=" . urlencode($row_data['supplier_name']) : '' ),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
-                'title' => __('Printer counters', 'iservice'),
+                'title' => _t('Printer counters'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
             ],
             'cartridges' => [
                 'link' => "views.php?view=Cartridges&cartridges0[partner_name]=" . urlencode($row_data['supplier_name']) . "&cartridges0[filter_description]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox.png',
-                'title' => __('Installable cartridges', 'iservice'),
+                'title' => _t('Installable cartridges'),
                 'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
                 'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getPrinterCartridgesPopup.php?supplier_id=$row_data[supplier_id]&supplier_name=" . urlencode($row_data['supplier_name']) . "&printer_id=$row_data[printer_id]&ticket_id=$row_data[ticket_id]\", \"\", function(message) {\$(\"#popup_$row_data[printer_id]_$row_data[ticket_id]\").html(message);});",
                 'suffix' => "<div class='iservice-view-popup' id='popup_$row_data[printer_id]_$row_data[ticket_id]'></div>",
@@ -129,7 +129,7 @@ class Tickets extends View
             'invoices' => [
                 'link' => "views.php?view=Partners" . ($row_data['supplier_id'] ? "&partners0[partener]=" . urlencode($row_data['supplier_name']) : '') . "&partners0[nr_fac_nepla]=-1&partners0[nr_fac_nepla2]=-1&partners0[val_scad]=-1&partners0[zile_ult_pla]=-1" . ($row_data['supplier_id'] ? "&partners0[filter_description]=" . urlencode($row_data['supplier_name']) : ''),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/price_alert.png',
-                'title' => __('Unpaid invoices', 'iservice'),
+                'title' => _t('Unpaid invoices'),
                 'visible' => Session::haveRight('plugin_iservice_view_partners', READ),
             ],
         ];
@@ -220,7 +220,7 @@ class Tickets extends View
             return $row_data['printer_serial'];
         }
 
-        $link = "<a href='printer.form.php?id=$row_data[printer_id]' title='" . __('Manage printer', 'iservice') . "'>$row_data[printer_serial]</a>";
+        $link = "<a href='printer.form.php?id=$row_data[printer_id]' title='" . _t('Manage printer') . "'>$row_data[printer_serial]</a>";
         if (isset($row_data['printer_gps']) && !empty($row_data['printer_gps'])) {
             $link = "<span style='color:blue;'><i>$link</i></span>";
         }
@@ -466,7 +466,7 @@ class Tickets extends View
                 ],
                 'usage_address_field' => [
                     'type' => self::FILTERTYPE_TEXT,
-                    'caption' => 'Adresa de exploatare',
+                    'caption' => _t('Usage address'),
                     'format' => '%%%s%%',
                     'header' => 'usage_address_field',
                 ],
@@ -549,7 +549,7 @@ class Tickets extends View
                     'visible' => self::inProfileArray('tehnician', 'admin', 'super-admin'),
                 ],
                 'usage_address_field' => [
-                    'title' => 'Adresa de exploatare',
+                    'title' => _t('Usage address'),
                 ],
                 'printer_serial' => [
                     'title' => 'Număr serie',

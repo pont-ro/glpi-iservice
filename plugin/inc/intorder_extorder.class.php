@@ -181,10 +181,10 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
             $header .= "</th>";
         }
 
-        $header .= "<th>" . _n('Internal order', 'Internal orders', 1, 'iservice') . "</th>";
+        $header .= "<th>" . _tn('Internal order', 'Internal orders', 1) . "</th>";
         $header .= "<th>" . "Cod" . "</th>";
-        $header .= "<th>" . __('Consumable', 'iservice') . "</th>";
-        $header .= "<th>" . __('Amount', 'iservice') . "</th></tr>";
+        $header .= "<th>" . _tn('Consumable', 'Consumables', 1) . "</th>";
+        $header .= "<th>" . _t('Amount') . "</th></tr>";
         echo $header;
 
         foreach ($intorders as $key => $intorder) {

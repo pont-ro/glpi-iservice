@@ -15,7 +15,7 @@ class Evaluation extends View
 
     public static function getName(): string
     {
-        return __('Evaluation', 'iService');
+        return _t('Evaluation');
     }
 
     protected function getSettings(): array
@@ -212,7 +212,7 @@ class Evaluation extends View
         }
 
         return [
-            'name' => __('Evaluation', 'iservice'),
+            'name' => _t('Evaluation'),
             'query' => join(' UNION ', $queries),
             'default_limit' => 100,
             'show_filter_buttons' => Session::haveRight('plugin_iservice_view_evaluation', UPDATE),

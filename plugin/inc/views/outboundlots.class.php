@@ -12,7 +12,7 @@ class OutboundLots extends View
 
     public static function getName(): string
     {
-        return __('Outbound Lots', 'iservice');
+        return _t('Outbound Lots');
     }
 
     protected function getSettings(): array

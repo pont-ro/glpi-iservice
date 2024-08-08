@@ -19,7 +19,7 @@ class PluginIservicePendingEmailUpdater extends CommonDBTM
 
     static function getTypeName($nb = 0)
     {
-        return _n('Pending email updater', 'Pending email updaters', $nb, 'iservice');
+        return _tn('Pending email updater', 'Pending email updaters', $nb);
     }
 
     static function cronInfo($name)

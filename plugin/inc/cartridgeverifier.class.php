@@ -22,7 +22,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
 
     public static function getTypeName($nb = 0): string
     {
-        return _n('Cartridge verifier', 'Cartridge verifiers', $nb, 'iservice');
+        return _tn('Cartridge verifier', 'Cartridge verifiers', $nb);
     }
 
     public static function cronInfo($name): ?array

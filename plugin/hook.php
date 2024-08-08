@@ -285,12 +285,12 @@ function plugin_iservice_ticket_reopen_newer_tickets(Ticket $parentItem)
     }
 
     if (!empty($reopened_tickets)) {
-        $message = __('The following tickets have been also reopened', 'iservice') . ':<br><ul>';
+        $message = _t('The following tickets have been also reopened') . ':<br><ul>';
         foreach ($reopened_tickets as $reopened_ticket_id) {
             $message .= "<li><a class='reopened-ticket' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$reopened_ticket_id&show_history=cartridge'>$reopened_ticket_id</a></li>";
         }
 
-        $message .= "</ul><a href='javascript:none;' onclick='openInNewTab(\".reopened-ticket\");return false;'>" . __('See all', 'iservice') . "</a>";
+        $message .= "</ul><a href='javascript:none;' onclick='openInNewTab(\".reopened-ticket\");return false;'>" . _t('See all') . "</a>";
         Session::addMessageAfterRedirect($message, false, WARNING);
     }
 }

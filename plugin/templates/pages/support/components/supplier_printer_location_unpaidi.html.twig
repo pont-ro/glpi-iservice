@@ -43,7 +43,7 @@
     {{ fields.textField(
         'printer[usage_address_field]',
         usageAddressField,
-        __('Usage Address', 'iservice'),
+        _t('Usage address'),
         field_options|merge({
             'disabled': true,
         })
@@ -95,7 +95,7 @@
 {% if sumOfUnpaidInvoicesLink %}
     {{ fieldsIservice.customFormRow(
         'sumOfUnpaidInvoicesLink',
-        __('Sum of unpaid invoices', 'iservice'),
+        _t('Sum of unpaid invoices'),
         sumOfUnpaidInvoicesLink,
         field_options|merge({
             'valueClass': 'mt-2'
@@ -106,7 +106,7 @@
 {% if lastInvoiceAndCountersTable %}
     {{ fieldsIservice.customFormRow(
         'lastInvoiceAndCountersTable',
-        __('Last invoice and counter information', 'iservice'),
+        _t('Last invoice and counter information'),
         lastInvoiceAndCountersTable
     ) }}
 {% endif %}

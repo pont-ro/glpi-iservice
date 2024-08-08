@@ -15,7 +15,7 @@ class Movements extends View
 
     public static function getName(): string
     {
-        return _n('Movement', 'Movements', \Session::getPluralNumber(), 'iservice');
+        return _tn('Movement', 'Movements', \Session::getPluralNumber());
     }
 
     public static function getAdditionalMenuOptions()
@@ -28,7 +28,7 @@ class Movements extends View
     protected function getSettings(): array
     {
         return [
-            'name' => __('Movement list', 'iservice'),
+            'name' => _t('Movement list'),
             'query' => "
 						SELECT
 							  m.id movement_id_field
@@ -132,7 +132,7 @@ class Movements extends View
                     'link' => [
                         'type' => 'normal',
                         'href' => 'printer.form.php?id=[printer_id]',
-                        'title' => __('Manage printer', 'iservice'), //'Administrare aparat',
+                        'title' => _t('Manage printer'), //'Administrare aparat',
                         'target' => '_blank',
                     ],
                 ],

@@ -4,7 +4,7 @@
 {{ fields.textareaField(
     '_followup_content',
     item.fields['_followup[content]'],
-    __('Followup description', 'iservice'),
+    _t('Followup description'),
     field_options|merge({
         'enable_richtext': 1,
         'enable_images': 0,
@@ -14,7 +14,7 @@
 {{ fields.checkboxField(
     '_followup[is_private]]',
     item.fields['_followup[is_private]'],
-    __('Private followup', 'iservice'),
+    _t('Private followup'),
     field_options
 ) }}
 

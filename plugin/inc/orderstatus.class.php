@@ -26,7 +26,7 @@ class PluginIserviceOrderStatus extends CommonDropdown
 
     public static function getTypeName($nb = 0): string
     {
-        return _n('Order status', 'Order statuses', $nb, 'iservice');
+        return _tn('Order status', 'Order statuses', $nb);
     }
 
     public static function getWeight($id): ?int
@@ -163,7 +163,7 @@ class PluginIserviceOrderStatus extends CommonDropdown
     {
 
         return [['name' => 'weight',
-            'label' => __('Weight', 'iservice'),
+            'label' => _t('Weight'),
             'type' => 'text',
             'list' => true
         ]
@@ -182,7 +182,7 @@ class PluginIserviceOrderStatus extends CommonDropdown
 
         $tab[11]['table']         = $this->getTable();
         $tab[11]['field']         = 'weight';
-        $tab[11]['name']          = __('Weight', 'iservice');
+        $tab[11]['name']          = _t('Weight');
         $tab[11]['datatype']      = 'int';
         $tab[11]['massiveactoin'] = false;
 

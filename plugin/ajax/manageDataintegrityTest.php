@@ -17,7 +17,7 @@ $operations = ['snooze', 'unsnooze', 'delete_last_result'];
 $operation = IserviceToolBox::getInputVariable('operation');
 $id        = IserviceToolBox::getInputVariable('id');
 if (!in_array($operation, $operations)) {
-    die(sprintf(__("Invalid operation: %s", "iservice"), $operation));
+    die(sprintf(_t('Invalid operation: %s'), $operation));
 }
 
 $dit = new PluginIserviceTask_DataIntegrityTest();
@@ -49,7 +49,7 @@ case 'delete_last_result':
     $dit->deleteLastResult($id);
     die;
 default:
-    die(sprintf(__("Operation not implemented: %s", "iservice"), $operations[$operation]));
+    die(sprintf(_t('Operation not implemented: %s'), $operations[$operation]));
 }
 
-die(sprintf(__("Could not complete operation %s for item %d", "iservice"), $operations[$operation], $id));
+die(sprintf(_t('Could not complete operation %s for item %d'), $operations[$operation], $id));

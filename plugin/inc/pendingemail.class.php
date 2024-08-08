@@ -16,12 +16,12 @@ class PluginIservicePendingEmail extends CommonDBTM
 
     public static function getTypeName($nb = 0)
     {
-        return _n('Pending email', 'Pending emails', $nb, 'iservice');
+        return _tn('Pending email', 'Pending emails', $nb);
     }
 
     public function getRawName()
     {
-        return __('Pending email', 'iservice') . " #" . $this->getID();
+        return _tn('Pending email', 'Pending emails', 1) . " #" . $this->getID();
     }
 
 }

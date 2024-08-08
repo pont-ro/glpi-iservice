@@ -6,7 +6,7 @@
 <div class="form-field row col-12 mb-2">
     <span id="change-cartridges-anchor"></span>
     <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
-        <a target='_blank' class="" href='{{ changeablesTableData["cartridge_link"] }}'>{{ __('Change cartridge', 'iservice') }}</a>
+        <a target='_blank' class="" href='{{ changeablesTableData["cartridge_link"] }}'>{{ _t('Change cartridge') }}</a>
     </label>
     <div class="col-xxl-8 field-container {{ options.valueClass }}">
         {% if tableData.warning %}
@@ -170,7 +170,7 @@
 {{ fieldsIservice.datetimeField(
     '_cartridge_installation_date',
     item.customfields.fields['cartridge_install_date_field'],
-    __('Change date', 'iservice'),
+    _t('Change date'),
     field_options|merge({
         'readonly': cartridgeInstallDateFieldReadonly,
         'dateTimePickerButtons':
@@ -225,7 +225,7 @@
 
             if ($('.changeables-update-section-changed-alert').length === 0) {
                 $('.changeables-update-section')
-                    .append('<div class="p-2 text-danger text-end changeables-update-section-changed-alert">' + __("Don't forget to press 'Update' button to save your changes", 'iservice') + '</div>');
+                    .append('<div class="p-2 text-danger text-end changeables-update-section-changed-alert">' + _t("Don't forget to press 'Update' button to save your changes") + '</div>');
             }
         });
     });

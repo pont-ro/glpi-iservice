@@ -35,7 +35,7 @@ class PluginIserviceTask_DataIntegrityTest
 
     function getTitle()
     {
-        return __('Self test', 'iservice');
+        return _t('Self test');
     }
 
     static function getLoadTimes()
@@ -69,24 +69,24 @@ class PluginIserviceTask_DataIntegrityTest
         if ($em_error_count > 0) {
             $result['em'] = [
                 'color_class' => 'text-warning',
-                'title' => $em_error_count . ' ' . __('EM errors', 'iservice'),
+                'title' => $em_error_count . ' ' . _t('EM errors'),
             ];
         } else {
             $result['em'] = [
                 'color_class' => '',
-                'title' => __('No E-Maintenance errors detected', 'iservice'),
+                'title' => _t('No E-Maintenance errors detected'),
             ];
         }
 
-        $title = __('Data integrity test returned', 'iservice');
+        $title = _t('Data integrity test returned');
         if ($warning_count + $error_count > 0) {
             $result['notEm'] = [
                 'icon_class' => 'fa-exclamation-triangle badge',
                 'color_class'    => ($error_count > 0 ? 'text-danger' : 'text-warning'),
                 'title'    => $title . ' '
-                    . ($warning_count > 0 ? $warning_count . __(' warnings', 'iservice') : "")
-                    . (($warning_count > 0 && $error_count > 0) ? __(' and ', 'iservice') : "")
-                    . ($error_count > 0 ? $error_count . __(' errors', 'iservice') : ""),
+                    . ($warning_count > 0 ? $warning_count . _t(' warnings') : "")
+                    . (($warning_count > 0 && $error_count > 0) ? _t(' and ') : "")
+                    . ($error_count > 0 ? $error_count . _t(' errors') : ""),
                 'badge'   => str_pad($warning_count + $error_count, 2, '0', STR_PAD_LEFT),
             ];
         } else {
