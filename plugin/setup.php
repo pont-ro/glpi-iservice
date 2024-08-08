@@ -1,5 +1,6 @@
 <?php
 
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Iservice\Utils\HtaccessChecker;
 use GlpiPlugin\Iservice\Utils\ViewsMenu;
@@ -50,6 +51,8 @@ function plugin_init_iservice(): void
     global $CFG_GLPI, $PLUGIN_HOOKS;
     global $CFG_PLUGIN_ISERVICE;
     global $DEBUG_SQL, $TIMER_DEBUG;
+
+    TemplateRenderer::getInstance()->getEnvironment()->addExtension(new PluginIserviceTranslationExtension());
 
     $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
 
