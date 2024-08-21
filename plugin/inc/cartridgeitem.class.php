@@ -36,9 +36,18 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return $supported_types;
     }
 
+    /**
+     * Gets cartridge item by ref
+     *
+     * Note getFromDBByCrit will return false if multiple results are found.
+     *
+     * @param string  $ref The object to convert
+     *
+     * @return array|bool
+     */
     public function getFromDBByRef($ref)
     {
-        return $this->getFromDBByCrit(["ref = '$ref' AND is_deleted = 0"]); // Note getFromDBByCrit will return false if multiple results are found.
+        return $this->getFromDBByCrit(["ref = '$ref' AND is_deleted = 0"]);
     }
 
     public static function getSupportedTypesByRef($ref): array
