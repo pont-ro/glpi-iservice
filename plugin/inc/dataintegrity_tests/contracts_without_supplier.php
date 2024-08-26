@@ -1,6 +1,7 @@
 <?php
 
 global $CFG_GLPI;
+global $CFG_PLUGIN_ISERVICE;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
@@ -28,8 +29,8 @@ return [
             'summary_text' => 'There are no contracts without partner',
         ],
         'positive_result' => [
-            'summary_text' => 'There are {count} contracts without supplier',
-            'iteration_text' => "Contract <a href='$CFG_GLPI[root_doc]/front/contract.form.php?id=[cid]' target='_blank'><b>[contract]</b></a> has no partner. The <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'><b>printer (ID: [pid])</b></a> on the contract is at partner <b>[partner_name]</b>",
+            'summary_text' => 'There are {count} contracts without partner',
+            'iteration_text' => "Contract <a href='$CFG_GLPI[root_doc]/front/contract.form.php?id=[cid]' target='_blank'><b>[contract]</b></a> has no partner. The <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'><b>printer (ID: [pid])</b></a> on the contract is at partner <b>[partner_name]</b> <a id='fix-contract-[cid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/setContractSupplier.php?supplier_id=[sid]&contract_id=[cid]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-contract-[cid]\").remove();}});'>»»» FIX «««</a>",
         ],
     ],
 ];
@@ -43,6 +44,6 @@ SELECT
 FROM glpi_contracts_items ci
 JOIN glpi_infocoms i ON i.itemtype = 'Printer' AND i.items_id = ci.items_id
 LEFT JOIN glpi_contracts_suppliers cs ON cs.contracts_id = ci.contracts_id
-WHERE cs.suppliers_id IS NULL AND i.suppliers_id <> 506
+WHERE cs.suppliers_id IS NULL
 GROUP BY ci.contracts_id
 */
