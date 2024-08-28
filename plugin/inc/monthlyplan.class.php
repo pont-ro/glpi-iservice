@@ -1,4 +1,6 @@
 <?php
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceMonthlyPlan extends CommonGLPI
 {
 
@@ -40,26 +42,11 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
     // Imported from iService2, needs refactoring. Code moved from: "planlunar.php".
     public function display($options = []): void
     {
-        $year = filter_input(INPUT_GET, 'year');
-        if ($year === null) {
-            $year = filter_input(INPUT_POST, 'year');
-            if ($year === null) {
-                $year = date('Y');
-            }
-        }
+        $year = IserviceToolBox::getInputVariable('year', date('Y'));
 
-        $month = filter_input(INPUT_GET, 'month');
-        if ($month === null) {
-            $month = filter_input(INPUT_POST, 'month');
-            if ($month === null) {
-                $month = date('m');
-            }
-        }
+        $month = IserviceToolBox::getInputVariable('month', date('m'));
 
-        $tech_id = filter_input(INPUT_GET, 'tech_id');
-        if ($tech_id === null) {
-            $tech_id = filter_input(INPUT_POST, 'tech_id');
-        }
+        $tech_id = IserviceToolBox::getInputVariable('tech_id');
 
         if (empty($tech_id)) {
             $tech_filter = '';

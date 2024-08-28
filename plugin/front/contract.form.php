@@ -15,7 +15,7 @@ $update_contract = IserviceToolBox::getInputVariable('update');
 
 global $DB;
 
-$post         = filter_input_array(INPUT_POST);
+$post         = filter_var_array($_POST);
 $special_keys = ['contract', '_customfields'];
 foreach ($special_keys as $special_key) {
     if ($special_key[0] === '_') {

@@ -1,6 +1,6 @@
 <?php
 
-if (filter_input(INPUT_GET, 'kcsrft') || filter_input(INPUT_POST, 'kcsrft')) {
+if (($_GET['kcsrft'] ?? null) || ($_POST['kcsrft'] ?? null)) {
     define('GLPI_KEEP_CSRF_TOKEN', true);
 }
 

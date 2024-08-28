@@ -14,9 +14,9 @@ Session::checkLoginUser();
 
 global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
-$supplier_id  = filter_input(INPUT_GET, 'supplier_id');
-$cartridge_id = filter_input(INPUT_GET, 'cartridge_id');
-$location_id  = filter_input(INPUT_GET, 'location_id');
+$supplier_id  = IserviceToolBox::getInputVariable('supplier_id');
+$cartridge_id = IserviceToolBox::getInputVariable('cartridge_id');
+$location_id  = IserviceToolBox::getInputVariable('location_id');
 
 echo "<table class='tab_cadre no-hover'>";
 echo "<tr><td style='border:0;'>";

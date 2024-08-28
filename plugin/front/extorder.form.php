@@ -18,7 +18,7 @@ $remove_intorder             = IserviceToolBox::getInputVariable('remove_intorde
 $mass_action_create_extorder = IserviceToolBox::getInputVariable('mass_action_create_extorder');
 $mass_action_change_status   = IserviceToolBox::getInputVariable('mass_action_change_status');
 
-$post = filter_input_array(INPUT_POST);
+$post = filter_var_array($_POST);
 
 $extOrder = new PluginIserviceExtOrder();
 

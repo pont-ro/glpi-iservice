@@ -35,8 +35,8 @@ class ToolBox
             return null;
         }
 
-        $get_result  = filter_input(INPUT_GET, $variable_name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-        $post_result = filter_input(INPUT_POST, $variable_name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $get_result  = filter_input(INPUT_GET, 'iServiceCompressedInputData') ? ($_GET[$variable_name] ?? null) : filter_input(INPUT_GET, $variable_name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $post_result = filter_input(INPUT_POST, 'iServiceCompressedInputData') ? ($_POST[$variable_name] ?? null) : filter_input(INPUT_POST, $variable_name, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
         return match ($input_type) {
             INPUT_GET => $get_result ?? $default_value,
@@ -64,8 +64,8 @@ class ToolBox
 
     public static function getInputVariable($variable_name, $default_value = null, $input_type = INPUT_REQUEST): mixed
     {
-        $get_result  = filter_input(INPUT_GET, $variable_name);
-        $post_result = filter_input(INPUT_POST, $variable_name);
+        $get_result  = filter_input(INPUT_GET, 'iServiceCompressedInputData') ? ($_GET[$variable_name] ?? null) : filter_input(INPUT_GET, $variable_name);
+        $post_result = filter_input(INPUT_POST, 'iServiceCompressedInputData') ? ($_POST[$variable_name] ?? null) : filter_input(INPUT_POST, $variable_name);
 
         return match ($input_type) {
             INPUT_GET => $get_result ?? $default_value,

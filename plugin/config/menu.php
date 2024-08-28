@@ -46,7 +46,7 @@ return [
             ],
             'aa' => [
                 'title' => 'AA',
-                'icon'  => 'fa-solid fa-file-contract',
+                'icon'  => 'ti ti-file-code-2',
                 'page'  => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php",
                 'roles' => ['super-admin','admin', 'tehnician'],
                 'options' => [

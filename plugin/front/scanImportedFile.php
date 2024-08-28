@@ -1,4 +1,5 @@
 <?php
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 require '../inc/includes.php';
 
@@ -47,7 +48,7 @@ $results         = [];
 $selectedResults = [];
 
 // Check if the form has been submitted.
-if (null !== ($filename = filter_input(INPUT_POST, 'filename'))) {
+if (null !== ($filename = IserviceToolBox::getInputVariable('filename'))) {
 
     // Open the file for reading.
     $file           = fopen($filename, 'r');

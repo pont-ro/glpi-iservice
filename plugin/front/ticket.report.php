@@ -1,4 +1,5 @@
 <?php
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 // Imported from iService2, needs refactoring.
 require "../inc/includes.php";
@@ -6,7 +7,7 @@ require "../inc/includes.php";
 global $DB, $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 $images_source = "$CFG_PLUGIN_ISERVICE[root_doc]/images";
 
-$ticket_id = filter_input(INPUT_GET, 'id');
+$ticket_id = IserviceToolBox::getInputVariable('id');
 
 if (!Session::haveRight('plugin_iservice_docgenerator', READ)) {
     Html::header(_t('Intervention report'), $_SERVER['PHP_SELF']);

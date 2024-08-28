@@ -1,8 +1,7 @@
 <?php
+require "../inc/includes.php";
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-
-require "../inc/includes.php";
 
 Session::checkLoginUser();
 $ticket = new PluginIserviceTicket();
@@ -28,8 +27,8 @@ if (($addConsumable = IserviceToolBox::getInputVariable('add_consumable'))
 $global_readcounter                     = IserviceToolBox::getInputVariable('global_readcounter');
 $add_cartridges_as_negative_consumables = IserviceToolBox::getInputVariable('add_cartridges_as_negative_consumables');
 
-$post                 = filter_input_array(INPUT_POST) ?: [];
-$get                  = filter_input_array(INPUT_GET) ?: [];
+$post                 = filter_var_array($_POST) ?: [];
+$get                  = filter_var_array($_GET) ?: [];
 $input                = array_merge((is_array($get) ? $get : []), (is_array($post) ? $post : []));
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get);
 $options['printerId'] = IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($get, 'Printer');
@@ -136,15 +135,15 @@ Html::footer();
 function add_cartridges_as_negative_consumables(): void
 {
     $track = new PluginIserviceTicket();
-    $track->prepareDataForMovement(Html::cleanPostForTextArea(filter_input_array(INPUT_GET)));
+    $track->prepareDataForMovement(Html::cleanPostForTextArea(filter_var_array($_GET)));
     $track->processFieldsByInput();
     $track->fields['add']    = 'add';
     $track->fields['status'] = Ticket::WAITING;
     if (($newTicketId = $track->add($track->fields)) !== false) {
         $printer = new PluginIservicePrinter();
-        $printer->getFromDB(filter_input(INPUT_GET, 'items_id') ?: IserviceToolBox::getItemsIdFromInput($track->fields, 'Printer'));
+        $printer->getFromDB(IserviceToolBox::getInputVariable('items_id') ?: IserviceToolBox::getItemsIdFromInput($track->fields, 'Printer'));
         $plugin_iservice_consumable_ticket = new PluginIserviceConsumable_Ticket();
-        $cartridge_counts                  = filter_input(INPUT_GET, 'cartridge-count', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $cartridge_counts                  = IserviceToolBox::getArrayInputVariable('cartridge-count');
         $cartridgeitem                     = new PluginIserviceCartridgeItem();
         $added_cartridges                  = [];
         foreach ($cartridge_counts as $location_id => $location_data) {
@@ -154,7 +153,7 @@ function add_cartridges_as_negative_consumables(): void
                     $DB->update(
                         'glpi_plugin_fields_cartridgecartridgecustomfields',
                         ['locations_id_field' => empty($added_cartridges[$cartridge_item_ref]['location']) ? '0' : $added_cartridges[$cartridge_item_ref]['location']],
-                        ['locations_id_field ' => $location_id, 'printers_id' => 0,  'c.date_use' => null, 'c.date_out' => null, 'suppliers_id_field' => filter_input(INPUT_GET, 'suppliers_id_old')],
+                        ['locations_id_field ' => $location_id, 'printers_id' => 0,  'c.date_use' => null, 'c.date_out' => null, 'suppliers_id_field' => IserviceToolBox::getInputVariable('suppliers_id_old')],
                         [
                             'JOIN' => [
                                 'glpi_cartridges as c' => [

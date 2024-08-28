@@ -21,7 +21,7 @@ class PluginIserviceReminder extends Reminder
 
     public function display($options = [])
     {
-        $options = filter_input_array(INPUT_GET);
+        $options = filter_var_array($_GET);
         if (isset($options['id']) && !$this->isNewID($options['id'])) {
             if (!$this->getFromDB($options['id'])) {
                 Html::displayNotFoundError();

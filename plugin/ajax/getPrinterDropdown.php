@@ -1,4 +1,5 @@
 <?php
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 // Imported from iService2, needs refactoring. Original file: "getPrinterDropdown.php".
 // Direct access to file
@@ -12,7 +13,7 @@ Session::checkLoginUser();
 
 global $CFG_PLUGIN_ISERVICE;
 
-$cartridge_id = filter_input(INPUT_GET, 'cartridge_id');
+$cartridge_id = IserviceToolBox::getInputVariable('cartridge_id');
 $cartridge    = new PluginIserviceCartridge();
 if (!$cartridge->getFromDB($cartridge_id)) {
     echo "<span style='color:red'>IntError: Not found cartridge # $cartridge_id</span>";

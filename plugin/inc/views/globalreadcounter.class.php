@@ -178,6 +178,7 @@ class GlobalReadCounter extends View
 
         return [
             'name' => _t('Global read counter'),
+            'class' => 'compress-data-before-submit',
             'postfix' => "<div style='text-align: center'><input type='submit' class='submit' name='global_readcounter' onclick='$(this).closest(\"form\").attr(\"action\", \"ticket.form.php\");' value='" . _t('Send data') . "' /></div>",
             'query' => "
                         SELECT p.id 

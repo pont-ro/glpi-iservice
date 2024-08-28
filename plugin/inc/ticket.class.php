@@ -2143,49 +2143,49 @@ class PluginIserviceTicket extends Ticket
 
     public static function createGlobalReadCounterTickets(array $data): ?int
     {
-        if (false !== ($success = isset($data['printer']) && is_array($data['printer']))) {
-            $ticket_count = 0;
-            foreach ($data['printer'] as $printerId => $ticketData) {
-                if ($ticketData['effective_date_field'] < $ticketData['effective_date_old']
-                    || (intval($ticketData['total2_black_field']) < intval($ticketData['total2_black_old']))
-                    || (intval($ticketData['total2_color_field']) < intval($ticketData['total2_color_old']))
-                    || (intval($ticketData['total2_black_field']) + intval($ticketData['total2_color_field']) < intval($ticketData['total2_black_old']) + intval($ticketData['total2_color_old']) + 10)
-                ) {
-                    continue;
-                }
-
-                $track = new PluginIserviceTicket();
-                PluginIserviceTicket::prepareDataForGlobalReadCounter($ticketData);
-                $track->explodeArrayFields();
-                $last_opened_ticket = PluginIserviceTicket::getLastForPrinterOrSupplier(0, $printerId, true);
-                if (($last_opened_ticket->getID() > 0 && $last_opened_ticket->customfields->fields['effective_date_field'] < $ticketData['effective_date_field'])
-                    || IserviceToolBox::inProfileArray(['client', 'superclient'])
-                ) {
-                    $ticketData['_dont_close'] = true;
-                }
-
-                if (!empty($ticketData['_dont_close'])) {
-                    $track->fields['status'] = Ticket::SOLVED;
-                    unset($ticketData['_dont_close']);
-                }
-
-                if (IserviceToolBox::inProfileArray(['client', 'superclient', 'admin', 'super-admin'])) {
-                    $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
-                } else {
-                    $ticketData['_users_id_assign'] = IserviceToolBox::getUserIdByName('Cititor');
-                }
-
-                if ($track->add(array_merge($ticketData, $track->fields, ['add' => 'add', '_no_message' => 1]))) {
-                    $ticket_count++;
-                } else {
-                    $success = false;
-                }
-            }
-
-            return $success ? $ticket_count : -$ticket_count;
+        if (false === ($success = isset($data['printer']) && is_array($data['printer']))) {
+            return 0;
         }
 
-        return 0;
+        $ticket_count = 0;
+        foreach ($data['printer'] as $printerId => $ticketData) {
+            if ($ticketData['effective_date_field'] < $ticketData['effective_date_old']
+                || (intval($ticketData['total2_black_field']) < intval($ticketData['total2_black_old']))
+                || (intval($ticketData['total2_color_field']) < intval($ticketData['total2_color_old']))
+                || (intval($ticketData['total2_black_field']) + intval($ticketData['total2_color_field']) < intval($ticketData['total2_black_old']) + intval($ticketData['total2_color_old']) + 10)
+            ) {
+                continue;
+            }
+
+            $track = new PluginIserviceTicket();
+            PluginIserviceTicket::prepareDataForGlobalReadCounter($ticketData);
+            $track->explodeArrayFields();
+            $last_opened_ticket = PluginIserviceTicket::getLastForPrinterOrSupplier(0, $printerId, true);
+            if (($last_opened_ticket->getID() > 0 && $last_opened_ticket->customfields->fields['effective_date_field'] < $ticketData['effective_date_field'])
+                || IserviceToolBox::inProfileArray(['client', 'superclient'])
+            ) {
+                $ticketData['_dont_close'] = true;
+            }
+
+            if (!empty($ticketData['_dont_close'])) {
+                $track->fields['status'] = Ticket::SOLVED;
+                unset($ticketData['_dont_close']);
+            }
+
+            if (IserviceToolBox::inProfileArray(['client', 'superclient', 'admin', 'super-admin'])) {
+                $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
+            } else {
+                $ticketData['_users_id_assign'] = IserviceToolBox::getUserIdByName('Cititor');
+            }
+
+            if ($track->add(array_merge($ticketData, $track->fields, ['add' => 'add', '_no_message' => 1]))) {
+                $ticket_count++;
+            } else {
+                $success = false;
+            }
+        }
+
+        return $success ? $ticket_count : -$ticket_count;
     }
 
     private static function prepareDataForGlobalReadCounter(&$ticketData): void

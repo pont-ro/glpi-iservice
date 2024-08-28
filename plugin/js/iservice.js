@@ -650,6 +650,37 @@ jQuery(document).ready(
             }
         );
 
+        $('form .compress-data-before-submit').each(
+            function() {
+                $(this).closest('form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    let $originalForm = $(this);
+                    let formData = {};
+
+                    $originalForm.find(':input').each(function() {
+                        let $input = $(this);
+                        if ($input.attr('name')) {
+                            formData[$input.attr('name')] = $input.val();
+                        }
+                    });
+
+                    let $newForm = $('<form>', {
+                        action: $originalForm.attr('action'),
+                        method: $originalForm.attr('method') || 'GET'
+                    });
+
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'iServiceCompressedInputData',
+                        value: JSON.stringify(formData)
+                    }).appendTo($newForm);
+
+                    $newForm.appendTo('body').submit().remove();
+                });
+            }
+        )
+
         var updateTextarea = function ($textarea, $changeCheckboxes) {
             $relatedCheckboxDiv = null;
             $textarea.closest('form').find('.textarea-checkboxes').each(

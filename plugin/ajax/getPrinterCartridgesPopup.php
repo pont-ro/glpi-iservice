@@ -1,4 +1,5 @@
 <?php
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 // Imported from iService2, needs refactoring. Original file: "getPrinterCartidges.php".
 // Direct access to file
@@ -12,14 +13,14 @@ Session::checkLoginUser();
 
 global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
-$uid = filter_input(INPUT_GET, 'uid');
+$uid = IserviceToolBox::getInputVariable('uid');
 if (empty($uid)) {
-    $uid = filter_input(INPUT_GET, 'ticket_id');
+    $uid = IserviceToolBox::getInputVariable('ticket_id');
 }
 
-$printer_id    = filter_input(INPUT_GET, 'printer_id');
-$supplier_id   = filter_input(INPUT_GET, 'supplier_id');
-$supplier_name = filter_input(INPUT_GET, 'supplier_name');
+$printer_id    = IserviceToolBox::getInputVariable('printer_id');
+$supplier_id   = IserviceToolBox::getInputVariable('supplier_id');
+$supplier_name = IserviceToolBox::getInputVariable('supplier_name');
 
 $ticket                                   = new PluginIserviceTicket();
 $ticket->fields['items_id']['Printer'][0] = $printer_id;

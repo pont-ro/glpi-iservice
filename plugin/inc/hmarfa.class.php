@@ -118,14 +118,14 @@ class PluginIserviceHmarfa
             $contractType = '';
         }
 
-        $nrcmd                     = filter_input(INPUT_POST, 'nrcmd') ?: '000000';
-        $invoice_date_field        = strtotime(filter_input(INPUT_POST, 'invoice_date_field') ?: $printer->customfields->fields['invoice_date_field']);
-        $invoice_expiry_date_field = strtotime(filter_input(INPUT_POST, 'invoice_expiry_date_field') ?: $printer->customfields->fields['invoice_expiry_date_field']);
+        $nrcmd                     = IserviceToolBox::getInputVariable('nrcmd') ?: '000000';
+        $invoice_date_field        = strtotime(IserviceToolBox::getInputVariable('invoice_date_field') ?: $printer->customfields->fields['invoice_date_field']);
+        $invoice_expiry_date_field = strtotime(IserviceToolBox::getInputVariable('invoice_expiry_date_field') ?: $printer->customfields->fields['invoice_expiry_date_field']);
         $effective_date            = strtotime($printer->lastTicket()->customfields->fields['effective_date_field'] ?? '');
-        $part_email_f1             = filter_input(INPUT_POST, 'email_for_invoices_field') ?: $enterprise->customfields->fields['email_for_invoices_field'];
-        $fixed1                    = filter_input(INPUT_POST, 'fixed1') ?: false;
-        $fixed2                    = filter_input(INPUT_POST, 'fixed2') ?: false;
-        $fixed3                    = filter_input(INPUT_POST, 'fixed3') ?: false;
+        $part_email_f1             = IserviceToolBox::getInputVariable('email_for_invoices_field') ?: $enterprise->customfields->fields['email_for_invoices_field'];
+        $fixed1                    = IserviceToolBox::getInputVariable('fixed1') ?: false;
+        $fixed2                    = IserviceToolBox::getInputVariable('fixed2') ?: false;
+        $fixed3                    = IserviceToolBox::getInputVariable('fixed3') ?: false;
 
         $location    = (!empty($_POST['location'])) ? "{$printer->customfields->fields["usage_address_field"]} - " : "";
         $cost_center = (!empty($_POST['cost_center'])) ? "{$printer->customfields->fields["cost_center_field"]} - " : "";
@@ -145,8 +145,8 @@ class PluginIserviceHmarfa
 
         $descrPart = "{$manufacturer->fields["name"]} {$printerModel->fields["name"]} ($cost_center$location{$printer->fields["serial"]})";
 
-        $doc_date     = strtotime(filter_input(INPUT_POST, 'doc_date') ?: date("Y-m-d"));
-        $exp_date     = strtotime(filter_input(INPUT_POST, 'exp_date') ?: $expDate);
+        $doc_date     = strtotime(IserviceToolBox::getInputVariable('doc_date') ?: date("Y-m-d"));
+        $exp_date     = strtotime(IserviceToolBox::getInputVariable('exp_date') ?: $expDate);
         $divizorCopii = (empty($contract_customfields->fields['copy_price_divider_field']) || $contract_customfields->fields['copy_price_divider_field'] == 0) ? 1 : $contract_customfields->fields['copy_price_divider_field'];
 
         $contract_rate     = floatval((empty($contract_customfields->fields['currency_field']) || $contract_customfields->fields['currency_field'] == 0) ? 1 : $contract_customfields->fields['currency_field']);
@@ -305,14 +305,14 @@ class PluginIserviceHmarfa
         $safeEnterpriseName   = preg_replace('/[^a-zA-z0-9-]/', '-', trim($enterprise->fields["name"]));
         $exportFileNameSuffix = IserviceToolBox::getInputVariable('export_file_name_suffix');
 
-        if (filter_input(INPUT_POST, 'restore')) {
+        if (IserviceToolBox::getInputVariable('restore')) {
             $backupPattern =
                 "$backFilePath/" .
-                filter_input(INPUT_POST, 'backup_year') .
+                IserviceToolBox::getInputVariable('backup_year') .
                 "-" .
-                filter_input(INPUT_POST, 'backup_month') .
+                IserviceToolBox::getInputVariable('backup_month') .
                 "." . $enterprise->getID() .
-                "." . filter_input(INPUT_POST, 'backup_name') .
+                "." . IserviceToolBox::getInputVariable('backup_name') .
                 ".[DS]*.*";
             foreach (glob($backupPattern) as $oldFilePath) {
                 $fileNameParts = explode('.', pathinfo($oldFilePath, PATHINFO_BASENAME));
@@ -332,7 +332,7 @@ class PluginIserviceHmarfa
             $exportFileNameSuffix = null;
         }
 
-        if ($exportFileNameSuffix && filter_input(INPUT_POST, 'delete')) {
+        if ($exportFileNameSuffix && IserviceToolBox::getInputVariable( 'delete')) {
             foreach (glob($exportFilePath . "S*.*.$exportFileNameSuffix.{$enterprise->getID()}.*") as $path) {
                 unlink($path);
             }
@@ -344,7 +344,7 @@ class PluginIserviceHmarfa
             $exportFileNameSuffix = null;
         }
 
-        if ($exportFileNameSuffix && filter_input(INPUT_POST, 'import')) {
+        if ($exportFileNameSuffix && IserviceToolBox::getInputVariable('import')) {
             foreach (glob($exportFilePath . "S*.*.$exportFileNameSuffix.{$enterprise->getID()}.*") as $oldFilePath) {
                 $fileNameParts = explode('.', pathinfo($oldFilePath, PATHINFO_BASENAME));
                 if (count($fileNameParts) < 5) {
@@ -742,9 +742,8 @@ class PluginIserviceHmarfa
         echo "        <th colspan=2>\n";
         echo "          Continutul fisierelor din $exportFilePath";
         echo "          <span style='display:inline-block;width:4em;'></span>";
-        $checked = (filter_input(INPUT_POST, 'extended-csv') == '') ? "checked" : "";
-        // $show_dat_checked = (filter_input(INPUT_POST, 'show-dat-csv') == '') ? "checked" : "";
-        $hide_dat         = filter_input(INPUT_POST, 'hide-dat');
+        $checked          = (IserviceToolBox::getInputVariable('extended-csv') == '') ? "checked" : "";
+        $hide_dat         = IserviceToolBox::getInputVariable('hide-dat');
         $show_dat_checked = $hide_dat ? "checked" : "";
         echo "          <input id='extended-chb' type='checkbox' name='extended-csv' onclick='$(\".extended-csv\").toggle(this.checked); $(\".base-csv\").toggle(!this.checked);' $checked/> CSV extins\n";
         echo "          <input id='show-dat-chb' type='checkbox' name='show-dat-csv' onclick='$(\"#hide-dat\").val(this.checked ? 0 : 1); $(\".base-dat\").toggle(this.checked); $(this).closest(\"th\").attr(\"colspan\", 1 + (this.checked ? 1 : 0));' $show_dat_checked /> Arată dat\n";
@@ -1050,11 +1049,11 @@ class PluginIserviceHmarfa
         if ($restore) {
             $backup_pattern =
                 "$back_file_path/" .
-                filter_input(INPUT_POST, 'backup_year') .
+                IserviceToolBox::getInputVariable('backup_year') .
                 "-" .
-                filter_input(INPUT_POST, 'backup_month') .
+                IserviceToolBox::getInputVariable('backup_month') .
                 "." . $partner->getID() .
-                "." . filter_input(INPUT_POST, 'backup_name') .
+                "." . IserviceToolBox::getInputVariable('backup_name') .
                 ".$export_file_name_prefix.*";
             foreach (glob($backup_pattern) as $old_file_path) {
                 $file_name_parts = explode('.', pathinfo($old_file_path, PATHINFO_BASENAME));

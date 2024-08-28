@@ -1,12 +1,13 @@
 <?php
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 // Imported from iService2, needs refactoring. Original file: "hmarfaexport.form.php".
 require "../inc/includes.php";
 
 Session::checkRight('plugin_iservice_hmarfa', READ);
 
-$id   = filter_input(INPUT_GET, 'id');
-$mode = filter_input(INPUT_GET, 'mode');
+$id   = IserviceToolBox::getInputVariable('id');
+$mode = IserviceToolBox::getInputVariable('mode');
 if (empty($mode)) {
     $mode = PluginIserviceHmarfa::EXPORT_MODE_PRINTER;
 }

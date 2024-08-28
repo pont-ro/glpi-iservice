@@ -7,7 +7,7 @@ use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
-define('ISERVICE_VERSION', '3.0.3');
+define('ISERVICE_VERSION', '3.0.4');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
@@ -39,6 +39,15 @@ if (!defined("PLUGIN_ISERVICE_LOG_DIR")) {
 
 if (!file_exists(PLUGIN_ISERVICE_LOG_DIR)) {
     mkdir(PLUGIN_ISERVICE_LOG_DIR);
+}
+
+if (isset($_GET['iServiceCompressedInputData'])) {
+    $_GET = plugin_iservice_json_decode_input_data($_GET['iServiceCompressedInputData']);
+    filter_input(INPUT_GET, 'valtozo neve');
+}
+
+if (isset($_POST['iServiceCompressedInputData'])) {
+    $_POST = plugin_iservice_json_decode_input_data($_POST['iServiceCompressedInputData']);
 }
 
 /**
@@ -248,4 +257,30 @@ function _tn(string $string, string $plural, int $nb): string
     }
 
     return _n($string, $plural, $nb, 'iservice');
+}
+
+function plugin_iservice_json_decode_input_data(string $string): array
+{
+    $result = [];
+
+    foreach (json_decode($string, true) as $key => $value) {
+        $keys = explode('[', $key);
+        $current_array =& $result;
+
+        foreach ($keys as $i => $subkey) {
+            if ($subkey !== '') {
+                $subkey = trim($subkey, ']');
+                if (!isset($current_array[$subkey])) {
+                    $current_array[$subkey] = [];
+                }
+                if ($i < count($keys) - 1) {
+                    $current_array =& $current_array[$subkey];
+                } else {
+                    $current_array[$subkey] = $value;
+                }
+            }
+        }
+    }
+
+    return $result;
 }
