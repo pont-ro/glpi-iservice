@@ -499,7 +499,7 @@ class View extends \CommonGLPI
                 }
             } else {
                 if (isset($filter_data['caption'])) {
-                    $class          = $filter_data['class'] ? " class='$filter_data[class]'" : '';
+                    $class          = !empty($filter_data['class']) ? " class='$filter_data[class]'" : '';
                     $filter_widget .= "<label$class>$filter_data[caption]</label>";
                 }
             }
@@ -658,7 +658,7 @@ class View extends \CommonGLPI
                 $total_span_name = "{$this->getRequestArrayName()}_total_$field_name";
                 if ($top_row) {
                     echo "<span id='$total_span_name'></span>";
-                } else {
+                } elseif (!empty($this->totals[$field_name])) {
                     if (isset($column['format'])) {
                         echo sprintf($column['format'], $this->totals[$field_name]);
                     } else {
