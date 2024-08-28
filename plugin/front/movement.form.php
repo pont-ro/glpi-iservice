@@ -15,7 +15,7 @@ $delete   = IserviceToolBox::getInputVariable('delete');
 $itemtype = IserviceToolBox::getInputVariable('itemtype', 'Printer');
 
 if (empty($id) && (empty($itemtype) || !class_exists("PluginIservice$itemtype"))) {
-    PluginIserviceHtml::header(_t('Move') . " " . __($itemtype, 'iservice'));
+    Html::header(_t('Move') . " " . __($itemtype, 'iservice'));
     Html::displayErrorAndDie(_t('Invalid movement type') . ": $itemtype");
 }
 

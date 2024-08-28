@@ -493,7 +493,7 @@ class PluginIserviceHtml {
       function displayTable($prefix, $table, $suffix = '', $options=[]) {
       echo $this->generateTable($prefix, $table, $suffix, $options);
       }
-      /* */
+
     static function header($title, $url = '', $calling_object = null, $popup = '') {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE, $HEADER_LOADED, $DB;
 
@@ -886,4 +886,6 @@ class PluginIserviceHtml {
         Html::nullFooter();
         exit();
     }
+
+    /**/
 }

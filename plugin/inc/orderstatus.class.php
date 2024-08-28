@@ -151,7 +151,7 @@ class PluginIserviceOrderStatus extends CommonDropdown
 
     public function displayHeader(): void
     {
-        PluginIserviceHtml::header($this->getTypeName(Session::getPluralNumber()));
+        Html::header($this->getTypeName(Session::getPluralNumber()));
     }
 
     public function title(): void
