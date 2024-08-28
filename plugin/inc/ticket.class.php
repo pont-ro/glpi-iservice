@@ -2025,6 +2025,8 @@ class PluginIserviceTicket extends Ticket
                 'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers&printers0[supplier_name]=" . urlencode($supplier->fields['name']) . "&printers0[filter_description]=" . urlencode($supplier->fields['name']),
                 'options' => [
                     'target' => '_blank',
+                    'buttonClass' => 'hide-label show-label-md',
+                    'buttonIconClass' => 'ti ti-printer',
                 ]
             ]
         ];
@@ -2040,6 +2042,10 @@ class PluginIserviceTicket extends Ticket
                     'name' => 'scroll_to_change_cartridges',
                     'label' => _t('Delivery/change'),
                     'value' => "#change-cartridges-anchor",
+                    'options' => [
+                        'buttonClass' => 'hide-label show-label-md',
+                        'buttonIconClass' => 'ti ti-file-orientation',
+                    ]
                 ],
             ],
             $result,
@@ -2051,6 +2057,8 @@ class PluginIserviceTicket extends Ticket
                     'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Operations&operations0[printer_id]={$printer->getID()}&operations0[filter_description]=" . urlencode("{$printer->fields['name']} - {$supplier->fields['name']}"),
                     'options' => [
                         'target' => '_blank',
+                        'buttonClass' => 'hide-label show-label-md',
+                        'buttonIconClass' => 'ti ti-clipboard-text',
                     ]
                 ],
                 [
@@ -2060,6 +2068,8 @@ class PluginIserviceTicket extends Ticket
                     'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id={$printer->getID()}",
                     'options' => [
                         'target' => '_blank',
+                        'buttonClass' => 'hide-label show-label-md',
+                        'buttonIconClass' => 'ti ti-file-code-2',
                     ]
                 ],
             ]

@@ -95,7 +95,10 @@
          {% if options.target %}
             target="{{ options.target }}"
          {% endif %}>
-         {{ label ?? name }}
+         {% if options.buttonIconClass %}
+            <i class="fa-fw {{ options.buttonIconClass }}"></i>
+         {% endif %}
+         <label>{{ label ?? name }}</label>
       </a>
    {% else %}
       <button

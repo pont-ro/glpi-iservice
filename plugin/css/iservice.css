@@ -202,3 +202,45 @@ div.actions-wrap {
     position: relative;
     bottom: 65px;
 }
+
+.hide-label label {
+    display: none;
+}
+
+.mr-1 {
+    margin-right: 0.5rem;
+}
+
+.ml-1 {
+    margin-left: 0.5rem;
+}
+
+@media (min-width: 576px) {
+    .show-label-sm label {
+        display: inherit;
+    }
+}
+
+@media (min-width: 768px) {
+    .show-label-md label {
+        display: inherit;
+    }
+}
+
+@media (min-width: 992px) {
+    .show-label-lg label {
+        display: inherit;
+    }
+}
+
+@media (min-width: 1200px) {
+    .show-label-xl label {
+        display: inherit;
+    }
+}
+
+@media (min-width: 1400px) {
+    .show-label-xxl label {
+        display: inherit;
+    }
+}
