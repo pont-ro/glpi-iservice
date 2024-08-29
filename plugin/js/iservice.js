@@ -656,18 +656,31 @@ jQuery(document).ready(
                     e.preventDefault();
 
                     let $originalForm = $(this);
+                    let $submittedButton = $originalForm.find('input[type="submit"]:focus, button[type="submit"]:focus');
                     let formData = {};
 
                     $originalForm.find(':input').each(function() {
-                        let $input = $(this);
-                        if ($input.attr('name')) {
-                            formData[$input.attr('name')] = $input.val();
+                        // Skip if input has no name
+                        if (!$(this).attr('name')) {
+                            return;
                         }
+
+                        // Skip submit elements/buttons that were not used/clicked
+                        if (($(this).is(':submit') || $(this).is('button[type="submit"]') || $(this).is('input[type="submit"]')) && !$(this).is($submittedButton)) {
+                            return;
+                        }
+
+                        formData[$(this).attr('name')] = $(this).val();
                     });
+
+                    if ($submittedButton.length && $submittedButton.attr('name')) {
+                        formData[$submittedButton.attr('name')] = $submittedButton.val();
+                    }
 
                     let $newForm = $('<form>', {
                         action: $originalForm.attr('action'),
-                        method: $originalForm.attr('method') || 'GET'
+                        method: $originalForm.attr('method') || 'POST',
+                        enctype: $originalForm.attr('enctype')
                     });
 
                     $('<input>').attr({
@@ -675,6 +688,10 @@ jQuery(document).ready(
                         name: 'iServiceCompressedInputData',
                         value: JSON.stringify(formData)
                     }).appendTo($newForm);
+
+                    $originalForm.find('input[type="file"]').each(function() {
+                        $newForm.append($(this).clone());
+                    });
 
                     $newForm.appendTo('body').submit().remove();
                 });
