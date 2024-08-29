@@ -2338,7 +2338,7 @@ class PluginIserviceTicket extends Ticket
                                                                                    FROM glpi_plugin_iservice_cachetable_printercounters
                                                                                    WHERE printer_id=$printerId
                                                                                ) cp2 on cp2.printer_id = cp.printer_id
-                                                                           LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgecustomfields cfci on cfci.items_id = cp.ciid and cfci.itemtype = 'CartridgeItem'
+                                                                           LEFT JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = cp.ciid and cfci.itemtype = 'CartridgeItem'
                                                                            WHERE cp.min_estimate_percentage = cp2.min_percentage 
                                                                              AND cp.cm_field = 1
                                                                              AND cp.consumable_type = 'cartridge'
