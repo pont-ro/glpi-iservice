@@ -1,0 +1,39 @@
+<div class="form-field row col-12 mb-2">
+    <span id="change-cartridges-anchor"></span>
+    <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
+        Cartridges & Consumables
+    </label>
+    <div class="col-xxl-8 field-container {{ options.valueClass }}">
+        <div class="table-responsive mt-1">
+            {{ _t('from cache')|capitalize }}: {{ printerCartridgesConsumablesData.printerCountersLastCacheData }}
+            <button class="btn btn-submit"
+                    onclick='if (confirm( "{{ _t("Warning! This operation will block the database for 5 minutes! Proceed?") }} ") === true) {
+                        preventDefault();
+                        window.open("{{ printerCartridgesConsumablesData.refreshUrl }}", "_blank").focus();
+                    } else {return false;}'> {{ _t('Refresh') }}
+            </button>
+            <table class="table mt-2">
+                <thead>
+                <tr>
+                    <th>Tip</th>
+                    <th>Cod hMarfa</th>
+                    <th>Consumabile instalate</th>
+                    <th>Consumabil disponibil pentru</th>
+                    <th>Stoc</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in printerCartridgesConsumablesData.printerCountersData %}
+                <tr>
+                    <td>{{ row.consumable_type|capitalize }}</td>
+                    <td>{{ row.consumable_codes|raw }}</td>
+                    <td>{{ row.estimate_percentages|raw }}</td>
+                    <td>{{ row.days_to_visits|raw }}</td>
+                    <td>{{ row.stocks|raw }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

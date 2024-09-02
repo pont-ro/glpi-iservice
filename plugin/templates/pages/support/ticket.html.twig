@@ -89,6 +89,10 @@
 
                             {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
 
+                            {% if printerCartridgesConsumablesData %}
+                                {{ include('@iservice/pages/support/components/cartridges_consumables_table.html.twig') }}
+                            {% endif %}
+
                             {% if printer %}
                                 {{ include('@iservice/pages/support/components/changeables_table.html.twig') }}
                             {% endif %}
