@@ -447,10 +447,10 @@ class PluginIserviceTicket extends Ticket
         }
 
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
-        $supplier = new PluginIservicePartner();
+        $supplier                             = new PluginIservicePartner();
         $supplier->getFromDB($partnerId);
 
-        $location                             = $this->getLocation();
+        $location = $this->getLocation();
         $this->setTicketUsersFields($ID, $options);
         $canUpdate                       = !$ID || (Session::getCurrentInterface() == "central" && $this->canUpdateItem());
         $prepared_data['field_required'] = [];
@@ -543,7 +543,7 @@ class PluginIserviceTicket extends Ticket
             ];
 
             if ($this->customfields->fields['exported_field'] ?? false) {
-                $months   = [
+                $months                                 = [
                     1 => 'ianuarie',
                     2 => 'februarie',
                     3 => 'martie',
@@ -572,14 +572,16 @@ class PluginIserviceTicket extends Ticket
             $templateParams['ticketDocuments'] = $this->getAttachedDocuments();
 
             $templateParams['verifyLastTonerInstalation'] = $this->getLastTonerInstallationData($printerId);
+
+            $templateParams['printerCartridgesConsumablesData'] = $this->getPrinterCartridgesConsumablesData($printerId);
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
 
         $templateParams['movementRelatedFields'] = $movementRelatedData['fields'] ?? null;
 
-        $options['ticketHasConsumables'] = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
-        $templateParams['submitButtons'] = $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
+        $options['ticketHasConsumables']   = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
+        $templateParams['submitButtons']   = $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
         $templateParams['floatingButtons'] = $this->getFloatingButtonsConfig($supplier, $this->printer);
 
         if ($renderExtendedForm) {
@@ -2330,7 +2332,8 @@ class PluginIserviceTicket extends Ticket
             return false;
         }
 
-        $printerMinPercentage = PluginIserviceDB::getQueryResult("SELECT consumable_code, min_estimate_percentage, cfci.mercury_code_field
+        $printerMinPercentage = PluginIserviceDB::getQueryResult(
+            "SELECT consumable_code, min_estimate_percentage, cfci.mercury_code_field
                                                                            FROM glpi_plugin_iservice_cachetable_printercounters  cp
                                                                            INNER JOIN
                                                                                (
@@ -2350,7 +2353,7 @@ class PluginIserviceTicket extends Ticket
              return false;
         }
 
-        $formatedPercentage = number_format($printerMinPercentage[0]['min_estimate_percentage'] * 100, 2, '.', '');
+        $formatedPercentage           = number_format($printerMinPercentage[0]['min_estimate_percentage'] * 100, 2, '.', '');
         $printerCountersLastCacheData = IserviceViews::getView('printercounters', false)->getCachedData();
 
         return [
@@ -2368,4 +2371,21 @@ class PluginIserviceTicket extends Ticket
             default => '',
         };
     }
+
+    private function getPrinterCartridgesConsumablesData(?int $printerId): ?array
+    {
+        global $CFG_PLUGIN_ISERVICE;
+        $data = PluginIserviceDB::getQueryResult("SELECT * FROM glpi_plugin_iservice_cachetable_printercounters WHERE printer_id = $printerId");
+
+        if (empty($data)) {
+            return null;
+        }
+
+        return [
+            'printerCountersLastCacheData' => IserviceViews::getView('printercounters', false)->getCachedData()['data_cached'] ?? null,
+            'printerCountersData' => $data,
+            'refreshUrl' => $CFG_PLUGIN_ISERVICE['root_doc'] . "/front/views.php?view=PrinterCounters&cache_refresh=1&kcsrft=1",
+        ];
+    }
+
 }
