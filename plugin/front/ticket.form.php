@@ -7,6 +7,7 @@ Session::checkLoginUser();
 $ticket = new PluginIserviceTicket();
 
 global $CFG_PLUGIN_ISERVICE;
+
 $id     = IserviceToolBox::getInputVariable('id', 0);
 $add    = IserviceToolBox::getInputVariable('add');
 $update = IserviceToolBox::getInputVariable('update');
@@ -27,8 +28,8 @@ if (($addConsumable = IserviceToolBox::getInputVariable('add_consumable'))
 $global_readcounter                     = IserviceToolBox::getInputVariable('global_readcounter');
 $add_cartridges_as_negative_consumables = IserviceToolBox::getInputVariable('add_cartridges_as_negative_consumables');
 
-$post                 = filter_var_array($_POST) ?: [];
-$get                  = filter_var_array($_GET) ?: [];
+$post                 = IserviceToolBox::filter_var_array(INPUT_POST) ?: [];
+$get                  = IserviceToolBox::filter_var_array(INPUT_GET) ?: [];
 $input                = array_merge((is_array($get) ? $get : []), (is_array($post) ? $post : []));
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get);
 $options['printerId'] = IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($get, 'Printer');
@@ -135,7 +136,7 @@ Html::footer();
 function add_cartridges_as_negative_consumables(): void
 {
     $track = new PluginIserviceTicket();
-    $track->prepareDataForMovement(Html::cleanPostForTextArea(filter_var_array($_GET)));
+    $track->prepareDataForMovement(Html::cleanPostForTextArea(IserviceToolBox::filter_var_array(INPUT_GET)));
     $track->processFieldsByInput();
     $track->fields['add']    = 'add';
     $track->fields['status'] = Ticket::WAITING;

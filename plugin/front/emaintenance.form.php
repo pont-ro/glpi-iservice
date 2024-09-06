@@ -16,7 +16,7 @@ $mass_action_delete      = IserviceToolBox::getInputVariable('mass_action_delete
 $mass_action_mark_read   = IserviceToolBox::getInputVariable('mass_action_mark_read');
 $mass_action_mark_unread = IserviceToolBox::getInputVariable('mass_action_mark_unread');
 
-$post = filter_var_array($_POST);
+$post = IserviceToolBox::filter_var_array(INPUT_POST);
 
 if (!empty($get_mails)) {
     $em                  = new PluginIserviceEmaintenance();

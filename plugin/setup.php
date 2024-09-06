@@ -42,12 +42,13 @@ if (!file_exists(PLUGIN_ISERVICE_LOG_DIR)) {
 }
 
 if (isset($_GET['iServiceCompressedInputData'])) {
-    $_GET = plugin_iservice_json_decode_input_data($_GET['iServiceCompressedInputData']);
-    filter_input(INPUT_GET, 'valtozo neve');
+    global $_UGET;
+    $_UGET = plugin_iservice_json_decode_input_data($_GET['iServiceCompressedInputData']);
 }
 
 if (isset($_POST['iServiceCompressedInputData'])) {
-    $_POST = plugin_iservice_json_decode_input_data($_POST['iServiceCompressedInputData']);
+    global $_UPOST;
+    $_UPOST = plugin_iservice_json_decode_input_data($_POST['iServiceCompressedInputData']);
 }
 
 /**

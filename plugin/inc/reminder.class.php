@@ -5,6 +5,7 @@ if (!defined('GLPI_ROOT')) {
 }
 
 use Glpi\RichText\RichText;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 /**
  * PluginIserviceReminder Class
@@ -21,7 +22,7 @@ class PluginIserviceReminder extends Reminder
 
     public function display($options = [])
     {
-        $options = filter_var_array($_GET);
+        $options = IserviceToolBox::filter_var_array(INPUT_GET);
         if (isset($options['id']) && !$this->isNewID($options['id'])) {
             if (!$this->getFromDB($options['id'])) {
                 Html::displayNotFoundError();

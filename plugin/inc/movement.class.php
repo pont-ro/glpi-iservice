@@ -72,7 +72,7 @@ class PluginIserviceMovement extends CommonDBTM
         global $CFG_GLPI;
         $id      = 0;
         $buttons = [];
-        $request = filter_var_array($_GET);
+        $request = IserviceToolBox::filter_var_array(INPUT_GET);
 
         if (isset($request['id'])) {
             if (!$this->getFromDB($id = $request['id'])) {

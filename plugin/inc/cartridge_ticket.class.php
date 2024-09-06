@@ -473,7 +473,11 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             } else {
                 $emptyablesByCartridgeDropdownSettings['type'] = 'dropdownArray';
             }
+
+            $data['emptyableCartridges'][] = array_keys($emptyableCartridges);
         }
+
+        $data['emptyableCartridges'] = call_user_func_array('array_merge', $data['emptyableCartridges']);
 
         $data['tableSection']['buttons'] = [
             'updateButton' => [
