@@ -573,7 +573,9 @@ class PluginIserviceTicket extends Ticket
 
             $templateParams['verifyLastTonerInstalation'] = $this->getLastTonerInstallationData($printerId);
 
-            $templateParams['printerCartridgesConsumablesData'] = $this->getPrinterCartridgesConsumablesData($printerId);
+            if ($lastTicket->getID() === $this->getID()) {
+                $templateParams['printerCartridgesConsumablesData'] = $this->getPrinterCartridgesConsumablesData($printerId);
+            }
         }
 
         $movementRelatedData = $this->getMovementRelatedData($ID, $printerId, $canUpdate);
@@ -2367,7 +2369,7 @@ class PluginIserviceTicket extends Ticket
     {
         return match (true) {
             self::isNotice($ticketExportTypeDropdownsId) => _t('Notice'),
-            self::isInvoice($ticketExportTypeDropdownsId) => _t('Invoice', 'Invoices', 1),
+            self::isInvoice($ticketExportTypeDropdownsId) => _tn('Invoice', 'Invoices', 1),
             default => '',
         };
     }
@@ -2381,11 +2383,59 @@ class PluginIserviceTicket extends Ticket
             return null;
         }
 
+        $cartridges = $this->getCartridgesConsumablesInstalledOnPrinter($printerId);
+
+        foreach ($data as $key => $row) {
+            if ($row['consumable_type'] === 'cartridge') {
+                $data[$key]['cartridgeIds'] = $this->orderByConsumableCodes(explode('<br>', $row['consumable_codes']), $cartridges['cartridgeIds'] ?? []);
+            } else {
+                $data[$key]['consumableIds'] = $this->orderByConsumableCodes(explode('<br>', $row['consumable_codes']), $cartridges['consumableIds'] ?? []);
+            }
+        }
+
         return [
             'printerCountersLastCacheData' => IserviceViews::getView('printercounters', false)->getCachedData()['data_cached'] ?? null,
             'printerCountersData' => $data,
+            'dba' => $data[0]['dba'] ?? null,
+            'dca' => $data[0]['dca'] ?? null,
             'refreshUrl' => $CFG_PLUGIN_ISERVICE['root_doc'] . "/front/views.php?view=PrinterCounters&cache_refresh=1&kcsrft=1",
         ];
+    }
+
+    public function orderByConsumableCodes(array $consumableCodes, array $cartridges): array
+    {
+        $ordered = [];
+        foreach ($consumableCodes as $code) {
+            foreach ($cartridges as $key => $cartridge) {
+                if ($cartridge['ref'] == $code) {
+                    $ordered[] = $cartridge['id'];
+                    unset($cartridges[$key]);
+                }
+            }
+        }
+
+        return $ordered;
+    }
+
+    public function getCartridgesConsumablesInstalledOnPrinter(?int $printerId): ?array
+    {
+        $data = PluginIserviceDB::getQueryResult(
+            "SELECT c.id, ci.ref FROM glpi_cartridges c
+        JOIN glpi_cartridgeitems ci ON c.cartridgeitems_id = ci.id
+        WHERE c.printers_id = $printerId AND c.date_out IS NULL AND c.date_use IS NOT NULL"
+        );
+
+        $structuredData = [];
+
+        foreach ($data as $key => $cartridge) {
+            if (str_starts_with($cartridge['ref'], 'CTON') || str_starts_with($cartridge['ref'], 'CCA')) {
+                $structuredData['cartridgeIds'][] = $cartridge;
+            } else {
+                $structuredData['consumableIds'][] = $cartridge;
+            }
+        }
+
+        return $structuredData;
     }
 
 }

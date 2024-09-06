@@ -24,7 +24,7 @@ class PluginIserviceExtOrder extends CommonDBTM
 
     function getRawName()
     {
-        return _t('External order') . " #" . $this->getID();
+        return _tn('External order', 'External orders', 1) . " #" . $this->getID();
     }
 
     function prepareInputForAdd($input)
