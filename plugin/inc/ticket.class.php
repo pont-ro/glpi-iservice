@@ -2354,7 +2354,7 @@ class PluginIserviceTicket extends Ticket
         $printerCountersLastCacheData = IserviceViews::getView('printercounters', false)->getCachedData();
 
         return [
-            'title' => _t('At the last verification at') . $printerCountersLastCacheData['data_cached'] . ":\n{$printerMinPercentage[0]['consumable_code']} $formatedPercentage%",
+            'title' => _t('At the last verification at') . ' ' . ($printerCountersLastCacheData['data_cached'] ?? '-') . ":\n{$printerMinPercentage[0]['consumable_code']} $formatedPercentage%",
             'text' => _t('Verify when you last installed cartridges on the printer!'), // "Verificați când ați instalat tonere pe aparat!",
             'class' => 'text-danger'
         ];

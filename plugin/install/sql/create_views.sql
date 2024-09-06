@@ -450,9 +450,26 @@ from glpi_plugin_iservice_intorders ic
 left join glpi_plugin_iservice_consumables c on c.id = ic.plugin_iservice_consumables_id;
 
 create or replace view glpi_plugin_iservice_printer_unclosed_ticket_counts as
-select it.items_id printers_id, count(it.tickets_id) ticket_count
+select
+    it.items_id printers_id
+     , count(it.tickets_id) ticket_count
+     , max(tcf.effective_date_field) max_effective_date
+     , min(tcf.effective_date_field) min_effective_date
 from glpi_items_tickets it
-    join glpi_tickets t on t.id = it.tickets_id and not t.status = 6 and t.is_deleted = 0
+         join glpi_tickets t on t.id = it.tickets_id and not t.status = 6 and t.is_deleted = 0
+         join glpi_plugin_fields_ticketticketcustomfields tcf on tcf.items_id = t.id and tcf.itemtype = 'Ticket'
+where it.itemtype = 'Printer'
+group by it.items_id;
+
+create or replace view glpi_plugin_iservice_printer_closed_ticket_counts as
+select
+    it.items_id printers_id
+     , count(it.tickets_id) ticket_count
+     , max(tcf.effective_date_field) max_effective_date
+     , min(tcf.effective_date_field) min_effective_date
+from glpi_items_tickets it
+         join glpi_tickets t on t.id = it.tickets_id and t.status = 6 and t.is_deleted = 0
+         join glpi_plugin_fields_ticketticketcustomfields tcf on tcf.items_id = t.id and tcf.itemtype = 'Ticket'
 where it.itemtype = 'Printer'
 group by it.items_id;
 
