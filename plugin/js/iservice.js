@@ -361,17 +361,17 @@ jQuery(document).ready(
             var data_fact_until = $element.closest('tr').find('div.data_fact_until').find('input.flatpickr,input.flatpickr-input').val();
 
             var array                     = data_exp.split('-');
-            var formatted_data_exp        = array[2] + '.' + array[1] + '.' + array[0];
+            var formatted_data_exp        = array[2] + '.' + array[1];
             array                         = data_fact_until.split('-');
             var formatted_data_fact_until = array[2] + '.' + array[1] + '.' + array[0];
 
             var formatted_name = $element.closest('tr').find('.name').text();
             formatted_name     = formatted_name.replace("Router_", "");
 
-            if ($element.closest('tr').find('.switch-router-calculation-details').val() == 'lunar') {
-                $element.closest('tr').find('.description').val(formatted_name + " pentru perioada " + formatted_data_exp + " - " + formatted_data_fact_until);
+            if ($element.closest('tr').find('.switch-router-calculation-details').val() === 'lunar') {
+                $element.closest('tr').find('.description').val(formatted_name + " per. " + formatted_data_exp + " - " + formatted_data_fact_until);
             } else {
-                $element.closest('tr').find('.description').val(formatted_name + " pentru perioada " + formatted_data_exp + " - " + formatted_data_fact_until + " (RETRAS)");
+                $element.closest('tr').find('.description').val(formatted_name + " per. " + formatted_data_exp + " - " + formatted_data_fact_until + " (RETRAS)");
             }
         }
 
