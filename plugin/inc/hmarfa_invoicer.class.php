@@ -617,6 +617,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 'general_include_status' => false,
 
                 'codmat_router' => 'S048RO',
+                'codmat_router_value' => IserviceToolBox::getCodmatValue('S048RO'),
                 'show_dat' => false,
             ]
         );
@@ -1598,10 +1599,12 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 PluginIserviceHtml::FIELDTYPE_TEXT,
                 "item[router][{$router->tableData['id']}][description]",
                 $router->tableData['description'],
-                true,
+                false,
                 [
                     'style' => 'width:90%',
-                    'class' => 'description'
+                    'class' => 'description char-count',
+                    'data-add' => strlen($invoiceData['codmat_router_value']) + 1,
+                    'data-code-value' => $invoiceData['codmat_router_value']
                 ]
             );
             echo "                            </td>\n";
