@@ -11,7 +11,7 @@ $remind = new PluginIserviceReminder();
 $id     = IserviceToolBox::getInputVariable('id', 0);
 $add    = IserviceToolBox::getInputVariable('add');
 $update = IserviceToolBox::getInputVariable('update');
-$post   = IserviceToolBox::filter_var_array(INPUT_POST);
+$post   = IserviceToolBox::filterVarArray(INPUT_POST);
 
 if (!empty($add)) {
     $remind->check(-1, CREATE, $post);

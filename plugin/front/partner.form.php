@@ -11,7 +11,7 @@ $update              = IserviceToolBox::getInputVariable('update');
 $partner_contacted   = IserviceToolBox::getInputVariable('partner_contacted');
 $generate_magic_link = IserviceToolBox::getInputVariable('generate_magic_link');
 
-$post = IserviceToolBox::filter_var_array(INPUT_POST);
+$post = IserviceToolBox::filterVarArray(INPUT_POST);
 
 if (!empty($generate_magic_link) && !empty($id)) {
     $partner->check($id, UPDATE);

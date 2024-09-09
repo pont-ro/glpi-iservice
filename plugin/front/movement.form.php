@@ -21,7 +21,7 @@ if (empty($id) && (empty($itemtype) || !class_exists("PluginIservice$itemtype"))
 
 $movement = new PluginIserviceMovement($itemtype);
 
-$post = IserviceToolBox::filter_var_array(INPUT_POST);
+$post = IserviceToolBox::filterVarArray(INPUT_POST);
 
 if (!empty($move)) {
     $update = 'update';

@@ -23,7 +23,7 @@ $update_contract = IserviceToolBox::getInputVariable('update_contract');
 
 global $DB;
 
-$post         = IserviceToolBox::filter_var_array(INPUT_POST);
+$post         = IserviceToolBox::filterVarArray(INPUT_POST);
 $special_keys = ['printer', 'supplier', 'contract', '_customfields'];
 foreach ($special_keys as $special_key) {
     if ($special_key[0] === '_') {

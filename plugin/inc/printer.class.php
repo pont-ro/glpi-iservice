@@ -332,7 +332,7 @@ class PluginIservicePrinter extends Printer
         $form            = new PluginIserviceHtml();
         $no_wrap_options = ['field_class' => 'nowrap'];
 
-        $post_data = IserviceToolBox::filter_var_array(INPUT_POST);
+        $post_data = IserviceToolBox::filterVarArray(INPUT_POST);
         if (isset($post_data['printer'])) {
             foreach ($post_data['printer'] as $field_name => $field_value) {
                 $printer->fields[$field_name] = $field_value;
@@ -468,7 +468,7 @@ class PluginIservicePrinter extends Printer
         $form            = new PluginIserviceHtml();
         $no_wrap_options = ['field_class' => 'nowrap'];
 
-        $post_data = IserviceToolBox::filter_var_array(INPUT_POST);
+        $post_data = IserviceToolBox::filterVarArray(INPUT_POST);
         if (!IserviceToolBox::getInputVariable('modify_supplier')) {
             if (isset($post_data['supplier'])) {
                 foreach ($post_data['supplier'] as $field_name => $field_value) {
@@ -565,7 +565,7 @@ class PluginIservicePrinter extends Printer
         $form            = new PluginIserviceHtml();
         $no_wrap_options = ['field_class' => 'nowrap'];
 
-        $post_data = IserviceToolBox::filter_var_array(INPUT_POST);
+        $post_data = IserviceToolBox::filterVarArray(INPUT_POST);
         if (!IserviceToolBox::getInputVariable('modify_contract')) {
             if (isset($post_data['contract'])) {
                 foreach ($post_data['contract'] as $field_name => $field_value) {

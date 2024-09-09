@@ -457,7 +457,7 @@ class ToolBox
         return in_array($printer->fields['printertypes_id'], [PluginIservicePrinter::ID_COLOR_TYPE, PluginIservicePrinter::ID_PLOTTER_TYPE]);
     }
 
-    public static function filter_var_array(int $inputType): array
+    public static function filterVarArray(int $inputType): array
     {
         if ($inputType === INPUT_POST) {
             global $_UPOST;
