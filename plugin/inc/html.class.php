@@ -543,7 +543,7 @@ class PluginIserviceHtml {
         echo "</div>";
         echo "<div id='header_top'>";
 
-        $post = filter_var_array($_POST);
+        $post = IserviceToolBox::filterVarArray(INPUT_POST);
         if (!empty($post)) {
             echo "<div id='back-link'><a href='" . filter_input(INPUT_SERVER, 'HTTP_REFERRER') . "'>«««</a></div>";
         }

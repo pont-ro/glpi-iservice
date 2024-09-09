@@ -15,7 +15,7 @@ $withtemplate              = IserviceToolBox::getInputVariable('withtemplate');
 $mass_action_order_again   = IserviceToolBox::getInputVariable('mass_action_order_again');
 $mass_action_change_status = IserviceToolBox::getInputVariable('mass_action_change_status');
 
-$post = filter_var_array($_POST);
+$post = IserviceToolBox::filterVarArray(INPUT_POST);
 
 $intOrder = new PluginIserviceIntOrder();
 global $CFG_PLUGIN_ISERVICE;
