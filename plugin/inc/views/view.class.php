@@ -1445,4 +1445,14 @@ class View extends \CommonGLPI
         return $string;
     }
 
+    public static function modifyTitleBasedOnUnpaidInvoices(array $rowData, string &$title, string &$color): void
+    {
+        if ($rowData['numar_facturi_neplatite'] >= 2) {
+            $color  = "red";
+            $title .= "\r\n\r\nPartenerul are " . $rowData['numar_facturi_neplatite'] . " facturi neplătite " . sprintf(_t('in value of %s RON'), number_format($rowData['unpaid_invoices_value'], 2));
+        } elseif ($rowData['numar_facturi_neplatite'] == 1) {
+            $color  = "orange";
+            $title .= "\r\n\r\nPartenerul are o factură neplătită " . sprintf(_t('in value of %s RON'), number_format($rowData['unpaid_invoices_value'], 2));
+        }
+    }
 }
