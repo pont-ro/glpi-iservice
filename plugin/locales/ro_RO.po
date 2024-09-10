@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2024-09-09 12:49+0300\n"
+"PO-Revision-Date: 2024-09-10 11:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -944,8 +944,11 @@ msgstr "Citire contor"
 
 #: inc/views/printers.class.php:215 inc/views/printers.class.php:218
 #, php-format
-msgid "in value of %s RON"
-msgstr "în valoare de %s RON"
+msgid "Client has an unpaid invoice in value of %s RON"
+msgid_plural "Client has %s unpaid invoices in value of %s RON"
+msgstr[0] "Partenerul are o factură neplătită în valoare de %s RON"
+msgstr[1] "Partenerul are %s facturi neplătite neplătite în valoare de %s RON"
+msgstr[2] "Partenerul are %s facturi neplătite neplătite în valoare de %s RON"
 
 #: inc/views/printers.class.php:252
 msgid "You have compatible cartridges at other locations:"
@@ -989,14 +992,14 @@ msgstr "Reîmprospătează"
 msgid "from cache %s"
 msgstr "din cache %s"
 
-#~ msgid "black and white copies/day"
-#~ msgstr "copii alb-negru/zi"
+msgid "black and white copies/day"
+msgstr "copii alb-negru/zi"
 
-#~ msgid "color copies/day"
-#~ msgstr "copii color/zi"
+msgid "color copies/day"
+msgstr "copii color/zi"
 
-#~ msgid "and"
-#~ msgstr "și"
+msgid "and"
+msgstr "și"
 
 #, fuzzy
 #~| msgid "Pending emails"

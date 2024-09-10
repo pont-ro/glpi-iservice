@@ -229,11 +229,13 @@ class Tickets extends View
 
     public static function getSupplierDisplay($row_data)
     {
-        $title = $color = '';
+        $title = self::getPartnerTitleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite'], $row_data['unpaid_invoices_value']);
+        $style = self::getPartnerStyleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite']);
 
-        self::modifyTitleBasedOnUnpaidInvoices($row_data, $title, $color);
+//        $title= 'gsdfgsdfgsdfg';
+//        $style= 'color:blue;';
 
-        return "<span style='color:$color' title='$title'>$row_data[supplier_name]</span>";
+        return "<span style='$style' title='$title'>$row_data[supplier_name]</span>";
     }
 
     protected function getSettings(): array
@@ -416,7 +418,7 @@ class Tickets extends View
                     'type' => self::FILTERTYPE_CHECKBOX,
                     'caption' => 'Fără partener sau aparat',
                     'class' => 'mx-1',
-                    'format' => 'AND (p.short_name is null OR s.name is null)',
+                    'format' => 'AND (p.name_and_location is null OR s.name is null)',
                     'visible' => !self::inProfilearray('subtehnician', 'superclient', 'client'),
                 ],
                 'date_open' => [

@@ -932,7 +932,7 @@ class View extends \CommonGLPI
                     self::ensureArrayKey($mass_action, 'new_tab', true);
                     $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
                     $mass_action_on_click   = $mass_action['onClick'] ?? '';
-                    $mass_action_on_click   .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
+                    $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
                     $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
                     $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
                     // $mass_action_on_click .= '$(this).closest("form").delay(1000).attr("action",old_action);$(this).closest("form").delay(1000).attr("target","");';
@@ -1445,14 +1445,41 @@ class View extends \CommonGLPI
         return $string;
     }
 
-    public static function modifyTitleBasedOnUnpaidInvoices(array $rowData, string &$title, string &$color): void
+    public static function getPartnerTitleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $valueOfUnpaidInvocies, bool $withLineBreaks = false): string
     {
-        if ($rowData['numar_facturi_neplatite'] >= 2) {
-            $color  = "red";
-            $title .= "\r\n\r\nPartenerul are " . $rowData['numar_facturi_neplatite'] . " facturi neplătite " . sprintf(_t('in value of %s RON'), number_format($rowData['unpaid_invoices_value'], 2));
-        } elseif ($rowData['numar_facturi_neplatite'] == 1) {
-            $color  = "orange";
-            $title .= "\r\n\r\nPartenerul are o factură neplătită " . sprintf(_t('in value of %s RON'), number_format($rowData['unpaid_invoices_value'], 2));
+
+        if ($numberOfUnpaidInvoices < 1) {
+            return '';
         }
+
+        $title     = '';
+        $arguments = $numberOfUnpaidInvoices === 1 ? [$valueOfUnpaidInvocies] : [$numberOfUnpaidInvoices, $valueOfUnpaidInvocies];
+        if ($withLineBreaks) {
+            $title .= "\r\n\r\n";
+        }
+
+        $title .= sprintf(
+            _tn('Client has an unpaid invoice in value of %s RON', 'Client has %s unpaid invoices in value of %s RON', $numberOfUnpaidInvoices),
+            ...$arguments
+        );
+
+        return $title;
     }
+
+    public static function getPartnerStyleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $style = ''): string
+    {
+        $style = 'color: green;';
+        if ($numberOfUnpaidInvoices === 1) {
+            $style = "color: darkgreen; font-weight: bold;";
+        } elseif ($numberOfUnpaidInvoices >= 2) {
+            $style = "color: orange;";
+        }
+
+        if ($numberOfUnpaidInvoices >= 4) {
+            $style = "color: red;";
+        }
+
+        return $style;
+    }
+
 }
