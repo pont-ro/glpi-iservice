@@ -1454,10 +1454,8 @@ class View extends \CommonGLPI
 
         $title     = '';
         $arguments = $numberOfUnpaidInvoices === 1 ? [$valueOfUnpaidInvocies] : [$numberOfUnpaidInvoices, $valueOfUnpaidInvocies];
-        if ($lineBreaksBefore > 0) {
-            for ($i = 0; $i < $lineBreaksBefore; $i++) {
-                $title .= "\r\n";
-            }
+        for ($i = 0; $i < $lineBreaksBefore; $i++) {
+            $title .= "\r\n";
         }
 
         $title .= sprintf(
