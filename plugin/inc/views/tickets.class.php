@@ -232,9 +232,6 @@ class Tickets extends View
         $title = self::getPartnerTitleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite'], $row_data['unpaid_invoices_value']);
         $style = self::getPartnerStyleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite']);
 
-//        $title= 'gsdfgsdfgsdfg';
-//        $style= 'color:blue;';
-
         return "<span style='$style' title='$title'>$row_data[supplier_name]</span>";
     }
 

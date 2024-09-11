@@ -208,9 +208,9 @@ class Printers extends View
 
     public static function getSupplierDisplay($row_data, $import_data): string
     {
-        $title = "Tel: $row_data[supplier_tel]\r\nFax: $row_data[supplier_fax]\r\nObservații: $row_data[supplier_comment]\r\nEmail trimis facturi: $row_data[supplier_email_facturi]";
-        $title .= self::getPartnerTitleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite'], $row_data['unpaid_invoices_value'], true);
-        $style = self::getPartnerStyleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite']);
+        $title  = "Tel: $row_data[supplier_tel]\r\nFax: $row_data[supplier_fax]\r\nObservații: $row_data[supplier_comment]\r\nEmail trimis facturi: $row_data[supplier_email_facturi]";
+        $title .= self::getPartnerTitleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite'], $row_data['unpaid_invoices_value'], 2);
+        $style  = self::getPartnerStyleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite']);
 
         if ($row_data['supplier_deleted']) {
             $style = "color: red";

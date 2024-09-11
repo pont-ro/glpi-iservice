@@ -1445,7 +1445,7 @@ class View extends \CommonGLPI
         return $string;
     }
 
-    public static function getPartnerTitleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $valueOfUnpaidInvocies, bool $withLineBreaks = false): string
+    public static function getPartnerTitleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $valueOfUnpaidInvocies, int $lineBreaksBefore = 0): string
     {
 
         if ($numberOfUnpaidInvoices < 1) {
@@ -1454,8 +1454,10 @@ class View extends \CommonGLPI
 
         $title     = '';
         $arguments = $numberOfUnpaidInvoices === 1 ? [$valueOfUnpaidInvocies] : [$numberOfUnpaidInvoices, $valueOfUnpaidInvocies];
-        if ($withLineBreaks) {
-            $title .= "\r\n\r\n";
+        if ($lineBreaksBefore > 0) {
+            for ($i = 0; $i < $lineBreaksBefore; $i++) {
+                $title .= "\r\n";
+            }
         }
 
         $title .= sprintf(
@@ -1466,9 +1468,8 @@ class View extends \CommonGLPI
         return $title;
     }
 
-    public static function getPartnerStyleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $style = ''): string
+    public static function getPartnerStyleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $style = 'color: green;'): string
     {
-        $style = 'color: green;';
         if ($numberOfUnpaidInvoices === 1) {
             $style = "color: darkgreen; font-weight: bold;";
         } elseif ($numberOfUnpaidInvoices >= 2) {
