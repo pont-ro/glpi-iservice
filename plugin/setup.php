@@ -43,12 +43,12 @@ if (!file_exists(PLUGIN_ISERVICE_LOG_DIR)) {
 
 if (isset($_GET['iServiceCompressedInputData'])) {
     global $_UGET;
-    $_UGET = plugin_iservice_json_decode_input_data($_GET['iServiceCompressedInputData']);
+    $_UGET = $_GET = plugin_iservice_json_decode_input_data($_GET['iServiceCompressedInputData'] ?? '');
 }
 
 if (isset($_POST['iServiceCompressedInputData'])) {
     global $_UPOST;
-    $_UPOST = plugin_iservice_json_decode_input_data($_POST['iServiceCompressedInputData']);
+    $_UPOST = $_POST = plugin_iservice_json_decode_input_data($_POST['iServiceCompressedInputData'] ?? '');
 }
 
 /**

@@ -461,10 +461,10 @@ class ToolBox
     {
         if ($inputType === INPUT_POST) {
             global $_UPOST;
-            return $_UPOST;
+            return filter_var_array($_UPOST);
         } elseif ($inputType === INPUT_GET) {
             global $_UGET;
-            return $_UGET;
+            return filter_var_array($_UGET);
         }
 
         return [];
