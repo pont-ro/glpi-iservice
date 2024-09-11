@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
-"POT-Creation-Date: 2024-09-06 16:34+0300\n"
-"PO-Revision-Date: 2024-09-06 16:40+0300\n"
+"POT-Creation-Date: 2024-09-09 12:48+0300\n"
+"PO-Revision-Date: 2024-09-10 11:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -230,7 +230,7 @@ msgstr "Nu există cartuș de golit"
 msgid "You have no more compatible cartridges"
 msgstr "Nu aveți alte cartușe compatibile"
 
-#: inc/cartridgeitem.class.php:87 inc/views/printers.class.php:489
+#: inc/cartridgeitem.class.php:87 inc/views/printers.class.php:490
 msgid "Cartridges available"
 msgstr "Cartușe neinstalate"
 
@@ -331,7 +331,7 @@ msgstr[2] "Stări comandă"
 
 #: inc/hmarfa.class.php:619 inc/movement.class.php:280
 #: inc/printer.class.php:364 inc/views/globalreadcounter.class.php:236
-#: inc/views/printers.class.php:547 inc/views/printers.class.php:591
+#: inc/views/printers.class.php:548 inc/views/printers.class.php:592
 #: inc/views/tickets.class.php:469 inc/views/tickets.class.php:552
 msgid "Usage address"
 msgstr "Adresa de exploatare"
@@ -381,7 +381,7 @@ msgstr "Comandă"
 msgid "Pending"
 msgstr "In lucrare"
 
-#: inc/hmarfa_invoicer.class.php:1037
+#: inc/hmarfa_invoicer.class.php:1038
 msgid "Sum of unpaid invoices"
 msgstr "Suma facturilor neplătite"
 
@@ -429,7 +429,7 @@ msgid "2 month ago"
 msgstr "Acum 2 luni"
 
 #: inc/monthlyplan.class.php:199 inc/views/globalreadcounter.class.php:22
-#: inc/views/globalreadcounter.class.php:180 inc/views/printers.class.php:480
+#: inc/views/globalreadcounter.class.php:180 inc/views/printers.class.php:481
 msgid "Global read counter"
 msgstr "Citire globală"
 
@@ -941,6 +941,14 @@ msgstr "Aparate"
 #: inc/views/printers.class.php:48
 msgid "Read counter"
 msgstr "Citire contor"
+
+#: inc/views/printers.class.php:215 inc/views/printers.class.php:218
+#, php-format
+msgid "Client has an unpaid invoice in value of %s RON"
+msgid_plural "Client has %s unpaid invoices in value of %s RON"
+msgstr[0] "Partenerul are o factură neplătită în valoare de %s RON"
+msgstr[1] "Partenerul are %s facturi neplătite neplătite în valoare de %s RON"
+msgstr[2] "Partenerul are %s facturi neplătite neplătite în valoare de %s RON"
 
 #: inc/views/printers.class.php:252
 msgid "You have compatible cartridges at other locations:"

@@ -208,22 +208,16 @@ class Printers extends View
 
     public static function getSupplierDisplay($row_data, $import_data): string
     {
-        $title = "Tel: $row_data[supplier_tel]\r\nFax: $row_data[supplier_fax]\r\nObservații: $row_data[supplier_comment]\r\nEmail trimis facturi: $row_data[supplier_email_facturi]";
-        $color = 'green';
-        if ($row_data['numar_facturi_neplatite'] >= 2) {
-            $color  = "red";
-            $title .= "\r\n\r\nPartenerul are " . $row_data['numar_facturi_neplatite'] . " facturi neplătite!";
-        } elseif ($row_data['numar_facturi_neplatite'] == 1) {
-            $color  = "orange";
-            $title .= "\r\n\r\nPartenerul are o factură neplătită!";
-        }
+        $title  = "Tel: $row_data[supplier_tel]\r\nFax: $row_data[supplier_fax]\r\nObservații: $row_data[supplier_comment]\r\nEmail trimis facturi: $row_data[supplier_email_facturi]";
+        $title .= self::getPartnerTitleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite'], $row_data['unpaid_invoices_value'], 2);
+        $style  = self::getPartnerStyleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite']);
 
         if ($row_data['supplier_deleted']) {
-            $color = "red";
+            $style = "color: red";
             $title = "PARTENER ȘTERS!\r\n\r\n$title";
         }
 
-        return "<span style='color:$color' title='$title'>$row_data[supplier_name]</span>";
+        return "<span style='$style' title='$title'>$row_data[supplier_name]</span>";
     }
 
     public static function getLocationDisplay($row_data): string
@@ -442,6 +436,7 @@ class Printers extends View
                             , s.cm_field
                             , t2.codbenef
                             , t2.numar_facturi_neplatite
+                            , t2.unpaid_invoices_value
                         FROM glpi_plugin_iservice_printers p
                         LEFT JOIN glpi_plugin_iservice_printers_last_tickets plt ON plt.printers_id = p.id
                         LEFT JOIN glpi_printertypes pt ON pt.id = p.printertypes_id
@@ -452,7 +447,7 @@ class Printers extends View
                         LEFT JOIN glpi_users ue ON ue.id = p.users_id
                         LEFT JOIN glpi_groups g ON g.id = p.groups_id
                         LEFT JOIN glpi_states st ON st.id = p.states_id
-                        LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite
+                        LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite,  sum(valinc-valpla) unpaid_invoices_value
                                    FROM hmarfa_facturi 
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
                                    AND valinc-valpla > 0

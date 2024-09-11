@@ -110,6 +110,7 @@ select
                      end
             end
     ) as `name`,
+    concat(`p`.`name`, coalesce(concat(' - ',`l`.`completename`),'')) as `name_and_location`,
     `p`.`name` as `original_name`,
     `p`.`contact` as `contact`,
     `p`.`contact_num` as `contact_num`,

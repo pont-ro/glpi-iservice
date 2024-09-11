@@ -932,7 +932,7 @@ class View extends \CommonGLPI
                     self::ensureArrayKey($mass_action, 'new_tab', true);
                     $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
                     $mass_action_on_click   = $mass_action['onClick'] ?? '';
-                    $mass_action_on_click   .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
+                    $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
                     $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
                     $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
                     // $mass_action_on_click .= '$(this).closest("form").delay(1000).attr("action",old_action);$(this).closest("form").delay(1000).attr("target","");';
@@ -1443,6 +1443,42 @@ class View extends \CommonGLPI
         }
 
         return $string;
+    }
+
+    public static function getPartnerTitleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $valueOfUnpaidInvocies, int $lineBreaksBefore = 0): string
+    {
+
+        if ($numberOfUnpaidInvoices < 1) {
+            return '';
+        }
+
+        $title     = '';
+        $arguments = $numberOfUnpaidInvoices === 1 ? [$valueOfUnpaidInvocies] : [$numberOfUnpaidInvoices, $valueOfUnpaidInvocies];
+        for ($i = 0; $i < $lineBreaksBefore; $i++) {
+            $title .= "\r\n";
+        }
+
+        $title .= sprintf(
+            _tn('Client has an unpaid invoice in value of %s RON', 'Client has %s unpaid invoices in value of %s RON', $numberOfUnpaidInvoices),
+            ...$arguments
+        );
+
+        return $title;
+    }
+
+    public static function getPartnerStyleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $style = 'color: green;'): string
+    {
+        if ($numberOfUnpaidInvoices === 1) {
+            $style = "color: darkgreen; font-weight: bold;";
+        } elseif ($numberOfUnpaidInvoices >= 2) {
+            $style = "color: orange;";
+        }
+
+        if ($numberOfUnpaidInvoices >= 4) {
+            $style = "color: red;";
+        }
+
+        return $style;
     }
 
 }

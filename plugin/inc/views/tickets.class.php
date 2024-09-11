@@ -4,7 +4,6 @@
 namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-use GlpiPlugin\Iservice\Views\View;
 use PluginIserviceHmarfa;
 use PluginIserviceMovement;
 use Ticket;
@@ -230,17 +229,10 @@ class Tickets extends View
 
     public static function getSupplierDisplay($row_data)
     {
-        $title = '';
-        $color = 'green';
-        if ($row_data['numar_facturi_neplatite'] >= 2) {
-            $color  = "red";
-            $title .= "\r\n\r\nPartenerul are " . $row_data['numar_facturi_neplatite'] . " facturi neplătite!";
-        } elseif ($row_data['numar_facturi_neplatite'] == 1) {
-            $color  = "orange";
-            $title .= "\r\n\r\nPartenerul are o factură neplătită!";
-        }
+        $title = self::getPartnerTitleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite'], $row_data['unpaid_invoices_value']);
+        $style = self::getPartnerStyleBasedOnUnpaidInvoices((int) $row_data['numar_facturi_neplatite']);
 
-        return "<span style='color:$color' title='$title'>$row_data[supplier_name]</span>";
+        return "<span style='$style' title='$title'>$row_data[supplier_name]</span>";
     }
 
     protected function getSettings(): array
@@ -315,7 +307,7 @@ class Tickets extends View
                             , t.plugin_fields_ticketexporttypedropdowns_id ticket_export_type
                             , t.exported_field ticket_exported
                             , p.id printer_id
-                            , CONCAT(p.name, CASE WHEN p.em_field = 1 THEN ' [EM]' ELSE '' END, CASE WHEN s.cm_field = 1 THEN ' [CM]' ELSE '' END) printer_name
+                            , CONCAT(p.short_name, CASE WHEN p.em_field = 1 THEN ' [EM]' ELSE '' END, CASE WHEN s.cm_field = 1 THEN ' [CM]' ELSE '' END) printer_name
                             , p.usage_address_field
                             , l.completename printer_location
                             , s.id supplier_id
@@ -334,6 +326,7 @@ class Tickets extends View
                             , eoc.externally_ordered_consumables
                             , GROUP_CONCAT(CONCAT(CAST(tf.date AS CHAR), '\n', tf.content) SEPARATOR '\n') ticket_followups
                             , t2.numar_facturi_neplatite
+                            , t2.unpaid_invoices_value
                         FROM glpi_plugin_iservice_tickets t
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
                         LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
@@ -364,7 +357,7 @@ class Tickets extends View
                                                 GROUP BY tickets_id
                                   ) eoc ON eoc.tickets_id = t.id
                         LEFT JOIN glpi_itilfollowups tf ON tf.items_id = t.id and tf.itemtype = 'Ticket'" . (self::inProfileArray('tehnician', 'admin', 'super-admin') ? '' : " AND (tf.is_private = 0 OR tf.users_id = $_SESSION[glpiID])") . "
-                        LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite
+                        LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite,  sum(valinc-valpla) unpaid_invoices_value
                                    FROM hmarfa_facturi 
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
                                    AND valinc-valpla > 0
@@ -373,7 +366,7 @@ class Tickets extends View
                             AND t.status in ([ticket_status])
                             AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
                             AND t.name LIKE '[ticket_name]'
-                            AND ((p.name IS NULL AND '[printer_name]' = '%%') OR p.name LIKE '[printer_name]')
+                            AND ((p.short_name IS NULL AND '[printer_name]' = '%%') OR p.short_name LIKE '[printer_name]')
                             AND ((p.usage_address_field is null AND '[usage_address_field]' = '%%') OR p.usage_address_field LIKE '[usage_address_field]')
                             AND ((s.name IS NULL AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
@@ -422,7 +415,7 @@ class Tickets extends View
                     'type' => self::FILTERTYPE_CHECKBOX,
                     'caption' => 'Fără partener sau aparat',
                     'class' => 'mx-1',
-                    'format' => 'AND (p.name is null OR s.name is null)',
+                    'format' => 'AND (p.name_and_location is null OR s.name is null)',
                     'visible' => !self::inProfilearray('subtehnician', 'superclient', 'client'),
                 ],
                 'date_open' => [
