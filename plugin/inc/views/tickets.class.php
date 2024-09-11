@@ -307,7 +307,7 @@ class Tickets extends View
                             , t.plugin_fields_ticketexporttypedropdowns_id ticket_export_type
                             , t.exported_field ticket_exported
                             , p.id printer_id
-                            , CONCAT(p.short_name, CASE WHEN p.em_field = 1 THEN ' [EM]' ELSE '' END, CASE WHEN s.cm_field = 1 THEN ' [CM]' ELSE '' END) printer_name
+                            , CONCAT(p.name_and_location, CASE WHEN p.em_field = 1 THEN ' [EM]' ELSE '' END, CASE WHEN s.cm_field = 1 THEN ' [CM]' ELSE '' END) printer_name
                             , p.usage_address_field
                             , l.completename printer_location
                             , s.id supplier_id
@@ -366,7 +366,7 @@ class Tickets extends View
                             AND t.status in ([ticket_status])
                             AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
                             AND t.name LIKE '[ticket_name]'
-                            AND ((p.short_name IS NULL AND '[printer_name]' = '%%') OR p.short_name LIKE '[printer_name]')
+                            AND ((p.name_and_location IS NULL AND '[printer_name]' = '%%') OR p.name_and_location LIKE '[printer_name]')
                             AND ((p.usage_address_field is null AND '[usage_address_field]' = '%%') OR p.usage_address_field LIKE '[usage_address_field]')
                             AND ((s.name IS NULL AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
