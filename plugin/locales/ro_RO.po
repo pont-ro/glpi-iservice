@@ -1226,13 +1226,11 @@ msgstr "și"
 #~ msgid "Description"
 #~ msgstr "Descriere tichet"
 
-#~ msgid "Do not check before invoice is issued, operation can not be undone!"
-#~ msgstr ""
-#~ "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate "
-#~ "fi revocată!"
+msgid "Do not check before invoice is issued, operation can not be undone!"
+msgstr "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi revocată!"
 
-#~ msgid "To create an invoice, press the link"
-#~ msgstr "Pentru a crea factura, apăsați linkul"
+msgid "To create an invoice, press the link"
+msgstr "Pentru a crea factura, apăsați linkul"
 
 #, fuzzy
 #~| msgid "Invoice information"
