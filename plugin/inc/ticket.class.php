@@ -2315,7 +2315,7 @@ class PluginIserviceTicket extends Ticket
             $fields['_services_invoiced']['value']  = $movement->fields['invoice'] ?? false;
 
             if (!$fields['_services_invoiced']['value']) {
-                $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . __('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . __('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?mode=3&kcsrft=1&item[printer][{$printerId}]=1' target='_blank'>" . _t('invoicing') . "</a></div>";
+                $fields['_services_invoiced']['options']['label2raw'] = "<div class='ms-2'><span class='text-danger'>" . _t('Do not check before invoice is issued, operation can not be undone!', "iservice") . "</span> " . _t('To create an invoice, press the link', "iservice") . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/hmarfaexport.form.php?mode=3&kcsrft=1&item[printer][{$printerId}]=1' target='_blank'>" . _t('invoicing') . "</a></div>";
             }
 
             $fields['_services_invoiced']['disabled'] = !$canEdit || $fields['_services_invoiced']['value'];
