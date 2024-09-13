@@ -1229,6 +1229,9 @@ msgstr "și"
 msgid "Do not check before invoice is issued, operation can not be undone!"
 msgstr "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi revocată!"
 
+msgid "Please confirm that the invoice was issued!"
+msgstr "Vă rugăm să confirmați că factura a fost emisă!"
+
 msgid "To create an invoice, press the link"
 msgstr "Pentru a crea factura, apăsați linkul"
 
