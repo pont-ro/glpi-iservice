@@ -1,0 +1,15 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{% if partnerId > 0 %}
+    {{ fields.dropdownArrayField(
+        '_export_type',
+        item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
+        exportTypeOptions,
+        _t('Export type'),
+        field_options|merge({
+            'required': item.hasConsumables(),
+            'on_change': 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}',
+        })
+    ) }}
+{% endif %}

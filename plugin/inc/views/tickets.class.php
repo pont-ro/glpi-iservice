@@ -516,7 +516,7 @@ class Tickets extends View
                         'href' => $CFG_GLPI['root_doc'] . '/front/printer.form.php?id=[printer_id]',
                         'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
                     ],
-                    'format' => '%s ([printer_location])',
+//                    'format' => '%s ([printer_location])',
                     'empty' => [
                         'value' => '---',
                         'link' => [

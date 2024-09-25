@@ -1468,14 +1468,14 @@ class View extends \CommonGLPI
 
     public static function getPartnerStyleBasedOnUnpaidInvoices(int $numberOfUnpaidInvoices, $style = 'color: green;'): string
     {
-        if ($numberOfUnpaidInvoices === 1) {
-            $style = "color: darkgreen; font-weight: bold;";
-        } elseif ($numberOfUnpaidInvoices >= 2) {
-            $style = "color: orange;";
-        }
-
         if ($numberOfUnpaidInvoices >= 4) {
             $style = "color: red;";
+        } elseif ($numberOfUnpaidInvoices >= 3) {
+            $style = "color: darkorange; font-weight: bold;";
+        } elseif ($numberOfUnpaidInvoices >= 2) {
+            $style = "color: orange;";
+        } elseif ($numberOfUnpaidInvoices === 1) {
+            $style = "color: darkgreen; font-weight: bold;";
         }
 
         return $style;

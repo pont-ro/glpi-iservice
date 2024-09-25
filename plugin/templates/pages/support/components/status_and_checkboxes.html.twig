@@ -1,0 +1,39 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{% set canUpdateInitalValue = canupdate %}
+{% set canupdate = false %}
+<div id="statusElementContainer">
+    {{ include('components/itilobject/fields/status.html.twig') }}
+    {% if item.fields['status'] == constant('Ticket::CLOSED') %}
+        <script>
+            const statusElementContainer = $('#statusElementContainer');
+            if (statusElementContainer.find('.closed').length > 0 && statusElementContainer.find('.btn').length > 0) {
+                statusElementContainer.find('.btn').remove();
+            }
+        </script>
+    {% endif %}
+</div>
+
+{% set canupdate = canUpdateInitalValue %}
+
+{{ fields.checkboxField(
+    '_operator_reading',
+    item.fields['_operator_reading'],
+    _t('Operator reading'),
+    field_options
+) }}
+
+{{ fields.checkboxField(
+    'without_paper_field',
+    item.customfields.fields['without_paper_field'],
+    _t('Without papers'),
+    field_options
+) }}
+
+{{ fields.checkboxField(
+    'no_travel_field',
+    item.customfields.fields['no_travel_field'],
+    _t('Without moving'),
+    field_options
+) }}
