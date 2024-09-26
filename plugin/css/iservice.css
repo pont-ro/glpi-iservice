@@ -244,3 +244,15 @@ div.actions-wrap {
         display: inherit;
     }
 }
+
+.form-elements-container > div:nth-child(odd) {
+    background-color: #f0f0f0;
+}
+
+.form-elements-container > div:nth-child(even) {
+    background-color: #e0e0e0;
+}
+
+.ticket-follow-up-section, .consumables-section{
+    background-color: #f5dd7661 !important;
+}

@@ -7,9 +7,9 @@
         <div class="table-responsive mt-1">
             <button class="btn btn-submit btn-sm"
                     onclick='if (confirm( "{{ _t("Warning! This operation will block the database for 5 minutes! Proceed?") }} ") === true) {
-                        preventDefault();
-                        window.open("{{ printerCartridgesConsumablesData.refreshUrl }}", "_blank").focus();
-                    } else {return false;}'> {{ _t('Refresh') }}
+                            preventDefault();
+                            window.open("{{ printerCartridgesConsumablesData.refreshUrl }}", "_blank").focus();
+                            } else {return false;}'> {{ _t('Refresh') }}
             </button> <span><b>{{ printerCartridgesConsumablesData.dba }}</b> {{ _t('black and white copies/day') }} {{ _t('and') }} <b>{{ printerCartridgesConsumablesData.dca }}</b> {{ _t('color copies/day') }}</span>
             ({{ _t('from cache')|capitalize }}: {{ printerCartridgesConsumablesData.printerCountersLastCacheData }})
             <table class="table mt-2">
@@ -25,23 +25,23 @@
                 </thead>
                 <tbody>
                 {% for row in printerCartridgesConsumablesData.printerCountersData %}
-                <tr>
-                    <td>{{ row.consumable_type|capitalize }}</td>
-                    <td>{{ row.consumable_codes|raw }}</td>
-                    <td>{{ row.estimate_percentages|raw }}</td>
-                    <td>{{ row.days_to_visits|raw }}</td>
-                    <td>{{ row.stocks|raw }}</td>
-                    <td>
-                        {%  for id in (row.cartridgeIds ?? row.consumableIds ?? []) %}
-                            {% if id in changeablesTableData.emptyableCartridges %}
-                                {% set class = 'text-danger' %}
-                            {% else %}
-                                {% set class = '' %}
-                            {% endif %}
-                            <span id="cart_{{ id }}" class="{{ class ?? '' }}">{{ id }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
+                    <tr>
+                        <td>{{ row.consumable_type|capitalize }}</td>
+                        <td>{{ row.consumable_codes|raw }}</td>
+                        <td>{{ row.estimate_percentages|raw }}</td>
+                        <td>{{ row.days_to_visits|raw }}</td>
+                        <td>{{ row.stocks|raw }}</td>
+                        <td>
+                            {%  for id in (row.cartridgeIds ?? row.consumableIds ?? []) %}
+                                {% if id in changeablesTableData.emptyableCartridges %}
+                                    {% set class = 'text-danger' %}
+                                {% else %}
+                                    {% set class = '' %}
+                                {% endif %}
+                                <span id="cart_{{ id }}" class="{{ class ?? '' }}">{{ id }}</span><br>
+                            {% endfor %}
+                        </td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>

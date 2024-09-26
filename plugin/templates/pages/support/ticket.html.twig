@@ -24,243 +24,110 @@
         <div class="col-12 col-xxl-10 flex-column">
             <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
                 <div class="row flex-row align-items-start flex-grow-1">
-                    <div class="row flex-row">
+                    <div class="row flex-row form-elements-container">
                         {% if item.id > 0 %}
-                            {{ fields.readOnlyField(
-                                'id',
-                                item.fields['id'],
-                                __('ID'),
-                                field_options
-                            ) }}
+                            <div class="pt-2 mt-2">
+                                {{ fields.readOnlyField(
+                                    'id',
+                                    item.fields['id'],
+                                    __('ID'),
+                                    field_options
+                                ) }}
+                            </div>
                         {% endif %}
 
                         {% block form_fields %}
-                            {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
-
-                            {% if printer %}
-                                {{ fieldsIservice.numberField(
-                                    'total2_black_field',
-                                    item.customfields.fields['total2_black_field'],
-                                    printer.isPlotter() ? _t('Consumed ink') : _t('Black counter reading'),
-                                    field_options|merge({
-                                        'min': total2BlackRequiredMinimum,
-                                        'disabled': total2BlackDisabled or isClosed,
-                                        'add_field_attribs': {
-                                            'data-toggle': 'tooltip',
-                                            'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
-                                        },
-                                        'buttons': [
-                                            csvCounterButtonConfig,
-                                            estimateButtonConfig,
-                                        ],
-                                        'input_addclass': 'w-50 d-inline-block',
-                                    })
-                                ) }}
-                            {% endif %}
-
-
-                            {% if printer.isColor() or printer.isPlotter() %}
-                                {{ fields.numberField(
-                                    'total2_color_field',
-                                    item.customfields.fields['total2_color_field'],
-                                    printer.isPlotter() ? _t('Printed surface') : _t('Color counter reading'),
-                                    field_options|merge({
-                                        'min': total2ColorRequiredMinimum,
-                                        'disabled': total2ColorDisabled or isClosed,
-                                        'add_field_attribs': {
-                                            'data-toggle': 'tooltip',
-                                            'title': __('Counter') ~ ' 106',
-                                        },
-                                    })
-                                ) }}
-                            {% endif %}
-
-                            {{ fields.dropdownField(
-                                'ITILCategory',
-                                'itilcategories_id',
-                                item.fields['itilcategories_id'],
-                                __('Category'),
-                                field_options|merge({
-                                    'required': true
-                                })
-                            ) }}
-
-                            {{ include('@iservice/pages/support/components/title_content.html.twig') }}
-
-                            {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
-
-                            {% if printerCartridgesConsumablesData %}
-                                {{ include('@iservice/pages/support/components/cartridges_consumables_table.html.twig') }}
-                            {% endif %}
-
-                            {% if printer %}
-                                {{ include('@iservice/pages/support/components/changeables_table.html.twig') }}
-                            {% endif %}
-
-                            {% set canUpdateInitalValue = canupdate %}
-                            {% set canupdate = false %}
-                            <div id="statusElementContainer">
-                                {{ include('components/itilobject/fields/status.html.twig') }}
-                                {% if item.fields['status'] == constant('Ticket::CLOSED') %}
-                                    <script>
-                                        const statusElementContainer = $('#statusElementContainer');
-                                        if (statusElementContainer.find('.closed').length > 0 && statusElementContainer.find('.btn').length > 0) {
-                                            statusElementContainer.find('.btn').remove();
-                                        }
-                                    </script>
-                                {% endif %}
+                            <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/supplier_printer_location_unpaidi.html.twig') }}
                             </div>
 
-                            {% set canupdate = canUpdateInitalValue %}
+                            <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/printer_counter.html.twig') }}
+                            </div>
 
-                            {{ fields.checkboxField(
-                                '_operator_reading',
-                                item.fields['_operator_reading'],
-                                _t('Operator reading'),
-                                field_options
-                            ) }}
-
-                            {{ fields.checkboxField(
-                                'without_paper_field',
-                                item.customfields.fields['without_paper_field'],
-                                _t('Without papers'),
-                                field_options
-                            ) }}
-
-                            {{ fields.checkboxField(
-                                'no_travel_field',
-                                item.customfields.fields['no_travel_field'],
-                                _t('Without moving'),
-                                field_options
-                            ) }}
-
-                            {% if partnerId > 0 %}
-                                {{ fields.dropdownArrayField(
-                                    '_export_type',
-                                    item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
-                                    exportTypeOptions,
-                                    _t('Export type'),
+                            <div class="pt-2 mt-2">
+                                {{ fields.dropdownField(
+                                    'ITILCategory',
+                                    'itilcategories_id',
+                                    item.fields['itilcategories_id'],
+                                    __('Category'),
                                     field_options|merge({
-                                        'required': item.hasConsumables(),
-                                        'on_change': 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}',
+                                        'required': true
                                     })
                                 ) }}
+                            </div>
+
+                            <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/title_content.html.twig') }}
+                            </div>
+
+                            <div class="pt-2 mt-2 ticket-follow-up-section">
+                                {{ include('@iservice/pages/support/components/follow_up.html.twig') }}
+                            </div>
+
+                            {% if printerCartridgesConsumablesData %}
+                                <div class="pt-2 mt-2">
+                                    {{ include('@iservice/pages/support/components/cartridges_consumables_table.html.twig') }}
+                            </div>
                             {% endif %}
 
-                            {% if consumablesTableData and (field_options.fields_template is not defined or not field_options.fields_template.isHiddenField('Consumables'))%}
-                                <div class="add-consumable-div">
-                                    {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
+                            {% if printer %}
+                                <div class="pt-2 mt-2">
+                                    {{ include('@iservice/pages/support/components/changeables_table.html.twig') }}
                                 </div>
-                                {% if item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'] == 0 %}
-                                    <script>
-                                        $(document).ready(function(){
-                                            $(".add-consumable-div").hide();
-                                        });
-                                    </script>
-                                {% endif %}
                             {% endif %}
 
-                            {% if item.hasConsumables() %}
-                                {{ fieldsIservice.checkboxFieldExtended(
-                                    'delivered_field',
-                                    item.getID() > 0 ? item.customfields.fields['delivered_field'] : deliveredDefaultValue,
-                                    _t('Delivered'),
-                                    field_options|merge({
-                                        'disabled': item.customfields.fields['exported_field'],
-                                        'on_change': 'if ($(this).is(":checked")) { $("[name=export]").prop("disabled", false).removeClass("disabled");} else {$("[name=export]").prop("disabled", true).addClass("disabled");}',
-                                    })
-                                ) }}
+                            <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/status_and_checkboxes.html.twig') }}
+                            </div>
 
-                                {{ fieldsIservice.checkboxFieldExtended(
-                                    'exported_field',
-                                    item.customfields.fields['exported_field'],
-                                    _t('Exported in csv and imported in hMarfa'),
-                                    field_options|merge({
-                                        'disabled': true,
-                                        'buttons': [sendMailButtonConfig],
-                                    })
-                                ) }}
-                            {%  endif %}
+                            <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/export_type.html.twig') }}
+                            </div>
 
-                            {{ fieldsIservice.datetimeField(
-                                'effective_date_field',
-                                effectiveDate,
-                                _t('Effective date'),
-                                field_options|merge({
-                                    'minDate': minEffectiveDate,
-                                    'readonly': effectiveDateFieldReadonly,
-                                    'dateTimePickerButtons':
-                                        '[
-                                            {
-                                               label: "' ~ __("Today")  ~ '",
-                                               attributes: {
-                                                  "class": "btn btn-outline-secondary"
-                                               },
-                                               onClick: (e, picker) => {
-                                                  picker.setDate(new Date());
-                                               }
-                                            },
-                                            {
-                                               label: "' ~ __("Yesterday") ~ '",
-                                               attributes: {
-                                                  "class": "btn btn-outline-secondary"
-                                               },
-                                               onClick: (e, picker) => {
-                                                  let date = new Date();
-                                                  date.setDate(date.getDate() - 1);
-                                                  picker.setDate(date);
-                                               }
-                                            }
-                                        ]',
-                                })
-                            ) }}
+                            <div class="pt-2 mt-2 consumables-section">
+                                {{ include('@iservice/pages/support/components/consumables_section.html.twig') }}
+                            </div>
 
-                            <script>
-                                $(document).ready(function(){
-                                    $('[name="effective_date_field"]').on('change', function(){
-                                        $('[name="effective_date_manually_changed"]').val(1);
-                                    });
-                                });
-                            </script>
-
-                            {% if not effectiveDateFieldReadonly %}
-                                {{ fields.hiddenField(
-                                    'effective_date_manually_changed',
-                                    0,
-                                    '',
-                                    field_options|merge({
-                                        'no_label': true,
-                                    })
-                                ) }}
-                            {% endif %}
+                            <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/effective_date.html.twig') }}
+                            </div>
 
                             {% if movementRelatedFields %}
-                                {{ include('@iservice/pages/support/components/movement_related_fields.html.twig') }}
+                                <div class="pt-2 mt-2">
+                                    {{ include('@iservice/pages/support/components/movement_related_fields.html.twig') }}
+                                </div>
                             {% endif %}
 
                             {% if emMailIdField %}
-                                {{ fields.hiddenField(
-                                    'em_mail_id_field',
-                                    emMailIdField,
-                                    '',
-                                    field_options|merge({
-                                        'no_label': true,
-                                    })
-                                ) }}
+                                <div class="pt-2 mt-2">
+                                    {{ fields.hiddenField(
+                                        'em_mail_id_field',
+                                        emMailIdField,
+                                        '',
+                                        field_options|merge({
+                                            'no_label': true,
+                                        })
+                                    ) }}
+                                </div>
                             {% endif %}
 
-                            {{ include('@iservice/pages/support/components/ticket_documents.html.twig') }}
+                            <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/ticket_documents.html.twig') }}
+                            </div>
 
                             {% if verifyLastTonerInstalation %}
-                                {{ fieldsIservice.customFormRow(
-                                    'verifyLastTonerInstalation',
-                                    '',
-                                    verifyLastTonerInstalation.text,
-                                    field_options|merge({
-                                        'title': verifyLastTonerInstalation.title,
-                                        'valueClass': verifyLastTonerInstalation.class
-                                    })
-                                ) }}
+                                <div class="pt-2 mt-2">
+                                    {{ fieldsIservice.customFormRow(
+                                        'verifyLastTonerInstalation',
+                                        '',
+                                        verifyLastTonerInstalation.text,
+                                        field_options|merge({
+                                            'title': verifyLastTonerInstalation.title,
+                                            'valueClass': verifyLastTonerInstalation.class
+                                        })
+                                    ) }}
+                                </div>
                             {% endif %}
                         {% endblock %}
                     </div>

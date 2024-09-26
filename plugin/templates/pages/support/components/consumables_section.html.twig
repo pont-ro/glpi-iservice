@@ -1,0 +1,37 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{% if consumablesTableData and (field_options.fields_template is not defined or not field_options.fields_template.isHiddenField('Consumables'))%}
+    <div class="add-consumable-div">
+        {{ include('@iservice/pages/support/components/consumables_table.html.twig') }}
+    </div>
+    {% if item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'] == 0 %}
+        <script>
+            $(document).ready(function(){
+                $(".add-consumable-div").hide();
+            });
+        </script>
+    {% endif %}
+{% endif %}
+
+{% if item.hasConsumables() %}
+    {{ fieldsIservice.checkboxFieldExtended(
+        'delivered_field',
+        item.getID() > 0 ? item.customfields.fields['delivered_field'] : deliveredDefaultValue,
+        _t('Delivered'),
+        field_options|merge({
+            'disabled': item.customfields.fields['exported_field'],
+            'on_change': 'if ($(this).is(":checked")) { $("[name=export]").prop("disabled", false).removeClass("disabled");} else {$("[name=export]").prop("disabled", true).addClass("disabled");}',
+        })
+    ) }}
+
+    {{ fieldsIservice.checkboxFieldExtended(
+        'exported_field',
+        item.customfields.fields['exported_field'],
+        _t('Exported in csv and imported in hMarfa'),
+        field_options|merge({
+            'disabled': true,
+            'buttons': [sendMailButtonConfig],
+        })
+    ) }}
+{%  endif %}

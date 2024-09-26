@@ -1,0 +1,40 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+{% if printer %}
+    {{ fieldsIservice.numberField(
+        'total2_black_field',
+        item.customfields.fields['total2_black_field'],
+        printer.isPlotter() ? _t('Consumed ink') : _t('Black counter reading'),
+        field_options|merge({
+            'min': total2BlackRequiredMinimum,
+            'disabled': total2BlackDisabled or isClosed,
+            'add_field_attribs': {
+                'data-toggle': 'tooltip',
+                'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
+            },
+            'buttons': [
+                csvCounterButtonConfig,
+                estimateButtonConfig,
+            ],
+            'input_addclass': 'w-50 d-inline-block',
+        })
+    ) }}
+{% endif %}
+
+{% if printer.isColor() or printer.isPlotter() %}
+    {{ fields.numberField(
+        'total2_color_field',
+        item.customfields.fields['total2_color_field'],
+        printer.isPlotter() ? _t('Printed surface') : _t('Color counter reading'),
+        field_options|merge({
+            'min': total2ColorRequiredMinimum,
+            'disabled': total2ColorDisabled or isClosed,
+            'add_field_attribs': {
+                'data-toggle': 'tooltip',
+                'title': __('Counter') ~ ' 106',
+            },
+        })
+    ) }}
+{% endif %}
+
