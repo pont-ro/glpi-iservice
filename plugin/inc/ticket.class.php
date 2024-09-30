@@ -1493,7 +1493,7 @@ class PluginIserviceTicket extends Ticket
         return true;
     }
 
-    public static function preProcessPostData($post): array
+    public static function preProcessPostData($post): bool|array
     {
         if (isset($post['content'])) {
             $post['content'] = IserviceToolBox::clearNotAllowedTags($post['content']);
@@ -1513,8 +1513,8 @@ class PluginIserviceTicket extends Ticket
             && !empty($post['cartridge_install_date_manually_changed'])
         ) {
             if ($post['_cartridge_installation_date'] > $post['effective_date_field']) {
-                $post = [];
-                Session::addMessageAfterRedirect('Data instalării cartușului nu poate fi mai recentă decât data efectivă!', false, ERROR);
+                Session::addMessageAfterRedirect(_t('The date of the cartridge installation can not be later than the effective date!'), false, ERROR);
+                return false;
             }
 
             $post['cartridge_install_date_field'] = $post['_cartridge_installation_date'];
