@@ -1235,6 +1235,9 @@ msgstr "Vă rugăm să confirmați că factura a fost emisă!"
 msgid "To create an invoice, press the link"
 msgstr "Pentru a crea factura, apăsați linkul"
 
+msgid "The date of the cartridge installation can not be later than the effective date!"
+msgstr "Data instalării cartușului nu poate fi mai recentă decât data efectivă!"
+
 #, fuzzy
 #~| msgid "Invoice information"
 #~ msgid "Information"

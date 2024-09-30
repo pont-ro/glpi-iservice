@@ -39,6 +39,10 @@ $errorMessage = '';
 
 if (!empty($input)) {
     $input = PluginIserviceTicket::preProcessPostData($input);
+
+    if ($input === false) {
+        Html::redirect($ticket->getFormURL());
+    }
 }
 
 if ($id > 0) {
