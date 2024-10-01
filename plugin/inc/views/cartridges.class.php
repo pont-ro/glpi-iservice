@@ -29,6 +29,10 @@ class Cartridges extends View
 
     public static function getRowBackgroundClass($row_data): string
     {
+        if (self::isRestrictedMode() && self::isCartidgeInstalledButTicketNotClosed($row_data)) {
+            return 'bg-danger';
+        }
+
         if (!empty($row_data['date_out'])) {
             return empty($row_data['date_use']) ? 'bg_cartridge_revoked' : 'bg_cartridge_emptied';
         } else {
@@ -152,14 +156,10 @@ class Cartridges extends View
 
     public static function getInstallerTicketIdDisplay($row_data): string
     {
-        if (self::isRestrictedMode()) {
-            return $row_data['installer_ticket_id'];
-        }
-
         global $CFG_PLUGIN_ISERVICE;
-        if (intval($row_data['saved_installer_ticket_id']) !== intval($row_data['installer_ticket_id'])) {
-            $style = "style='color:red;'";
-            $title = "$row_data[saved_installer_ticket_id] != $row_data[installer_ticket_id]";
+        if (self::isCartidgeInstalledButTicketNotClosed($row_data)) {
+            $style = self::isRestrictedMode() ? '' : "style='color:red;'";
+            $title = self::isRestrictedMode() ? '' : "$row_data[saved_installer_ticket_id] != $row_data[installer_ticket_id]";
         } else {
             $style = '';
             $title = '';
@@ -167,6 +167,11 @@ class Cartridges extends View
 
         $ticket_id = empty($row_data['installer_ticket_id']) ? $row_data['saved_installer_ticket_id'] : $row_data['installer_ticket_id'];
         return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$ticket_id' $style title='$title'>$ticket_id</a>";
+    }
+
+    public static function isCartidgeInstalledButTicketNotClosed($row_data): bool
+    {
+        return intval($row_data['saved_installer_ticket_id']) !== intval($row_data['installer_ticket_id']);
     }
 
     public static function getTicketIdDisplay($row_data): string
@@ -183,6 +188,7 @@ class Cartridges extends View
             $title .= "\r\nPartener instalare: " . htmlspecialchars($row_data['partener_instalare']) . " ($row_data[id_partener_instalare])";
         } else {
         }
+
         if (!empty($style)) {
             $title .= "\r\nCartușul a fost instalat de alt partener!";
         }
@@ -539,7 +545,7 @@ class Cartridges extends View
                 ],
                 'installer_ticket_id' => [
                     'title' => 'Nr.&nbsp;tichet instalare',
-                    'visible' => !self::isRestrictedMode(),
+                    'visible' => true,
                     'align' => 'center',
                     'format' => 'function:default', // this will call \GlpiPlugin\Iservice\Views\Cartridges::getInstallerTicketIdDisplay($row);
                 ],
