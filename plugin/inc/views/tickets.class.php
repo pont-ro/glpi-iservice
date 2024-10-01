@@ -97,7 +97,7 @@ class Tickets extends View
                 'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
                 'title' => _t('Close ticket'),
-                'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
+                'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE) || $row_data['users_id_recipient'] === $_SESSION['glpiID'],
             ],
             'ticketreport' => [
                 'link' => $CFG_GLPI['root_doc'] . "/plugins/iservice/front/ticket.report.php?id=$row_data[ticket_id]",
@@ -327,6 +327,7 @@ class Tickets extends View
                             , GROUP_CONCAT(CONCAT(CAST(tf.date AS CHAR), '\n', tf.content) SEPARATOR '\n') ticket_followups
                             , t2.numar_facturi_neplatite
                             , t2.unpaid_invoices_value
+                            , t.users_id_recipient
                         FROM glpi_plugin_iservice_tickets t
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
                         LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
