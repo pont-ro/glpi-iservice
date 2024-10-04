@@ -253,6 +253,10 @@ div.actions-wrap {
     background-color: #e0e0e0;
 }
 
-.ticket-follow-up-section, .consumables-section{
+.ticket-follow-up-section, .consumables-section {
     background-color: #f5dd7661 !important;
+}
+
+.ticket-change-cartridge-section {
+    background-color: rgba(133, 205, 181, 0.45) !important;
 }
