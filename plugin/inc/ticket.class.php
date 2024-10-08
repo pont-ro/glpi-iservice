@@ -946,7 +946,7 @@ class PluginIserviceTicket extends Ticket
                     continue;
                 }
 
-                $success &= $cartridge->update(
+                $success = $success && $cartridge->update(
                     [
                         'id' => $pluginIserviceCartridgesTickets->fields['cartridges_id'],
                         'printers_id' => 0,
@@ -960,7 +960,7 @@ class PluginIserviceTicket extends Ticket
                         'pages_color_use_field' => 0,
                     ]
                 );
-                $success &= $pluginIserviceCartridgesTickets->delete(['id' => $idToDelete]);
+                $success = $success && $pluginIserviceCartridgesTickets->delete(['id' => $idToDelete]);
             }
         } else {
             Session::addMessageAfterRedirect(_t('Select a cartridge'), false, ERROR);
@@ -1580,7 +1580,7 @@ class PluginIserviceTicket extends Ticket
             $plugin_iservice_consumable_ticket_data                     = $post['_plugin_iservice_consumable'];
             $plugin_iservice_consumable_ticket_data['tickets_id']       = $ticketId;
             $create_cartridge                                           = in_array($plugin_iservice_consumable_ticket_data['plugin_iservice_consumables_id'], PluginIserviceConsumable_Ticket::getCompatibleCartridges(IserviceToolBox::getValueFromInput('suppliers_id', $post), IserviceToolBox::getValueFromInput('printer_id', $post)));
-             $create_cartridge                                         &= self::isNotice(intval($post['_export_type'])) || $plugin_iservice_consumable_ticket_data['amount'] < 0;
+            $create_cartridge                                           = $create_cartridge && (self::isNotice(intval($post['_export_type'])) || $plugin_iservice_consumable_ticket_data['amount'] < 0);
             $plugin_iservice_consumable_ticket_data['create_cartridge'] = $create_cartridge;
             $cartridgeitem                                              = new PluginIserviceCartridgeItem();
             if ($cartridgeitem->getFromDBByRef($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
