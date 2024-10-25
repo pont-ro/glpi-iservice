@@ -5,6 +5,8 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 class PluginIserviceTicketFollowup extends ITILFollowup
 {
 
@@ -15,7 +17,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
     {
         global $CFG_GLPI;
 
-        $showprivate = Session::haveRight(self::$rightname, self::SEEPRIVATE);
+        $showprivate = Session::haveRight(self::$rightname, self::SEEPRIVATE) || IserviceToolBox::inProfileArray(['admin', 'super-admin', 'tehnician', 'subtehnician']);
 
         $criteria = [
             'items_id' => $ID,
@@ -70,7 +72,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
                         ],
                         'description' => [
                             'value' => Html::resume_text($data["content"], $CFG_GLPI["cut"]),
-                            'class' => 'center' .  ($data['is_private'] ? ' text-danger' : ''),
+                            'class' => 'center' . ($data['is_private'] ? ' text-danger' : ''),
                         ],
                     ],
                 ];
@@ -80,7 +82,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
         return $followupsData;
     }
 
-    static function getShortForMail($id, $showprivate = false)
+    public static function getShortForMail($id, $showprivate = false)
     {
         global $DB;
         $restrict = $showprivate ? '' : "AND `is_private` = '0'";
