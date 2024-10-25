@@ -152,7 +152,7 @@ class Tickets extends View
                         $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='ajaxCall(\"$action[link]\", \"$action[confirm]\", $action[success]);'>\r\n";
                     }
                 } else {
-                    $out .= "<a href='$action[link]'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                    $out .= "<a href='$action[link]' target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
                 }
 
                 if (isset($action['suffix'])) {

@@ -14,7 +14,9 @@ class PluginIserviceTicket extends Ticket
 
     use PluginIserviceCommonITILObject;
     use PluginIserviceItem {
+        prepareInputForAdd as prepareInputForAdd_Trait;
         post_addItem as postAddItem;
+        prepareInputForUpdate as prepareInputForUpdate_Trait;
         post_updateItem as postUpdateItem;
     }
 
@@ -1222,8 +1224,10 @@ class PluginIserviceTicket extends Ticket
         return false;
     }
 
-    public function prepareInputForAdd($input): array|bool
+    public function prepareInputForAdd($input)
     {
+        $input = $this->prepareInputForAdd_Trait($input);
+
         self::removeEmptyStringFromNumericFields($input);
 
         foreach (array_keys($input['items_id'] ?? []) as $itemtype) {
@@ -1235,14 +1239,48 @@ class PluginIserviceTicket extends Ticket
 
             if (empty($input['items_id'][$itemtype])) {
                 unset($input['items_id'][$itemtype]);
+            } else {
+                $input['items_id'][$itemtype] = array_values($input['items_id'][$itemtype]);
             }
         }
 
-        return parent::prepareInputForAdd($input);
+        $ticketPrinter = new PluginIservicePrinter();
+        if (isset($input['items_id']['Printer'][0])) {
+            $ticketPrinter->getFromDB($input['items_id']['Printer'][0]);
+        };
+
+        if ($ticketPrinter->isNewItem() && isset($input['printer_id'])) {
+            $ticketPrinter->getFromDB($input['printer_id']);
+        };
+
+        if ($ticketPrinter->isNewItem()) {
+            $customFieldsData = [
+                'contact_name_field' => '',
+                'contact_phone_field' => '',
+                'device_observations_field' => '',
+            ];
+        } else {
+            $customFieldsData = [
+                'contact_name_field' => $ticketPrinter->fields['contact'],
+                'contact_phone_field' => $ticketPrinter->fields['contact_num'],
+                'device_observations_field' => $ticketPrinter->fields['comment'],
+            ];
+        }
+
+        return array_merge($input, $customFieldsData);
+
     }
 
-    public function prepareInputForUpdate($input): array
+    public function post_addItem($history = 1): void
     {
+        $this->postAddItem($history);
+        $this->updateRelatedMovement($this->input['_services_invoiced'] ?? 0);
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        $input = $this->prepareInputForUpdate_Trait($input);
+
         self::removeEmptyStringFromNumericFields($input);
 
         foreach ([CommonITILActor::ASSIGN => 'assign', CommonITILActor::REQUESTER => 'requester', CommonITILActor::OBSERVER => 'observer'] as $user_type_key => $user_type) {
@@ -1262,22 +1300,38 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-        $input = parent::prepareInputForUpdate($input);
-        if (isset($this->fields['items_id']['Printer'][0])) {
-            $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
+//        if (isset($this->fields['items_id']['Printer'][0])) {
+//            $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
+//        }
+//
+//        if (isset($input['items_id']['Printer'][0])) {
+//            $input['items_id'] = $input['items_id']['Printer'][0];
+//        }
+
+        if (($ticketPrinter = $this->getFirstPrinter()) && $ticketPrinter->isNewItem() && isset($input['items_id']['Printer'][0])) {
+            $ticketPrinter->getFromDB($input['items_id']['Printer'][0]);
+        };
+
+        if ($ticketPrinter->isNewItem() && isset($input['printer_id'])) {
+            $ticketPrinter->getFromDB($input['printer_id']);
+        };
+
+        if ($ticketPrinter->isNewItem()) {
+            $customFieldsData = [
+                'contact_name_field' => '',
+                'contact_phone_field' => '',
+                'device_observations_field' => '',
+            ];
+        } else {
+            $customFieldsData = [
+                'contact_name_field' => $ticketPrinter->fields['contact'],
+                'contact_phone_field' => $ticketPrinter->fields['contact_num'],
+                'device_observations_field' => $ticketPrinter->fields['comment'],
+            ];
         }
 
-        if (isset($input['items_id']['Printer'][0])) {
-            $input['items_id'] = $input['items_id']['Printer'][0];
-        }
 
-        return $input;
-    }
-
-    public function post_addItem($history = 1): void
-    {
-        $this->postAddItem($history);
-        $this->updateRelatedMovement($this->input['_services_invoiced'] ?? 0);
+        return array_merge($input, $customFieldsData);
     }
 
     public function post_updateItem($history = 1): void

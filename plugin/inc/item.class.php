@@ -75,40 +75,63 @@ trait PluginIserviceItem
     public function add(array $input, $options = [], $history = true)
     {
         $model = new parent;
-        IserviceToolBox::preprocessInputValuesForCustomFields(get_Class($model), $input);
-        $result = $model->add($input, $options, $history);
+        $input = $this->prepareInputForAdd($input);
 
-        if ($result) {
-            $this->post_addItem($history);
-
-            $this->updateCustomFields($model, $input);
+        if (false === ($result = $model->add($input, $options, $history))) {
+            return false;
         }
+
+        if (false === $this->updateCustomFields($model, $input)) {
+            return false;
+        }
+
+        $this->post_addItem($history);
 
         return $result;
     }
 
-    public function post_addItem($history = 1): void
+    public function prepareInputForAdd($input)
     {
-        // This should be kept here, but do not call parent::post_addItem($history) here, because it is already called in add().
+        // This should be kept here, but do not call parent::prepareInputForAdd($input) here, because it is already called in add() for the parent model.
+        IserviceToolBox::preprocessInputValuesForCustomFields(get_Class(new parent), $input);
+
+        return $input;
     }
 
-    public function update(array $input, $history = 1, $options = []): bool
+    public function post_addItem($history = 1): void
+    {
+        // This should be kept here, but do not call parent::post_addItem($history) here, because it is already called in add() for the parent model.
+    }
+
+    public function update(array $input, $history = 1, $options = [])
     {
         $model = new parent;
-        IserviceToolBox::preprocessInputValuesForCustomFields(get_Class($model), $input);
-        $model->getFromDB($this->getID());
-        $result = $model->update($input, $history, $options);
+        $input = $this->prepareInputForUpdate($input);
 
-        if ($result) {
-            $this->post_updateItem($history);
+        if (false === $model->update(array_merge([static::getIndexName() => $this->getID()], $input), $history, $options)) {
+            return false;
         }
 
-        return $result && $this->updateCustomFields($model, $input);
+        if (false === $this->updateCustomFields($model, $model->input)) {
+            return false;
+        }
+
+        $this->post_updateItem($history);
+
+        return true;
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        // This should be kept here, but do not call parent::prepareInputForAdd($input) here, because it is already called in add() for the parent model.
+        IserviceToolBox::preprocessInputValuesForCustomFields(get_Class(new parent), $input);
+
+        return $input;
     }
 
     public function post_updateItem($history = 1): void
     {
-        // This should be kept here, but do not call parent::post_updateItem($history) here, because it is already called in update().
+        // This should be kept here, but do not call parent::post_updateItem($history) here, because it is already called in update() for the parent model.
     }
 
     public function updateCustomFields($model, $input, $history = 1, $options = []): bool
