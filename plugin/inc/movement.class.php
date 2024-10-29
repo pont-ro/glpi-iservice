@@ -192,7 +192,6 @@ class PluginIserviceMovement extends CommonDBTM
                 $params                                  .= "&name=preluare echipament";
                 $params                                  .= "&content=preluare echipament";
                 $params                                  .= "&_users_id_assign=" . ($printer->fields['users_id_tech'] ?? '');
-                $params                                  .= "&_export_type=" . PluginIserviceTicket::EXPORT_TYPE_NOTICE_ID;
                 $params                                  .= "&_close_on_success=1";
                 $params                                  .= "&add_cartridges_as_negative_consumables=1";
                 $ticket                                   = new PluginIserviceTicket();
