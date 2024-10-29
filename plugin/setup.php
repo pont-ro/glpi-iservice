@@ -67,7 +67,8 @@ function plugin_init_iservice(): void
     $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
 
     $CFG_PLUGIN_ISERVICE = [
-        'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice"
+        'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice",
+        'data_integrity_tests_date_from' => PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from'),
     ];
 
     // Required!

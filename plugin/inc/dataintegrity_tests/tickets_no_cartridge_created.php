@@ -17,18 +17,18 @@ return [
           AND pcf.em_field = 1
           AND scf.cm_field = 1
           AND ct.tickets_id NOT IN ('84693', '88333', '92634')
-          AND tcf.effective_date_field > '" . PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from') . "'
+          AND tcf.effective_date_field > '$CFG_PLUGIN_ISERVICE[data_integrity_tests_date_from]'
         GROUP BY tid;
         ",
     'test' => [
         'alert' => true,
         'type' => 'compare_query_count',
         'zero_result' => [
-            'summary_text' => 'There are no tickets which do not create cartridge but should'
+            'summary_text' => 'There are no tickets which do not create cartridge, but should'
         ],
         'positive_result' => [
-            'summary_text' => 'There are {count} tickets which do not create cartridge but should',
-            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> does not create cartridge but it should",
+            'summary_text' => 'There are {count} tickets which do not create cartridge, but should',
+            'iteration_text' => "Ticket <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=[tid]' target='_blank'>[tid]</a> does not create cartridge, but it should",
         ],
     ],
 ];

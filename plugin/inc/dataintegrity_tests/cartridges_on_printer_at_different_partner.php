@@ -14,7 +14,7 @@ return [
         left join glpi_suppliers s2 on s2.id = ic.suppliers_id
         where c.date_use is not null and c.date_out is null
           and c.suppliers_id_field != ic.suppliers_id
-          and c.date_mod > '" . PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from') . "'
+          and c.date_mod > '$CFG_PLUGIN_ISERVICE[data_integrity_tests_date_from]'
         ",
     'test' => [
         'alert' => true,

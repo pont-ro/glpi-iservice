@@ -4,7 +4,7 @@ return [
     'query' => "
         select c.id, c.printers_id, c.printed_pages_field bk, c.printed_pages_color_field color, c.tickets_id_use_field install_ticket_id, c.tickets_id_out_field out_ticket_id
         from glpi_plugin_iservice_cartridges c
-        where c.date_creation > '" . PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from') . "' AND (c.printed_pages_field < 0 or c.printed_pages_color_field < 0)
+        where c.date_creation > '$CFG_PLUGIN_ISERVICE[data_integrity_tests_date_from]' AND (c.printed_pages_field < 0 or c.printed_pages_color_field < 0)
         ",
     'test' => [
         'alert' => true,
