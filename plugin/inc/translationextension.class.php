@@ -9,6 +9,7 @@ class PluginIserviceTranslationExtension extends AbstractExtension
         return [
             new TwigFunction('_t', '_t'),
             new TwigFunction('_tn', '_tn'),
+            new TwigFunction('implode', 'implode'),
         ];
     }
 }

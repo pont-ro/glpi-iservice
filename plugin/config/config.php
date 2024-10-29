@@ -12,7 +12,7 @@ return [
     'enabled_crons.mailStockVerify' => true,
     'enabled_crons.mailCartridgeVerify' => true,
     'enable_header_tests' => true,
-    'data_integrity_tests_date_from' => '2022-01-01',
+    'data_integrity_tests_date_from' => '2023-01-01',
     'hmarfa.import.script_file' => PLUGIN_ISERVICE_CACHE_DIR . '/hMarfaImport.sql',
     'hmarfa.import.errors' => PLUGIN_ISERVICE_CACHE_DIR . "/hMarfaImportErrors",
     'hmarfa.export.default_path' => '/var/sambadir/2x/CSV_HAMOR', // Without trailing slash!

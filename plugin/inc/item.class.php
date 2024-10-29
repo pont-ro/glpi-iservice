@@ -109,7 +109,10 @@ trait PluginIserviceItem
         $input = $this->prepareInputForUpdate($input);
 
         if (false === $model->update(array_merge([static::getIndexName() => $this->getID()], $input), $history, $options)) {
-            return false;
+            // If custom fields was updated by hooks, plugin_fields_data is not empty, so an update was made
+            if (empty($model->plugin_fields_data)) {
+                return false;
+            }
         }
 
         if (false === $this->updateCustomFields($model, $model->input)) {

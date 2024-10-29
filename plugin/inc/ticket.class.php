@@ -1937,6 +1937,10 @@ class PluginIserviceTicket extends Ticket
             if (empty($this->customfields->fields['exported_field'])) {
                 $reasons[] = _t('hMarfa export not done!');
             }
+        } else {
+            if (!empty($this->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'])) {
+                $reasons[] = _t('Consumables must exist if there is an export type!');
+            }
         }
 
         return $reasons;
@@ -1998,6 +2002,7 @@ class PluginIserviceTicket extends Ticket
                     'label'   => __('Close'),
                     'value'   => 1,
                     'options' => [
+                        'id' => 'ticket-close',
                         'data-confirm-message' => $close_confirm_message,
                         'on_click'             => '$("[name=status]").val(' . Ticket::CLOSED . ');',
                     ],

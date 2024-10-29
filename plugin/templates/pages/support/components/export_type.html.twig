@@ -2,6 +2,22 @@
 {% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
 
 {% if partnerId > 0 %}
+    {% if item.hasConsumables() %}
+        {% set onChange = 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}' %}
+    {% else %}
+        {% if item.isCloseable() %}
+            {% set revertDisabledTo = 'false' %}
+            {% set addClass = '.addClass("submit disabled")' %}
+            {% set removeClass = '.removeClass("submit disabled")' %}
+        {% else %}
+            {% set revertDisabledTo = 'true' %}
+            {% set addClass = '' %}
+            {% set removeClass = '' %}
+        {% endif %}
+        {% set disabledReason = implode('<br>', item.getNotCloseableReasonsList()) %}
+        {% set disabledReasonExtended = disabledReason ~ (disabledReason ? '<br>' : '') ~ 'Daca tip export nu este gol, adaugati consumabile' %}
+        {% set onChange = 'if ($(this).val()) {$(".add-consumable-div").show(); $("#ticket-close")' ~ addClass ~ '.attr("data-bs-original-title", "' ~ disabledReasonExtended ~ '").prop("disabled", true);} else {$(".add-consumable-div").hide(); $("#ticket-close")' ~ removeClass ~ '.attr("data-bs-original-title", "' ~ disabledReason ~ '").prop("disabled", ' ~ revertDisabledTo ~ ');}' %}
+    {% endif %}
     {{ fields.dropdownArrayField(
         '_export_type',
         item.customfields.fields['plugin_fields_ticketexporttypedropdowns_id'],
@@ -9,7 +25,7 @@
         _t('Export type'),
         field_options|merge({
             'required': item.hasConsumables(),
-            'on_change': 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}',
+            'on_change': onChange,
         })
     ) }}
 {% endif %}

@@ -95,6 +95,9 @@
          {% if options.target %}
             target="{{ options.target }}"
          {% endif %}>
+         {%  if options.id %}
+            id = "{{ options.id }}"
+         {% endif %}
          {% if options.buttonIconClass %}
             <i class="fa-fw {{ options.buttonIconClass }}"></i>
          {% endif %}
@@ -102,6 +105,9 @@
       </a>
    {% else %}
       <button
+         {%  if options.id %}
+            id = "{{ options.id }}"
+         {% endif %}
          data-bs-toggle="tooltip"
          data-bs-html="true"
          class="btn {{ options.buttonClass ?? '' }}"
