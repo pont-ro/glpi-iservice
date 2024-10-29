@@ -388,7 +388,7 @@ class PluginIserviceTask_DataIntegrityTest
             global $CFG_PLUGIN_ISERVICE;
 
             if (!empty($case_result_type)) {
-                $last_checked = empty($should_ignore) ? date('Y-m-d H:i:s') : (self::$lastTestResults[$case_name]['last_checked'] ?? 'never');
+                $last_checked = empty($should_ignore) ? $_SESSION["glpi_currenttime"] : (self::$lastTestResults[$case_name]['last_checked'] ?? 'never');
 
                 $clear_data      = "<span id='delete_last_saved_data_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=delete_last_result&id=$case_name\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#delete_last_saved_data_span_$case_name\").hide(); } }); return false;' value='clear cached data' /></span>";
                 $additional_info = sprintf(

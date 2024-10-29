@@ -38,7 +38,7 @@ class PluginIserviceExtOrder extends CommonDBTM
             $input['users_id'] = $_SESSION['glpiID'];
         }
 
-        $input['modify_date'] = date('Y-m-d H:i:s');
+        $input['modify_date'] = $_SESSION["glpi_currenttime"];
 
         if ($input['plugin_iservice_orderstatuses_id'] != ($this->fields['plugin_iservice_orderstatuses_id'] ?? null) || isset($input['_add'])) {
             $input['_status_change']['add']                                  = 'add';

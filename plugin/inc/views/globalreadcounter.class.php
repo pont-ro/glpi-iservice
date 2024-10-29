@@ -316,7 +316,7 @@ class GlobalReadCounter extends View
                     'edit_field' => [
                         'type' => self::FILTERTYPE_DATETIME,
                         'name' => 'effective_date_field',
-                        'empty_value' => date('Y-m-d H:i:s'),
+                        'empty_value' => $_SESSION["glpi_currenttime"],
                         'min_value' => '[last_effective_date]',
                         'label' => 'Data citire pentru [serial]',
                         'import' => [

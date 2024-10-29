@@ -1093,7 +1093,7 @@ class View extends \CommonGLPI
                 }
             }
 
-            $style          = date('Y-m-d H:i:s') > ($this->use_cache['data_expire_warning'] ?? '') ? "style='color:red'" : "";
+            $style          = $_SESSION["glpi_currenttime"] > ($this->use_cache['data_expire_warning'] ?? '') ? "style='color:red'" : "";
             $title          = sprintf(_t('Expires on %s'), $this->use_cache['data_expires'] ?? '');
             $refresh_button = $this->enable_refresh ? " <input class='submit' onclick='if (confirm(\"" . _t('Warning! This operation will block the database for 5 minutes! Proceed?') . "\") === true) { $(\"#cache-refresh\").val(1);$(\".refresh-target\").submit(); }' $style type='submit' value='" . _t('Refresh') . "'>" : "";
             $this->name    .= " [<span $style title='$title'>" . sprintf(_t('from cache %s'), $this->use_cache['data_cached'] ?? '') . "$refresh_button</span>]";
@@ -1231,7 +1231,7 @@ class View extends \CommonGLPI
         $cache_data = [
             'control_hash' => $this->control_hash,
             'table_name' => $table_name,
-            'data_cached' => date('Y-m-d H:i:s'),
+            'data_cached' => $_SESSION["glpi_currenttime"],
             'data_expires' => date('Y-m-d H:i:s', time() + $this->cache_timeout),
             'data_expire_warning' => date('Y-m-d H:i:s', time() + $this->cache_timeout_warning),
         ];

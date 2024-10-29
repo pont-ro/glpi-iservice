@@ -489,7 +489,7 @@ class PluginIserviceTicket extends Ticket
             'solvedStatusValue'           => self::SOLVED,
             'consumablesTableData'        => PluginIserviceConsumable_Ticket::getDataForTicketConsumablesSection($this, $prepared_data['field_required'], (empty($ID) || ($ID > 0 && $this->customfields->fields['delivered_field']))),
 
-            'effectiveDate'                => $this->customfields->fields['effective_date_field'] ?? date('Y-m-d H:i:s'),
+            'effectiveDate'                => $this->customfields->fields['effective_date_field'] ?? $_SESSION["glpi_currenttime"],
             'effectiveDateFieldReadonly'   => $this->fields['status'] == self::CLOSED,
             'cartridgeInstallDateFieldReadonly' => $this->fields['status'] == self::CLOSED,
             'emMailIdField'             => $options['em_mail_id_field'] ?? null,
@@ -1267,6 +1267,10 @@ class PluginIserviceTicket extends Ticket
             ];
         }
 
+        if (empty($input['effective_date_field'])) {
+            $customFieldsData['effective_date_field'] = $_SESSION["glpi_currenttime"];
+        }
+
         return array_merge($input, $customFieldsData);
 
     }
@@ -1558,9 +1562,8 @@ class PluginIserviceTicket extends Ticket
             unset($post['_followup_content']);
         }
 
-        if (!isset($post['effective_date_field']) && (empty($post['id']) || $post['id'] < 0)
-        ) {
-            $post['effective_date_field'] = date('Y-m-d H:i:s');
+        if (!isset($post['effective_date_field']) && (empty($post['id']) || $post['id'] < 0)) {
+            $post['effective_date_field'] = $_SESSION["glpi_currenttime"];
         }
 
         if (isset($post['_cartridge_installation_date'])
@@ -1774,7 +1777,7 @@ class PluginIserviceTicket extends Ticket
         $lastTicket = self::getLastForPrinterOrSupplier($input['printer_id'] ?? null, $input['suppliers_id'] ?? null);
 
         if (empty($lastTicket->fields) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') < $input['effective_date_field'] || empty($input['effective_date_field'])) {
-            $input['effective_date_field'] = date('Y-m-d H:i:s');
+            $input['effective_date_field'] = $_SESSION["glpi_currenttime"];
         }
 
         return $input;
