@@ -2,16 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2024-09-10 11:39+0300\n"
+"PO-Revision-Date: 2024-10-29 11:51+0200\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
-"X-Generator: Poedit 3.4.4\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-KeywordsList: _t;_tn:1,2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -56,8 +55,7 @@ msgid "Could not delete cartridge from the database."
 msgstr "Nu s-a putut șterge cartușul din baza de date."
 
 #: ajax/manageCartridge.php:141 ajax/manageConsumable.php:68
-#: ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45
-#: ajax/managePrinter.php:177
+#: ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45 ajax/managePrinter.php:177
 #, php-format
 msgid "Operation not implemented: %s"
 msgstr "Operația %s nu este implementată"
@@ -78,9 +76,7 @@ msgstr "Câmpurile adiționale au fost resetate la setările implicite"
 
 #: ajax/manageCustomFields.php:15
 msgid "An error occurred while resetting custom fields to default settings"
-msgstr ""
-"A apărut o eroare în timpul resetării câmpurilor adiționale la setările "
-"implicite"
+msgstr "A apărut o eroare în timpul resetării câmpurilor adiționale la setările implicite"
 
 #: ajax/manageDataintegrityTest.php:55
 #, php-format
@@ -97,6 +93,9 @@ msgstr "Id invalid: %d"
 msgid "Invalid printer id: %d"
 msgstr "Id aparat invalid: %d"
 
+msgid "Invalid ticket id: %d"
+msgstr "Id tichet invalid: %d"
+
 #: ajax/managePrinter.php:180
 #, php-format
 msgid "Could not complete operation %s for printer %d"
@@ -106,12 +105,12 @@ msgstr "Operația %s nu poate fi efectuată pentru aparatul %d"
 #, fuzzy, php-format
 #| msgid "Invalid cartridge id: %d"
 msgid "Invalid contract id: %d or supplier id: %d"
-msgstr "Id cartuș invalid: %d"
+msgstr "Id contract %d sau partener %d invalid"
 
 #: ajax/setContractSupplier.php:32
 #, php-format
 msgid "Could not add supplier %d to contract %d"
-msgstr ""
+msgstr "Partenerul %d nu poate fi adaugat la contract %d"
 
 #: ajax/setDefaulProfileRights.php:10
 msgid "Profile rights have been reset to default settings"
@@ -119,21 +118,15 @@ msgstr "Drepturile au fost resetate la setările implicite"
 
 #: ajax/setDefaulProfileRights.php:10
 msgid "An error occurred while resetting profile rights to default settings"
-msgstr ""
-"A apărut o eroare în timpul resetării drepturilor la setările implicite"
+msgstr "A apărut o eroare în timpul resetării drepturilor la setările implicite"
 
 #: ajax/setDefaulProfileRights.php:11
 msgid "Profile rights for custom fields have been reset to default settings"
-msgstr ""
-"Drepturile pentru câmpurile adiționale au fost resetate la setările implicite"
+msgstr "Drepturile pentru câmpurile adiționale au fost resetate la setările implicite"
 
 #: ajax/setDefaulProfileRights.php:11
-msgid ""
-"An error occurred while resetting custom fields profile rights to default "
-"settings"
-msgstr ""
-"A apărut o eroare în timpul resetării drepturilor pentru câmpurile "
-"adiționale la setările implicite"
+msgid "An error occurred while resetting custom fields profile rights to default settings"
+msgstr "A apărut o eroare în timpul resetării drepturilor pentru câmpurile adiționale la setările implicite"
 
 #: config/import.php:5
 msgid "Various data"
@@ -153,8 +146,8 @@ msgstr[0] "Listă specială"
 msgstr[1] "Liste speciale"
 msgstr[2] "Liste speciale"
 
-#: config/menu.php:35 front/config.form.php:5 front/monthlyplan.php:11
-#: front/views.php:21 inc/menu.class.php:14 inc/utils/iservicemenu.class.php:15
+#: config/menu.php:35 front/config.form.php:5 front/monthlyplan.php:11 front/views.php:21
+#: inc/menu.class.php:14 inc/utils/iservicemenu.class.php:15
 msgid "iService"
 msgstr "iService"
 
@@ -162,14 +155,13 @@ msgstr "iService"
 msgid "Inquiry"
 msgstr "Solicitare"
 
-#: front/hmarfaexport.form.php:18 inc/printer.class.php:292
-#: inc/ticket.class.php:1999 inc/views/printers.class.php:57
+#: front/hmarfaexport.form.php:18 inc/printer.class.php:292 inc/ticket.class.php:1999
+#: inc/views/printers.class.php:57
 msgid "hMarfa export"
 msgstr "export hMarfa"
 
-#: front/movement.form.php:18 front/movement.form.php:183
-#: inc/movement.class.php:116 inc/movement.class.php:264
-#: inc/printer.class.php:303 inc/views/printers.class.php:107
+#: front/movement.form.php:18 front/movement.form.php:183 inc/movement.class.php:116
+#: inc/movement.class.php:264 inc/printer.class.php:303 inc/views/printers.class.php:107
 msgid "Move"
 msgstr "Mută"
 
@@ -280,8 +272,7 @@ msgstr[2] "E-maintenance"
 
 #: inc/emaintenance.class.php:550
 msgid "MailCollector has to be inactive to use it for E-maintenance"
-msgstr ""
-"Receiverul trebuie să fie inactiv pentru a-l folosi pentru E-maintenance"
+msgstr "Receiverul trebuie să fie inactiv pentru a-l folosi pentru E-maintenance"
 
 #: inc/emaintenance.class.php:679
 #, php-format
@@ -293,46 +284,43 @@ msgstr "Adresa %s respinsă"
 msgid "Email with subject \"%s\" rejected"
 msgstr "Emailul cu subiectul \"%s\" a fost respins"
 
-#: inc/extorder.class.php:22 inc/extorder.class.php:27
-#: inc/views/extorders.class.php:19 inc/views/extorders.class.php:28
-#: inc/views/extorders.class.php:53 inc/views/intorders.class.php:83
+#: inc/extorder.class.php:22 inc/extorder.class.php:27 inc/views/extorders.class.php:19
+#: inc/views/extorders.class.php:28 inc/views/extorders.class.php:53
+#: inc/views/intorders.class.php:83
 msgid "External order"
 msgid_plural "External orders"
 msgstr[0] "Comandă externă"
 msgstr[1] "Comenzi externe"
 msgstr[2] "Comenzi externe"
 
-#: inc/extorder.class.php:125 inc/intorder.class.php:22
-#: inc/intorder.class.php:27 inc/intorder_extorder.class.php:184
-#: inc/intorder_view.class.php:21 inc/views/extorders.class.php:33
-#: inc/views/intorders.class.php:22 inc/views/intorders.class.php:79
-#: inc/views/intorders.class.php:103
+#: inc/extorder.class.php:125 inc/intorder.class.php:22 inc/intorder.class.php:27
+#: inc/intorder_extorder.class.php:184 inc/intorder_view.class.php:21
+#: inc/views/extorders.class.php:33 inc/views/intorders.class.php:22
+#: inc/views/intorders.class.php:79 inc/views/intorders.class.php:103
 msgid "Internal order"
 msgid_plural "Internal orders"
 msgstr[0] "Comandă internă"
 msgstr[1] "Comenzi interne"
 msgstr[2] "Comenzi interne"
 
-#: inc/extorder.class.php:161 inc/printer.class.php:245
-#: inc/views/extorders.class.php:154
+#: inc/extorder.class.php:161 inc/printer.class.php:245 inc/views/extorders.class.php:154
 msgid "Supplier"
 msgid_plural "Suppliers"
 msgstr[0] "Partener"
 msgstr[1] "Parteneri"
 msgstr[2] "Parteneri"
 
-#: inc/extorder.class.php:173 inc/intorder.class.php:197
-#: inc/orderstatus.class.php:29
+#: inc/extorder.class.php:173 inc/intorder.class.php:197 inc/orderstatus.class.php:29
 msgid "Order status"
 msgid_plural "Order statuses"
 msgstr[0] "Stare comandă"
 msgstr[1] "Stări comandă"
 msgstr[2] "Stări comandă"
 
-#: inc/hmarfa.class.php:619 inc/movement.class.php:280
-#: inc/printer.class.php:364 inc/views/globalreadcounter.class.php:236
-#: inc/views/printers.class.php:548 inc/views/printers.class.php:592
-#: inc/views/tickets.class.php:469 inc/views/tickets.class.php:552
+#: inc/hmarfa.class.php:619 inc/movement.class.php:280 inc/printer.class.php:364
+#: inc/views/globalreadcounter.class.php:236 inc/views/printers.class.php:548
+#: inc/views/printers.class.php:592 inc/views/tickets.class.php:469
+#: inc/views/tickets.class.php:552
 msgid "Usage address"
 msgstr "Adresa de exploatare"
 
@@ -360,9 +348,8 @@ msgstr "Procent mediu"
 msgid "Last sales to the partner"
 msgstr "Ultimele vânzări către partener"
 
-#: inc/hmarfa.class.php:1332 inc/intorder.class.php:171
-#: inc/intorder_extorder.class.php:186 inc/views/extorders.class.php:151
-#: inc/views/intorders.class.php:342
+#: inc/hmarfa.class.php:1332 inc/intorder.class.php:171 inc/intorder_extorder.class.php:186
+#: inc/views/extorders.class.php:151 inc/views/intorders.class.php:342
 msgid "Consumable"
 msgid_plural "Consumables"
 msgstr[0] "Consumabil"
@@ -450,10 +437,9 @@ msgstr "Facturi neplătite"
 msgid "Total unpaid"
 msgstr "Total neplătit"
 
-#: inc/movement.class.php:23 inc/printer.class.php:244
-#: inc/printer.class.php:303 inc/printer.class.php:355
-#: inc/printer.class.php:676 inc/printer.class.php:681 inc/ticket.class.php:169
-#: inc/views/printers.class.php:107
+#: inc/movement.class.php:23 inc/printer.class.php:244 inc/printer.class.php:303
+#: inc/printer.class.php:355 inc/printer.class.php:676 inc/printer.class.php:681
+#: inc/ticket.class.php:169 inc/views/printers.class.php:107
 msgid "Printer"
 msgstr "Aparat"
 
@@ -469,8 +455,8 @@ msgstr "Partener nou"
 msgid "View"
 msgstr "Vizualizează"
 
-#: inc/movement.class.php:184 inc/movement.class.php:383
-#: inc/printer.class.php:495 inc/printer.class.php:594
+#: inc/movement.class.php:184 inc/movement.class.php:383 inc/printer.class.php:495
+#: inc/printer.class.php:594
 msgid "Modify"
 msgstr "Modifică"
 
@@ -521,9 +507,8 @@ msgstr[0] "Actualizator emailuri în așteptare"
 msgstr[1] "Actualizatori emailuri în așteptare"
 msgstr[2] "Actualizatori emailuri în așteptare"
 
-#: inc/printer.class.php:43 inc/ticket.class.php:2071
-#: inc/views/movements.class.php:135 inc/views/printers.class.php:295
-#: inc/views/tickets.class.php:223
+#: inc/printer.class.php:43 inc/ticket.class.php:2071 inc/views/movements.class.php:135
+#: inc/views/printers.class.php:295 inc/views/tickets.class.php:223
 msgid "Manage printer"
 msgstr "Administrare aparat"
 
@@ -532,9 +517,8 @@ msgstr "Administrare aparat"
 msgid "New quick ticket"
 msgstr "Tichet rapid nou"
 
-#: inc/printer.class.php:299 inc/ticket.class.php:2060
-#: inc/views/emaintenance.class.php:38 inc/views/printers.class.php:63
-#: inc/views/tickets.class.php:112
+#: inc/printer.class.php:299 inc/ticket.class.php:2060 inc/views/emaintenance.class.php:38
+#: inc/views/printers.class.php:63 inc/views/tickets.class.php:112
 msgid "Operations list"
 msgstr "Lista lucrări"
 
@@ -542,8 +526,7 @@ msgstr "Lista lucrări"
 msgid "Printers of the client"
 msgstr "Aparatele acestui client"
 
-#: inc/printer.class.php:307 inc/ticket.class.php:2028
-#: inc/views/clientinvoices.class.php:130
+#: inc/printer.class.php:307 inc/ticket.class.php:2028 inc/views/clientinvoices.class.php:130
 msgid "Client printers"
 msgstr "Aparate client"
 
@@ -552,12 +535,10 @@ msgid "Global contract"
 msgstr "Contract global"
 
 #: inc/printer.class.php:396
-msgid ""
-"Select if the printer is not billed individually, but together with other "
-"printers"
+msgid "Select if the printer is not billed individually, but together with other printers"
 msgstr ""
-"Bifați aici în cazul în care aparatul NU se factureaza individual, ci este "
-"facturat împreună cu mai multe aparate"
+"Bifați aici în cazul în care aparatul NU se factureaza individual, ci este facturat "
+"împreună cu mai multe aparate"
 
 #: inc/stockverifier.class.php:22
 msgid "Stock verifier"
@@ -614,11 +595,11 @@ msgstr "%d ticket(e) salvat(e)."
 #: inc/ticket.class.php:524
 #, php-format
 msgid ""
-"Warning. There is a newer ticket %1$d with installed cartridges. First "
-"remove cartridges from that ticket."
+"Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges "
+"from that ticket."
 msgstr ""
-"Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi "
-"cartușele de pe acel tichet."
+"Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi cartușele de pe "
+"acel tichet."
 
 #: inc/ticket.class.php:541 inc/ticket.class.php:2371
 msgid "Notice"
@@ -645,18 +626,15 @@ msgstr "Estimare"
 
 #: inc/ticket.class.php:855
 msgid ""
-"You can not install this cartridge because it is already installed with an "
-"other ticket!"
-msgstr ""
-"Nu puteți instala acest cartuș deoarece este deja instalat cu un alt tichet!"
+"You can not install this cartridge because it is already installed with an other ticket!"
+msgstr "Nu puteți instala acest cartuș deoarece este deja instalat cu un alt tichet!"
 
 #: inc/ticket.class.php:908
 msgid "You can not add new cartridges while there is a newer closed ticket."
 msgstr "Nu puteți adăuga cartușe cât timp există un tichet închis mai nou."
 
 #: inc/ticket.class.php:911
-msgid ""
-"You can not add new cartridges while there is a newer ticket with cartridges."
+msgid "You can not add new cartridges while there is a newer ticket with cartridges."
 msgstr "Nu puteți adăuga cartușe cât timp există un tichet mai nou cu cartușe."
 
 #: inc/ticket.class.php:966
@@ -684,8 +662,7 @@ msgstr "Data ultima factură"
 msgid "Invoice expiry date"
 msgstr "Data expirare factură"
 
-#: inc/ticket.class.php:1417 inc/ticket.class.php:1418
-#: inc/views/operations.class.php:262
+#: inc/ticket.class.php:1417 inc/ticket.class.php:1418 inc/views/operations.class.php:262
 msgid "Printed surface"
 msgstr "Suprafața printată"
 
@@ -701,8 +678,7 @@ msgstr "ultima factură"
 msgid "last closed ticket"
 msgstr "ultimul tichet închis"
 
-#: inc/ticket.class.php:1419 inc/ticket.class.php:1420
-#: inc/views/operations.class.php:261
+#: inc/ticket.class.php:1419 inc/ticket.class.php:1420 inc/views/operations.class.php:261
 msgid "Consumed ink"
 msgstr "Cerneală consumată"
 
@@ -776,12 +752,9 @@ msgstr "Factură servicii"
 
 #: inc/ticket.class.php:2287
 #, php-format
-msgid ""
-"There is an unfinished movement for this printer, please finish movement %s "
-"first!"
+msgid "There is an unfinished movement for this printer, please finish movement %s first!"
 msgstr ""
-"O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați "
-"mutarea %s întâi!"
+"O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea %s întâi!"
 
 #: inc/ticket.class.php:2295 inc/ticket.class.php:2299
 #, php-format
@@ -926,9 +899,7 @@ msgstr "Contoare aparate"
 
 #: inc/views/printercounters.class.php:175 inc/views/view.class.php:1098
 msgid "Warning! This operation will block the database for 5 minutes! Proceed?"
-msgstr ""
-"Atenție!!! Această operațiune blochează baza de date pentru 5 minute! "
-"Executati?"
+msgstr "Atenție!!! Această operațiune blochează baza de date pentru 5 minute! Executati?"
 
 #: inc/views/printers.class.php:26
 msgid "Printer list"
@@ -1000,6 +971,21 @@ msgstr "copii color/zi"
 
 msgid "and"
 msgstr "și"
+
+msgid "Do not check before invoice is issued, operation can not be undone!"
+msgstr "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi revocată!"
+
+msgid "Please confirm that the invoice was issued!"
+msgstr "Vă rugăm să confirmați că factura a fost emisă!"
+
+msgid "To create an invoice, press the link"
+msgstr "Pentru a crea factura, apăsați linkul"
+
+msgid "The date of the cartridge installation can not be later than the effective date!"
+msgstr "Data instalării cartușului nu poate fi mai recentă decât data efectivă!"
+
+msgid "Consumables must exist if there is an export type!"
+msgstr "Daca tip export nu este gol, adăugați consumabile!"
 
 #, fuzzy
 #~| msgid "Pending emails"
@@ -1226,18 +1212,6 @@ msgstr "și"
 #~ msgid "Description"
 #~ msgstr "Descriere tichet"
 
-msgid "Do not check before invoice is issued, operation can not be undone!"
-msgstr "Nu bifați înainte ca factura de servicii să fie emisă, operația nu poate fi revocată!"
-
-msgid "Please confirm that the invoice was issued!"
-msgstr "Vă rugăm să confirmați că factura a fost emisă!"
-
-msgid "To create an invoice, press the link"
-msgstr "Pentru a crea factura, apăsați linkul"
-
-msgid "The date of the cartridge installation can not be later than the effective date!"
-msgstr "Data instalării cartușului nu poate fi mai recentă decât data efectivă!"
-
 #, fuzzy
 #~| msgid "Invoice information"
 #~ msgid "Information"
@@ -1288,9 +1262,7 @@ msgstr "Data instalării cartușului nu poate fi mai recentă decât data efecti
 #~ msgstr "Interfața originală"
 
 #~ msgid "Welcome to the Expert Line copy device reporting system"
-#~ msgstr ""
-#~ "Bine ați venit in sistemul de raportare on-line al echipamentelor de "
-#~ "copiere"
+#~ msgstr "Bine ați venit in sistemul de raportare on-line al echipamentelor de copiere"
 
 #~ msgid "Display iService debug informations"
 #~ msgstr "Afișează informați de depanare"
@@ -1298,11 +1270,8 @@ msgstr "Data instalării cartușului nu poate fi mai recentă decât data efecti
 #~ msgid "Generate new magic link"
 #~ msgstr "Generează link magic nou"
 
-#~ msgid ""
-#~ "Please associate a printer with the ticket to be able to generate a "
-#~ "ticket report."
-#~ msgstr ""
-#~ "Adăugați o imprimantă la tichet pentru a genera raportul de intervenție."
+#~ msgid "Please associate a printer with the ticket to be able to generate a ticket report."
+#~ msgstr "Adăugați o imprimantă la tichet pentru a genera raportul de intervenție."
 
 #~ msgid "Close tickets"
 #~ msgstr "Închide tichete"
@@ -1368,8 +1337,7 @@ msgstr "Data instalării cartușului nu poate fi mai recentă decât data efecti
 #~ msgstr "Selectați tip export"
 
 #~ msgid "Don't forget to press 'Update' button to save your changes"
-#~ msgstr ""
-#~ "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificările"
+#~ msgstr "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificările"
 
 #~ msgid "Are you sure you want to reset profile rights to default settings?"
 #~ msgstr "Sigur vreți să resetați drepturile la setările implicite?"
@@ -1381,11 +1349,11 @@ msgstr "Data instalării cartușului nu poate fi mai recentă decât data efecti
 #~ msgstr "Sigur vreți să resetați câmpurile adiționale la setările implicite?"
 
 #~ msgid ""
-#~ "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported "
-#~ "for manual processing, %5$d refused, %6$d errors."
+#~ "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual "
+#~ "processing, %5$d refused, %6$d errors."
 #~ msgstr ""
-#~ "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate "
-#~ "pentru procesare manuală, %5$d refuzate, %6$d eronate."
+#~ "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare "
+#~ "manuală, %5$d refuzate, %6$d eronate."
 
 #~ msgid "last intervention"
 #~ msgstr "ultima intervenție"
@@ -1403,9 +1371,6 @@ msgstr "Data instalării cartușului nu poate fi mai recentă decât data efecti
 
 #~ msgid "%s [cache from %s %s]"
 #~ msgstr "%s [cache din %s %s]"
-
-#~ msgid "Invalid ticket id: %d"
-#~ msgstr "Id tichet invalid: %d"
 
 #, fuzzy
 #~| msgid "Error saving ticket(s)"

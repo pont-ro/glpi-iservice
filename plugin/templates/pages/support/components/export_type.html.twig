@@ -15,7 +15,7 @@
             {% set removeClass = '' %}
         {% endif %}
         {% set disabledReason = implode('<br>', item.getNotCloseableReasonsList()) %}
-        {% set disabledReasonExtended = disabledReason ~ (disabledReason ? '<br>' : '') ~ 'Daca tip export nu este gol, adaugati consumabile' %}
+        {% set disabledReasonExtended = disabledReason ~ (disabledReason ? '<br>' : '') ~ _t('Consumables must exist if there is an export type!') %}
         {% set onChange = 'if ($(this).val()) {$(".add-consumable-div").show(); $("#ticket-close")' ~ addClass ~ '.attr("data-bs-original-title", "' ~ disabledReasonExtended ~ '").prop("disabled", true);} else {$(".add-consumable-div").hide(); $("#ticket-close")' ~ removeClass ~ '.attr("data-bs-original-title", "' ~ disabledReason ~ '").prop("disabled", ' ~ revertDisabledTo ~ ');}' %}
     {% endif %}
     {{ fields.dropdownArrayField(
