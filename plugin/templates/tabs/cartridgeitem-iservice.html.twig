@@ -1,0 +1,18 @@
+<div class="container">
+    <div class="center my-3">
+        <a class="btn btn-primary me-2" href="#" id="import-button">
+            <span onclick="ajaxCall('{{ plugin_url_base }}/ajax/duplicateCartridgeItem.php?cartridgeItemId={{ cartridgeItem.id }}',
+                    '{{ _t('Are you sure you want to duplicate this cartridge item?') }}',
+                    function(message) {
+                        message = JSON.parse(message);
+                        console.log(message.success);
+                        if (message.success === true) {
+                            window.location.href = '{{ glpi_url_base }}/front/cartridgeitem.form.php?id=' + message.newCartridgeItemId;
+                        } else {
+                            alert('{{ _t('An error occurred while duplicating cartridge item.') }}');
+                        }
+                    });
+                    ">{{ _t('Duplicate Cartridge Item') }}</span>
+        </a>
+    </div>
+</div>

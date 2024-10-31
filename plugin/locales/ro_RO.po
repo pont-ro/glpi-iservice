@@ -987,6 +987,15 @@ msgstr "Data instalării cartușului nu poate fi mai recentă decât data efecti
 msgid "Consumables must exist if there is an export type!"
 msgstr "Daca tip export nu este gol, adăugați consumabile!"
 
+msgid "Cartridge item was duplicated!"
+msgstr "Modelul de cartuș a fost duplicat!"
+
+msgid "Are you sure you want to duplicate this cartridge item?"
+msgstr "Sigur doriți să duplicați acest model de cartuș?"
+
+msgid "An error occurred while duplicating cartridge item."
+msgstr "A apărut o eroare la duplicarea modelului de cartuș."
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"

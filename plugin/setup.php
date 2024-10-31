@@ -149,6 +149,13 @@ function plugin_init_iservice(): void
     $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
 
     PluginIserviceConfig::handleConfigValues();
+
+    Plugin::registerClass(
+        'PluginIserviceExtraTabs',
+        [
+            'addtabon' => ['CartridgeItem'],
+        ]
+    );
 }
 
 function plugin_iservice_debug_tab($with_session, $ajax, $rand): void
