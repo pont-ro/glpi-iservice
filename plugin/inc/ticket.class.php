@@ -1334,6 +1334,9 @@ class PluginIserviceTicket extends Ticket
             ];
         }
 
+        if (empty($input['_cartridge_installation_date']) && !empty($input['_plugin_iservice_cartridges_tickets'])) {
+            $customFieldsData['cartridge_install_date_field'] = $input['effective_date_field'];
+        }
 
         return array_merge($input, $customFieldsData);
     }
@@ -1902,7 +1905,7 @@ class PluginIserviceTicket extends Ticket
         $isMovement = !empty($this->customfields->fields['movement_id_field']) || !empty($this->customfields->fields['movement2_id_field']);
         if ($isMovement) {
             $movement = new PluginIserviceMovement();
-            $movement->getFromDB($this?->customfields?->fields['movement_id_field'] ?: $this?->customfields?->fields['movement2_id_field'] ?: -1);
+            $movement->getFromDB($this->customfields?->fields['movement_id_field'] ?: $this->customfields?->fields['movement2_id_field'] ?: -1);
         }
 
         $reasons = [];
@@ -1916,32 +1919,32 @@ class PluginIserviceTicket extends Ticket
         }
 
         if (!empty($this->getPrinterId())) {
-            if ($this->customfields->fields['total2_black_field'] < $this->total2BlackRequiredMinimum) {
+            if ($this->customfields?->fields['total2_black_field'] < $this->total2BlackRequiredMinimum) {
                 $reasons[] = _t('Black counter under limit!');
             }
 
-            if ($this->printer?->isColor() && $this->customfields->fields['total2_color_field'] < $this->total2ColorRequiredMinimum) {
+            if ($this->printer?->isColor() && $this->customfields?->fields['total2_color_field'] < $this->total2ColorRequiredMinimum) {
                 $reasons[] = _t('Color counter under limit!');
             }
         }
 
         if ($isMovement
             && empty($movement->fields['invoice'])
-            && empty($this->customfields->fields['movement2_id_field'])  // Do not show the message if it is a delivery ticket, from ExpertLine to Client.
+            && empty($this->customfields?->fields['movement2_id_field'])  // Do not show the message if it is a delivery ticket, from ExpertLine to Client.
         ) {
             $reasons[] = _t('Movement not invoiced!');
         }
 
         if ($this->hasConsumables()) {
-            if (empty($this->customfields->fields['delivered_field'])) {
+            if (empty($this->customfields?->fields['delivered_field'])) {
                 $reasons[] = _t('Unfinished delivery!');
             }
 
-            if (empty($this->customfields->fields['exported_field'])) {
+            if (empty($this->customfields?->fields['exported_field'])) {
                 $reasons[] = _t('hMarfa export not done!');
             }
         } else {
-            if (!empty($this->customfields->fields['plugin_fields_ticketexporttypedropdowns_id'])) {
+            if (!empty($this->customfields?->fields['plugin_fields_ticketexporttypedropdowns_id'])) {
                 $reasons[] = _t('Consumables must exist if there is an export type!');
             }
         }

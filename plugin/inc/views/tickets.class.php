@@ -357,7 +357,7 @@ class Tickets extends View
                                                 WHERE NOT io.tickets_id IS NULL AND not ieo.plugin_iservice_extorders_id IS NULL
                                                 GROUP BY tickets_id
                                   ) eoc ON eoc.tickets_id = t.id
-                        LEFT JOIN glpi_itilfollowups tf ON tf.items_id = t.id and tf.itemtype = 'Ticket'" . (self::inProfileArray('tehnician', 'admin', 'super-admin') ? '' : " AND (tf.is_private = 0 OR tf.users_id = $_SESSION[glpiID])") . "
+                        LEFT JOIN glpi_itilfollowups tf ON tf.items_id = t.id and tf.itemtype = 'Ticket'" . (self::inProfileArray('tehnician', 'admin', 'super-admin') ? '' : " AND (tf.is_private = 0 OR tf.users_id = " . ($_SESSION[glpiID] ?? 0) . ")") . "
                         LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite,  sum(valinc-valpla) unpaid_invoices_value
                                    FROM hmarfa_facturi 
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'

@@ -45,7 +45,6 @@ class Cartridges extends View
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         $ajax_link = $CFG_GLPI['root_doc'] . "/plugins/iservice/ajax/manageCartridge.php?id=$row_data[id]";
         $actions   = [
-            /**
             'remove_from_partner' => [
                 'link' => "$ajax_link&operation=remove_from_partner",
                 'success' => 'function(message) {if(message !== "' . IserviceToolBox::RESPONSE_OK . '") {alert(message);} else {alert("' . _t('Cartridge deleted from evidence') . '");$("#row_actions_' . $row_data['id'] . '").closest("tr").remove();}}',
@@ -55,7 +54,6 @@ class Cartridges extends View
                 'visible' => self::inProfileArray('admin', 'super-admin'),
                 'onclick' => 'ajaxCall',
             ],
-            /**/
             'change_location' => [
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_down.png',
                 'title' => _t('Change location'),
@@ -92,6 +90,10 @@ class Cartridges extends View
             ],
             /**/
         ];
+
+        if (!empty($row_data['ticket_id'])) {
+            unset($actions['remove_from_partner']);
+        }
 
         $out = "<div id='row_actions_$row_data[id]' class='actions-wrap'>$row_data[id] ";
         foreach ($actions as $action) {

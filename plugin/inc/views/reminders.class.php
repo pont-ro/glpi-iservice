@@ -66,7 +66,7 @@ class Reminders extends View
         $visibility_conditions[] = "er.entities_id = 0";
         $visibility_conditions[] = "r.begin_view_date IS NULL OR r.begin_view_date < NOW()";
         $visibility_conditions[] = "r.end_view_date IS NULL OR r.end_view_date > NOW()";
-        $visibility_condition    = "r.users_id = $_SESSION[glpiID] OR ((" . implode(") AND (", $visibility_conditions) . "))";
+        $visibility_condition    = "r.users_id = " . ($_SESSION['glpiID'] ?? 0) . " OR ((" . implode(") AND (", $visibility_conditions) . "))";
 
         return [
             'name' => self::getName(),
