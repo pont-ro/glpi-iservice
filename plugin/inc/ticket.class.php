@@ -1697,7 +1697,6 @@ class PluginIserviceTicket extends Ticket
     public function updateConsumable($ticketId, $post): void
     {
         $this->check($ticketId, UPDATE);
-        $this->filterDataForSelectedConsumableTickets($post);
 
         $success                   = $this->update($post);
         $consumable_prices         = explode('###', $this->customfields->fields['consumable_prices_field']);
@@ -1737,29 +1736,6 @@ class PluginIserviceTicket extends Ticket
             );
         }
 
-    }
-
-    public function filterDataForSelectedConsumableTickets(&$input): void
-    {
-        $consumableArrays = [
-            '_plugin_iservice_consumable_orig_prices',
-            '_plugin_iservice_consumable_codes',
-            '_plugin_iservice_consumable_create_cartridges',
-            '_plugin_iservice_consumable_locations',
-            '_plugin_iservice_consumable_prices',
-            '_plugin_iservice_consumable_prices_in_euro',
-            '_plugin_iservice_consumable_amounts',
-        ];
-
-        foreach ($consumableArrays as $consumableArray) {
-            if (!empty($input[$consumableArray])) {
-                foreach ($input[$consumableArray] as $key => $value) {
-                    if (($input['_plugin_iservice_consumables_tickets'][$key] ?? null) !== '1') {
-                        unset($input[$consumableArray][$key]);
-                    }
-                }
-            }
-        }
     }
 
     public function updateEffectiveDate($input): array
