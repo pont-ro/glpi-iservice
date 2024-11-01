@@ -144,15 +144,20 @@ function add_cartridges_as_negative_consumables(): void
     $track->processFieldsByInput();
     $track->fields['add']    = 'add';
     $track->fields['status'] = Ticket::WAITING;
+
+    $cartridge_counts = IserviceToolBox::getArrayInputVariable('cartridge-count');
+    if ($cartridge_counts) {
+        $track->fields['plugin_fields_ticketexporttypedropdowns_id'] = 1;
+    }
+
     if (($newTicketId = $track->add($track->fields)) !== false) {
         $printer = new PluginIservicePrinter();
         $printer->getFromDB(IserviceToolBox::getInputVariable('items_id') ?: IserviceToolBox::getItemsIdFromInput($track->fields, 'Printer'));
         $plugin_iservice_consumable_ticket = new PluginIserviceConsumable_Ticket();
-        $cartridge_counts                  = IserviceToolBox::getArrayInputVariable('cartridge-count');
         $cartridgeitem                     = new PluginIserviceCartridgeItem();
         $added_cartridges                  = [];
-        foreach ($cartridge_counts as $location_id => $location_data) {
-            foreach ($location_data as $cartridge_item_ref => $amount) {
+        foreach ($cartridge_counts ?? [] as $location_id => $location_data) {
+            foreach ($location_data ?? [] as $cartridge_item_ref => $amount) {
                 if (array_key_exists($cartridge_item_ref, $added_cartridges)) {
                     global $DB;
                     $DB->update(

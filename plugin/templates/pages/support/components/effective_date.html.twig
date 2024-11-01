@@ -1,54 +1,63 @@
 {% import 'components/form/fields_macros.html.twig' as fields %}
 {% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
 
-{{ fieldsIservice.datetimeField(
-    'effective_date_field',
-    effectiveDate,
-    _t('Effective date'),
-    field_options|merge({
-        'minDate': minEffectiveDate,
-        'readonly': effectiveDateFieldReadonly,
-        'dateTimePickerButtons':
-        '[
-                                            {
-                                               label: "' ~ __("Today")  ~ '",
-                                               attributes: {
-                                                  "class": "btn btn-outline-secondary"
-                                               },
-                                               onClick: (e, picker) => {
-                                                  picker.setDate(new Date());
-                                               }
-                                            },
-                                            {
-                                               label: "' ~ __("Yesterday") ~ '",
-                                               attributes: {
-                                                  "class": "btn btn-outline-secondary"
-                                               },
-                                               onClick: (e, picker) => {
-                                                  let date = new Date();
-                                                  date.setDate(date.getDate() - 1);
-                                                  picker.setDate(date);
-                                               }
-                                            }
-                                        ]',
-    })
-) }}
-
-<script>
-    $(document).ready(function(){
-        $('[name="effective_date_field"]').on('change', function(){
-            $('[name="effective_date_manually_changed"]').val(1);
-        });
-    });
-</script>
-
 {% if not effectiveDateFieldReadonly %}
+    {{ fieldsIservice.datetimeField(
+        'effective_date_field',
+        effectiveDate,
+        _t('Effective date'),
+        field_options|merge({
+            'minDate': minEffectiveDate,
+            'readonly': effectiveDateFieldReadonly,
+            'dateTimePickerButtons':
+            '[
+                                                {
+                                                   label: "' ~ __("Today")  ~ '",
+                                                   attributes: {
+                                                      "class": "btn btn-outline-secondary"
+                                                   },
+                                                   onClick: (e, picker) => {
+                                                      picker.setDate(new Date());
+                                                   }
+                                                },
+                                                {
+                                                   label: "' ~ __("Yesterday") ~ '",
+                                                   attributes: {
+                                                      "class": "btn btn-outline-secondary"
+                                                   },
+                                                   onClick: (e, picker) => {
+                                                      let date = new Date();
+                                                      date.setDate(date.getDate() - 1);
+                                                      picker.setDate(date);
+                                                   }
+                                                }
+                                            ]',
+        })
+    ) }}
+
+    <script>
+        $(document).ready(function(){
+            $('[name="effective_date_field"]').on('change', function(){
+                $('[name="effective_date_manually_changed"]').val(1);
+            });
+        });
+    </script>
+
     {{ fields.hiddenField(
         'effective_date_manually_changed',
         0,
         '',
         field_options|merge({
             'no_label': true,
+        })
+    ) }}
+{% else %}
+    {{ fields.textField(
+        'effective_date_field',
+        effectiveDate,
+        _t('Effective date'),
+        field_options|merge({
+            'disabled': true,
         })
     ) }}
 {% endif %}

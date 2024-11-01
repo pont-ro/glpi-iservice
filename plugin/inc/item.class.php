@@ -87,6 +87,7 @@ trait PluginIserviceItem
 
         $this->post_addItem($history);
 
+        // It is important to return the result of the add, as it is the newly created id!
         return $result;
     }
 

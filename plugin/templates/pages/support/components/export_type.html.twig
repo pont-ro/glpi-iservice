@@ -5,7 +5,7 @@
     {% if item.hasConsumables() %}
         {% set onChange = 'if ($(this).val()) {$(".add-consumable-div").show();} else {$(".add-consumable-div").hide();}' %}
     {% else %}
-        {% if item.isCloseable() %}
+        {% if (item.isCloseable() or (implode('', item.getNotCloseableReasonsList()) is same as (_t('Consumables must exist if there is an export type!')))) %}
             {% set revertDisabledTo = 'false' %}
             {% set addClass = '.addClass("submit disabled")' %}
             {% set removeClass = '.removeClass("submit disabled")' %}

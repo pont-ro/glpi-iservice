@@ -516,7 +516,7 @@ class Printers extends View
                     'caption' => 'Responsabil',
                     'format' => 'AND u.id = %d',
                     'header' => 'tech_name',
-                    'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"], ['subtehnician', 'superclient', 'client']),
+                    'visible' => !in_array($_SESSION["glpiactiveprofile"]["name"] ?? '', ['subtehnician', 'superclient', 'client']),
                     'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
                 ],
                 'otherserial' => [

@@ -45,19 +45,15 @@ case 'remove_from_supplier':
         die(sprintf(_t('Cartridge %d is already installed on a printer'), $id));
     }
 
+    $consumable_ticket = new PluginIserviceConsumable_Ticket();
+    $consumable_tickets = $consumable_ticket->find(["amount > 0 AND new_cartridge_ids LIKE '%|$id|%'"]);
+
+    if (count($consumable_tickets) > 0) {
+        $ticket_id = array_shift($consumable_tickets)['tickets_id'];
+        die("Remove cartridge by removing it from ticket $ticket_id");
+    }
+
     if ($cartridge->delete(['id' => $id])) {
-        $consumable_ticket = new PluginIserviceConsumable_Ticket();
-        $condition         = "amount > 0 AND new_cartridge_ids LIKE '%|$id|%'";
-        foreach ($consumable_ticket->find($condition) as $row) {
-            $new_cartridge_ids = str_replace(["|$id|,", ",|$id|"], "", $row['new_cartridge_ids']);
-            if ($row['new_cartridge_ids'] === "|$id|") {
-                $new_cartridge_ids = 'NULL';
-            }
-
-            $new_amount = $row['amount'] > 0 ? $row['amount'] - 1 : $row['amount'] + 1;
-            $consumable_ticket->update(['id' => $row['id'], 'amount' => $new_amount, 'new_cartridge_ids' => $new_cartridge_ids]);
-        }
-
         die(IserviceToolBox::RESPONSE_OK);
     }
     break;
