@@ -47,6 +47,32 @@ class PluginIservicePartner extends Supplier
         return parent::getFormURL($full);
     }
 
+    public static function ajaxAdd(): string
+    {
+        $partner = new self();
+        $input   = [
+            'entities_id' => 0,
+        ];
+        $fields = [
+            'name' => 'name',
+            'code' => 'hmarfa_code_field'
+        ];
+
+        foreach ($fields as $inputName => $fieldName) {
+            $input[$fieldName] = IserviceToolBox::getInputVariable($inputName);
+        }
+
+        if (!$partner->can(-1, CREATE, $input)) {
+            return 'No right to create partner!';
+        }
+
+        if ($id = $partner->add($input)) {
+            return $id;
+        }
+
+        return "Could not create partner with the following details:<br><pre>" . print_r($input, true) . "</pre>";
+    }
+
     public function additionalGetFromDbSteps($ID = null): void
     {
         $this->hMarfa_fields = self::gethMarfaFields($this->customfields->fields['hmarfa_code_field']);
