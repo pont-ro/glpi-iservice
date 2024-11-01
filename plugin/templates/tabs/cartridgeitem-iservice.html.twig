@@ -5,7 +5,6 @@
                     '{{ _t('Are you sure you want to duplicate this cartridge item?') }}',
                     function(message) {
                         message = JSON.parse(message);
-                        console.log(message.success);
                         if (message.success === true) {
                             window.location.href = '{{ glpi_url_base }}/front/cartridgeitem.form.php?id=' + message.newCartridgeItemId;
                         } else {

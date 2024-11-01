@@ -996,6 +996,24 @@ msgstr "Sigur doriți să duplicați acest model de cartuș?"
 msgid "An error occurred while duplicating cartridge item."
 msgstr "A apărut o eroare la duplicarea modelului de cartuș."
 
+msgid "Please make sure the CUI is correct, multiple partners found: "
+msgstr "Asigurați-vă că CUI-ul este corect, s-au găsit mai mulți parteneri: "
+
+msgid "Field Cod Fiscal is required for import!"
+msgstr "Câmpul Cod Fiscal este obligatoriu pentru import!"
+
+msgid "Partner already imported: "
+msgstr "Partener deja importat: "
+
+msgid "An error occurred!"
+msgstr "A apărut o eroare!"
+
+msgid "Import hMarfă"
+msgstr "Import hMarfă"
+
+msgid "Partner not found"
+msgstr "Partenerul nu a fost găsit"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
