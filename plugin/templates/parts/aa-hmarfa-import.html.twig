@@ -1,0 +1,36 @@
+<input id="btn_import_hmarfa_firme" class="submit ms-2" name="import_hmarfa_firme" type="button" value="{{ _t('Import hMarfă') }}"
+       onclick="handleAjaxCall()
+    ">
+
+<script>
+    function handleAjaxCall() {
+        ajaxCall('{{ plugin_url_base }}/ajax/importPartnerFromHMarfa.php?cui=' + getCui(),
+            '',
+            function(message) {
+                message = JSON.parse(message);
+                console.log(message.success);
+                if (message.success === true) {
+                    populateFields(message.partnerData);
+                } else {
+                    alert(message.errorMessage ?? '{{ _t('An error occurred!') }}');
+                }
+            });
+            }
+
+    function getCui() {
+        return $('input[name="{{ cui_field_name }}"]').val();
+    }
+
+    function populateFields(partnerData) {
+        $('input[name="supplier[name]"]').val(partnerData.name);
+        $('input[name="supplier[phonenumber]"]').val(partnerData.phonenumbers);
+        $('input[name="supplier[fax]"]').val(partnerData.fax);
+        $('textarea[name="supplier[address]"]').val(partnerData.address);
+        $('input[name="supplier[postcode]"]').val(partnerData.postcode);
+        $('input[name="supplier[town]"]').val(partnerData.town);
+        $('textarea[name="supplier[comment]"]').val(partnerData.comment);
+        $('input[name="{{ cui_field_name }}"]').val(partnerData.cui);
+        $('input[name="_customfields[supplier][crn_field]"]').val(partnerData.crn);
+        $('input[name="_customfields[supplier][hmarfa_code_field]"]').val(partnerData.hmarfa_code);
+    }
+</script>

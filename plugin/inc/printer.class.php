@@ -5,6 +5,7 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 class PluginIservicePrinter extends Printer
@@ -292,7 +293,7 @@ class PluginIservicePrinter extends Printer
             $buttons[] = "<a class='vsubmit' href='" . $CFG_GLPI['root_doc'] . "/plugins/iservice/front/hmarfaexport.form.php?item[printer][$printer_id]=1&mode=3&kcsrft=1'>" . _t('hMarfa export') . "</a>";
         }
 
-        $supplierName       = $supplier->fields['name'] ?? '';
+        $supplierName = $supplier->fields['name'] ?? '';
         if (Session::haveRight('plugin_iservice_view_operations', READ)) {
             $usageAddress       = $printer_customfields->fields['usage_address_field'] ?? '';
             $filter_description = urlencode("{$printer->fields['name']} ({$printer->fields['serial']}) - {$usageAddress} - {$supplierName}");
@@ -529,8 +530,22 @@ class PluginIservicePrinter extends Printer
             $output .= $form->generateFieldTableRow(__('Comments'), $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, 'supplier[comment]', $supplier->fields['comment'] ?? '', $readonly));
         }
 
+        global $CFG_PLUGIN_ISERVICE;
         // Cod Fiscal.
-        $output .= $form->generateFieldTableRow('Cod Fiscal', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][uic_field]', $supplier_customfields->fields['uic_field'], $readonly));
+        $output .= $form->generateFieldTableRow(
+            'Cod Fiscal',
+            $form->generateField(
+                PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][uic_field]', $supplier_customfields->fields['uic_field'], $readonly, [
+                    'postfix' => IserviceToolBox::inProfileArray(['admin', 'super-admin']) ? TemplateRenderer::getInstance()->render(
+                        '@iservice/parts/aa-hmarfa-import.html.twig',
+                        [
+                            'plugin_url_base' => $CFG_PLUGIN_ISERVICE['root_doc'],
+                            'cui_field_name' => '_customfields[supplier][uic_field]'
+                        ]
+                    ) : ''
+                ]
+            )
+        );
 
         // Numar Registru Comert.
         $output .= $form->generateFieldTableRow('Număr Registru Comerț', $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][crn_field]', $supplier_customfields->fields['crn_field'], $readonly));

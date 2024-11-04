@@ -53,7 +53,7 @@ class PluginIservicePartner extends Supplier
         $input   = [
             'entities_id' => 0,
         ];
-        $fields = [
+        $fields  = [
             'name' => 'name',
             'code' => 'hmarfa_code_field'
         ];
@@ -71,6 +71,39 @@ class PluginIservicePartner extends Supplier
         }
 
         return "Could not create partner with the following details:<br><pre>" . print_r($input, true) . "</pre>";
+    }
+
+    public static function ajaxUpdate(): string
+    {
+        $partner = new self();
+        $id      = IserviceToolBox::getInputVariable('id');
+
+        if (!$partner->getFromDB($id)) {
+            return "Could not find partner with id $id!";
+        };
+
+        $input = [
+            "id" => $id,
+            'entities_id' => 0,
+        ];
+
+        $fields = [
+            'uic_field' => 'uic_field'
+        ];
+
+        foreach ($fields as $inputName => $fieldName) {
+            $input[$fieldName] = IserviceToolBox::getInputVariable($inputName);
+        }
+
+        if (!$partner->can($id, UPDATE, $input)) {
+            return 'No right to update partner!';
+        }
+
+        if ($partner->update($input)) {
+            return $id;
+        }
+
+        return "Could not update partner with $id";
     }
 
     public function additionalGetFromDbSteps($ID = null): void
@@ -139,7 +172,7 @@ class PluginIservicePartner extends Supplier
     {
         if ($id instanceof PluginIservicePartner) {
             $partner = $id;
-            $id = $partner->getID();
+            $id      = $partner->getID();
             $partner->check($id, UPDATE);
         } else {
             $partner = new PluginIservicePartner();
@@ -201,7 +234,7 @@ class PluginIservicePartner extends Supplier
     public function getMailBody($type = '', $url_encoded = true): string
     {
         if (!empty($this->customfields->fields['magic_link_field'])) {
-            $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
+            $siteUrl               = PluginIserviceConfig::getConfigValue('site_url');
             $unpaid_invoices_count = $unpaid_invoices_value = 0;
             $unpaid_invoices       = $this->getInvoiceInfo(PluginIservicePartner::INVOICEINFO_FULL_UNPAID);
             if (count($unpaid_invoices) < 1) {
