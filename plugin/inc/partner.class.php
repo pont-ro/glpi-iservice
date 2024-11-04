@@ -95,7 +95,7 @@ class PluginIservicePartner extends Supplier
             $input[$fieldName] = IserviceToolBox::getInputVariable($inputName);
         }
 
-        if (!$partner->can(-1, UPDATE, $input)) {
+        if (!$partner->can($id, UPDATE, $input)) {
             return 'No right to update partner!';
         }
 
