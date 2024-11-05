@@ -14,11 +14,20 @@ Session::checkLoginUser();
 $cartridgeItemId = IserviceToolBox::getInputVariable('cartridgeItemId');
 $cartridgeItem   = new PluginIserviceCartridgeItem();
 $cartridgeItem->getFromDB($cartridgeItemId);
+$printerModelIds = $cartridgeItem->getPrinterModelsIds();
 
-$data = array_merge($cartridgeItem->fields ?? [], $cartridgeItem->customfields->fields ?? []);
+$data         = array_merge($cartridgeItem->fields ?? [], $cartridgeItem->customfields->fields ?? []);
+$data['name'] = $data['name'] . ' - ' . _t('Duplicate');
 unset($data['id'], $data['date_mod'], $data['date_creation']);
 
 if ($newCartidgeItemId = $cartridgeItem->add($data)) {
+    if (!empty($printerModelIds)) {
+        $cartridgeItem->getFromDB($newCartidgeItemId);
+        foreach ($printerModelIds as $printerModelId) {
+            $cartridgeItem->addCompatibleType($newCartidgeItemId, $printerModelId);
+        }
+    }
+
     Session::addMessageAfterRedirect(_t('Cartridge item was duplicated!'), true, INFO, true);
     echo json_encode(
         [

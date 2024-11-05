@@ -505,4 +505,21 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return $cartridge_item_ids;
     }
 
+    public function getPrinterModelsIds(): array
+    {
+        $id = $this->fields['id'] ?? null;
+
+        if (empty($id)) {
+            return [];
+        }
+
+        $ids = PluginIserviceDB::getQueryResult(
+            "SELECT printermodels_id
+             FROM glpi_cartridgeitems_printermodels
+             WHERE cartridgeitems_id = $id"
+        ) ?? [];
+
+        return array_column($ids, 'printermodels_id');
+    }
+
 }

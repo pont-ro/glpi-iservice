@@ -1014,6 +1014,9 @@ msgstr "Import hMarfă"
 msgid "Partner not found"
 msgstr "Partenerul nu a fost găsit"
 
+msgid "Duplicate"
+msgstr "Duplicat"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
