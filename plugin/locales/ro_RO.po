@@ -1017,6 +1017,9 @@ msgstr "Partenerul nu a fost găsit"
 msgid "Duplicate"
 msgstr "Duplicat"
 
+msgid "Duplicate Cartridge Item"
+msgstr "Duplicare model de cartuș"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
