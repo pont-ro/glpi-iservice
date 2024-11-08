@@ -755,14 +755,16 @@ class PluginIserviceTask_DataIntegrityTest
                     return $format;
                 }
             }
-        } else {
-            return $iteration_format;
         }
+
+        return $iteration_format;
     }
 
     protected function substituteValues($string, $params, $opening_param_separator = '[', $closing_param_separator = ']')
     {
         foreach ($params as $param_name => $param_value) {
+            $string = str_replace("$opening_param_separator-$param_name-$closing_param_separator", IserviceToolBox::getHtmlSanitizedValue($param_value), $string);
+            $string = str_replace("$opening_param_separator%$param_name%$closing_param_separator", urlencode($param_value), $string);
             $string = str_replace("$opening_param_separator$param_name$closing_param_separator", $param_value, $string);
         }
 
