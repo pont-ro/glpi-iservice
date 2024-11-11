@@ -41,7 +41,7 @@ class ToolBox
         return match ($input_type) {
             INPUT_GET => $get_result ?? $default_value,
             INPUT_POST => $post_result ?? $default_value,
-            INPUT_REQUEST => ($get_result === null && $post_result === null) ? $default_value : array_merge((array) $get_result, (array) $post_result),
+            INPUT_REQUEST => ($get_result === null && $post_result === null) ? $default_value : ((array) $get_result + (array) $post_result),
             default => null,
         };
     }
