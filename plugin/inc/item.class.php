@@ -138,6 +138,12 @@ trait PluginIserviceItem
         // This should be kept here, but do not call parent::post_updateItem($history) here, because it is already called in update() for the parent model.
     }
 
+    public function delete(array $input, $force = 0, $history = 1)
+    {
+        $model = new parent;
+        return $model->delete($input, $force, $history);
+    }
+
     public function updateCustomFields($model, $input, $history = 1, $options = []): bool
     {
         // If custom fields was updated by hooks, plugin_fields_data is not empty.
