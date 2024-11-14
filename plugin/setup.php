@@ -152,7 +152,7 @@ function plugin_init_iservice(): void
     Plugin::registerClass(
         'PluginIserviceExtraTabs',
         [
-            'addtabon' => ['CartridgeItem'],
+            'addtabon' => ['CartridgeItem', 'PrinterModel'],
         ]
     );
 }

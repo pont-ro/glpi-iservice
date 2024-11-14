@@ -1,0 +1,77 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+<div class="container">
+    <div class="">
+        <table class="table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>{{ _t('Name') }}</th>
+                <th>{{ _t('Ref.') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for cartidgeItem in assignedCartidgeItems %}
+                <tr class="">
+                    <td>
+                        <input type="checkbox" name="cartridge_item_ids[]" value="{{ cartidgeItem.id }}" class="form-check-input">
+                    </td>
+                    <td>{{ cartidgeItem.name }}</td>
+                    <td>{{ cartidgeItem.ref }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-2 d-flex flex-row-reverse align-items-start flex-wrap">
+        {{ fieldsIservice.button(
+            '',
+            'delete',
+            '1',
+            _t('Delete'),
+            {
+                'buttonClass': 'btn-outline-warning ms-2',
+                'buttonIconClass': 'ti ti-trash',
+                'on_click': "handleAjaxCall(event, 'delete')",
+            }
+        ) }}
+        {{ fields.dropdownField(
+            'CartridgeItem',
+            'cartridgeItem_id',
+            '',
+            _t('Add Cartridge Items'),
+            {
+                'on_change': "handleAjaxCall(event, 'add', $(this).val())",
+            }
+        ) }}
+    </div>
+</div>
+
+<script>
+    function handleAjaxCall(event, action, value = null) {
+        let url = "{{ plugin_url_base }}/ajax/manageItem.php?itemtype=PluginIservicePrinterModel";
+        url += '&printerModelId={{ printerModel.getId() }}';
+        if (action === 'add') {
+            url += '&operation=AddCartridgeItem&cartridgeItemIds[]=' + value;
+        } else if (action === 'delete') {
+            url += '&operation=RemoveCartridgeItems';
+            $("input[name='cartridge_item_ids[]']:checked").each(function () {
+                console.log('Checked', $(this).val());
+                url += '&cartridgeItemIds[]=' + $(this).val();
+            });
+        }
+        ajaxCall(url, '', function(response) {
+            response = JSON.parse(response);
+
+            if (response.html) {
+                $('#iservice_tab_container').html(response.html);
+            }
+
+            if (response.message) {
+                alert(response.message);
+            }
+        });
+
+    }
+</script>
