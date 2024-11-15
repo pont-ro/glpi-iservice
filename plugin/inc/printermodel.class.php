@@ -66,12 +66,7 @@ class PluginIservicePrinterModel extends PrinterModel
         list($printerModelId, $cartridgeItemIds, $pluginIservicePrinterModel) = self::prepareVarsForAjaxRequestHandling();
 
         if (empty($printerModelId) || empty($cartridgeItemIds[0] ?? null)) {
-            return json_encode(
-                [
-                    'status' => 'error',
-                    'message' => 'Invalid input',
-                ]
-            );
+            return self::generateJsonResponse('error', _t('An error occurred!'), self::getIserviceTabHtml($pluginIservicePrinterModel));
         }
 
         $query = "INSERT INTO glpi_cartridgeitems_printermodels (printermodels_id, cartridgeitems_id)
@@ -85,13 +80,8 @@ class PluginIservicePrinterModel extends PrinterModel
             $message = _t('Error adding Cartridge Item');
         }
 
-        return json_encode(
-            [
-                'status' => $status,
-                'message' => $message,
-                'html' => self::getIserviceTabHtml($pluginIservicePrinterModel),
-            ]
-        );
+        return self::generateJsonResponse($status, $message, self::getIserviceTabHtml($pluginIservicePrinterModel));
+
     }
 
     public static function ajaxRemoveCartridgeItems()
@@ -99,12 +89,7 @@ class PluginIservicePrinterModel extends PrinterModel
         list($printerModelId, $cartridgeItemIds, $pluginIservicePrinterModel) = self::prepareVarsForAjaxRequestHandling();
 
         if (empty($printerModelId) || empty($cartridgeItemIds)) {
-            return json_encode(
-                [
-                    'status' => 'error',
-                    'message' => _t('An error occurred!'),
-                ]
-            );
+            return self::generateJsonResponse('error', _t('An error occurred!'), self::getIserviceTabHtml($pluginIservicePrinterModel));
         }
 
         $query = "DELETE FROM glpi_cartridgeitems_printermodels
@@ -113,25 +98,21 @@ class PluginIservicePrinterModel extends PrinterModel
 
         if (PluginIserviceDB::getQueryResult($query)) {
             $status  = 'success';
-            $message = 'Cartridge Item(s) removed';
+            $message = _t('Cartridge Item(s) removed');
+            self::generateJsonResponse($status, $message);
         } else {
             $status  = 'error';
             $message = _t('Error removing Cartridge Item(s)');
         }
 
-        return json_encode(
-            [
-                'status' => $status,
-                'message' => $message,
-                'html' => self::getIserviceTabHtml($pluginIservicePrinterModel),
-            ]
-        );
+        return self::generateJsonResponse($status, $message, self::getIserviceTabHtml($pluginIservicePrinterModel));
+
     }
 
     private static function prepareVarsForAjaxRequestHandling(): array
     {
         $printerModelId   = IserviceToolBox::getInputVariable('printerModelId');
-        $cartridgeItemIds = IserviceToolBox::getInputVariable('cartridgeItemIds');
+        $cartridgeItemIds = IserviceToolBox::getArrayInputVariable('cartridgeItemIds');
 
         $pluginIservicePrinterModel = new PluginIservicePrinterModel();
         $pluginIservicePrinterModel->getFromDB($printerModelId);

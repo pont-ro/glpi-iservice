@@ -213,4 +213,15 @@ trait PluginIserviceItem
     {
     }
 
+    public static function generateJsonResponse(string $status = null, string $message = null, string $html = null): string
+    {
+        $response = [
+            'status' => $status,
+            'message' => $message,
+            'html' => $html,
+        ];
+
+        return json_encode(array_filter($response));
+    }
+
 }
