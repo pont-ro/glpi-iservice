@@ -2092,6 +2092,17 @@ class PluginIserviceTicket extends Ticket
                         'buttonIconClass' => 'ti ti-file-orientation',
                     ]
                 ],
+                [
+                    'type' => 'link',
+                    'name' => 'new_ticket',
+                    'label' => __('New ticket'),
+                    'value' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?items_id[Printer][0]={$printer->getID()}&_users_id_assign={$_SESSION['glpiID']}",
+                    'options' => [
+                        'target' => '_blank',
+                        'buttonClass' => 'hide-label show-label-md',
+                        'buttonIconClass' => 'ti ti-plus',
+                    ]
+                ],
             ],
             $result,
             [
