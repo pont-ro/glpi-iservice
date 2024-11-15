@@ -164,8 +164,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 group by l.id
                 "
             );
-            if (!empty($changeable_cartridge['location_name'])) {
-                $location = " din locația $changeable_cartridge[location_name]";
+            if (!empty($changeable_cartridge['location_completename'])) {
+                $location = " din locația $changeable_cartridge[location_completename]";
             } else {
                 $location = "";
             }
@@ -215,7 +215,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
             $table .= "</td><td>";
             $count  = explode(':', $changeable_cartridge['cpt'])[0];
-            $table .= "<input type='edit' id='cartridge-count-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]' data-param-name='cartridge-count[$changeable_cartridge[locations_id_field]][$changeable_cartridge[ref]]' style='display:none; width:1em;' value='$count' />";
+            $table .= "<input type='text' id='cartridge-count-$changeable_cartridge[locations_id_field]-$changeable_cartridge[id]' data-param-name='cartridge-count[$changeable_cartridge[locations_id_field]][$changeable_cartridge[ref]]' style='display:none; width:2em;text-align:center;' value='$count' $checked/>";
             $table .= "</td></tr>";
         }
 
