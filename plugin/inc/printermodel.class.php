@@ -66,22 +66,17 @@ class PluginIservicePrinterModel extends PrinterModel
         list($printerModelId, $cartridgeItemIds, $pluginIservicePrinterModel) = self::prepareVarsForAjaxRequestHandling();
 
         if (empty($printerModelId) || empty($cartridgeItemIds[0] ?? null)) {
-            return self::generateJsonResponse('error', _t('An error occurred!'), self::getIserviceTabHtml($pluginIservicePrinterModel));
+            return self::getJsonResponse('error', _t('An error occurred!'));
         }
 
         $query = "INSERT INTO glpi_cartridgeitems_printermodels (printermodels_id, cartridgeitems_id)
                           VALUES ('$printerModelId', '$cartridgeItemIds[0]' )";
 
         if (PluginIserviceDB::getQueryResult($query)) {
-            $status  = 'success';
-            $message = _t('Cartridge Item added');
+            return self::getJsonResponse('success', _t('Cartridge Item added'), self::getIserviceTabHtml($pluginIservicePrinterModel));
         } else {
-            $status  = 'error';
-            $message = _t('Error adding Cartridge Item');
+            return self::getJsonResponse('error', _t('Error adding Cartridge Item'));
         }
-
-        return self::generateJsonResponse($status, $message, self::getIserviceTabHtml($pluginIservicePrinterModel));
-
     }
 
     public static function ajaxRemoveCartridgeItems()
@@ -89,7 +84,7 @@ class PluginIservicePrinterModel extends PrinterModel
         list($printerModelId, $cartridgeItemIds, $pluginIservicePrinterModel) = self::prepareVarsForAjaxRequestHandling();
 
         if (empty($printerModelId) || empty($cartridgeItemIds)) {
-            return self::generateJsonResponse('error', _t('An error occurred!'), self::getIserviceTabHtml($pluginIservicePrinterModel));
+            return self::getJsonResponse('error', _t('An error occurred!'));
         }
 
         $query = "DELETE FROM glpi_cartridgeitems_printermodels
@@ -97,15 +92,10 @@ class PluginIservicePrinterModel extends PrinterModel
                   AND cartridgeitems_id IN (" . implode(',', $cartridgeItemIds) . ")";
 
         if (PluginIserviceDB::getQueryResult($query)) {
-            $status  = 'success';
-            $message = _t('Cartridge Item(s) removed');
-            self::generateJsonResponse($status, $message);
+            return self::getJsonResponse('success', _t('Cartridge Item(s) removed'), self::getIserviceTabHtml($pluginIservicePrinterModel));
         } else {
-            $status  = 'error';
-            $message = _t('Error removing Cartridge Item(s)');
+            return self::getJsonResponse('error', _t('Error removing Cartridge Item(s)'));
         }
-
-        return self::generateJsonResponse($status, $message, self::getIserviceTabHtml($pluginIservicePrinterModel));
 
     }
 

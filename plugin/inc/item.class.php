@@ -110,7 +110,7 @@ trait PluginIserviceItem
         $input = $this->prepareInputForUpdate($input);
 
         if (false === $model->update(array_merge([static::getIndexName() => $this->getID()], $input), $history, $options)) {
-            // If custom fields was updated by hooks, plugin_fields_data is not empty, so an update was made
+            // If custom fields was updated by hooks, plugin_fields_data is not empty, so an update was made.
             if (empty($model->plugin_fields_data)) {
                 return false;
             }
@@ -213,7 +213,7 @@ trait PluginIserviceItem
     {
     }
 
-    public static function generateJsonResponse(string $status = null, string $message = null, string $html = null): string
+    public static function getJsonResponse(string $status = null, string $message = null, string $html = null): string
     {
         $response = [
             'status' => $status,
