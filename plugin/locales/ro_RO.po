@@ -1020,6 +1020,21 @@ msgstr "Duplicat"
 msgid "Duplicate Cartridge Item"
 msgstr "Duplicare model de cartuș"
 
+msgid "Add Cartridge Item"
+msgstr "Adaugă tip cartuș"
+
+msgid "Cartridge Item added"
+msgstr "Tipul de cartuș a fost adăugat"
+
+msgid "Error adding Cartridge Item"
+msgstr "Eroare la adăugarea tipului de cartuș"
+
+msgid "Cartridge Item(s) removed"
+msgstr "Tipul de cartuș(e) a fost șters"
+
+msgid "Error removing Cartridge Item(s)"
+msgstr "Eroare la ștergerea tipului de cartuș(e)"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"

@@ -4,11 +4,11 @@ use Glpi\Application\View\TemplateRenderer;
 
 class PluginIserviceExtraTabs extends CommonDBTM
 {
-
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         switch ($item::getType()) {
         case CartridgeItem::getType():
+        case PrinterModel::getType():
             return  _t('iService');
                 break;
         }
@@ -22,6 +22,10 @@ class PluginIserviceExtraTabs extends CommonDBTM
         case CartridgeItem::getType():
             /* @var CartridgeItem $item;*/
             self::displayTabContentForCartridgeItem($item);
+            break;
+        case PrinterModel::getType():
+            /* @var PrinterModel $item;*/
+            self::displayTabContentForPrinterModel($item);
             break;
         }
 
@@ -40,6 +44,13 @@ class PluginIserviceExtraTabs extends CommonDBTM
                 'cartridgeItem' => $item,
             ]
         );
+    }
+
+    private static function displayTabContentForPrinterModel(CommonGLPI|PrinterModel $item)
+    {
+        echo "<div id='iservice_tab_container'>";
+        echo PluginIservicePrinterModel::getIserviceTabHtml($item);
+        echo "</div>";
     }
 
 }
