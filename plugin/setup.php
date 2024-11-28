@@ -178,7 +178,7 @@ function plugin_version_iservice(): array
     return [
         'name'         => 'iService',
         'version'      => ISERVICE_VERSION,
-        'author'       => 'hupu',
+        'author'       => "hupu'",
         'license'      => 'GLPv3',
         'homepage'     => '',
         'requirements' => [
