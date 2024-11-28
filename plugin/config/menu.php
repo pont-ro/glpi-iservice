@@ -13,6 +13,7 @@ return [
             'GlpiPlugin\Iservice\Views\Stock',
             'GlpiPlugin\Iservice\Views\StockLots',
             'GlpiPlugin\Iservice\Views\InboundLots',
+            'GlpiPlugin\Iservice\Views\HighTurnoverLots',
             'GlpiPlugin\Iservice\Views\RouteManifest',
             'GlpiPlugin\Iservice\Views\PriceList',
         ],
