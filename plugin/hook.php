@@ -340,7 +340,7 @@ function plugin_iservice_ticket_disable_delete_if_has_consumables_or_cartridges(
 {
     $ticket_consumable = new PluginIserviceConsumable_Ticket();
     $ticket_cartridge = new PluginIserviceCartridge_Ticket();
-    if ($ticket_consumable->find("tickets_id = {$item->getID()}") || $ticket_cartridge->find("tickets_id = {$item->getID()}")) {
+    if ($ticket_consumable->find(["tickets_id = {$item->getID()}"]) || $ticket_cartridge->find(["tickets_id = {$item->getID()}"])) {
         $item->input = null;
         Session::addMessageAfterRedirect("Nu puteți șterge un ticket daca acesta livrează un consumabil sau instalează un cartuș!", true, ERROR);
     }
