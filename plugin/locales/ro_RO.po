@@ -1062,6 +1062,18 @@ msgstr "Stoc"
 msgid "High Turnover Lots"
 msgstr "Loturi cu rulaj mare"
 
+msgid "Compatible models"
+msgstr "Modele compatibile"
+
+msgid "Group"
+msgstr "Grupa"
+
+msgid "Observations"
+msgstr "Observații"
+
+msgid "Exclude item codes starting with: "
+msgstr "Exclude codurile de articol care încep cu: "
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
