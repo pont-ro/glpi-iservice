@@ -620,6 +620,15 @@ class View extends \CommonGLPI
 
             $replacement_value = $filter_value_empty ? (isset($filter_data['empty_value']) ? $filter_data['empty_value'] : '') : sprintf($filter_data['format'], $filter_value);
             break;
+        case self::FILTERTYPE_TEXT:
+            if (!empty($filter_value) && isset($filter_data['format']) && strpos($filter_data['format'], 'function:') === 0) {
+                list($class, $method) = explode('::', substr($filter_data['format'], strlen('function:')));
+                if (method_exists($class, $method)) {
+                    $replacement_value = $class::$method($filter_value);
+                    break;
+                }
+            }
+
         default:
             $replacement_value = empty($filter_value) ? sprintf($filter_data['empty_format'], $filter_value) : sprintf($filter_data['format'], $filter_value);
             break;
