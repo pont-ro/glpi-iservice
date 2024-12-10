@@ -16,9 +16,9 @@ class HighTurnoverLots extends View
 
     public static function getExcludeCondition(string $value): string
     {
-        $startingLetters = explode(',', $value);
+        $prefixes = explode(',', $value);
         $sqlCondition    = '';
-        foreach ($startingLetters as $letter) {
+        foreach ($prefixes as $letter) {
             $sqlCondition .= " AND fr.codmat NOT LIKE '{$letter}%'";
         }
 
@@ -39,7 +39,7 @@ class HighTurnoverLots extends View
                 , SUM(l.iesiri) AS outbound_items_number
                 , SUM(l.stoci) - SUM(l.iesiri) AS stock
                 , mn.model_names
-                , l.grupa AS _group
+                , l.grupa AS lot_group
                 , l.obs AS obs
                 FROM (SELECT
                     fr.codmat AS item_code,
@@ -133,7 +133,7 @@ class HighTurnoverLots extends View
                     'type' => 'text',
                     'caption' => _t("Group"),
                     'format' => '%%%s%%',
-                    'header' => '_group',
+                    'header' => 'lot_group',
                 ],
                 'obs' => [
                     'type' => 'text',
@@ -172,7 +172,7 @@ class HighTurnoverLots extends View
                     'title' => _t('Compatible models'),
                     'align' => 'center',
                 ],
-                '_group' => [
+                'lot_group' => [
                     'title' => _t('Group'),
                     'align' => 'center',
                 ],
