@@ -1740,9 +1740,9 @@ class PluginIserviceTicket extends Ticket
 
     public function updateEffectiveDate($input): array
     {
-        // If ticket status is Ticket::SOLVED or Ticket::CLOSED, effective date should not change unless it was manually changed.
+        // If ticket status is not Ticket::WAITING, effective date should not change unless it was manually changed.
         // We presume that in such cases effective date is always set.
-        if ((intval($input['status'] ?? null)) === Ticket::SOLVED || (intval($input['status'] ?? null)) === Ticket::CLOSED || !empty($input['effective_date_manually_changed'])) {
+        if ((intval($input['status'] ?? null)) !== Ticket::WAITING || !empty($input['effective_date_manually_changed'])) {
             return $input;
         }
 
