@@ -597,41 +597,39 @@ class View extends \CommonGLPI
 
         self::ensureArrayKey($filter_data, 'format', $default_format);
         self::ensureArrayKey($filter_data, 'empty_format', $filter_data['format']);
-        switch ($filter_data['type']) {
-        case self::FILTERTYPE_HIDDEN:
-            if (in_array($filter_data['old_type'], [self::FILTERTYPE_DATE, self::FILTERTYPE_DATETIME])) {
-                $replacement_value = date($filter_data['format'], strtotime($filter_value));
-            } else {
-                $replacement_value = empty($filter_value) ? sprintf($filter_data['empty_format'], $filter_value) : sprintf($filter_data['format'], $filter_value);
+        if (str_starts_with($filter_data['format'] ?? '', 'function:')) {
+            list($class, $method) = explode('::', substr($filter_data['format'], strlen('function:')));
+            if (method_exists($class, $method)) {
+                $replacement_value = $class::$method($filter_value);
             }
-            break;
-        case self::FILTERTYPE_DATE:
-        case self::FILTERTYPE_DATETIME:
-            $replacement_value = empty($filter_value) ? sprintf($filter_data['empty_format'], $filter_value) : date($filter_data['format'], strtotime($filter_value));
-            break;
-        case self::FILTERTYPE_USER:
-        case self::FILTERTYPE_SELECT:
-        case self::FILTERTYPE_CHECKBOX:
-            self::ensureArrayKey($filter_data, 'zero_is_empty', true);
-            $filter_value_empty = empty($filter_value);
-            if (!$filter_data['zero_is_empty']) {
-                $filter_value_empty &= $filter_value !== 0 && $filter_value !== "0";
-            }
-
-            $replacement_value = $filter_value_empty ? (isset($filter_data['empty_value']) ? $filter_data['empty_value'] : '') : sprintf($filter_data['format'], $filter_value);
-            break;
-        case self::FILTERTYPE_TEXT:
-            if (!empty($filter_value) && isset($filter_data['format']) && strpos($filter_data['format'], 'function:') === 0) {
-                list($class, $method) = explode('::', substr($filter_data['format'], strlen('function:')));
-                if (method_exists($class, $method)) {
-                    $replacement_value = $class::$method($filter_value);
-                    break;
+        } else {
+            switch ($filter_data['type']) {
+            case self::FILTERTYPE_HIDDEN:
+                if (in_array($filter_data['old_type'], [self::FILTERTYPE_DATE, self::FILTERTYPE_DATETIME])) {
+                    $replacement_value = date($filter_data['format'], strtotime($filter_value));
+                } else {
+                    $replacement_value = empty($filter_value) ? sprintf($filter_data['empty_format'], $filter_value) : sprintf($filter_data['format'], $filter_value);
                 }
-            }
+                break;
+            case self::FILTERTYPE_DATE:
+            case self::FILTERTYPE_DATETIME:
+                $replacement_value = empty($filter_value) ? sprintf($filter_data['empty_format'], $filter_value) : date($filter_data['format'], strtotime($filter_value));
+                break;
+            case self::FILTERTYPE_USER:
+            case self::FILTERTYPE_SELECT:
+            case self::FILTERTYPE_CHECKBOX:
+                self::ensureArrayKey($filter_data, 'zero_is_empty', true);
+                $filter_value_empty = empty($filter_value);
+                if (!$filter_data['zero_is_empty']) {
+                    $filter_value_empty &= $filter_value !== 0 && $filter_value !== "0";
+                }
 
-        default:
-            $replacement_value = empty($filter_value) ? sprintf($filter_data['empty_format'], $filter_value) : sprintf($filter_data['format'], $filter_value);
-            break;
+                $replacement_value = $filter_value_empty ? (isset($filter_data['empty_value']) ? $filter_data['empty_value'] : '') : sprintf($filter_data['format'], $filter_value);
+                break;
+            default:
+                $replacement_value = empty($filter_value) ? sprintf($filter_data['empty_format'], $filter_value) : sprintf($filter_data['format'], $filter_value);
+                break;
+            }
         }
 
         $this->query = str_replace("[$filter_name]", $replacement_value, $this->query);

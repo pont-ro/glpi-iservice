@@ -1065,7 +1065,7 @@ msgstr "Loturi cu rulaj mare"
 msgid "Compatible models"
 msgstr "Modele compatibile"
 
-msgid "Group"
+msgid "Lot group"
 msgstr "Grupa"
 
 msgid "Observations"

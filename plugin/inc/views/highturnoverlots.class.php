@@ -131,7 +131,7 @@ class HighTurnoverLots extends View
                 ],
                 'group' => [
                     'type' => 'text',
-                    'caption' => _t("Group"),
+                    'caption' => _t("Lot group"),
                     'format' => '%%%s%%',
                     'header' => 'lot_group',
                 ],
@@ -173,7 +173,7 @@ class HighTurnoverLots extends View
                     'align' => 'center',
                 ],
                 'lot_group' => [
-                    'title' => _t('Group'),
+                    'title' => _t('Lot group'),
                     'align' => 'center',
                 ],
                 'obs' => [
