@@ -18,8 +18,8 @@ class HighTurnoverLots extends View
     {
         $prefixes = explode(',', $value);
         $sqlCondition    = '';
-        foreach ($prefixes as $letter) {
-            $sqlCondition .= " AND fr.codmat NOT LIKE '{$letter}%'";
+        foreach ($prefixes as $prefix) {
+            $sqlCondition .= " AND fr.codmat NOT LIKE '{$prefix}%'";
         }
 
         return $sqlCondition;
