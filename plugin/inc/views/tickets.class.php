@@ -382,7 +382,7 @@ class Tickets extends View
                             [ticket_category]
                         GROUP BY t.id
                         ",
-            'default_limit' => self::inProfileArray('subtehnician', 'superclient', 'client') ? 20 : 30,
+            'default_limit' => self::inProfileArray('subtehnician', 'superclient', 'client') ? 20 : 50,
             'filters' => [
                 'printer_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,
