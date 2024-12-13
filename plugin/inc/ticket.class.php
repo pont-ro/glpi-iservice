@@ -2010,7 +2010,7 @@ class PluginIserviceTicket extends Ticket
                 ];
 
                 foreach ($button_statuses as $status) {
-                    $confirm_alert    = ($status === Ticket::SOLVED || $this->fields['status'] != Ticket::SOLVED) ? '' : "if (!confirm(\"ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de {$this->customfields->fields['effective_date_field']}!\")) return false;";
+                    $confirm_alert    = ($status !== Ticket::WAITING || $this->fields['status'] === Ticket::WAITING) ? '' : "if (!confirm(\"ATENȚIE! Schimbând starea tichetului, data efectivă va deveni data curentă în loc de {$this->customfields->fields['effective_date_field']}!\")) return false;";
                     $buttons[$status] = [
                         'type'    => 'submit',
                         'name'    => 'update',
