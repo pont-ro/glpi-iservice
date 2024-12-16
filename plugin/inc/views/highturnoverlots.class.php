@@ -43,9 +43,10 @@ class HighTurnoverLots extends View
                 , SUM(l.stoci) AS inbound_items_number
                 , SUM(l.iesiri) AS outbound_items_number
                 , SUM(l.stoci) - SUM(l.iesiri) AS stock
+                , ROUND(SUM(l2.total_lot_value)/(SUM(l2.stoci) - SUM(l2.iesiri)),2) AS average_price
                 , mn.model_names
                 , l.grupa AS lot_group
-                , GROUP_CONCAT(DISTINCT l.obs SEPARATOR ' | ') AS obs
+                , GROUP_CONCAT(DISTINCT l2.obs SEPARATOR ' | ') AS obs
                 FROM (SELECT
                     fr.codmat AS item_code,
                     n.denum AS item_name,
@@ -66,6 +67,7 @@ class HighTurnoverLots extends View
                     GROUP BY fr.codmat
                     HAVING number_of_outbond_lots > [number_of_outbond_lots]) AS ol
                 LEFT JOIN hmarfa_lotm l ON l.codmat = ol.item_code
+                LEFT JOIN (SELECT *, (pcont * (stoci - iesiri)) as total_lot_value FROM hmarfa_lotm WHERE stoci <> iesiri AND stoci > iesiri) AS l2 ON l2.codmat = ol.item_code
                 LEFT JOIN
                     ( SELECT GROUP_CONCAT(CONCAT(pm.name) SEPARATOR '<br>') model_names, cm.plugin_iservice_consumables_id
                       FROM glpi_plugin_iservice_consumables_models cm
@@ -73,7 +75,7 @@ class HighTurnoverLots extends View
                       GROUP BY cm.plugin_iservice_consumables_id
                     ) mn ON mn.plugin_iservice_consumables_id = l.codmat
                 GROUP BY ol.item_code
-                HAVING stock > [stock] AND lot_group LIKE '[lot_group]' AND obs LIKE '[obs]'
+                HAVING stock > [stock] AND average_price > [average_price] AND lot_group LIKE '[lot_group]' AND obs LIKE '[obs]'
                 AND outbound_items_number > [outbound_items_number]
                 ",
             'default_limit' => 25,
@@ -135,6 +137,16 @@ class HighTurnoverLots extends View
                     'header' => 'stock',
                     'header_caption' => '> ',
                 ],
+                'average_price' => [
+                    'type' => 'int',
+                    'caption' => _t("Average price"),
+                    'format' => '%d',
+                    'default' => -1,
+                    'empty_value' => -1,
+                    'style' => 'text-align:right;width:3em;',
+                    'header' => 'average_price',
+                    'header_caption' => '> ',
+                ],
                 'item_code' => [
                     'type' => 'text',
                     'caption' => _t("Item code"),
@@ -184,6 +196,10 @@ class HighTurnoverLots extends View
                     'title' => _t("Stock"),
                     'align' => 'center',
                 ],
+                'average_price' => [
+                    'title' => _t("Average price"),
+                    'align' => 'center',
+                ],
                 'model_names' => [
                     'title' => _t('Compatible models'),
                     'align' => 'center',
@@ -203,7 +219,7 @@ class HighTurnoverLots extends View
 
     public static function getObservationsDisplay(array $row): string
     {
-        return str_replace(['| NULL', 'NULL |'], '', $row['obs']);
+        return str_replace(['| NULL', 'NULL |', 'NULL'], '', $row['obs']);
     }
 
 }

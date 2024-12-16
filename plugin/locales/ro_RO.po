@@ -1074,6 +1074,9 @@ msgstr "Observații"
 msgid "Exclude item codes starting with: "
 msgstr "Exclude codurile de articol care încep cu: "
 
+msgid "Average price"
+msgstr "Preț mediu"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
