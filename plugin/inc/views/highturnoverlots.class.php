@@ -14,10 +14,14 @@ class HighTurnoverLots extends View
         return _t('High Turnover Lots');
     }
 
-    public static function getExcludeCondition(string $value): string
+    public static function getExcludeCondition(?string $value): string
     {
-        $prefixes = explode(',', $value);
-        $sqlCondition    = '';
+        if (empty($value)) {
+            return '';
+        }
+
+        $prefixes     = explode(',', $value);
+        $sqlCondition = '';
         foreach ($prefixes as $prefix) {
             $sqlCondition .= " AND fr.codmat NOT LIKE '{$prefix}%'";
         }
@@ -27,11 +31,12 @@ class HighTurnoverLots extends View
 
     protected function getSettings(): array
     {
+        global $CFG_PLUGIN_ISERVICE;
         return [
             'name' => self::getName(),
             'query' => "
                 SELECT 
-                  ol.item_code AS item_code
+                 ol.item_code AS item_code
                 , ol.item_name AS item_name
                 , ol.quantity_on_outbond_lots AS quantity_on_outbond_lots
                 , ol.number_of_outbond_lots AS number_of_outbond_lots
@@ -40,7 +45,7 @@ class HighTurnoverLots extends View
                 , SUM(l.stoci) - SUM(l.iesiri) AS stock
                 , mn.model_names
                 , l.grupa AS lot_group
-                , l.obs AS obs
+                , GROUP_CONCAT(DISTINCT l.obs SEPARATOR ' | ') AS obs
                 FROM (SELECT
                     fr.codmat AS item_code,
                     n.denum AS item_name,
@@ -55,19 +60,20 @@ class HighTurnoverLots extends View
                         fr.tip IN ('TFAC', 'AIMFS', 'TFACR', 'TAIM')
                         AND fa.datafac >= '[start_date]'
                         AND fa.datafac <= '[end_date]'
+                        AND n.denum LIKE '[item_name]'
                         [exclude]
                         AND fr.codmat LIKE '[item_code]'
                     GROUP BY fr.codmat
                     HAVING number_of_outbond_lots > [number_of_outbond_lots]) AS ol
                 LEFT JOIN hmarfa_lotm l ON l.codmat = ol.item_code
                 LEFT JOIN
-                    ( SELECT GROUP_CONCAT(CONCAT(pm.id, ':', pm.name) SEPARATOR '<br>') model_names, cm.plugin_iservice_consumables_id
+                    ( SELECT GROUP_CONCAT(CONCAT(pm.name) SEPARATOR '<br>') model_names, cm.plugin_iservice_consumables_id
                       FROM glpi_plugin_iservice_consumables_models cm
                       LEFT JOIN glpi_printermodels pm on pm.id = cm.printermodels_id
                       GROUP BY cm.plugin_iservice_consumables_id
                     ) mn ON mn.plugin_iservice_consumables_id = l.codmat
                 GROUP BY ol.item_code
-                HAVING stock > [stock]
+                HAVING stock > [stock] AND lot_group LIKE '[lot_group]' AND obs LIKE '[obs]'
                 AND outbound_items_number > [outbound_items_number]
                 ",
             'default_limit' => 25,
@@ -92,6 +98,12 @@ class HighTurnoverLots extends View
                     'caption' => _t('Exclude item codes starting with: '),
                     'format' => 'function:\GlpiPlugin\Iservice\Views\HighTurnoverLots::getExcludeCondition',
                     'empty_format' => '',
+                ],
+                'item_name' => [
+                    'type' => 'text',
+                    'caption' => _t("Item name"),
+                    'format' => '%%%s%%',
+                    'header' => 'item_name',
                 ],
                 'number_of_outbond_lots' => [
                     'type' => 'int',
@@ -129,7 +141,7 @@ class HighTurnoverLots extends View
                     'format' => '%%%s%%',
                     'header' => 'item_code',
                 ],
-                'group' => [
+                'lot_group' => [
                     'type' => 'text',
                     'caption' => _t("Lot group"),
                     'format' => '%%%s%%',
@@ -145,6 +157,10 @@ class HighTurnoverLots extends View
             'columns' => [
                 'item_code' => [
                     'title' => _t("Item code"),
+                    'link' => [
+                        'href' => $CFG_PLUGIN_ISERVICE['root_doc'] . '/front/views.php?view=StockLots&stocklots0[cod]=[item_code]',
+                        'target' => '_blank',
+                    ],
                 ],
                 'item_name' => [
                     'title' => _t("Item name"),
@@ -179,9 +195,15 @@ class HighTurnoverLots extends View
                 'obs' => [
                     'title' => _t('Observations'),
                     'align' => 'center',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\HighTurnoverLots::getObservationsDisplay($row);',
                 ],
             ],
         ];
+    }
+
+    public static function getObservationsDisplay(array $row): string
+    {
+        return str_replace(['| NULL', 'NULL |'], '', $row['obs']);
     }
 
 }
