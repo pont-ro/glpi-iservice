@@ -40,13 +40,13 @@ class HighTurnoverLots extends View
                 , ol.item_name AS item_name
                 , ol.quantity_on_outbond_lots AS quantity_on_outbond_lots
                 , ol.number_of_outbond_lots AS number_of_outbond_lots
-                , SUM(l.stoci) AS inbound_items_number
-                , SUM(l.iesiri) AS outbound_items_number
-                , SUM(l.stoci) - SUM(l.iesiri) AS stock
-                , ROUND(SUM(l2.total_lot_value)/(SUM(l2.stoci) - SUM(l2.iesiri)),2) AS average_price
+                , SUM(ls.stoci) AS inbound_items_number
+                , SUM(ls.iesiri) AS outbound_items_number
+                , SUM(ls.stoci) - sum(ls.iesiri) AS stock
+                , ROUND(SUM(ls.total_lot_value)/IF(SUM(ls.stoci)=SUM(ls.iesiri), 1, SUM(ls.stoci) - SUM(ls.iesiri)),2) AS average_price
                 , mn.model_names
-                , l.grupa AS lot_group
-                , GROUP_CONCAT(DISTINCT l2.obs SEPARATOR ' | ') AS obs
+                , ls.grupa AS lot_group
+                , GROUP_CONCAT(DISTINCT ls.obs SEPARATOR ' | ') AS obs
                 FROM (SELECT
                     fr.codmat AS item_code,
                     n.denum AS item_name,
@@ -66,14 +66,26 @@ class HighTurnoverLots extends View
                         AND fr.codmat LIKE '[item_code]'
                     GROUP BY fr.codmat
                     HAVING number_of_outbond_lots > [number_of_outbond_lots]) AS ol
-                LEFT JOIN hmarfa_lotm l ON l.codmat = ol.item_code
-                LEFT JOIN (SELECT *, (pcont * (stoci - iesiri)) as total_lot_value FROM hmarfa_lotm WHERE stoci <> iesiri AND stoci > iesiri) AS l2 ON l2.codmat = ol.item_code
-                LEFT JOIN
-                    ( SELECT GROUP_CONCAT(CONCAT(pm.name) SEPARATOR '<br>') model_names, cm.plugin_iservice_consumables_id
-                      FROM glpi_plugin_iservice_consumables_models cm
-                      LEFT JOIN glpi_printermodels pm on pm.id = cm.printermodels_id
-                      GROUP BY cm.plugin_iservice_consumables_id
-                    ) mn ON mn.plugin_iservice_consumables_id = l.codmat
+                 LEFT JOIN (
+                        SELECT 
+                            l.codmat
+                            , l.nrtran AS Nr_receptie
+                            , t.dataint AS Data_Receptie
+                            , l.stoci
+                            , l.iesiri
+                            , l.grupa
+                            , IF(l.stoci - l.iesiri > 0, l.obs, 'N/A') AS obs
+                            , (l.pcont * (l.stoci - l.iesiri)) as total_lot_value
+                        FROM hmarfa_lotm l
+                        INNER JOIN hmarfa_tran t USING (nrtran)
+                        WHERE t.dataint >= '[start_date]' AND t.dataint <= '[end_date]'
+                    ) ls ON ls.codmat = ol.item_code
+                    LEFT JOIN
+                        ( SELECT GROUP_CONCAT(CONCAT(pm.name) SEPARATOR '<br>') model_names, cm.plugin_iservice_consumables_id
+                          FROM glpi_plugin_iservice_consumables_models cm
+                          LEFT JOIN glpi_printermodels pm on pm.id = cm.printermodels_id
+                          GROUP BY cm.plugin_iservice_consumables_id
+                        ) mn ON mn.plugin_iservice_consumables_id = ol.item_code
                 GROUP BY ol.item_code
                 HAVING stock > [stock] AND average_price > [average_price] AND lot_group LIKE '[lot_group]' AND obs LIKE '[obs]'
                 AND outbound_items_number > [outbound_items_number]
@@ -219,7 +231,7 @@ class HighTurnoverLots extends View
 
     public static function getObservationsDisplay(array $row): string
     {
-        return str_replace(['| NULL', 'NULL |', 'NULL'], '', $row['obs']);
+        return str_replace(['| NULL', 'NULL |', 'NULL', 'N/A |', '| N/A', 'N/A'], '', $row['obs']);
     }
 
 }
