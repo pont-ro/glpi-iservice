@@ -380,6 +380,8 @@ class Tickets extends View
                             [observer_id]
                             [printer_id]
                             [ticket_category]
+                            [no_travel]
+                            [without_paper]
                         GROUP BY t.id
                         ",
             'default_limit' => self::inProfileArray('subtehnician', 'superclient', 'client') ? 20 : 50,
@@ -472,6 +474,20 @@ class Tickets extends View
                     'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
                     'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
                 ],
+                'no_travel' => [
+                    'type' => self::FILTERTYPE_CHECKBOX,
+                    'format' => 'AND NOT t.no_travel_field = 1',
+                    'class' => 'mx-1',
+                    'caption' => _t('Exclude no travel'),
+                    'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
+                ],
+                'without_paper' => [
+                    'type' => self::FILTERTYPE_CHECKBOX,
+                    'format' => 'AND NOT t.without_paper_field = 1',
+                    'class' => 'mx-1',
+                    'caption' => _t('Exclude without papers'),
+                    'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
+                ],
                 'assigned_only' => [
                     'type' => self::FILTERTYPE_CHECKBOX,
                     'format' => 'AND NOT a.id IS NULL',
@@ -517,7 +533,7 @@ class Tickets extends View
                         'href' => $CFG_GLPI['root_doc'] . '/front/printer.form.php?id=[printer_id]',
                         'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
                     ],
-//                    'format' => '%s ([printer_location])',
+                    // 'format' => '%s ([printer_location])',
                     'empty' => [
                         'value' => '---',
                         'link' => [
