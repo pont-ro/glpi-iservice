@@ -1077,6 +1077,18 @@ msgstr "Exclude codurile de articol care încep cu: "
 msgid "Average price"
 msgstr "Preț mediu"
 
+msgid "No travel"
+msgstr "Fără deplasare"
+
+msgid "Exclude no travel"
+msgstr "Exclude fără deplasare"
+
+msgid "Without paper"
+msgstr "Fără hârtie"
+
+msgid "Exclude without papers"
+msgstr "Exclude fără hârtie"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
