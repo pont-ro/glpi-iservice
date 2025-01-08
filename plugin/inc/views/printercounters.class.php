@@ -285,6 +285,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , cfci.plugin_fields_cartridgeitemtypedropdowns_id
                   , t2.codbenef
                   , t2.numar_facturi_neplatite
+                  , t2.unpaid_invoices_value
                   , @consumableType := if (ci.ref like 'CTON%' or ci.ref like 'CCA%', 'cartridge', 'consumable') consumable_type
                   , @atc := if(coalesce(cfci.atc_field, 0) = 0, 1000, cfci.atc_field) average_total_counter
                   , @lc := if(coalesce(cfci.life_coefficient_field, 0) = 0, 1, cfci.life_coefficient_field) life_coefficient
@@ -311,7 +312,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , @estimateCounter := @lastClosedCounter + datediff(NOW(), @lastClosedDate) * @da estimate_counter
                   , @availableEstimate := 1 - round((@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 2) available_percentage_estimate
                   , if (@availableEstimate < @atl, 'da', 'nu') below_limit
-                  , round(coalesce((@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, 180) - datediff(NOW(), @lastClosedDate) + (@atc * @lc * @uc / @da) * (@changeable_count / @compatible_printer_count)) days_to_visit
+                  , if (@compatible_printer_count > 0, round(coalesce((@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, 180) - datediff(NOW(), @lastClosedDate) + (@atc * @lc * @uc / @da) * (@changeable_count / @compatible_printer_count)), 0) days_to_visit
                   /*, CONCAT_WS(' | ', '@act:', @atc, '@lc:', @lc, '@uc:', @uc, '@lastClosecCounter', @lastClosedCounter, '@installedCounter', @installedCounter, '@da', @da, '@lastClosedDate', @lastClosedDate, '@changeable_count', @changeable_count, '@compatible_printer_count', @compatible_printer_count) days_to_visit_debug*/
                   , concat('<span title=\"', coalesce(ccc.cids, 'nu există cartușe compatibile'), '\">', @changeable_count, '</span> / <span title=\"', coalesce(ccpc.pids, 'nu există aparate compatibile'), '\">', @compatible_printer_count, '</span>') in_stock
                   , getPrinterDailyAverage(p.id, 0) cdba
@@ -337,7 +338,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                 left join glpi_plugin_iservice_printer_usage_coefficients pcuc on pcuc.printers_id = p.id and pcuc.plugin_fields_cartridgeitemtypedropdowns_id = 2 
                 left join glpi_plugin_iservice_printer_usage_coefficients pmuc on pmuc.printers_id = p.id and pmuc.plugin_fields_cartridgeitemtypedropdowns_id = 3 
                 left join glpi_plugin_iservice_printer_usage_coefficients pyuc on pyuc.printers_id = p.id and pyuc.plugin_fields_cartridgeitemtypedropdowns_id = 4 
-                left join (select codbenef, count(codbenef) numar_facturi_neplatite
+                left join (select codbenef, count(codbenef) numar_facturi_neplatite, sum(valinc-valpla) unpaid_invoices_value
                            from hmarfa_facturi 
                            where (codl = 'f' or stare like 'v%') and tip like 'tf%'
                            and valinc-valpla > 0
