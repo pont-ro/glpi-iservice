@@ -7,208 +7,231 @@ if (!defined('GLPI_ROOT')) {
 
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-class PluginIserviceHtml {
+class PluginIserviceHtml
+{
 
-    const FIELDTYPE_CHECKBOX = 'checkbox';
-    const FIELDTYPE_DATE = 'date';
-    const FIELDTYPE_DATETIME = 'datetime';
-    const FIELDTYPE_DROPDOWN = 'dropdown';
-    const FIELDTYPE_HIDDEN = 'hidden';
-    const FIELDTYPE_LABEL = 'label';
-    const FIELDTYPE_TEXT = 'text';
-    const FIELDTYPE_MEMO = 'memo';
-    const FIELDTYPE_RICHMEMO = 'richmemo';
-    const CHECKBOXPOSITION_LEFT = 'left';
-    const CHECKBOXPOSITION_RIGHT = 'right';
+    const FIELDTYPE_CHECKBOX       = 'checkbox';
+    const FIELDTYPE_DATE           = 'date';
+    const FIELDTYPE_DATETIME       = 'datetime';
+    const FIELDTYPE_DROPDOWN       = 'dropdown';
+    const FIELDTYPE_HIDDEN         = 'hidden';
+    const FIELDTYPE_LABEL          = 'label';
+    const FIELDTYPE_TEXT           = 'text';
+    const FIELDTYPE_MEMO           = 'memo';
+    const FIELDTYPE_RICHMEMO       = 'richmemo';
+    const CHECKBOXPOSITION_LEFT    = 'left';
+    const CHECKBOXPOSITION_RIGHT   = 'right';
     const DEFAULT_CHECKBOXPOSITION = self::CHECKBOXPOSITION_LEFT;
 
-    function generateField($type, $name, $value = '', $readonly = false, $options = []) {
+    function generateField($type, $name, $value = '', $readonly = false, $options = [])
+    {
         $use_default = false;
         if (is_array($readonly)) {
             die("This is the old use of generateField! Be aware that the 4th parameter should be boolean and only the 5th should be the options array!");
         }
+
         if (!is_array($options)) {
             die('Parameter $options should be an array!');
         }
+
         if (!empty($options['class']) && !is_array($options['class'])) {
             $options['class'] = [$options['class']];
         }
+
         if (!empty($options['style']) && !is_array($options['style'])) {
             $options['style'] = [$options['style']];
         }
-        $class = $this->adjustAttribute('class', $options['class'] ?? null);
-        $style = $this->adjustAttribute('style', $options['style'] ?? null, ';');
-        $title = $this->adjustAttribute('title', $options['title'] ?? null);
-        $onclick = $this->adjustAttribute('onclick', $options['onclick'] ?? null, ';');
-        $onchange = $this->adjustAttribute('onchange', $options['onchange'] ?? null, ';');
+
+        $class           = $this->adjustAttribute('class', $options['class'] ?? null);
+        $style           = $this->adjustAttribute('style', $options['style'] ?? null, ';');
+        $title           = $this->adjustAttribute('title', $options['title'] ?? null);
+        $onclick         = $this->adjustAttribute('onclick', $options['onclick'] ?? null, ';');
+        $onchange        = $this->adjustAttribute('onchange', $options['onchange'] ?? null, ';');
         $data_attributes = $this->getDataAttributesFromArray($options);
-        $output = isset($options['prefix']) ? $options['prefix'] : "";
+        $output          = isset($options['prefix']) ? $options['prefix'] : "";
 
         $required = ($options['required'] ?? false) ? ' required' : '';
         switch ($type) {
-            case self::FIELDTYPE_CHECKBOX:
-                $onchange_value = $options['onchange'] ?? [];
-                if (!is_array($onchange_value)) {
-                    $onchange_value = [$onchange_value];
-                }
-                $onchange = $this->adjustAttribute('onchange', array_merge(['$("#" + $(this).data("for")).val($(this).is(":checked") ? 1 : 0)'], $onchange_value), ';');
+        case self::FIELDTYPE_CHECKBOX:
+            $onchange_value = $options['onchange'] ?? [];
+            if (!is_array($onchange_value)) {
+                $onchange_value = [$onchange_value];
+            }
 
-                $checked = !empty($value) ? " checked='1'" : "";
-                $label = $options['label'] ?? "";
-                $valid_positions = [self::CHECKBOXPOSITION_LEFT, self::CHECKBOXPOSITION_RIGHT];
-                $position = (isset($options['position']) && in_array($options['position'], $valid_positions)) ? $options['position'] : self::DEFAULT_CHECKBOXPOSITION;
-                if ($position === self::CHECKBOXPOSITION_RIGHT) {
-                    $output .= "$label ";
+            $onchange = $this->adjustAttribute('onchange', array_merge(['$("#" + $(this).data("for")).val($(this).is(":checked") ? 1 : 0)'], $onchange_value), ';');
+
+            $checked         = !empty($value) ? " checked='1'" : "";
+            $label           = $options['label'] ?? "";
+            $valid_positions = [self::CHECKBOXPOSITION_LEFT, self::CHECKBOXPOSITION_RIGHT];
+            $position        = (isset($options['position']) && in_array($options['position'], $valid_positions)) ? $options['position'] : self::DEFAULT_CHECKBOXPOSITION;
+            if ($position === self::CHECKBOXPOSITION_RIGHT) {
+                $output .= "$label ";
+            }
+
+            if ($readonly) {
+                $read_only = " disabled='disabled'";
+            } else {
+                $read_only = "";
+            }
+
+            $output             .= "<input type='hidden' id='$name' name='$name' value='" . (empty($checked) ? 0 : 1) . "' />";
+            $options['class'][]  = 'checkbox-helper';
+            $options['data-for'] = $name;
+            $class               = $this->adjustAttribute('class', $options['class']);
+            $data_attributes     = $this->getDataAttributesFromArray($options);
+            $output             .= "<input$checked$class$data_attributes id='_checkbox_helper_$name' name='_checkbox_helper_$name'$onchange$onclick$read_only$style$title type='checkbox' value='1'/>";
+            if ($position === self::CHECKBOXPOSITION_LEFT) {
+                $output .= " $label ";
+            }
+            break;
+        case self::FIELDTYPE_DATE:
+        case self::FIELDTYPE_DATETIME:
+            if ($readonly) {
+                return $this->generateField(self::FIELDTYPE_TEXT, $name, $value, $readonly, $options);
+            }
+
+            $field_options = [
+                'value' => $value,
+                'display' => false,
+                'min' => $options['min'] ?? '',
+                'max' => $options['max'] ?? '',
+                'mindate' => $options['mindate'] ?? '',
+                'maxdate' => $options['maxdate'] ?? '',
+                'mintime' => $options['mintime'] ?? '',
+                'maxtime' => $options['maxtime'] ?? '',
+                'warning' => $options['warning'] ?? '',
+                'on_change' => $options['on_change'] ?? '',
+            ];
+            if ($type == self::FIELDTYPE_DATE) {
+                $options['class'][] = 'date-field';
+                $datetime_selector  = Html::showDateField($name, $field_options);
+            } elseif ($type == self::FIELDTYPE_DATETIME) {
+                $options['class'][] = 'datetime-field';
+                $datetime_selector  = Html::showDateTimeField($name, $field_options);
+            }
+
+            $options['class'][] = 'dropdown_wrapper';
+            $class              = $this->adjustAttribute('class', $options['class']);
+            $buttons            = '';
+            if (isset($options['buttons']) && is_array($options['buttons'])) {
+                foreach ($options['buttons'] as $button_caption => $button_value) {
+                    $buttons .= " <input type='button' class='submit' value='$button_caption' onclick ='setGlpiDateField($(this).closest(\".dropdown_wrapper\"), \"$button_value\");' />";
                 }
+            }
+
+            $warning = $field_options['warning'] ? " <span class='warning'>$field_options[warning]</span>" : '';
+            $output .= "<div$class$data_attributes$style>$datetime_selector$buttons$warning</div>";
+            break;
+        case self::FIELDTYPE_DROPDOWN:
+            if (!isset($options['type'])) {
+                $options['type'] = 'Dropdown';
+            }
+
+            if (!isset($options['method'])) {
+                $options['method'] = $options['type'] === 'Dropdown' ? 'showFromArray' : 'dropdown';
+            }
+
+            $use_default = true;
+            if (class_exists($options['type']) && method_exists(new $options['type'], $options['method'])) {
                 if ($readonly) {
-                    $read_only = " disabled='disabled'";
-                } else {
-                    $read_only = "";
-                }
-                $output .= "<input type='hidden' id='$name' name='$name' value='" . (empty($checked) ? 0 : 1) . "' />";
-                $options['class'][] = 'checkbox-helper';
-                $options['data-for'] = $name;
-                $class = $this->adjustAttribute('class', $options['class']);
-                $data_attributes = $this->getDataAttributesFromArray($options);
-                $output .= "<input$checked$class$data_attributes id='_checkbox_helper_$name' name='_checkbox_helper_$name'$onchange$onclick$read_only$style$title type='checkbox' value='1'/>";
-                if ($position === self::CHECKBOXPOSITION_LEFT) {
-                    $output .= " $label ";
-                }
-                break;
-            case self::FIELDTYPE_DATE:
-            case self::FIELDTYPE_DATETIME:
-                if ($readonly) {
-                    return $this->generateField(self::FIELDTYPE_TEXT, $name, $value, $readonly, $options);
-                }
-                $field_options = [
-                    'value' => $value,
-                    'display' => false,
-                    'min' => $options['min'] ?? '',
-                    'max' => $options['max'] ?? '',
-                    'mindate' => $options['mindate'] ?? '',
-                    'maxdate' => $options['maxdate'] ?? '',
-                    'mintime' => $options['mintime'] ?? '',
-                    'maxtime' => $options['maxtime'] ?? '',
-                    'warning' => $options['warning'] ?? '',
-                    'on_change' => $options['on_change'] ?? '',
-                ];
-                if ($type == self::FIELDTYPE_DATE) {
-                    $options['class'][] = 'date-field';
-                    $datetime_selector = Html::showDateField($name, $field_options);
-                } elseif ($type == self::FIELDTYPE_DATETIME) {
-                    $options['class'][] = 'datetime-field';
-                    $datetime_selector = Html::showDateTimeField($name, $field_options);
-                }
-                $options['class'][] = 'dropdown_wrapper';
-                $class = $this->adjustAttribute('class', $options['class']);
-                $buttons = '';
-                if (isset($options['buttons']) && is_array($options['buttons'])) {
-                    foreach ($options['buttons'] as $button_caption => $button_value) {
-                        $buttons .= " <input type='button' class='submit' value='$button_caption' onclick ='setGlpiDateField($(this).closest(\".dropdown_wrapper\"), \"$button_value\");' />";
+                    if (!isset($options['readonly_type'])) {
+                        $options['readonly_type'] = $options['type'];
                     }
-                }
-                $warning = $field_options['warning'] ? " <span class='warning'>$field_options[warning]</span>" : '';
-                $output .= "<div$class$data_attributes$style>$datetime_selector$buttons$warning</div>";
-                break;
-            case self::FIELDTYPE_DROPDOWN:
-                if (!isset($options['type'])) {
-                    $options['type'] = 'Dropdown';
-                }
-                if (!isset($options['method'])) {
-                    $options['method'] = $options['type'] === 'Dropdown' ? 'showFromArray' : 'dropdown';
-                }
-                $use_default = true;
-                if (class_exists($options['type']) && method_exists(new $options['type'], $options['method'])) {
-                    if ($readonly) {
-                        if (!isset($options['readonly_type'])) {
-                            $options['readonly_type'] = $options['type'];
+
+                    $dropdown_class  = $options['readonly_type'];
+                    $dropdown_object = new $dropdown_class;
+                    if (isset($options['readonly_method']) && class_exists($options['readonly_type'])) {
+                        if (method_exists($options['readonly_type'], $options['readonly_method'])) {
+                            $value = forward_static_call([$options['readonly_type'], $options['readonly_method']], $value);
                         }
-                        $dropdown_class = $options['readonly_type'];
-                        $dropdown_object = new $dropdown_class;
-                        if (isset($options['readonly_method']) && class_exists($options['readonly_type'])) {
-                            if (method_exists($options['readonly_type'], $options['readonly_method'])) {
-                                $value = forward_static_call(array($options['readonly_type'], $options['readonly_method']), $value);
-                            }
-                        } else if (method_exists($dropdown_object, 'getFromDB')) {
-                            if ($dropdown_object->getFromDB($value)) {
-                                unset($options['type']);
-                                $options['title'] = $dropdown_object->fields['completename'] ?? $dropdown_object->fields['name'] ?? $value;
-                                return
-                                    $this->generateField(self::FIELDTYPE_TEXT, "_readonly_field_display_$name", $options['title'], $readonly, $options) .
-                                    $this->generateField(self::FIELDTYPE_HIDDEN, $name, $value, $readonly, $options);
-                            }
-                        } elseif ($options['type'] === 'Dropdown' && isset($options['options']['unit'])) {
-                            $value = Dropdown::getValueWithUnit($value, $options['options']['unit']);
-                        } elseif (!empty($options['values'][$value])) {
-                            $value = $options['values'][$value];
+                    } else if (method_exists($dropdown_object, 'getFromDB')) {
+                        if ($dropdown_object->getFromDB($value)) {
+                            unset($options['type']);
+                            $options['title'] = $dropdown_object->fields['completename'] ?? $dropdown_object->fields['name'] ?? $value;
+                            return
+                                $this->generateField(self::FIELDTYPE_TEXT, "_readonly_field_display_$name", $options['title'], $readonly, $options) .
+                                $this->generateField(self::FIELDTYPE_HIDDEN, $name, $value, $readonly, $options);
                         }
+                    } elseif ($options['type'] === 'Dropdown' && isset($options['options']['unit'])) {
+                        $value = Dropdown::getValueWithUnit($value, $options['options']['unit']);
+                    } elseif (!empty($options['values'][$value])) {
+                        $value = $options['values'][$value];
+                    }
+                } else {
+                    if (!isset($options['options'])) {
+                        $options['options'] = [];
+                    }
+
+                    $options['options']['name']  = $name;
+                    $options['options']['value'] = $value;
+                    if (!isset($options['options']['display'])) {
+                        $options['options']['display'] = false;
+                    }
+
+                    if ($options['type'] === 'Dropdown' && $options['method'] === 'showNumber') {
+                        $arguments = [$name, $options['options']];
+                    } elseif ($options['type'] === 'Dropdown' && $options['method'] === 'showYesNo') {
+                        $arguments                          = [$name, $value, -1, $options['options']];
+                        $options['options']['force_return'] = true;
+                    } elseif ($options['type'] === 'Dropdown' && $options['method'] === 'showFromArray') {
+                        $arguments = [$name, $options['values'], $options['options']];
+                    } elseif (isset($options['arguments'])) {
+                        $arguments = $options['arguments'];
                     } else {
-                        if (!isset($options['options'])) {
-                            $options['options'] = [];
-                        }
-                        $options['options']['name'] = $name;
-                        $options['options']['value'] = $value;
-                        if (!isset($options['options']['display'])) {
-                            $options['options']['display'] = false;
-                        }
-                        if ($options['type'] === 'Dropdown' && $options['method'] === 'showNumber') {
-                            $arguments = [$name, $options['options']];
-                        } elseif ($options['type'] === 'Dropdown' && $options['method'] === 'showYesNo') {
-                            $arguments = [$name, $value, -1, $options['options']];
-                            $options['options']['force_return'] = true;
-                        } elseif ($options['type'] === 'Dropdown' && $options['method'] === 'showFromArray') {
-                            $arguments = [$name, $options['values'], $options['options']];
-                        } elseif (isset($options['arguments'])) {
-                            $arguments = $options['arguments'];
-                        } else {
-                            $arguments = [$options['options']];
-                        }
-                        if (isset($options['options']['force_return']) && $options['options']['force_return']) {
-                            ob_start();
-                            forward_static_call_array([$options['type'], $options['method']], $arguments);
-                            $temp_output = ob_get_contents();
-                            ob_end_clean();
-                        } else {
-                            $temp_output = forward_static_call_array([$options['type'], $options['method']], $arguments);
-                        }
-                        $options['class'][] = 'dropdown_wrapper';
-                        $class = $this->adjustAttribute('class', $options['class']);
-                        $output .= "<div$class>$temp_output</div>";
-                        $use_default = false;
+                        $arguments = [$options['options']];
                     }
+
+                    if (isset($options['options']['force_return']) && $options['options']['force_return']) {
+                        ob_start();
+                        forward_static_call_array([$options['type'], $options['method']], $arguments);
+                        $temp_output = ob_get_contents();
+                        ob_end_clean();
+                    } else {
+                        $temp_output = forward_static_call_array([$options['type'], $options['method']], $arguments);
+                    }
+
+                    $options['class'][] = 'dropdown_wrapper';
+                    $class              = $this->adjustAttribute('class', $options['class']);
+                    $output            .= "<div$class>$temp_output</div>";
+                    $use_default        = false;
                 }
-                break;
-            case self::FIELDTYPE_HIDDEN:
-            case self::FIELDTYPE_TEXT:
-                if ($readonly) {
-                    $read_only = ' readonly';
-                } else {
-                    $read_only = '';
-                }
-                $output .= "<input$class$data_attributes id='$name' name='$name'$onchange$onclick$read_only$required$style$title type='$type' value='$value' />";
-                break;
-            case self::FIELDTYPE_MEMO:
-            case self::FIELDTYPE_RICHMEMO:
-                if ($readonly) {
-                    $read_only = ' readonly';
-                } else {
-                    $read_only = '';
-                }
-                $output .= "<textarea$class$data_attributes name='$name'$read_only$style>$value</textarea>";
-                if ($type === self::FIELDTYPE_RICHMEMO) {
-                    $output .= Html::initEditorSystem($name, '', false, $readonly);
-                }
-                break;
-            case self::FIELDTYPE_LABEL:
-                if (empty($class)) {
-                    $class = " class='label-input'";
-                } else {
-                    $class = substr($class, 0, -1) . " label-input'";
-                }
-            default:
-                $use_default = true;
-                break;
+            }
+            break;
+        case self::FIELDTYPE_HIDDEN:
+        case self::FIELDTYPE_TEXT:
+            if ($readonly) {
+                $read_only = ' readonly';
+            } else {
+                $read_only = '';
+            }
+
+            $output .= "<input$class$data_attributes id='$name' name='$name'$onchange$onclick$read_only$required$style$title type='$type' value='$value' />";
+            break;
+        case self::FIELDTYPE_MEMO:
+        case self::FIELDTYPE_RICHMEMO:
+            if ($readonly) {
+                $read_only = ' readonly';
+            } else {
+                $read_only = '';
+            }
+
+            $output .= "<textarea$class$data_attributes name='$name'$read_only$style>$value</textarea>";
+            if ($type === self::FIELDTYPE_RICHMEMO) {
+                $output .= Html::initEditorSystem($name, '', false, $readonly);
+            }
+            break;
+        case self::FIELDTYPE_LABEL:
+            if (empty($class)) {
+                $class = " class='label-input'";
+            } else {
+                $class = substr($class, 0, -1) . " label-input'";
+            }
+
+        default:
+            $use_default = true;
+            break;
         }
+
         $output .= $use_default ? "<span$class$data_attributes$style>$value</span>" : "";
         $output .= isset($options['postfix']) ? $options['postfix'] : "";
         return $output;
@@ -226,7 +249,7 @@ class PluginIserviceHtml {
 
     function generateSubmit($name, $caption, $options = []): string
     {
-        $options['type'] = 'submit';
+        $options['type']  = 'submit';
         $options['class'] = $options['class'] ?? 'submit';
         return $this->generateButton($name, $caption, $options);
     }
@@ -234,46 +257,50 @@ class PluginIserviceHtml {
     function generateButton($name, $caption, $options = []): string
     {
         $data_attributes = $this->getDataAttributesFromArray($options);
-        $type = $options['type'] ?? 'button';
-        $id = $this->adjustAttribute('id', $options['id'] ?? "btn_$name");
-        $class = $this->adjustAttribute('class', $options['class'] ?? 'submit');
-        $style = $this->adjustAttribute('style', $options['style'] ?? null, ';');
-        $title = $this->adjustAttribute('title', $options['title'] ?? null);
-        $onclick = $this->adjustAttribute('onclick', $options['onclick'] ?? null);
+        $type            = $options['type'] ?? 'button';
+        $id              = $this->adjustAttribute('id', $options['id'] ?? "btn_$name");
+        $class           = $this->adjustAttribute('class', $options['class'] ?? 'submit');
+        $style           = $this->adjustAttribute('style', $options['style'] ?? null, ';');
+        $title           = $this->adjustAttribute('title', $options['title'] ?? null);
+        $onclick         = $this->adjustAttribute('onclick', $options['onclick'] ?? null);
         if (!empty($options['disabled'])) {
             $disabled = "disabled='true'";
         } else {
             $disabled = '';
         }
-        $output = isset($options['prefix']) ? $options['prefix'] : "";
+
+        $output  = isset($options['prefix']) ? $options['prefix'] : "";
         $output .= "<input$id$class$data_attributes name='$name'$style$title type='$type' value='$caption' $onclick$disabled/>";
         $output .= isset($options['postfix']) ? $options['postfix'] : "";
         return $output;
     }
 
-    function generateFieldTableRow($label, $field, $options = []) {
+    function generateFieldTableRow($label, $field, $options = [])
+    {
         $data_attributes = $this->getDataAttributesFromArray($options);
-        $output = isset($options['prefix']) ? $options['prefix'] : "";
-        $output .= "<tr" . $this->adjustAttribute('class', isset($options['row_class']) ? $options['row_class'] : null) . "$data_attributes>";
-        $output .= "<td" . $this->adjustAttribute('class', isset($options['label_class']) ? $options['label_class'] : 'label') . ">$label</td>";
-        $output .= "<td" . $this->adjustAttribute('class', isset($options['field_class']) ? $options['field_class'] : 'field') . ">$field</td>";
-        $output .= "</tr>";
-        $output .= isset($options['postfix']) ? $options['postfix'] : "";
+        $output          = isset($options['prefix']) ? $options['prefix'] : "";
+        $output         .= "<tr" . $this->adjustAttribute('class', isset($options['row_class']) ? $options['row_class'] : null) . "$data_attributes>";
+        $output         .= "<td" . $this->adjustAttribute('class', isset($options['label_class']) ? $options['label_class'] : 'label') . ">$label</td>";
+        $output         .= "<td" . $this->adjustAttribute('class', isset($options['field_class']) ? $options['field_class'] : 'field') . ">$field</td>";
+        $output         .= "</tr>";
+        $output         .= isset($options['postfix']) ? $options['postfix'] : "";
         return $output;
     }
 
-    function generateButtonsTableRow($buttons, $options = []) {
+    function generateButtonsTableRow($buttons, $options = [])
+    {
         $data_attributes = $this->getDataAttributesFromArray($options);
-        $colspan = intval($options['colspan'] ?? 2);
-        $output = $options['prefix'] ?? "";
-        $output .= "<tr" . $this->adjustAttribute('class', isset($options['class']) ? $options['class'] : 'buttons') . "$data_attributes>";
-        $output .= "<td colspan='$colspan'>";
-        $output .= $options['label'] ?? '';
+        $colspan         = intval($options['colspan'] ?? 2);
+        $output          = $options['prefix'] ?? "";
+        $output         .= "<tr" . $this->adjustAttribute('class', isset($options['class']) ? $options['class'] : 'buttons') . "$data_attributes>";
+        $output         .= "<td colspan='$colspan'>";
+        $output         .= $options['label'] ?? '';
         if (is_array($buttons)) {
             foreach ($buttons as $button) {
                 $output .= $button;
             }
         }
+
         $output .= "</td>";
         $output .= "</tr>";
         $output .= isset($options['postfix']) ? $options['postfix'] : "";
@@ -286,6 +313,7 @@ class PluginIserviceHtml {
         foreach ($columns as $index => $column) {
             $result .= $this->generateTableColumn($column, $options['column_options'][$index] ?? [], $columnTag);
         }
+
         $result .= $this->closeTableRow();
 
         return $result;
@@ -306,27 +334,33 @@ class PluginIserviceHtml {
         echo $this->generateTag();
     }
 
-    function displayField($type, $name, $value = '', $readonly = false, $options = []) {
+    function displayField($type, $name, $value = '', $readonly = false, $options = [])
+    {
         echo $this->generateField($type, $name, $value, $readonly, $options);
     }
 
-    function displayFieldTableRow($label, $field, $options = []) {
+    function displayFieldTableRow($label, $field, $options = [])
+    {
         echo $this->generateFieldTableRow($label, $field, $options);
     }
 
-    function displayButton($name, $caption, $options = []) {
+    function displayButton($name, $caption, $options = [])
+    {
         echo $this->generateButton($name, $caption, $options);
     }
 
-    function displaySubmit($name, $caption, $options = []) {
+    function displaySubmit($name, $caption, $options = [])
+    {
         echo $this->generateSubmit($name, $caption, $options);
     }
 
-    function displayButtonsTableRow($buttons, $options = []) {
+    function displayButtonsTableRow($buttons, $options = [])
+    {
         echo $this->generateButtonsTableRow($buttons, $options);
     }
 
-    function displayTableRow($columns = [], $options = [], $columnTag = 'td') {
+    function displayTableRow($columns = [], $options = [], $columnTag = 'td')
+    {
         echo $this->generateTableRow($columns, $options, $columnTag);
     }
 
@@ -350,7 +384,8 @@ class PluginIserviceHtml {
         return $this->openTag('form', IserviceToolBox::addKeysToArray(['id', 'name', 'class', 'action', 'method', 'enctype', 'style'], $options), $return);
     }
 
-    function closeForm($return = false) {
+    function closeForm($return = false)
+    {
         if ($return) {
             return Html::closeForm(false);
         } else {
@@ -415,16 +450,19 @@ class PluginIserviceHtml {
         }
     }
 
-    static function getDataAttributesFromArray($array) {
+    static function getDataAttributesFromArray($array)
+    {
         $data_attributes = "";
         if (empty($array) || !is_array($array)) {
             return $data_attributes;
         }
+
         foreach ($array as $key => $value) {
             if (strpos($key, 'data') === 0) {
                 $data_attributes .= " $key='$value'";
             }
         }
+
         return $data_attributes;
     }
 
@@ -433,6 +471,7 @@ class PluginIserviceHtml {
         if (!is_array($attribute_value) && !empty($attribute_value)) {
             $attribute_value = [$attribute_value];
         }
+
         return empty($attribute_value) ? "" : " $attribute_name='" . implode($attribute_separator, $attribute_value) . "'";
     }
 
@@ -886,6 +925,5 @@ class PluginIserviceHtml {
         Html::nullFooter();
         exit();
     }
-
     /**/
 }
