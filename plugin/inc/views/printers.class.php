@@ -194,6 +194,11 @@ class Printers extends View
             $style   .= 'font-style: italic;';
         }
 
+        if ($row_data['qr_code']) {
+            $printer .= " [QR]";
+            $title   .= "\r\n\r\nQR: " . $row_data['qr_code'];
+        }
+
         if (!empty($style)) {
             $style = "style='$style'";
         }
@@ -437,6 +442,7 @@ class Printers extends View
                             , t2.codbenef
                             , t2.numar_facturi_neplatite
                             , t2.unpaid_invoices_value
+                            , qr.code as qr_code
                         FROM glpi_plugin_iservice_printers p
                         LEFT JOIN glpi_plugin_iservice_printers_last_tickets plt ON plt.printers_id = p.id
                         LEFT JOIN glpi_printertypes pt ON pt.id = p.printertypes_id
@@ -447,6 +453,7 @@ class Printers extends View
                         LEFT JOIN glpi_users ue ON ue.id = p.users_id
                         LEFT JOIN glpi_groups g ON g.id = p.groups_id
                         LEFT JOIN glpi_states st ON st.id = p.states_id
+                        LEFT JOIN glpi_plugin_iservice_qrs qr ON qr.items_id = p.id and qr.itemtype = 'Printer'
                         LEFT JOIN (SELECT codbenef, count(codbenef) numar_facturi_neplatite,  sum(valinc-valpla) unpaid_invoices_value
                                    FROM hmarfa_facturi 
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'

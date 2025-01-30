@@ -1,0 +1,113 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+<div class="asset container">
+    {% set rand = random() %}
+    {% set field_options = {
+        'locked_fields': item.getLockedFields(),
+        'full_width': true,
+    } %}
+
+    <div id="header" class="card-header main-header d-flex flex-wrap mx-n2 mt-n2 align-items-stretch flex-grow-1">
+        <h3 class="card-title d-flex align-items-center ps-4">
+            {{ infoMessage }}
+        </h3>
+    </div>
+
+    <form method="post" class="form-horizontal">
+        <div class="card-body d-flex flex-wrap">
+            <div class="col-12 col-xxl-10 flex-column">
+                <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+                    <div class="row flex-row align-items-start flex-grow-1">
+                        <div class="row flex-row">
+                            {{ fieldsIservice.checkboxFieldExtended(
+                                'qr_ticket_data[replaced_cartridges][black]', 'black', _t("Replaced black toner"), field_options
+                            ) }}
+                            {% if isColorPrinter %}
+                                {{ fieldsIservice.checkboxFieldExtended(
+                                    'qr_ticket_data[replaced_cartridges][cyan]', 'cyan', _t("Replaced cyan toner"), field_options
+                                ) }}
+
+                                {{ fieldsIservice.checkboxFieldExtended(
+                                    'qr_ticket_data[replaced_cartridges][magenta]', 'magenta', _t("Replaced magenta toner"), field_options
+                                ) }}
+
+                                {{ fieldsIservice.checkboxFieldExtended(
+                                    'qr_ticket_data[replaced_cartridges][yellow]', 'yellow', _t("Replaced yellow toner"), field_options
+                                ) }}
+                            {% endif %}
+                            {% block form_fields %}
+                                {{ fields.numberField(
+                                    'qr_ticket_data[total2_black_field]',
+                                    '',
+                                    _t('Black counter'),
+                                    field_options|merge({
+                                        'min': total2BlackRequiredMinimum ?? 0
+                                    })
+                                ) }}
+
+                                {% if isColorPrinter %}
+                                    {{ fields.numberField(
+                                        'qr_ticket_data[total2_color_field]',
+                                        '',
+                                        _t('Color counter'),
+                                        field_options|merge({
+                                            'min': total2ColorRequiredMinimum ?? 0
+                                        })
+                                    ) }}
+                                {% endif %}
+
+                                {{ fields.textareaField(
+                                    'qr_ticket_data[message]',
+                                    '',
+                                    _t('Message'),
+                                    field_options
+                                ) }}
+
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body mx-n2 mb-4 border-top d-flex align-items-center flex-wrap justify-content-center">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+            {{ fieldsIservice.button(
+                'submit',
+                'submit',
+                'submit',
+                _t('Send'),
+                {
+                    'on_click': 'return validateForm();'
+                }
+            ) }}
+        </div>
+    </form>
+</div>
+
+<script>
+    // check if at least one input in the form is filled or at least one checkbox is checked
+    function validateForm() {
+        var inputs = document.querySelectorAll('input[type="text"], input[type="number"], textarea');
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var filled = false;
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].value && inputs[i].value !== '0') {
+                filled = true;
+                break;
+            }
+        }
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                filled = true;
+                break;
+            }
+        }
+        if (!filled) {
+            alert('{{ _t('At least one field or checkbox must filled or checked!') }}');
+            return false;
+        }
+        return true;
+    }
+</script>
+

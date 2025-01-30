@@ -925,5 +925,38 @@ class PluginIserviceHtml
         Html::nullFooter();
         exit();
     }
-    /**/
+     /**/
+
+    public static function publicHeader(
+        $title,
+        $url = '',
+        $sector = "none",
+        $item = "none",
+        $option = "",
+        bool $add_id = true
+    ) {
+        global $HEADER_LOADED, $DB;
+
+        if ($HEADER_LOADED) {
+            return;
+        }
+
+        $HEADER_LOADED = true;
+        // Force lower case for sector and item.
+        $sector = strtolower($sector);
+        $item   = strtolower($item);
+
+        Html::includeHeader($title, $sector, $item, $option, $add_id);
+
+        $tpl_vars = [
+            'menu'        => null,
+            'sector'      => $sector,
+            'item'        => $item,
+            'option'      => $option,
+            'menu_active' => null,
+        ];
+
+        TemplateRenderer::getInstance()->display('@iservice/parts/page_header.html.twig', $tpl_vars);
+    }
+
 }

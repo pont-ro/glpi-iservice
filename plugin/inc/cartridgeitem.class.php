@@ -16,6 +16,15 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 {
     use PluginIserviceItem;
 
+    public const BLACK = 1;
+    public const CYAN  = 2;
+    public const MAGENTA = 3;
+    public const YELLOW = 4;
+    public const MAT_BLACK = 5;
+    public const FOTO_BLACK = 6;
+    public const UNKNOWN = 7;
+    public const REPLACEMENT_PART = 8;
+    public const COLOR = 9;
     /*
      *
      * @var PluginFieldsCartridgeitemcartridgeitemcustomfield
@@ -289,6 +298,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                        , l.locations_id location_parent_id
                        , c.printers_id
                        , c.suppliers_id_field
+                       , c.plugin_fields_cartridgeitemtypedropdowns_id
                   FROM glpi_cartridgeitems ci
                   LEFT JOIN glpi_plugin_iservice_cartridges c ON c.cartridgeitems_id = ci.id $used_condition
                   LEFT JOIN glpi_locations l ON l.id = c.locations_id_field

@@ -16,6 +16,7 @@ return [
             'GlpiPlugin\Iservice\Views\HighTurnoverLots',
             'GlpiPlugin\Iservice\Views\RouteManifest',
             'GlpiPlugin\Iservice\Views\PriceList',
+            'GlpiPlugin\Iservice\Views\Qrs',
         ],
     ],
     'specialViews' => [
