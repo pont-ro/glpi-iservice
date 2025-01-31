@@ -40,22 +40,28 @@ class PluginIserviceQr extends CommonDBTM
         return base64_encode(mt_rand(10000, 99999) . str_pad($id, 5, '0', STR_PAD_LEFT) . mt_rand(10000, 99999));
     }
 
-    public static function generateQrCodes(): void
+    public static function generateQrCodes($numberOfCodesToGenerate = 10): array
     {
         global $DB;
         $qrs    = $DB->request("SELECT `auto_increment` FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '" . self::getTable() . "'");
         $nextId = $qrs->current()['auto_increment'];
+        $ids    = [];
 
-        $massInsertQuery = "INSERT INTO " . self::getTable() . " (code) VALUES";
-        for ($i = $nextId; $i <= $nextId + 50; $i++) {
-            $massInsertQuery .= " ('" . self::generateQrCode($i) . "'),";
+        $massInsertQuery = "INSERT INTO " . self::getTable() . " (itemtype, code) VALUES";
+        for ($i = $nextId; $i < $nextId + $numberOfCodesToGenerate; $i++) {
+            $massInsertQuery .= " ('Printer', '" . self::generateQrCode($i) . "'),";
+            $ids[$i]          = true;
         }
 
         $massInsertQuery = rtrim($massInsertQuery, ',');
-        $DB->request($massInsertQuery);
+        if ($DB->request($massInsertQuery)) {
+            return $ids;
+        };
+
+        return [];
     }
 
-    public function showConnectForm($id, array $options = []): void
+    public function showConnectForm(): void
     {
         echo TemplateRenderer::getInstance()->render('@iservice/qr/not_connected.html.twig');
     }
@@ -121,7 +127,7 @@ class PluginIserviceQr extends CommonDBTM
         if (count($result) == 1) {
             $printerSupplierData = $result->current();
         } else {
-            Session::addMessageAfterRedirect(_t('We could not connect QR code to printer %s serial %s.'), true, ERROR, true);
+            Session::addMessageAfterRedirect(sprintf(_t('We could not connect QR code to printer with serial %s'), $printerSerialNumber), true, ERROR, true);
             return;
         }
 
@@ -141,9 +147,9 @@ class PluginIserviceQr extends CommonDBTM
             ]
         )
         ) {
-            Session::addMessageAfterRedirect(sprintf(_t('QR code connected to printer %d serial %d.'), $printerSupplierData['name'], $printerSupplierData['serial']), true, INFO, true);
+            Session::addMessageAfterRedirect(sprintf(_t('QR code connected to printer %s serial %s.'), $printerSupplierData['name'], $printerSupplierData['serial']), true, INFO, true);
         } else {
-            Session::addMessageAfterRedirect(_t('We could not connect QR code to printer %s serial %s.'), true, ERROR, true);
+            Session::addMessageAfterRedirect(sprintf(_t('We could not connect QR code to printer with serial %s'), $printerSerialNumber), true, ERROR, true);
         }
     }
 
@@ -270,9 +276,9 @@ class PluginIserviceQr extends CommonDBTM
         return false;
     }
 
-    public static function downloadQrCodes(Array $ids)
+    public static function downloadQrCodes(Array $ids, $refresh = false): void
     {
-        global $DB, $CFG_GLPI;
+        global $DB;
         $qr  = new self();
         $ids = array_keys(array_filter($ids));
 
@@ -373,7 +379,7 @@ class PluginIserviceQr extends CommonDBTM
         // Create a larger image to accommodate text below QR code.
         $textHeight = 40; // Space for text.
         $finalImage = imagecreatetruecolor($qrWidth, $qrHeight + $textHeight);
-        
+
         // Fill with white background.
         $white = imagecolorallocate($finalImage, 255, 255, 255);
         imagefill($finalImage, 0, 0, $white);
@@ -528,7 +534,7 @@ class PluginIserviceQr extends CommonDBTM
         return $zipFile;
     }
 
-    public static function prepareCodesForDownload(array $qrs): void
+    public static function prepareCodesForDownload(array $qrs, $refresh = false): void
     {
         self::checkRequiredExtensions();
 

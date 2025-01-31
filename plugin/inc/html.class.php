@@ -948,15 +948,7 @@ class PluginIserviceHtml
 
         Html::includeHeader($title, $sector, $item, $option, $add_id);
 
-        $tpl_vars = [
-            'menu'        => null,
-            'sector'      => $sector,
-            'item'        => $item,
-            'option'      => $option,
-            'menu_active' => null,
-        ];
-
-        TemplateRenderer::getInstance()->display('@iservice/parts/page_header.html.twig', $tpl_vars);
+        TemplateRenderer::getInstance()->display('@iservice/parts/page_header.html.twig');
     }
 
 }

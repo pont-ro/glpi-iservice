@@ -24,7 +24,7 @@ class Qrs extends View
         }
 
         if (IserviceToolBox::getInputVariable('mass_action_generate')) {
-            PluginIserviceQr::generateQrCodes();
+            PluginIserviceQr::downloadQrCodes(PluginIserviceQr::generateQrCodes(IserviceToolBox::getInputVariable('number_of_codes_to_generate', 1)));
         }
 
         if (IserviceToolBox::getInputVariable('mass_action_disconnect') && !empty(IserviceToolBox::getArrayInputVariable('item')['Qrs'])) {
@@ -35,9 +35,6 @@ class Qrs extends View
             PluginIserviceQr::deleteQrCodes(IserviceToolBox::getArrayInputVariable('item')['Qrs']);
         }
 
-        global $CFG_GLPI;
-        $iservice_front = $CFG_GLPI['root_doc'] . "/plugins/iservice/front/";
-
         return [
             'name'          => self::getName(),
             'query'         => "
@@ -45,13 +42,17 @@ class Qrs extends View
 						    qrs.id
 						    , qrs.create_date
 						    , qrs.modify_date
-							, qrs.items_id
+						    , p.name_and_location as name
+							, p.serial
 							, qrs.code
 						FROM glpi_plugin_iservice_qrs qrs
+						LEFT JOIN glpi_plugin_iservice_printers p ON p.id = qrs.items_id
 						WHERE 1
-                            AND CAST(id AS CHAR) LIKE '[id]'
-							AND create_date <= '[date]'
-                            AND (CAST(items_id AS CHAR) LIKE '[items_id]' OR items_id IS NULL)
+                            AND CAST( qrs.id AS CHAR) LIKE '[id]'
+							AND qrs.create_date <= '[date]'
+                            AND ((p.name_and_location is null AND '[name]' = '%%') OR p.name_and_location LIKE '[name]')                                              
+                            AND ((p.serial  is null AND '[serial]' = '%%') OR p.serial LIKE '[serial]')
+						    AND qrs.itemtype = 'Printer'
 						",
             'default_limit' => 50,
             'filters'       => [
@@ -69,11 +70,17 @@ class Qrs extends View
                     'header'         => 'date',
                     'header_caption' => '< ',
                 ],
-                'items_id' => [
-                    'type'           => self::FILTERTYPE_INT,
-                    'caption'        => '',
+                'name' => [
+                    'type'           => self::FILTERTYPE_TEXT,
+                    'caption'        => 'Printer',
                     'format' => '%%%s%%',
-                    'header'         => 'items_id',
+                    'header'         => 'name',
+                ],
+                'serial' => [
+                    'type'           => self::FILTERTYPE_TEXT,
+                    'caption'        => 'Serial',
+                    'format' => '%%%s%%',
+                    'header'         => 'serial',
                 ],
             ],
             'columns'       => [
@@ -86,12 +93,12 @@ class Qrs extends View
                         'target' => '_blank',
                     ],
                 ],
-                'create_date'       => [
-                    'title' => _t('Create Date'),
-                ],
-                'items_id'      => [
+                'name'      => [
                     'title'  => _t('Printer'),
-                ]
+                ],
+                'serial'      => [
+                    'title'  => _t('Serial'),
+                ],
             ],
             'mass_actions' => [
                 'download' => [
@@ -100,9 +107,10 @@ class Qrs extends View
                     'new_tab' => false
                 ],
                 'generate' => [
-                    'caption' => _t('Generate QR Codes'),
+                    'caption' => _t('Generate and download QR Codes'),
                     'action' => 'views.php?view=Qrs',
-                    'new_tab' => false
+                    'new_tab' => false,
+                    'prefix' => "<input type='number' name='number_of_codes_to_generate' value='50' min='1' max='1000'>",
                 ],
                 'disconnect' => [
                     'caption' => _t('Disconnect QR Codes'),
