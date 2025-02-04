@@ -3,6 +3,7 @@
 namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use PluginIserviceHtml;
 use PluginIserviceQr;
 
 class Qrs extends View
@@ -35,25 +36,40 @@ class Qrs extends View
             PluginIserviceQr::deleteQrCodes(IserviceToolBox::getArrayInputVariable('item')['Qrs']);
         }
 
+        if (IserviceToolBox::getInputVariable('mass_action_assign_to_technician') && !empty(IserviceToolBox::getArrayInputVariable('item')['Qrs'])) {
+            PluginIserviceQr::assignQrCodesToTechnician(IserviceToolBox::getArrayInputVariable('item')['Qrs'], IserviceToolBox::getInputVariable('technician_id'));
+        }
+
+        $techDropdown = (new PluginIserviceHtml())->generateField(
+            PluginIserviceHtml::FIELDTYPE_DROPDOWN,
+            'technician_id',
+            0,
+            false,
+            ['values' => IserviceToolBox::getUsersByProfiles(['tehnician'])]
+        );
+
         return [
             'name'          => self::getName(),
             'query'         => "
-						SELECT
-						    qrs.id
-						    , qrs.create_date
-						    , qrs.modify_date
-						    , p.name_and_location as name
-							, p.serial
-							, qrs.code
-						FROM glpi_plugin_iservice_qrs qrs
-						LEFT JOIN glpi_plugin_iservice_printers p ON p.id = qrs.items_id
-						WHERE 1
-                            AND CAST( qrs.id AS CHAR) LIKE '[id]'
-							AND qrs.create_date <= '[date]'
-                            AND ((p.name_and_location is null AND '[name]' = '%%') OR p.name_and_location LIKE '[name]')                                              
-                            AND ((p.serial  is null AND '[serial]' = '%%') OR p.serial LIKE '[serial]')
-						    AND qrs.itemtype = 'Printer'
-						",
+                    SELECT
+                        qrs.id
+                        , qrs.is_deleted
+                        , p.name_and_location as name
+                        , p.serial
+                        , qrs.code
+                        , p.supplier_name as partner
+                        , u.name as technician
+                    FROM glpi_plugin_iservice_qrs qrs
+                    LEFT JOIN glpi_plugin_iservice_printers p ON p.id = qrs.items_id
+                    LEFT JOIN glpi_users u ON u.id = qrs.technician_id
+                    WHERE (qrs.is_deleted = 0 OR qrs.is_deleted IS NULL)
+                        AND CAST( qrs.id AS CHAR) LIKE '[id]'
+                        AND ((p.name_and_location is null AND '[name]' = '%%') OR p.name_and_location LIKE '[name]')                                              
+                        AND ((p.serial  is null AND '[serial]' = '%%') OR p.serial LIKE '[serial]')
+                        AND qrs.itemtype = 'Printer'
+                        AND ((p.supplier_name is null AND '[partner]' = '%%') OR p.supplier_name LIKE '[partner]')
+                        AND ((u.name is null AND '[technician]' = '%%') OR u.name LIKE '[technician]')
+                ",
             'default_limit' => 50,
             'filters'       => [
                 'id' => [
@@ -61,14 +77,6 @@ class Qrs extends View
                     'caption' => 'Număr',
                     'format' => '%%%s%%',
                     'header' => 'id',
-                ],
-                'date'       => [
-                    'type'           => self::FILTERTYPE_DATE,
-                    'caption'        => '',
-                    'format'         => 'Y-m-d 23:59:59',
-                    'empty_value'    => date('Y-m-d'),
-                    'header'         => 'date',
-                    'header_caption' => '< ',
                 ],
                 'name' => [
                     'type'           => self::FILTERTYPE_TEXT,
@@ -81,6 +89,18 @@ class Qrs extends View
                     'caption'        => 'Serial',
                     'format' => '%%%s%%',
                     'header'         => 'serial',
+                ],
+                'partner' => [
+                    'type'           => self::FILTERTYPE_TEXT,
+                    'caption'        => 'Partner',
+                    'format' => '%%%s%%',
+                    'header'         => 'partner',
+                ],
+                'technician' => [
+                    'type'           => self::FILTERTYPE_TEXT,
+                    'caption'        => __('Technician'),
+                    'format' => '%%%s%%',
+                    'header'         => 'technician',
                 ],
             ],
             'columns'       => [
@@ -99,6 +119,12 @@ class Qrs extends View
                 'serial'      => [
                     'title'  => _t('Serial'),
                 ],
+                'partner'      => [
+                    'title'  => _t('Partner'),
+                ],
+                'technician'      => [
+                    'title'  => _t('Technician'),
+                ],
             ],
             'mass_actions' => [
                 'download' => [
@@ -111,6 +137,12 @@ class Qrs extends View
                     'action' => 'views.php?view=Qrs',
                     'new_tab' => false,
                     'prefix' => "<input type='number' name='number_of_codes_to_generate' value='50' min='1' max='1000'>",
+                ],
+                'assign_to_technician' => [
+                    'caption' => _t('Assign to technician'),
+                    'action' => 'views.php?view=Qrs',
+                    'suffix' => $techDropdown,
+                    'new_tab' => false
                 ],
                 'disconnect' => [
                     'caption' => _t('Disconnect QR Codes'),

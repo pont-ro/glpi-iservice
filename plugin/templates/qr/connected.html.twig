@@ -21,19 +21,19 @@
                     <div class="row flex-row align-items-start flex-grow-1">
                         <div class="row flex-row">
                             {{ fieldsIservice.checkboxFieldExtended(
-                                'qr_ticket_data[replaced_cartridges][black]', 'black', _t("Replaced black toner"), field_options
+                                'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_BLACK') ~ ']', 0, _t("Replaced black toner"), field_options
                             ) }}
                             {% if isColorPrinter %}
                                 {{ fieldsIservice.checkboxFieldExtended(
-                                    'qr_ticket_data[replaced_cartridges][cyan]', 'cyan', _t("Replaced cyan toner"), field_options
+                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_CYAN') ~ ']', 0, _t("Replaced cyan toner"), field_options
                                 ) }}
 
                                 {{ fieldsIservice.checkboxFieldExtended(
-                                    'qr_ticket_data[replaced_cartridges][magenta]', 'magenta', _t("Replaced magenta toner"), field_options
+                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_MAGENTA') ~ ']', 0,  _t("Replaced magenta toner"), field_options
                                 ) }}
 
                                 {{ fieldsIservice.checkboxFieldExtended(
-                                    'qr_ticket_data[replaced_cartridges][yellow]', 'yellow', _t("Replaced yellow toner"), field_options
+                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_YELLOW') ~ ']', 0, _t("Replaced yellow toner"), field_options
                                 ) }}
                             {% endif %}
                             {% block form_fields %}
@@ -97,7 +97,7 @@
                 break;
             }
         }
-        for (var i = 0; i < checkboxes.length; i++) {
+        for (i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i].checked) {
                 filled = true;
                 break;

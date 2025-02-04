@@ -1128,8 +1128,8 @@ msgstr "Data creării"
 msgid "QR code connected to printer %s serial %s."
 msgstr "Codul QR conectat la aparatul %s cu seria %s."
 
-msgid 'You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the "Send" button.'
-msgstr 'Sunteți conectat la aparatul %s cu seria %s. Vă rugăm bifați tonerele pe care le-ați inlocuit și completați celelalte date daca este cazul. Datele se vor trimite după apăsarea butonului "Trimite".'
+msgid "You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."
+msgstr "Sunteți conectat la aparatul %s cu seria %s. Vă rugăm bifați tonerele pe care le-ați inlocuit și completați celelalte date daca este cazul. Datele se vor trimite după apăsarea butonului \"Trimite\"."
 
 msgid "In order to send inquries, please fill in the fields below!"
 msgstr "Pentru a trimite solicitări, vă rugăm completați câmpurile de mai jos!"
@@ -1157,6 +1157,12 @@ msgstr "Nu s-au putut deconecta codurile QR."
 
 msgid "Could not delete QR codes."
 msgstr "Nu s-au putut șterge codurile QR."
+
+msgid "Assign to technician"
+msgstr "Repartizează la tehnician"
+
+msgid "Could not assign QR code(s) to technician."
+msgstr "Nu s-au putut repartiza codurile QR la tehnician."
 
 #, fuzzy
 #~| msgid "Pending emails"

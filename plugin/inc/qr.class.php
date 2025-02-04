@@ -91,7 +91,7 @@ class PluginIserviceQr extends CommonDBTM
 
         $data = [
             'isColorPrinter' => $printer->isColor(),
-            'infoMessage' => sprintf(_t('You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the "Send" button.'), $printer->fields['name'], $printer->fields['serial']),
+            'infoMessage' => sprintf(_t("You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."), $printer->fields['name'], $printer->fields['serial']),
         ];
 
         if ($lastClosedTicketForPrinter) {
@@ -217,7 +217,7 @@ class PluginIserviceQr extends CommonDBTM
 
             $message .= "<br>" . _t('Replaced cartridges:') . "<br>";
             foreach ($replacedCartridges as $color) {
-                $result = self::addCartridgeBasedOnColor($color, $qr, $ticket, $printer, $availableCartridges);
+                $result = self::addCartridgeBasedOnColorId($color, $qr, $ticket, $printer, $availableCartridges);
 
                 if ($result === false) {
                     $message .= _t("Replaced $color toner, but there was an error while adding it to the ticket") . ".<br>";
@@ -239,21 +239,14 @@ class PluginIserviceQr extends CommonDBTM
         return true;
     }
 
-    public static function addCartridgeBasedOnColor(string $color, self $qr, PluginIserviceTicket $ticket, PluginIservicePrinter $printer, array $availableCartridges): bool|string
+    public static function addCartridgeBasedOnColorId(string $colorId, self $qr, PluginIserviceTicket $ticket, PluginIservicePrinter $printer, array $availableCartridges): bool|string
     {
         if (empty($availableCartridges)) {
             return _t('No cartridges to add.');
         }
 
-        $cartridgeitemtypedropdownsIdMap = [
-            'black' => PluginIserviceCartridgeItem::BLACK,
-            'cyan' => PluginIserviceCartridgeItem::CYAN,
-            'magenta' => PluginIserviceCartridgeItem::MAGENTA,
-            'yellow' => PluginIserviceCartridgeItem::YELLOW,
-        ];
-
         foreach ($availableCartridges as $availableCartridgeItem) {
-            if ($availableCartridgeItem['plugin_fields_cartridgeitemtypedropdowns_id'] == $cartridgeitemtypedropdownsIdMap[$color]) {
+            if ($availableCartridgeItem['plugin_fields_cartridgeitemtypedropdowns_id'] === $colorId) {
                 $inputForAddCartridge = [
                     'printer_id' => $qr->fields['items_id'],
                     'suppliers_id' => $printer->fields['supplier_id'],
@@ -297,6 +290,17 @@ class PluginIserviceQr extends CommonDBTM
         }
 
         self::prepareCodesForDownload($codes);
+    }
+
+    public static function assignQrCodesToTechnician(Array $ids, int $technicianId): void
+    {
+        global $DB;
+        $qr  = new self();
+        $ids = array_keys(array_filter($ids));
+
+        if (!$DB->update($qr::getTable(), ['technician_id' => $technicianId], ['id' => $ids])) {
+            Session::addMessageAfterRedirect(_t('Could not assign QR code(s) to technician.'), true, ERROR, true);
+        }
     }
 
     public static function disconnectQrCodes(Array $ids)
@@ -365,7 +369,6 @@ class PluginIserviceQr extends CommonDBTM
 
                 // Space for logo.
                 'imagickFormat'    => 'png',
-                'imageTransparent' => false,
                 'returnResource'   => true
             ]
         );

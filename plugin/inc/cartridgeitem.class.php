@@ -15,16 +15,6 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceCartridgeItem extends CartridgeItem
 {
     use PluginIserviceItem;
-
-    public const BLACK = 1;
-    public const CYAN  = 2;
-    public const MAGENTA = 3;
-    public const YELLOW = 4;
-    public const MAT_BLACK = 5;
-    public const FOTO_BLACK = 6;
-    public const UNKNOWN = 7;
-    public const REPLACEMENT_PART = 8;
-    public const COLOR = 9;
     /*
      *
      * @var PluginFieldsCartridgeitemcartridgeitemcustomfield
