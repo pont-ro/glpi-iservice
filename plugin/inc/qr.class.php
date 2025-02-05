@@ -298,7 +298,7 @@ class PluginIserviceQr extends CommonDBTM
         $qr  = new self();
         $ids = array_keys(array_filter($ids));
 
-        if (!$DB->update($qr::getTable(), ['technician_id' => $technicianId], ['id' => $ids])) {
+        if (!$DB->update($qr::getTable(), ['users_id_tech' => $technicianId], ['id' => $ids])) {
             Session::addMessageAfterRedirect(_t('Could not assign QR code(s) to technician.'), true, ERROR, true);
         }
     }
