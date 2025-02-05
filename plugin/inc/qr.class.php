@@ -269,7 +269,7 @@ class PluginIserviceQr extends CommonDBTM
         return false;
     }
 
-    public static function downloadQrCodes(Array $ids, $refresh = false): void
+    public static function downloadQrCodes(Array $ids): void
     {
         global $DB;
         $qr  = new self();
@@ -537,7 +537,7 @@ class PluginIserviceQr extends CommonDBTM
         return $zipFile;
     }
 
-    public static function prepareCodesForDownload(array $qrs, $refresh = false): void
+    public static function prepareCodesForDownload(array $qrs): void
     {
         self::checkRequiredExtensions();
 

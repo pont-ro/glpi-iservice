@@ -37,12 +37,12 @@ class Qrs extends View
         }
 
         if (IserviceToolBox::getInputVariable('mass_action_assign_to_technician') && !empty(IserviceToolBox::getArrayInputVariable('item')['Qrs'])) {
-            PluginIserviceQr::assignQrCodesToTechnician(IserviceToolBox::getArrayInputVariable('item')['Qrs'], IserviceToolBox::getInputVariable('technician_id'));
+            PluginIserviceQr::assignQrCodesToTechnician(IserviceToolBox::getArrayInputVariable('item')['Qrs'], IserviceToolBox::getInputVariable('users_id_tech'));
         }
 
         $techDropdown = (new PluginIserviceHtml())->generateField(
             PluginIserviceHtml::FIELDTYPE_DROPDOWN,
-            'technician_id',
+            'users_id_tech',
             0,
             false,
             ['values' => IserviceToolBox::getUsersByProfiles(['tehnician'])]
@@ -61,7 +61,7 @@ class Qrs extends View
                         , u.name as technician
                     FROM glpi_plugin_iservice_qrs qrs
                     LEFT JOIN glpi_plugin_iservice_printers p ON p.id = qrs.items_id
-                    LEFT JOIN glpi_users u ON u.id = qrs.technician_id
+                    LEFT JOIN glpi_users u ON u.id = qrs.users_id_tech
                     WHERE (qrs.is_deleted = 0 OR qrs.is_deleted IS NULL)
                         AND CAST( qrs.id AS CHAR) LIKE '[id]'
                         AND ((p.name_and_location is null AND '[name]' = '%%') OR p.name_and_location LIKE '[name]')                                              
