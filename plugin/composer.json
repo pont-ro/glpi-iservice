@@ -1,0 +1,11 @@
+{
+    "require": {
+        "chillerlan/php-qrcode": "^4.3"
+    },
+    "config": {
+        "vendor-dir": "vendor",
+        "platform": {
+            "php": "8.0.27"
+        }
+    }
+}

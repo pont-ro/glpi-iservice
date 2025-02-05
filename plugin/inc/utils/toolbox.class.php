@@ -20,6 +20,16 @@ class ToolBox
     const RESPONSE_OK    = 'OK';
     const RESPONSE_ERROR = 'ERROR';
 
+    public const CARTRIDGE_COLOR_ID_BLACK            = 1;
+    public const CARTRIDGE_COLOR_ID_CYAN             = 2;
+    public const CARTRIDGE_COLOR_ID_MAGENTA          = 3;
+    public const CARTRIDGE_COLOR_ID_YELLOW           = 4;
+    public const CARTRIDGE_COLOR_ID_MAT_BLACK        = 5;
+    public const CARTRIDGE_COLOR_ID_FOTO_BLACK       = 6;
+    public const CARTRIDGE_COLOR_ID_UNKNOWN          = 7;
+    public const CARTRIDGE_COLOR_ID_REPLACEMENT_PART = 8;
+    public const CARTRIDGE_COLOR_ID_COLOR            = 9;
+
     public static array $usersByProfile = [];
 
     protected static $codmatValues        = [];

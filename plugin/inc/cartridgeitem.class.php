@@ -15,7 +15,6 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceCartridgeItem extends CartridgeItem
 {
     use PluginIserviceItem;
-
     /*
      *
      * @var PluginFieldsCartridgeitemcartridgeitemcustomfield
@@ -289,6 +288,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                        , l.locations_id location_parent_id
                        , c.printers_id
                        , c.suppliers_id_field
+                       , c.plugin_fields_cartridgeitemtypedropdowns_id
                   FROM glpi_cartridgeitems ci
                   LEFT JOIN glpi_plugin_iservice_cartridges c ON c.cartridgeitems_id = ci.id $used_condition
                   LEFT JOIN glpi_locations l ON l.id = c.locations_id_field

@@ -1,0 +1,61 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+
+<div class="asset container">
+
+    {% set rand = random() %}
+    {% set field_options = {
+        'locked_fields': item.getLockedFields(),
+        'full_width': true,
+    } %}
+
+    <div id="header" class="card-header main-header d-flex flex-wrap mx-n2 mt-n2 align-items-stretch flex-grow-1">
+        <h3 class="card-title d-flex align-items-center ps-4">
+            {{ _t('In order to send inquries, please fill in the fields below!') }}
+        </h3>
+    </div>
+
+    <form method="post">
+        <div class="card-body d-flex flex-wrap">
+            <div class="col-12 col-xxl-10 flex-column">
+                <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+                    <div class="row flex-row align-items-start flex-grow-1">
+                        <div class="row flex-row">
+                            {% block form_fields %}
+                                {{ fields.textField(
+                                    'serial_number',
+                                    '',
+                                    _t('Serial number'),
+                                    field_options|merge({
+                                            'required': true,
+                                        })
+                                )}}
+
+                                {{ fields.textField(
+                                    'unique_identification_code',
+                                    '',
+                                    _t('Unique Identification Code'),
+                                field_options|merge({
+                                        'required': true,
+                                    })
+                                )}}
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body mx-n2 mb-4 border-top d-flex align-items-center flex-wrap justify-content-center">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
+            {{ fieldsIservice.button(
+                'submit',
+                'submit',
+                'submit',
+                _t('Save'),
+                {}
+            ) }}
+        </div>
+    </form>
+
+</div>
+

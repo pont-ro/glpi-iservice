@@ -1089,6 +1089,81 @@ msgstr "Fără hârtie"
 msgid "Exclude without papers"
 msgstr "Exclude fără hârtie"
 
+msgid "Serial number"
+msgstr "Număr serie"
+
+msgid "Unic Identification Code"
+msgstr "CUI"
+
+msgid "Send"
+msgstr "Trimite"
+
+msgid "Replaced black toner"
+msgstr "Înlocuit toner negru"
+
+msgid "Replaced cyan toner"
+msgstr "Înlocuit toner cyan"
+
+msgid "Replaced magenta toner"
+msgstr "Înlocuit toner magenta"
+
+msgid "Replaced yellow toner"
+msgstr "Înlocuit toner galben"
+
+msgid "Download QR Codes"
+msgstr "Descarcă codurile QR"
+
+msgid "Generate and download QR Codes"
+msgstr "Generează și descarcă coduri QR"
+
+msgid "Disconnect QR Codes"
+msgstr "Deconectează codurile QR"
+
+msgid "Delete QR Codes"
+msgstr "Șterge codurile QR"
+
+msgid "Create Date"
+msgstr "Data creării"
+
+msgid "QR code connected to printer %s serial %s."
+msgstr "Codul QR conectat la aparatul %s cu seria %s."
+
+msgid "You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."
+msgstr "Sunteți conectat la aparatul %s cu seria %s. Vă rugăm bifați tonerele pe care le-ați inlocuit și completați celelalte date daca este cazul. Datele se vor trimite după apăsarea butonului \"Trimite\"."
+
+msgid "In order to send inquries, please fill in the fields below!"
+msgstr "Pentru a trimite solicitări, vă rugăm completați câmpurile de mai jos!"
+
+msgid "Something went wrong, please try again later!"
+msgstr "Ceva nu a mers bine, vă rugăm încercați mai târziu!"
+
+msgid "You have reached the maximum number of tickets that can be created from QR codes. Please contact the administrator if you need more tickets."
+msgstr "Ați atins numărul maxim de tichete care pot fi create din codurile QR. Vă rugăm contactați administratorul dacă aveți nevoie de mai multe tichete."
+
+msgid "We could not connect QR code to printer with serial %s."
+msgstr "Nu am putut conecta codul QR la aparatul cu seria %s."
+
+msgid "At least one field or checkbox must filled or checked!"
+msgstr "Cel puțin un câmp sau casetă trebuie completat sau bifat!"
+
+msgid "Invalid QR code."
+msgstr "Cod QR invalid."
+
+msgid "Can not find printer."
+msgstr "Nu se poate găsi aparatul."
+
+msgid "Could not disconnect QR codes."
+msgstr "Nu s-au putut deconecta codurile QR."
+
+msgid "Could not delete QR codes."
+msgstr "Nu s-au putut șterge codurile QR."
+
+msgid "Assign to technician"
+msgstr "Repartizează la tehnician"
+
+msgid "Could not assign QR code(s) to technician."
+msgstr "Nu s-au putut repartiza codurile QR la tehnician."
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
