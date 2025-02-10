@@ -56,6 +56,7 @@ class Qrs extends View
                         , qrs.is_deleted
                         , p.name_and_location as name
                         , p.serial
+                        , p.id as printer_id
                         , qrs.code
                         , p.supplier_name as partner
                         , u.name as technician
@@ -118,6 +119,11 @@ class Qrs extends View
                 ],
                 'serial'      => [
                     'title'  => _t('Serial'),
+                    'link' => [
+                        'title' => '[serial]',
+                        'href' => 'printer.form.php?id=[printer_id]',
+                        'target' => '_blank',
+                    ],
                 ],
                 'partner'      => [
                     'title'  => _t('Partner'),

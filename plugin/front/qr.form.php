@@ -10,6 +10,12 @@ $code                     = IserviceToolBox::getInputVariable('code');
 $serialNumber             = IserviceToolBox::getInputVariable('serial_number');
 $uniqueIdentificationCode = IserviceToolBox::getInputVariable('unique_identification_code');
 $qrTicketData             = IserviceToolBox::getArrayInputVariable('qr_ticket_data');
+$filesData                = [
+    '_filename' => IserviceToolBox::getArrayInputVariable('_filename'),
+    '_prefix_filename' => IserviceToolBox::getArrayInputVariable('_prefix_filename'),
+    '_tag_filename' => IserviceToolBox::getArrayInputVariable('_tag_filename'),
+    '_uploader_filename' => IserviceToolBox::getArrayInputVariable('_uploader_filename'),
+];
 
 PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
 
@@ -23,17 +29,16 @@ if (!empty($code)
     )
 ) {
     if ($qr->isConnected() && !empty($qrTicketData)) {
-        if ($qr->createTicket($qr, $qrTicketData)) {
-            Html::redirect($qr->getFormURL() . "?code=$code");
-        };
+        $qr->createTicket($qr, $qrTicketData, $filesData);
     } elseif ($qr->isConnected()) {
         $qr->showConnectedForm($qr->getID());
     } else {
-        $qr->showConnectForm($qr->getID());
+        $qr->showConnectForm();
     }
 } elseif (!empty($serialNumber) && !empty($uniqueIdentificationCode)) {
-    $qr->connectCodeToPrinter($code, $serialNumber, $uniqueIdentificationCode);
-    Html::redirect($qr->getFormURL() . "?code=$code");
+    if ($qr->connectCodeToPrinter($code, $serialNumber, $uniqueIdentificationCode)) {
+        Html::redirect($qr->getFormURL() . "?code=$code");
+    }
 } else {
     echo TemplateRenderer::getInstance()->render(
         '@iservice/qr/message_page.html.twig', [
@@ -42,4 +47,5 @@ if (!empty($code)
     );
 }
 
+Html::requireJs('fileupload');
 Html::footer();

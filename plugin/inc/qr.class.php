@@ -9,7 +9,7 @@ if (file_exists($vendorAutoload)) {
 use Glpi\Application\View\TemplateRenderer;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
-use chillerlan\QRCode\Data\QRMatrix;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -45,7 +45,12 @@ class PluginIserviceQr extends CommonDBTM
         global $DB;
         $qrs    = $DB->request("SELECT `auto_increment` FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '" . self::getTable() . "'");
         $nextId = $qrs->current()['auto_increment'];
-        $ids    = [];
+        if ($nextId < 500) {
+            $nextId = 500;
+            $DB->request("ALTER TABLE " . self::getTable() . " AUTO_INCREMENT = $nextId");
+        }
+
+        $ids = [];
 
         $massInsertQuery = "INSERT INTO " . self::getTable() . " (itemtype, code) VALUES";
         for ($i = $nextId; $i < $nextId + $numberOfCodesToGenerate; $i++) {
@@ -72,42 +77,39 @@ class PluginIserviceQr extends CommonDBTM
         $printer = new PluginIservicePrinter();
 
         if (!$qr->getFromDB($id)) {
-            echo TemplateRenderer::getInstance()->render(
-                '@iservice/qr/message_page.html.twig', [
-                    'message' => _t('Invalid QR code.'),
-                ]
-            );
+            self::renderMessageTemplate(_t('Invalid QR code.'));
+
+            return;
         }
 
         if (!$printer->getFromDB($qr->fields['items_id'])) {
-            echo TemplateRenderer::getInstance()->render(
-                '@iservice/qr/message_page.html.twig', [
-                    'message' => _t('Can not find printer.'),
-                ]
-            );
+            self::renderMessageTemplate(_t('Can not find printer.'));
+
+            return;
         }
 
         $lastClosedTicketForPrinter = PluginIserviceTicket::getLastForPrinterOrSupplier(0, $printer->getID());
 
         $data = [
             'isColorPrinter' => $printer->isColor(),
+            'isPlotter' => $printer->isPlotter(),
             'infoMessage' => sprintf(_t("You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."), $printer->fields['name'], $printer->fields['serial']),
+            'total2BlackRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_black_field'] ?? null,
+            'total2ColorRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_color_field'] ?? null,
         ];
 
-        if ($lastClosedTicketForPrinter) {
-            $data['total2BlackRequiredMinimum'] = $lastClosedTicketForPrinter->customfields->fields['total2_black_field'] ?? null;
-            $data['total2ColorRequiredMinimum'] = $lastClosedTicketForPrinter->customfields->fields['total2_color_field'] ?? null;
-        }
+        $data['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($printer, new PluginIserviceTicket(),  $lastClosedTicketForPrinter) ?? [];
 
         echo TemplateRenderer::getInstance()->render('@iservice/qr/connected.html.twig', $data);
     }
 
-    public function connectCodeToPrinter($code, $printerSerialNumber, $uniqueIdentificationCode): void
+    public function connectCodeToPrinter($code, $printerSerialNumber, $uniqueIdentificationCode): bool
     {
         global $DB;
 
         $printerSerialNumber      = preg_replace('/\s+/', '', $printerSerialNumber);
         $uniqueIdentificationCode = preg_replace('/\s+/', '', $uniqueIdentificationCode);
+        $qr                       = new self();
 
         $result = $DB->request(
             "SELECT 
@@ -127,18 +129,31 @@ class PluginIserviceQr extends CommonDBTM
         if (count($result) == 1) {
             $printerSupplierData = $result->current();
         } else {
-            Session::addMessageAfterRedirect(sprintf(_t('We could not connect QR code to printer with serial %s'), $printerSerialNumber), true, ERROR, true);
-            return;
+            self::renderMessageTemplate(sprintf(_t('We could not connect QR code to printer with serial %s'), $printerSerialNumber));
+
+            return false;
         }
 
-        $qr = new self();
+        $qrsConnectedToPrinter = $qr->find(
+            [
+                'items_id' => $printerSupplierData['printer_id'],
+                'is_deleted' => 0,
+            ]
+        );
+
+        if (count($qrsConnectedToPrinter) > 0) {
+            self::renderMessageTemplate(sprintf(_t('Printer with serial %s is already connected to an other QR code.'), $printerSerialNumber));
+
+            return false;
+        }
+
         $qr->getFromDBByRequest(
             [
                 'code' => $code,
             ]
         );
 
-        if ($qr->update(
+        if (!$qr->update(
             [
                 'id'       => $qr->getID(),
                 'itemtype' => 'Printer',
@@ -147,10 +162,12 @@ class PluginIserviceQr extends CommonDBTM
             ]
         )
         ) {
-            Session::addMessageAfterRedirect(sprintf(_t('QR code connected to printer %s serial %s.'), $printerSupplierData['name'], $printerSupplierData['serial']), true, INFO, true);
-        } else {
-            Session::addMessageAfterRedirect(sprintf(_t('We could not connect QR code to printer with serial %s'), $printerSerialNumber), true, ERROR, true);
+            self::renderMessageTemplate(sprintf(_t('We could not connect QR code to printer with serial %s'), $printerSerialNumber));
+
+            return false;
         }
+
+        return true;
     }
 
     public function isConnected(): bool
@@ -158,14 +175,11 @@ class PluginIserviceQr extends CommonDBTM
         return !empty($this->fields['items_id']);
     }
 
-    public function createTicket(PluginIserviceQr $qr, array $qrTicketData): bool
+    public function createTicket(PluginIserviceQr $qr, array $qrTicketData, array $filesData): bool
     {
         if (!$this->canCreateQrTicket()) {
-            echo TemplateRenderer::getInstance()->render(
-                '@iservice/qr/message_page.html.twig',  [
-                    'message' => _t('You have reached the maximum number of tickets that can be created from QR codes. Please contact the administrator if you need more tickets.'),
-                ]
-            );
+            self::renderMessageTemplate(_t('You have reached the maximum number of tickets that can be created from QR codes. Please contact the administrator if you need more tickets.'));
+
             return false;
         }
 
@@ -193,16 +207,13 @@ class PluginIserviceQr extends CommonDBTM
             'total2_color_field' => $qrTicketData['total2_color_field'] ?? null,
             '_do_not_compute_status' => true, // This is needed to avoid ticket status change in CommonITILObject.php:prepareInputForUpdate method, line 1780.
             'effective_date_field' => $_SESSION['glpi_currenttime'],
+            '_no_message' => true,
         ];
 
-        $ticketId = $ticket->add($input);
+        $ticketId = $ticket->add(array_merge($input, $filesData));
 
         if (empty($ticketId)) {
-            echo TemplateRenderer::getInstance()->render(
-                '@iservice/qr/message_page.html.twig', [
-                    'message' => _t('Could not create ticket!'),
-                ]
-            );
+            self::renderMessageTemplate(_t('Could not create ticket!'));
 
             return false;
         }
@@ -216,15 +227,18 @@ class PluginIserviceQr extends CommonDBTM
             $availableCartridges                      = PluginIserviceCartridgeItem::getChangeablesForTicket($ticket);
 
             $message .= "<br>" . _t('Replaced cartridges:') . "<br>";
-            foreach ($replacedCartridges as $color) {
-                $result = self::addCartridgeBasedOnColorId($color, $qr, $ticket, $printer, $availableCartridges);
+            foreach ($replacedCartridges as $colorId) {
+                $result              = self::addCartridgeBasedOnColorId($colorId, $qr, $ticket, $printer, $availableCartridges);
+                $installedCartridges = PluginIservicePrinter::getInstalledCartridges($printer->getID(), "AND c.plugin_fields_cartridgeitemtypedropdowns_id = $colorId");
+                $tonerId             = array_values($installedCartridges ?: [])[0]['id'] ?? 'N/A';
+                $color               = IserviceToolBox::getCartridgeNameByColorId($colorId);
 
                 if ($result === false) {
-                    $message .= _t("Replaced $color toner, but there was an error while adding it to the ticket") . ".<br>";
+                    $message .= sprintf(_t("Replaced toner with id: %s, color %s, but there was an error while adding it to the ticket"), $tonerId, $color) . ".<br>";
                 } elseif ($result !== true) {
-                    $message .= _t("Replaced $color toner, but there was an error while adding it to the ticket") . ": " . $result . "<br>";
+                    $message .= sprintf(_t("Replaced toner with id: %s, color %s, but there was an error while adding it to the ticket"), $tonerId, $color) . ": " . $result . "<br>";
                 } else {
-                    $message .= _t("Replaced $color toner") . "<br>";
+                    $message .= sprintf(_t("Replaced toner with id: %s, color %s"), $tonerId, $color) . "<br>";
                 }
             }
 
@@ -236,7 +250,18 @@ class PluginIserviceQr extends CommonDBTM
             );
         }
 
+        self::renderMessageTemplate($this->getTicketCreatedMessage($ticketId, $printer, $replacedCartridges, $qrTicketData));
+
         return true;
+    }
+
+    public static function renderMessageTemplate(string $message): void
+    {
+        echo TemplateRenderer::getInstance()->render(
+            '@iservice/qr/message_page.html.twig',  [
+                'message' => $message,
+            ]
+        );
     }
 
     public static function addCartridgeBasedOnColorId(string $colorId, self $qr, PluginIserviceTicket $ticket, PluginIservicePrinter $printer, array $availableCartridges): bool|string
@@ -320,7 +345,7 @@ class PluginIserviceQr extends CommonDBTM
         $qr  = new self();
         $ids = array_keys(array_filter($ids));
 
-        if (!$DB->update($qr::getTable(), ['deleted_at' => $_SESSION['glpi_currenttime']], ['id' => $ids])) {
+        if (!$DB->update($qr::getTable(), ['is_deleted' => 1, 'date_mod' => $_SESSION['glpi_currenttime']], ['id' => $ids])) {
             Session::addMessageAfterRedirect(_t('Could not delete QR codes.'), true, ERROR, true);
         }
     }
@@ -562,6 +587,32 @@ class PluginIserviceQr extends CommonDBTM
         array_map('unlink', glob($tempDir . '/*'));
         rmdir($tempDir);
         exit();
+    }
+
+    public function getTicketCreatedMessage($ticketId, PluginIservicePrinter $printer, array $replacedCartridges, array $qrTicketData): string
+    {
+        $message = sprintf(_t('Ticket with ID: %s was created for printer %s serial %s.'), $ticketId, $printer->fields['name'], $printer->fields['serial']);
+
+        if (!empty($replacedCartridges)) {
+            foreach ($replacedCartridges as $colorId) {
+                $color    = IserviceToolBox::getCartridgeNameByColorId($colorId);
+                $message .= "<br>" . sprintf(_t("Replaced %s toner"), $color);
+            }
+        }
+
+        if (!empty($qrTicketData['total2_black_field'])) {
+            $message .= "<br>" . _t('Black counter') . ': ' . $qrTicketData['total2_black_field'];
+        }
+
+        if (!empty($qrTicketData['total2_color_field'])) {
+            $message .= "<br>" . _t('Color counter') . ': ' . $qrTicketData['total2_color_field'];
+        }
+
+        if (!empty($qrTicketData['message'])) {
+            $message .= "<br>" . _t('Message') . ': ' . $qrTicketData['message'];
+        }
+
+        return $message;
     }
 
 }

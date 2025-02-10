@@ -1098,6 +1098,15 @@ msgstr "CUI"
 msgid "Send"
 msgstr "Trimite"
 
+msgid "Replaced %s toner"
+msgstr "Înlocuit toner %s"
+
+msgid "Replaced toner with id: %s, color %s"
+msgstr "Înlocuit toner cu id: %s, culoare %s"
+
+msgid "Replaced toner with id: %s, color %s, but there was an error while adding it to the ticket"
+msgstr "Înlocuit toner cu id: %s, culoare %s, dar a apărut o eroare la adăugarea lui pe tichet"
+
 msgid "Replaced black toner"
 msgstr "Înlocuit toner negru"
 
@@ -1163,6 +1172,12 @@ msgstr "Repartizează la tehnician"
 
 msgid "Could not assign QR code(s) to technician."
 msgstr "Nu s-au putut repartiza codurile QR la tehnician."
+
+msgid "Unique Identification Code"
+msgstr "Cod Fiscal"
+
+msgid "Printer with serial %s is already connected to an other QR code."
+msgstr "Aparatul cu seria %s este deja conectat la un alt cod QR."
 
 #, fuzzy
 #~| msgid "Pending emails"
