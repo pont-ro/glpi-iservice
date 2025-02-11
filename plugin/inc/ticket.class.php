@@ -516,7 +516,7 @@ class PluginIserviceTicket extends Ticket
                 $templateParams['total2BlackDisabled'] = true;
                 $templateParams['total2ColorDisabled'] = true;
             } else {
-                $templateParams['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($this->printer ?? new PluginIservicePrinter(), $this,  $lastClosedTicket) ?? [];
+                $templateParams['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($this->printer ?? new PluginIservicePrinter(), $this,  $lastClosedTicket);
             }
 
             $templateParams['observerVisible'] = true;
