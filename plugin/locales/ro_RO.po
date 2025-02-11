@@ -1092,9 +1092,6 @@ msgstr "Exclude fără hârtie"
 msgid "Serial number"
 msgstr "Număr serie"
 
-msgid "Unic Identification Code"
-msgstr "CUI"
-
 msgid "Send"
 msgstr "Trimite"
 
