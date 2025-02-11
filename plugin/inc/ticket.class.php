@@ -515,6 +515,8 @@ class PluginIserviceTicket extends Ticket
             if ($ID > 0 && ($lastClosedTicket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
                 $templateParams['total2BlackDisabled'] = true;
                 $templateParams['total2ColorDisabled'] = true;
+            } else {
+                $templateParams['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($this->printer ?? new PluginIservicePrinter(), $this,  $lastClosedTicket);
             }
 
             $templateParams['observerVisible'] = true;
@@ -684,7 +686,7 @@ class PluginIserviceTicket extends Ticket
                 }
             }
 
-            $dataLucRequieredMinimum = $closed ? '2000-01-01' : date('Y-m-d H:i', strtotime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '2000-01-01'));
+            $dataLucRequieredMinimum = self::getMinRequiredEffectiveDate($closed, $lastClosedTicket);
             if (!isset($csv_data['effective_date_field']['error']) && $csv_data['effective_date_field'] >= $dataLucRequieredMinimum) {
                 $onclick .= sprintf("setGlpiDateField($(\"[name=effective_date_field]\").closest(\".flatpickr\"), \"%s\");", $csv_data['effective_date_field']);
             } elseif (isset($csv_data['effective_date_field']) && $csv_data['effective_date_field'] < $dataLucRequieredMinimum) {
@@ -707,6 +709,50 @@ class PluginIserviceTicket extends Ticket
         return [];
     }
 
+    public static function getCountersDefaultValues(PluginIservicePrinter $printer, null|PluginIserviceTicket $ticket, PluginIserviceTicket $lastClosedTicket): array
+    {
+        if (empty($printer)) {
+            return [];
+        }
+
+        $defaultsFromCsv    = self::getCounterDefaultsValuesFromCsv($printer, $lastClosedTicket);
+        $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer);
+
+        return [
+            'blackCounterDefaultValue' => $defaultsFromCsv['blackCounterDefaultValue'] ?? round($dataFromEstimation[1] ?? 0 * 0.75, 0),
+            'colorCounterDefaultValue' => $defaultsFromCsv['colorCounterDefaultValue'] ?? round($dataFromEstimation[2] ?? 0 * 0.75, 0)
+        ];
+    }
+
+    public static  function getCounterDefaultsValuesFromCsv(PluginIservicePrinter $printer, PluginIserviceTicket $lastClosedTicket): array
+    {
+        $csvData = PluginIserviceEmaintenance::getDataFromCsvsForSpacelessSerial($printer->getSpacelessSerial());
+
+        if (empty($csvData)
+            || !empty($csvData['effective_date_field']['error'])
+            || $csvData['effective_date_field'] < PluginIserviceTicket::getMinRequiredEffectiveDate(false, $lastClosedTicket)
+        ) {
+            return [];
+        }
+
+        $counters = [];
+
+        if (empty($csvData['total2_black_field']['error'])) {
+            $counters['blackCounterDefaultValue'] = $csvData['total2_black_field'];
+        }
+
+        if (empty($csvData['total2_color_field']['error'])) {
+            $counters['colorCounterDefaultValue'] = $csvData['total2_color_field'];
+        }
+
+        return $counters;
+    }
+
+    public static function getMinRequiredEffectiveDate(bool $isClosed, $lastClosedTicket): string
+    {
+        return $isClosed ? '2000-01-01' : date('Y-m-d H:i', strtotime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '2000-01-01'));
+    }
+
     public function getEstimateButtonConfig($ticket, $closed, $printerId, $printer, $lastTicket, $lastClosedTicket, $colorPrinter, $plotterPrinter): array
     {
         if (empty($printer)) {
@@ -714,12 +760,9 @@ class PluginIserviceTicket extends Ticket
         }
 
         if (!$closed && $printerId > 0 && !$printer->isRouter() && (empty($id) || ($lastTicket->customfields->fields['effective_date_field'] ?? '') <= $ticket->customfields->fields['effective_date_field']) && $lastClosedTicket->getID() > 0 && !$printer->customfields->fields['no_invoice_field']) {
-            $lastDataLuc          = new DateTime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '');
-            $daysSinceLastCounter = $lastDataLuc->diff(new DateTime(empty($ticket->customfields->fields['effective_date_field']) ? null : $ticket->customfields->fields['effective_date_field']))->format("%a");
-            $estimatedBlack       = $lastClosedTicket->customfields->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter;
-            $estimatedColor       = $lastClosedTicket->customfields->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter;
-            $title                = "";
-            $onclick              = '';
+            list($daysSinceLastCounter, $estimatedBlack, $estimatedColor) = self::getEstimatedData($lastClosedTicket, $ticket, $printer);
+            $title   = "";
+            $onclick = '';
             if ($estimatedBlack > 0) {
                 $title   .= "black: $estimatedBlack ({$lastClosedTicket->customfields->fields['total2_black_field']} + {$printer->customfields->fields['daily_bk_average_field']}*$daysSinceLastCounter)";
                 $onclick .= "$(\"[name=total2_black_field]\").val($estimatedBlack);";
@@ -2495,6 +2538,19 @@ class PluginIserviceTicket extends Ticket
         }
 
         return $structuredData;
+    }
+
+    public static  function getEstimatedData($lastClosedTicket, $ticket, $printer): array
+    {
+        if (empty($lastClosedTicket->customfields)) {
+            return [];
+        }
+
+        $lastDataLuc          = new DateTime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '');
+        $daysSinceLastCounter = $lastDataLuc->diff(new DateTime(empty($ticket->customfields->fields['effective_date_field']) ? null : $ticket->customfields->fields['effective_date_field']))->format("%a");
+        $estimatedBlack       = $lastClosedTicket->customfields->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter;
+        $estimatedColor       = $lastClosedTicket->customfields->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter;
+        return [$daysSinceLastCounter, $estimatedBlack, $estimatedColor];
     }
 
 }

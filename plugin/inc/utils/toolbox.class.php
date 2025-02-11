@@ -5,6 +5,7 @@ namespace GlpiPlugin\Iservice\Utils;
 
 use DateTime;
 use Dropdown;
+use PluginFieldsCartridgeitemtypeDropdown;
 use PluginFieldsContainer;
 use PluginFieldsField;
 use PluginIserviceDB;
@@ -478,6 +479,25 @@ class ToolBox
         }
 
         return [];
+    }
+
+    public static function getCartridgeNameByColorId(int $colorId): string
+    {
+        if (!isset($_SESSION['catridgesColorsNamesById'])) {
+            $_SESSION['catridgesColorsNamesById'] = [];
+        }
+
+        if (!isset($_SESSION['catridgesColorsNamesById'][$colorId])) {
+            $_SESSION['catridgesColorsNamesById'][$colorId] = self::getCartridgeNameByColorIdFromDb($colorId);
+        }
+
+        return $_SESSION['catridgesColorsNamesById'][$colorId];
+
+    }
+
+    public static function getCartridgeNameByColorIdFromDb(int $colorId): string
+    {
+        return (new PluginFieldsCartridgeitemtypeDropdown())->getById($colorId)->fields['completename'] ?? '';
     }
 
 }

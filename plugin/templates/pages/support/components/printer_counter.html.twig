@@ -4,7 +4,7 @@
 {% if printer %}
     {{ fieldsIservice.numberField(
         'total2_black_field',
-        item.customfields.fields['total2_black_field'],
+        item.customfields.fields['total2_black_field'] ?? countersDefaultValues['blackCounterDefaultValue'],
         printer.isPlotter() ? _t('Consumed ink') : _t('Black counter reading'),
         field_options|merge({
             'min': total2BlackRequiredMinimum,
@@ -25,7 +25,7 @@
 {% if printer.isColor() or printer.isPlotter() %}
     {{ fields.numberField(
         'total2_color_field',
-        item.customfields.fields['total2_color_field'],
+        item.customfields.fields['total2_color_field'] ?? countersDefaultValues['colorCounterDefaultValue'],
         printer.isPlotter() ? _t('Printed surface') : _t('Color counter reading'),
         field_options|merge({
             'min': total2ColorRequiredMinimum,
