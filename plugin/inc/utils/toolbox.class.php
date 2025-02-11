@@ -5,6 +5,7 @@ namespace GlpiPlugin\Iservice\Utils;
 
 use DateTime;
 use Dropdown;
+use PluginFieldsCartridgeitemtypeDropdown;
 use PluginFieldsContainer;
 use PluginFieldsField;
 use PluginIserviceDB;
@@ -482,19 +483,21 @@ class ToolBox
 
     public static function getCartridgeNameByColorId(int $colorId): string
     {
-        return match ($colorId) {
-            self::CARTRIDGE_COLOR_ID_BLACK => _t('Black'),
-            self::CARTRIDGE_COLOR_ID_CYAN => _t('Cyan'),
-            self::CARTRIDGE_COLOR_ID_MAGENTA => _t('Magenta'),
-            self::CARTRIDGE_COLOR_ID_YELLOW => _t('Yellow'),
-            self::CARTRIDGE_COLOR_ID_MAT_BLACK => _t('Matte Black'),
-            self::CARTRIDGE_COLOR_ID_FOTO_BLACK => _t('Photo Black'),
-            self::CARTRIDGE_COLOR_ID_UNKNOWN => _t('Unknown'),
-            self::CARTRIDGE_COLOR_ID_REPLACEMENT_PART => _t('Replacement Part'),
-            self::CARTRIDGE_COLOR_ID_COLOR => _t('Color'),
-            default => '',
-        };
+        if (!isset($_SESSION['catridgesColorsNamesById'])) {
+            $_SESSION['catridgesColorsNamesById'] = [];
+        }
 
+        if (!isset($_SESSION['catridgesColorsNamesById'][$colorId])) {
+            $_SESSION['catridgesColorsNamesById'][$colorId] = self::getCartridgeNameByColorIdFromDb($colorId);
+        }
+
+        return $_SESSION['catridgesColorsNamesById'][$colorId];
+
+    }
+
+    public static function getCartridgeNameByColorIdFromDb(int $colorId): string
+    {
+        return (new PluginFieldsCartridgeitemtypeDropdown())->getById($colorId)->fields['completename'] ?? '';
     }
 
 }
