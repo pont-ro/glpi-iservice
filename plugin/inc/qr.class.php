@@ -278,7 +278,7 @@ class PluginIserviceQr extends CommonDBTM
                     'cartridge_install_date_field' => $_SESSION['glpi_currenttime'],
                     'effective_date_field' => $_SESSION['glpi_currenttime'],
                     '_plugin_iservice_cartridge' => [
-                        'cartridgeitems_id' => $availableCartridgeItem['id'],
+                        'cartridgeitems_id' => $availableCartridgeItem['id'] . 'l' . $availableCartridgeItem['locations_id_field'],
                     ],
                 ];
 
