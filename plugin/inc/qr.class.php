@@ -612,7 +612,7 @@ class PluginIserviceQr extends CommonDBTM
             $message .= "<br>" . _t('Message') . ': ' . $qrTicketData['message'];
         }
 
-        $message .= "<br>" . _t('Închideți acestă pagina și scanați din nou codul QR pentru o nouă raportare!');
+        $message .= "<br>" . _t('Close this page and scan the QR code again for a new report!');
 
         return $message;
     }
