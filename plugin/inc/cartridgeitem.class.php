@@ -258,7 +258,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         if ($printer_id < 1 || !empty($options['ignore_location'])) {
             $location_condition = '';
         } else {
-            $printer_location_location = empty($printer_location->fields['id']) ? 0 : $printer_location->fields['id'];
+            $printer_location_location = empty($printer_location->fields['locations_id']) ? 0 : $printer_location->fields['id'];
             $location_condition        = "AND COALESCE(l.locations_id, 0) = $printer_location_location";
         }
 

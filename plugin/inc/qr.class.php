@@ -93,7 +93,7 @@ class PluginIserviceQr extends CommonDBTM
         $data = [
             'isColorPrinter' => $printer->isColor(),
             'isPlotter' => $printer->isPlotter(),
-            'infoMessage' => sprintf(_t("You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."), $printer->fields['name'], $printer->fields['serial']),
+            'infoMessage' => sprintf(_t("You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."), $printer->fields['original_name'], $printer->fields['serial']),
             'total2BlackRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_black_field'] ?? null,
             'total2ColorRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_color_field'] ?? null,
         ];
@@ -611,6 +611,8 @@ class PluginIserviceQr extends CommonDBTM
         if (!empty($qrTicketData['message'])) {
             $message .= "<br>" . _t('Message') . ': ' . $qrTicketData['message'];
         }
+
+        $message .= "<br>" . _t('Închideți acestă pagina și scanați din nou codul QR pentru o nouă raportare!');
 
         return $message;
     }

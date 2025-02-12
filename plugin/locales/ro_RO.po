@@ -1135,7 +1135,7 @@ msgid "QR code connected to printer %s serial %s."
 msgstr "Codul QR conectat la aparatul %s cu seria %s."
 
 msgid "You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."
-msgstr "Sunteți conectat la aparatul %s cu seria %s. Vă rugăm bifați tonerele pe care le-ați inlocuit și completați celelalte date daca este cazul. Datele se vor trimite după apăsarea butonului \"Trimite\"."
+msgstr "Sunteți conectat la aparatul %s cu seria %s. Vă rugăm bifați tonerele pe care le-ați inlocuit și opțional completați celelalte date. Datele se vor trimite după apăsarea butonului \"Trimite\"."
 
 msgid "In order to send inquries, please fill in the fields below!"
 msgstr "Pentru a trimite solicitări, vă rugăm completați câmpurile de mai jos!"
@@ -1175,6 +1175,15 @@ msgstr "Cod Fiscal"
 
 msgid "Printer with serial %s is already connected to an other QR code."
 msgstr "Aparatul cu seria %s este deja conectat la un alt cod QR."
+
+msgid "Message"
+msgstr "Mesaj"
+
+msgid "Document/Relevant pictures"
+msgstr "Documente/Poze relevante"
+
+msgid "Close this page and scan the QR code again for a new report!"
+msgstr "Închideți acestă pagina și scanați din nou codul QR pentru o nouă raportare!"
 
 #, fuzzy
 #~| msgid "Pending emails"
