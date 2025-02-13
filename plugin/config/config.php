@@ -36,4 +36,6 @@ return [
     'backup_restore.backup_path'   => '/var/backup', // Without trailing slash!
     'backup_restore.backup_method' => 'bz2', // Supported: sql, bz2.
     'ajax_limit_count' => 1,
+    'qr_ticket_user' => 'Cititor',
+    'qr_ticket_user_password' => '6PrDatF23b0P12X',
 ];
