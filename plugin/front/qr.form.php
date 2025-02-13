@@ -17,8 +17,6 @@ $filesData                = [
     '_uploader_filename' => IserviceToolBox::getArrayInputVariable('_uploader_filename'),
 ];
 
-PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
-
 if (!empty($code)
     && empty($serialNumber)
     && empty($uniqueIdentificationCode)
@@ -29,10 +27,19 @@ if (!empty($code)
     )
 ) {
     if ($qr->isConnected() && !empty($qrTicketData)) {
+        // Auth must happen before the header is sent!
+        $auth = new Auth();
+        $auth->login(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'), PluginIserviceConfig::getConfigValue('qr.ticket_user_password'));
+
+        PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
         $qr->createTicket($qr, $qrTicketData, $filesData);
+
+        Session::cleanOnLogout();
     } elseif ($qr->isConnected()) {
+        PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
         $qr->showConnectedForm($qr->getID());
     } else {
+        PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
         $qr->showConnectForm();
     }
 } elseif (!empty($serialNumber) && !empty($uniqueIdentificationCode)) {
