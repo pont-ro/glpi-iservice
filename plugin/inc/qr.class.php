@@ -242,12 +242,10 @@ class PluginIserviceQr extends CommonDBTM
                 }
             }
 
-            $ticket->update(
-                [
-                    'id' => $ticketId,
-                    'content' => $message,
-                ]
-            );
+            global $DB;
+
+            // Ticket update from model doesn't work if user is not logged in.
+            $DB->request("UPDATE glpi_tickets SET content = '$message' WHERE id = $ticketId");
         }
 
         self::renderMessageTemplate($this->getTicketCreatedMessage($ticketId, $printer, $replacedCartridges, $qrTicketData));
