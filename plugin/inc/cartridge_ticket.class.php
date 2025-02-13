@@ -123,7 +123,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                                         return true;
                                     }
                                     return false;
-                                });}, 1000);
+                                });}, 1000)
                           </script>',
                     ],
                     'addButton' => [
@@ -323,7 +323,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                                         return true;
                                     }
                                     return false;
-                                });}, 1000);
+                                });}, 1000)
                           </script>'
                 ];
             } else {
@@ -421,6 +421,9 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                         'options' => [
                             'condition' => ['id in (' . implode(',', $supported_types) . ')'],
                             'on_click' => '$(this).closest("form").submit();',
+                            'addicon' => false,
+                            'comments' => false,
+                            'no_label' => true,
                         ],
                     ],
                 ];
