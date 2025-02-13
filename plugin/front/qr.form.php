@@ -29,7 +29,7 @@ if (!empty($code)
     if ($qr->isConnected() && !empty($qrTicketData)) {
         // Auth must happen before the header is sent!
         $auth = new Auth();
-        $auth->login(PluginIserviceConfig::getConfigValue('qr_ticket_user'), PluginIserviceConfig::getConfigValue('qr_ticket_user_password'));
+        $auth->login(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'), PluginIserviceConfig::getConfigValue('qr.ticket_user_password'));
 
         PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
         $qr->createTicket($qr, $qrTicketData, $filesData);
