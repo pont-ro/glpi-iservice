@@ -21,7 +21,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginIserviceQr extends CommonDBTM
 {
     public const QR_TICKET_NAME                  = 'Citire QR';
-    public const QR_TICKETS_NUMBER_LIMIT_PER_DAY = 5;
+    public const QR_TICKETS_NUMBER_LIMIT_PER_DAY = 5000;
 
     public static $rightname = 'plugin_iservice_view_qrs';
 
@@ -208,6 +208,8 @@ class PluginIserviceQr extends CommonDBTM
             '_do_not_compute_status' => true, // This is needed to avoid ticket status change in CommonITILObject.php:prepareInputForUpdate method, line 1780.
             'effective_date_field' => $_SESSION['glpi_currenttime'],
             '_no_message' => true,
+            'without_paper_field' => 1,
+            'no_travel_field'     => 1,
         ];
 
         $ticketId = $ticket->add(array_merge($input, $filesData));
@@ -594,7 +596,7 @@ class PluginIserviceQr extends CommonDBTM
 
     public function getTicketCreatedMessage($ticketId, PluginIservicePrinter $printer, array $replacedCartridges, array $qrTicketData): string
     {
-        $message = sprintf(_t('Ticket with ID: %s was created for printer %s serial %s.'), $ticketId, $printer->fields['name'], $printer->fields['serial']);
+        $message = sprintf(_t('Ticket with ID: %s was created for printer %s serial %s.'), $ticketId, $printer->fields['name'], $printer->fields['serial']) . "<br>";
 
         if (!empty($replacedCartridges)) {
             foreach ($replacedCartridges as $colorId) {
@@ -615,7 +617,7 @@ class PluginIserviceQr extends CommonDBTM
             $message .= "<br>" . _t('Message') . ': ' . $qrTicketData['message'];
         }
 
-        $message .= "<br>" . _t('Close this page and scan the QR code again for a new report!');
+        $message .= "<hr>" . _t('Close this page and scan the QR code again for a new report!');
 
         return $message;
     }
