@@ -128,11 +128,12 @@ class Operations extends View
                     LEFT JOIN glpi_suppliers s ON s.id = st.suppliers_id
                     LEFT JOIN glpi_locations l ON l.id = t.locations_id
                     -- LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '<br>(', c.id,')') SEPARATOR '<br>') cartridges
-                    LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '&nbsp;<span title=\"', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, coalesce(t.total2_black_field, 0) + coalesce(t.total2_color_field, 0)), ' + (', ci.atc_field, ' * ', ci.life_coefficient_field, ')', '\">(pana&nbsp;', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)) + ROUND(ci.atc_field * ci.life_coefficient_field), ')</span><br>[', c.id,COALESCE(CONCAT(' -> ',cat.cartridges_id_emptied),' -> <span style=\"color:red;\" title=\"nu golește nimic\">!!!</span>'),']') SEPARATOR '<br>') cartridges
+                    LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '&nbsp;<span title=\"', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, coalesce(t.total2_black_field, 0) + coalesce(t.total2_color_field, 0)), ' + (', ci.atc_field, ' * ', ci.life_coefficient_field, ')', '\">(pana&nbsp;', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)) + ROUND(ci.atc_field * ci.life_coefficient_field), ')</span><br>[', c.id,COALESCE(CONCAT(' -> ',cat.cartridges_id_emptied),' -> <span style=\"color:red;\" title=\"nu golește nimic\">!!!</span>'),'] (', cid.completename, ')') SEPARATOR '<br>') cartridges
                                 FROM glpi_plugin_iservice_cartridges_tickets cat
                                 LEFT JOIN glpi_plugin_iservice_tickets t ON t.id = cat.tickets_id
                                 LEFT JOIN glpi_cartridges c ON c.id = cat.cartridges_id
                                 LEFT JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
+                                LEFT JOIN glpi_plugin_fields_cartridgeitemtypedropdowns cid on cid.id = ci.plugin_fields_cartridgeitemtypedropdowns_id
                                 GROUP BY cat.tickets_id
                               ) ct ON ct.tickets_id = t.id
                     WHERE t.is_deleted = 0
