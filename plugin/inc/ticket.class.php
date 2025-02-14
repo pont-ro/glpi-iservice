@@ -719,8 +719,8 @@ class PluginIserviceTicket extends Ticket
         $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer);
 
         return [
-            'blackCounterDefaultValue' => $defaultsFromCsv['blackCounterDefaultValue'] ?? round($dataFromEstimation[1] ?? 0 * 0.75, 0),
-            'colorCounterDefaultValue' => $defaultsFromCsv['colorCounterDefaultValue'] ?? round($dataFromEstimation[2] ?? 0 * 0.75, 0)
+            'blackCounterDefaultValue' => $defaultsFromCsv['blackCounterDefaultValue'] ?? round(($dataFromEstimation[1] ?? 0) * 0.75, 0),
+            'colorCounterDefaultValue' => $defaultsFromCsv['colorCounterDefaultValue'] ?? round(($dataFromEstimation[2] ?? 0) * 0.75, 0)
         ];
     }
 
