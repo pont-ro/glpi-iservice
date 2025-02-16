@@ -716,11 +716,11 @@ class PluginIserviceTicket extends Ticket
         }
 
         $defaultsFromCsv    = self::getCounterDefaultsValuesFromCsv($printer, $lastClosedTicket);
-        $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer);
+        $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer, 0.75);
 
         return [
-            'blackCounterDefaultValue' => $defaultsFromCsv['blackCounterDefaultValue'] ?? round($dataFromEstimation[1] ?? 0 * 0.75, 0),
-            'colorCounterDefaultValue' => $defaultsFromCsv['colorCounterDefaultValue'] ?? round($dataFromEstimation[2] ?? 0 * 0.75, 0)
+            'blackCounterDefaultValue' => $defaultsFromCsv['blackCounterDefaultValue'] ?? $dataFromEstimation[1] ?? 0,
+            'colorCounterDefaultValue' => $defaultsFromCsv['colorCounterDefaultValue'] ?? $dataFromEstimation[2] ?? 0
         ];
     }
 
@@ -2540,7 +2540,7 @@ class PluginIserviceTicket extends Ticket
         return $structuredData;
     }
 
-    public static  function getEstimatedData($lastClosedTicket, $ticket, $printer): array
+    public static  function getEstimatedData($lastClosedTicket, $ticket, $printer, float $coefficient = 1): array
     {
         if (empty($lastClosedTicket->customfields)) {
             return [];
@@ -2548,8 +2548,8 @@ class PluginIserviceTicket extends Ticket
 
         $lastDataLuc          = new DateTime($lastClosedTicket->customfields->fields['effective_date_field'] ?? '');
         $daysSinceLastCounter = $lastDataLuc->diff(new DateTime(empty($ticket->customfields->fields['effective_date_field']) ? null : $ticket->customfields->fields['effective_date_field']))->format("%a");
-        $estimatedBlack       = $lastClosedTicket->customfields->fields['total2_black_field'] + $printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter;
-        $estimatedColor       = $lastClosedTicket->customfields->fields['total2_color_field'] + $printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter;
+        $estimatedBlack       = $lastClosedTicket->customfields->fields['total2_black_field'] + round($printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter * $coefficient);
+        $estimatedColor       = $lastClosedTicket->customfields->fields['total2_color_field'] + round($printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter * $coefficient);
         return [$daysSinceLastCounter, $estimatedBlack, $estimatedColor];
     }
 

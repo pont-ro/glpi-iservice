@@ -281,6 +281,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                        , ci.id
                        , ci.name
                        , ci.ref
+                       , if (ci.ref like 'CTON%' or ci.ref like 'CCA%', 'cartridge', 'consumable') consumable_type
                        , c.locations_id_field
                        , GROUP_CONCAT(c.id SEPARATOR ', ') cartridge_ids
                        , l.name location_name

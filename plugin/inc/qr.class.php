@@ -280,8 +280,6 @@ class PluginIserviceQr extends CommonDBTM
                 }
             }
 
-            global $DB;
-
             // Ticket update from model will work only if user is not logged in.
             $ticket->update(
                 [
@@ -312,24 +310,26 @@ class PluginIserviceQr extends CommonDBTM
         }
 
         foreach ($availableCartridges as $availableCartridgeItem) {
-            if ($availableCartridgeItem['plugin_fields_cartridgeitemtypedropdowns_id'] === $colorId) {
-                $inputForAddCartridge = [
-                    'printer_id' => $qr->fields['items_id'],
-                    'suppliers_id' => $printer->fields['supplier_id'],
-                    'cartridge_install_date_field' => $_SESSION['glpi_currenttime'],
-                    'effective_date_field' => $_SESSION['glpi_currenttime'],
-                    '_plugin_iservice_cartridge' => [
-                        'cartridgeitems_id' => $availableCartridgeItem['id'] . 'l' . $availableCartridgeItem['locations_id_field'],
-                    ],
-                ];
-
-                $errorMessage = '';
-                if (!$ticket->addCartridge($ticket->getID(), $inputForAddCartridge, $errorMessage)) {
-                    return !empty($errorMessage) ? $errorMessage : false;
-                }
-
-                return true;
+            if ($availableCartridgeItem['consumable_type'] !== 'cartridge' || $availableCartridgeItem['plugin_fields_cartridgeitemtypedropdowns_id'] !== $colorId) {
+                continue;
             }
+
+            $inputForAddCartridge = [
+                'printer_id' => $qr->fields['items_id'],
+                'suppliers_id' => $printer->fields['supplier_id'],
+                'cartridge_install_date_field' => $_SESSION['glpi_currenttime'],
+                'effective_date_field' => $_SESSION['glpi_currenttime'],
+                '_plugin_iservice_cartridge' => [
+                    'cartridgeitems_id' => $availableCartridgeItem['id'] . 'l' . $availableCartridgeItem['locations_id_field'],
+                ],
+            ];
+
+            $errorMessage = '';
+            if (!$ticket->addCartridge($ticket->getID(), $inputForAddCartridge, $errorMessage)) {
+                return !empty($errorMessage) ? $errorMessage : false;
+            }
+
+            return true;
         }
 
         return false;
