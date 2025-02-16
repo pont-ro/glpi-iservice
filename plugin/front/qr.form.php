@@ -19,6 +19,7 @@ $filesData                = [
 
 // Auth must happen before the header is sent!
 PluginIserviceQr::loginQrUser();
+PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
 
 if (!empty($code)
     && empty($serialNumber)
@@ -30,15 +31,10 @@ if (!empty($code)
     )
 ) {
     if ($qr->isConnected() && !empty($qrTicketData)) {
-        PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
         $qr->createTicket($qr, $qrTicketData, $filesData);
-
-        Session::cleanOnLogout();
     } elseif ($qr->isConnected()) {
-        PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
         $qr->showConnectedForm($qr->getID());
     } else {
-        PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
         $qr->showConnectForm();
     }
 } elseif (!empty($serialNumber) && !empty($uniqueIdentificationCode)) {
