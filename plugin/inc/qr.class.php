@@ -30,6 +30,42 @@ class PluginIserviceQr extends CommonDBTM
         return _tn('QR Code', 'QR Codes', $nb);
     }
 
+    public static function loginQrUser(): void
+    {
+        $auth = new Auth();
+        $auth->login(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'), PluginIserviceConfig::getConfigValue('qr.ticket_user_password'));
+    }
+
+    public static function restrictQrUserToQrForm(): void
+    {
+        // This is a hack to limit the access to the QR form only for allowed users.
+        if (($_SESSION['glpiID'] ?? '') === IserviceToolBox::getUserIdByName(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'))) {
+            $currentPage = $_SERVER['REQUEST_URI'];
+            if (!self::isUrlAllowed($currentPage)) {
+                Session::cleanOnLogout(); // Log out the user!
+                Html::redirect('/index.php'); // Redirect to index page, this will display login form!
+            }
+        }
+    }
+
+    private static function isUrlAllowed($url): bool
+    {
+        $allowedPages = [
+            '/plugins/iservice/front/qr.form.php',
+            '/ajax/fileupload.php',
+            '/ajax/getFileTag.php',
+            '/front/locale.php',
+        ];
+
+        foreach ($allowedPages as $allowedPage) {
+            if (strpos($url, $allowedPage) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getRawName(): string
     {
         return _tn('QR code', 'QR codes', 1) . " #" . $this->getID();
@@ -244,7 +280,6 @@ class PluginIserviceQr extends CommonDBTM
                 }
             }
 
-            // Ticket update from model will work only if user is not logged in.
             $ticket->update(
                 [
                     'id' => $ticketId,
