@@ -21,7 +21,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginIserviceQr extends CommonDBTM
 {
     public const QR_TICKET_NAME                  = 'Citire QR';
-    public const QR_TICKETS_NUMBER_LIMIT_PER_DAY = 5;
+    public const QR_TICKETS_NUMBER_LIMIT_PER_DAY = 50;
 
     public static $rightname = 'plugin_iservice_view_qrs';
 
