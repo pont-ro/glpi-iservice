@@ -79,11 +79,11 @@ class PluginIserviceQr extends CommonDBTM
     public static function generateQrCodes($numberOfCodesToGenerate = 10): array
     {
         global $DB;
-        $qrs    = $DB->request("SELECT `auto_increment` FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '" . self::getTable() . "'");
+        $qrs    = $DB->request("SELECT `auto_increment` FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '$DB->dbdefault' AND table_name = '" . self::getTable() . "'");
         $nextId = $qrs->current()['auto_increment'];
         if ($nextId < 500) {
             $nextId = 500;
-            $DB->request("ALTER TABLE " . self::getTable() . " AUTO_INCREMENT = $nextId");
+            $DB->request("ALTER TABLE $DB->dbdefault." . self::getTable() . " AUTO_INCREMENT = $nextId");
         }
 
         $ids = [];
