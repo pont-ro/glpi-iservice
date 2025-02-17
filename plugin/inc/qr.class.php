@@ -236,6 +236,7 @@ class PluginIserviceQr extends CommonDBTM
             'name' => self::QR_TICKET_NAME,
             'content' => $message,
             '_suppliers_id_assign' => $printer->fields['supplier_id'],
+            '_users_id_assign' => IserviceToolBox::getUserIdByName('Cititor'),
             'printer_id' => $qr->fields['items_id'],
             'date' => $_SESSION['glpi_currenttime'],
             'itilcategories_id' => PluginIserviceTicket::getItilCategoryId('Sesizare externa'),
