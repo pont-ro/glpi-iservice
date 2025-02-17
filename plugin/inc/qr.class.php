@@ -30,10 +30,10 @@ class PluginIserviceQr extends CommonDBTM
         return _tn('QR Code', 'QR Codes', $nb);
     }
 
-    public static function loginQrUser(): void
+    public static function loginQrUser(): bool|int
     {
         $auth = new Auth();
-        $auth->login(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'), PluginIserviceConfig::getConfigValue('qr.ticket_user_password'));
+        return $auth->login(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'), PluginIserviceConfig::getConfigValue('qr.ticket_user_password'));
     }
 
     public static function restrictQrUserToQrForm(): void

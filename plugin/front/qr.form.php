@@ -18,7 +18,10 @@ $filesData                = [
 ];
 
 // Auth must happen before the header is sent!
-PluginIserviceQr::loginQrUser();
+if (!PluginIserviceQr::loginQrUser()) {
+    Html::displayErrorAndDie('Internal authorization server error.');
+}
+
 PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
 
 if (!empty($code)
