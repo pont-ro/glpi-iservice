@@ -157,7 +157,6 @@ class PluginIserviceQr extends CommonDBTM
                  FROM glpi_plugin_iservice_printers p
                 LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON p.supplier_id = cfs.items_id AND cfs.itemtype = 'Supplier'
                 WHERE
-                    
                     REPLACE(p.serial, ' ', '') = '$printerSerialNumber' 
                     AND REPLACE(cfs.uic_field, ' ', '') LIKE '%$uniqueIdentificationCode%'"
         );
