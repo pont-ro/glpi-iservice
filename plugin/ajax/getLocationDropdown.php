@@ -40,7 +40,7 @@ $location_condition_select = "
     SELECT distinct(p.locations_id)
     FROM glpi_infocoms ic 
     JOIN glpi_printers p ON p.id = ic.items_id AND itemtype = 'Printer'  AND p.is_deleted = 0
-    WHERE ic.suppliers_id = $supplier_id";
+    WHERE FIND_IN_SET (ic.suppliers_id, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id))";
 $location_input_id         = Dropdown::show(
     'Location', [
         'width' => '100%',
