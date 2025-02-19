@@ -29,7 +29,8 @@ if (!empty($code)
     && empty($uniqueIdentificationCode)
     && $qr->getFromDBByRequest(
         [
-            'code' => $code
+            'code' => $code,
+            'is_deleted' => 0
         ]
     )
 ) {

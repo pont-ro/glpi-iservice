@@ -1185,6 +1185,12 @@ msgstr "Documente/Poze relevante"
 msgid "Close this page and scan the QR code again for a new report!"
 msgstr "Închideți acestă pagina și scanați din nou codul QR pentru o nouă raportare!"
 
+msgid "Note: QR codes connected to printers should be disconnected before delete!"
+msgstr "Notă: Codurile QR conectate la aparate trebuie deconectate înainte de ștergere!"
+
+msgid "Ticket with ID: %s was created for printer %s serial %s."
+msgstr "Tichetul cu ID: %s a fost creat pentru aparatul %s cu seria %s."
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"

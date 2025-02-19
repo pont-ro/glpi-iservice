@@ -156,7 +156,8 @@ class PluginIserviceQr extends CommonDBTM
                 , cfs.uic_field
                  FROM glpi_plugin_iservice_printers p
                 LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields cfs ON p.supplier_id = cfs.items_id AND cfs.itemtype = 'Supplier'
-                WHERE  
+                WHERE
+                    
                     REPLACE(p.serial, ' ', '') = '$printerSerialNumber' 
                     AND REPLACE(cfs.uic_field, ' ', '') LIKE '%$uniqueIdentificationCode%'"
         );
@@ -186,6 +187,7 @@ class PluginIserviceQr extends CommonDBTM
         $qr->getFromDBByRequest(
             [
                 'code' => $code,
+                'is_deleted' => 0,
             ]
         );
 
@@ -386,7 +388,8 @@ class PluginIserviceQr extends CommonDBTM
         $qr  = new self();
         $ids = array_keys(array_filter($ids));
 
-        if (!$DB->update($qr::getTable(), ['is_deleted' => 1, 'date_mod' => $_SESSION['glpi_currenttime']], ['id' => $ids])) {
+        // Allow soft delete only if items_id is null.
+        if (!$DB->update($qr::getTable(), ['is_deleted' => 1, 'users_id_tech' => null, 'date_mod' => $_SESSION['glpi_currenttime']], ['id' => $ids, 'items_id' => null])) {
             Session::addMessageAfterRedirect(_t('Could not delete QR codes.'), true, ERROR, true);
         }
     }
@@ -632,7 +635,7 @@ class PluginIserviceQr extends CommonDBTM
 
     public function getTicketCreatedMessage($ticketId, PluginIservicePrinter $printer, array $replacedCartridges, array $qrTicketData): string
     {
-        $message = sprintf(_t('Ticket with ID: %s was created for printer %s serial %s.'), $ticketId, $printer->fields['name'], $printer->fields['serial']) . "<br>";
+        $message = sprintf(_t('Ticket with ID: %s was created for printer %s serial %s.'), $ticketId, $printer->fields['original_name'], $printer->fields['serial']) . "<br>";
 
         if (!empty($replacedCartridges)) {
             foreach ($replacedCartridges as $colorId) {
