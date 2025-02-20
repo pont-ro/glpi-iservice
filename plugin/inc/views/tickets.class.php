@@ -235,6 +235,22 @@ class Tickets extends View
         return "<span style='$style' title='$title'>$row_data[supplier_name]</span>";
     }
 
+    public static function getPrinterNameDisplay($row_data)
+    {
+        $label = $row_data['printer_name'];
+        $title = '';
+        if ($row_data['qr_code']) {
+            $label .= " [QR]";
+            $title .= "QR: " . $row_data['qr_code'];
+        }
+
+        if (Session::haveRight('plugin_iservice_interface_original', READ)) {
+            return "<a href='printer.form.php?id=$row_data[printer_id]' title='$title'>$label</a>";
+        } else {
+            return "<span title='$title'>$label</span>";
+        }
+    }
+
     protected function getSettings(): array
     {
         global $CFG_GLPI;
@@ -328,10 +344,12 @@ class Tickets extends View
                             , t2.numar_facturi_neplatite
                             , t2.unpaid_invoices_value
                             , t.users_id_recipient
+                            , qr.code as qr_code
                         FROM glpi_plugin_iservice_tickets t
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
                         LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
                         LEFT JOIN glpi_plugin_iservice_printers p ON p.id = it.items_id
+                        LEFT JOIN glpi_plugin_iservice_qrs qr ON qr.items_id = p.id and qr.itemtype = 'Printer'
                         LEFT JOIN glpi_locations l ON l.id = t.locations_id
                         LEFT JOIN glpi_suppliers_tickets st ON st.tickets_id = t.id AND st.type = " . CommonITILActor::ASSIGN . "
                         LEFT JOIN glpi_plugin_iservice_suppliers s ON s.id = st.suppliers_id
@@ -529,11 +547,7 @@ class Tickets extends View
                 ],
                 'printer_name' => [
                     'title' => 'Nume aparat',
-                    'link' => [
-                        'href' => $CFG_GLPI['root_doc'] . '/front/printer.form.php?id=[printer_id]',
-                        'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
-                    ],
-                    // 'format' => '%s ([printer_location])',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getPrinterNameDisplay($row);',
                     'empty' => [
                         'value' => '---',
                         'link' => [

@@ -18,6 +18,15 @@ class Qrs extends View
         return _tn('QR Code', 'QR Codes', 2);
     }
 
+    public static function getRowBackgroundClass($row_data): string
+    {
+        if ($row_data['is_deleted']) {
+            return 'border border-danger';
+        }
+
+        return '';
+    }
+
     protected function getSettings(): array
     {
         if (IserviceToolBox::getInputVariable('mass_action_download') && !empty(IserviceToolBox::getArrayInputVariable('item')['Qrs'])) {
@@ -63,7 +72,7 @@ class Qrs extends View
                     FROM glpi_plugin_iservice_qrs qrs
                     LEFT JOIN glpi_plugin_iservice_printers p ON p.id = qrs.items_id
                     LEFT JOIN glpi_users u ON u.id = qrs.users_id_tech
-                    WHERE (qrs.is_deleted = 0 OR qrs.is_deleted IS NULL)
+                    WHERE 1
                         AND CAST( qrs.id AS CHAR) LIKE '[id]'
                         AND ((p.name_and_location is null AND '[name]' = '%%') OR p.name_and_location LIKE '[name]')                                              
                         AND ((p.serial  is null AND '[serial]' = '%%') OR p.serial LIKE '[serial]')
@@ -72,6 +81,7 @@ class Qrs extends View
                         AND ((u.name is null AND '[technician]' = '%%') OR u.name LIKE '[technician]')
                 ",
             'default_limit' => 50,
+            'row_class' => 'function:\GlpiPlugin\Iservice\Views\Qrs::getRowBackgroundClass($row_data);',
             'filters'       => [
                 'id' => [
                     'type' => self::FILTERTYPE_INT,
@@ -158,7 +168,8 @@ class Qrs extends View
                 'delete' => [
                     'caption' => _t('Delete QR Codes'),
                     'action' => 'views.php?view=Qrs',
-                    'new_tab' => false
+                    'new_tab' => false,
+                    'onClick' => 'if (confirm("' . _t('Note: QR codes connected to printers should be disconnected before delete!') . '") !== true) { return false; }',
                 ],
             ],
         ];
