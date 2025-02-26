@@ -255,6 +255,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 $cartridges[$cartridge['id']]               = $cartridge;
                 $used_ids[$cartridge['cid']]                = $cartridge['cid'];
                 $used[$cartridge['cid']]['last']            = $cartridge['id'];
+                $used[$cartridge['cid']]['mercurycode']     = $cartridge['mercurycode'];
                 $used[$cartridge['cid']]['mercurycodes']    = $cartridge['mercurycodes'];
                 $used[$cartridge['cid']]['supported_types'] = $cartridge['supportedtypes'];
                 if (!empty($cartridge['selected_type_id'])) {
@@ -262,7 +263,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 }
             }
 
-            $usedForRowDropdowns = $used;
+            $usedForRowDropdowns = $used = self::mergeTypesByMercuryCodes($used);
 
             foreach ($used as $cid => $used_data) {
                 if ($used_data['supported_types'] !== implode(',', empty($used_data['types']) ? [] : $used_data['types'])) {
@@ -518,6 +519,27 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         ];
 
         return $data;
+    }
+
+    private static function mergeTypesByMercuryCodes(array $data): array
+    {
+        $result = [];
+
+        foreach ($data as $key => $item) {
+            foreach ($data as $key2 => $item2) {
+                if (!isset($result[$key])) {
+                    $result[$key] = $item;
+                }
+
+                if (strpos($item2['mercurycodes'], $item['mercurycode'])) {
+                    $types = array_unique(array_merge($result[$key]['types'], $item2['types']));
+                    asort($types);
+                    $result[$key]['types'] = array_values($types);
+                }
+            }
+        }
+
+        return $result;
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
