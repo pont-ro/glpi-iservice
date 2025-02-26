@@ -908,13 +908,12 @@ class PluginIserviceTicket extends Ticket
         $pluginIserviceCartridgesTickets = new PluginIserviceCartridge_Ticket();
 
         $usedTypes = PluginIserviceDB::getQueryResult(
-            "
-            select ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type
+            "select ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type
             from glpi_plugin_iservice_cartridges_tickets ct
             join glpi_cartridges c on c.id = ct.cartridges_id
-            where ct.tickets_id = {$this->getID()}
-              and c.cartridgeitems_id = {$cartridge->fields['cartridgeitems_id']}
-            "
+            join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cicf on cicf.items_id = c.cartridgeitems_id and cicf.itemtype = 'cartridgeitem'
+            where ct.tickets_id = {$this->getid()}
+            and find_in_set('\'{$cartridge->fields['mercury_code_field']}\'', cicf.compatible_mercury_codes_field)"
         );
 
         foreach (explode(',', $cartridgeCustomfields->fields['supported_types_field']) as $supportedType) {

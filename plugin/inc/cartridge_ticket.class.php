@@ -255,6 +255,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 $cartridges[$cartridge['id']]               = $cartridge;
                 $used_ids[$cartridge['cid']]                = $cartridge['cid'];
                 $used[$cartridge['cid']]['last']            = $cartridge['id'];
+                $used[$cartridge['cid']]['mercurycode']     = $cartridge['mercurycode'];
                 $used[$cartridge['cid']]['mercurycodes']    = $cartridge['mercurycodes'];
                 $used[$cartridge['cid']]['supported_types'] = $cartridge['supportedtypes'];
                 if (!empty($cartridge['selected_type_id'])) {
@@ -262,9 +263,12 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 }
             }
 
+            $usedForRowDropdowns = $used = self::mergeTypesByMercuryCodes($used);
+
             foreach ($used as $cid => $used_data) {
                 if ($used_data['supported_types'] !== implode(',', empty($used_data['types']) ? [] : $used_data['types'])) {
                     unset($used_ids[$cid]);
+                    unset($used[$cid]);
                 }
             }
         }
@@ -362,6 +366,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             ],
         ];
 
+        // Generating changeable table rows.
         foreach ($cartridges as $key => $cartridge) {
             $data['tableSection']['rows'][$key] = [
                 'cols' => [
@@ -397,11 +402,11 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             ];
 
             $supported_types = explode(',', $cartridge['supportedtypes']);
-            if (empty($used[$cartridge['cid']]['types'])) {
-                $used[$cartridge['cid']]['types'] = [];
+            if (empty($usedForRowDropdowns[$cartridge['cid']]['types'])) {
+                $usedForRowDropdowns[$cartridge['cid']]['types'] = [];
             }
 
-            foreach ($used[$cartridge['cid']]['types'] as $used_type_id) {
+            foreach ($usedForRowDropdowns[$cartridge['cid']]['types'] as $used_type_id) {
                 if ($used_type_id != $cartridge['selected_type_id'] && false !== ($unset_index = array_search($used_type_id, $supported_types))) {
                     unset($supported_types[$unset_index]);
                 }
@@ -411,7 +416,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 $cartridge['selected_type_id'] = reset($supported_types);
             }
 
-            if (count($supported_types) > 1 && (empty($used[$cartridge['cid']]['last']) || $cartridge['id'] === $used[$cartridge['cid']]['last'])) {
+            if (count($supported_types) > 1 && (empty($usedForRowDropdowns[$cartridge['cid']]['last']) || $cartridge['id'] === $usedForRowDropdowns[$cartridge['cid']]['last'])) {
                 $data['tableSection']['rows'][$key]['cols']['cartridgeTypeIds'] = [
                     'input' => [
                         'itemType' => 'PluginFieldsCartridgeitemtypeDropdown',
@@ -514,6 +519,27 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         ];
 
         return $data;
+    }
+
+    private static function mergeTypesByMercuryCodes(array $data): array
+    {
+        $result = [];
+
+        foreach ($data as $key => $item) {
+            foreach ($data as $key2 => $item2) {
+                if (!isset($result[$key])) {
+                    $result[$key] = $item;
+                }
+
+                if (in_array("'$item[mercurycode]'", explode(',', $item2['mercurycodes']))) {
+                    $types = array_unique(array_merge($result[$key]['types'], $item2['types']));
+                    asort($types);
+                    $result[$key]['types'] = array_values($types);
+                }
+            }
+        }
+
+        return $result;
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string
