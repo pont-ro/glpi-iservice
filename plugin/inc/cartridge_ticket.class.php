@@ -531,7 +531,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     $result[$key] = $item;
                 }
 
-                if (strpos($item2['mercurycodes'], $item['mercurycode'])) {
+                if (in_array("'$item[mercurycode]'", explode(',', $item2['mercurycodes']))) {
                     $types = array_unique(array_merge($result[$key]['types'], $item2['types']));
                     asort($types);
                     $result[$key]['types'] = array_values($types);
