@@ -515,8 +515,6 @@ class PluginIserviceTicket extends Ticket
             if ($ID > 0 && ($lastClosedTicket->customfields->fields['effective_date_field'] ?? '') > $this->customfields->fields['effective_date_field']) {
                 $templateParams['total2BlackDisabled'] = true;
                 $templateParams['total2ColorDisabled'] = true;
-            } else {
-                $templateParams['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($this->printer ?? new PluginIservicePrinter(), $this,  $lastClosedTicket);
             }
 
             $templateParams['observerVisible'] = true;
