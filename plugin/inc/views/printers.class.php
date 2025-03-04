@@ -194,7 +194,7 @@ class Printers extends View
             $style   .= 'font-style: italic;';
         }
 
-        if ($row_data['qr_code']) {
+        if ($row_data['qr_code'] ?? false) {
             $printer .= " [QR]";
             $title   .= "\r\n\r\nQR: " . $row_data['qr_code'];
         }
