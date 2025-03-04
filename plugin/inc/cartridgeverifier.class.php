@@ -115,6 +115,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
               AND cpc.printer_types_id in ($blackWhitePrinterType, $colorPrinterType)
               AND cpc.printer_states_id in (SELECT id FROM glpi_states WHERE name like 'COI%' OR name like 'COF%' OR name like 'Pro%')
               AND cpc.min_estimate_percentage <= 0
+              AND cpc.consumable_type = 'cartridge'
              ORDER BY cpc.tech_name, cpc.min_estimate_percentage ASC
             "
         );
