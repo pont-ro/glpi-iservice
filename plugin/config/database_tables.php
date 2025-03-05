@@ -849,6 +849,8 @@ return [
             'items_id' => 'int unsigned null',
             'users_id_tech' => 'int unsigned null',
             'code' => 'varchar(255) null default null',
+            'notes' => 'text null default null',
+            'usage_address' => 'varchar(255) null default null',
             'date_creation' => 'timestamp not null default current_timestamp()',
             'date_mod' => 'timestamp not null default \'0000-00-00 00:00:00\'',
             'is_deleted' => 'tinyint(1) not null default \'0\'',
