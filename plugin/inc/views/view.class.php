@@ -1414,7 +1414,8 @@ class View extends \CommonGLPI
 
         $edit_field      = "<input id='$field_name-input-$item_id' style='vertical-align: middle;' value='$field_value' />";
         $on_edit_click   = $on_cancel_click = "$(\"#$field_name-edit-$item_id\").toggle();$(\"#$field_name-value-$item_id\").toggle();$(\"#$field_name-icon-$item_id\").toggle();";
-        $on_accept_click = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/$settings[callback].php?id=$item_id&operation=$settings[operation]&value=\" + $(\"#$field_name-input-$item_id\").val(), \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#$field_name-value-$item_id\").html(\$(\"#$field_name-input-$item_id\").val());$on_edit_click}});";
+        $itemType        = isset($settings['itemType']) ? "&itemtype=$settings[itemType]" : '';
+        $on_accept_click = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/$settings[callback].php?id=$item_id$itemType&operation=$settings[operation]&value=\" + $(\"#$field_name-input-$item_id\").val(), \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#$field_name-value-$item_id\").html(\$(\"#$field_name-input-$item_id\").val());$on_edit_click}});";
         $accept_button   = "<a class='fa fa-check-circle' href='javascript:void(0);' onclick='$on_accept_click' style='color: green; vertical-align: middle;'></a>";
         $cancel_button   = "<a class='fa fa-times-circle' href='javascript:void(0);' onclick='$on_cancel_click' style='color: red; vertical-align: middle;'></a>";
         $edit_span       = "<span id='$field_name-edit-$item_id' style='display: none;'>$edit_field $accept_button $cancel_button</span>";

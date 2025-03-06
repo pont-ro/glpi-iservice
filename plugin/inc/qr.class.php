@@ -660,4 +660,55 @@ class PluginIserviceQr extends CommonDBTM
         return $message;
     }
 
+    public static function ajaxSetUsageAddress(): string
+    {
+        list($qr, $value) = self::prepareVarsForAjaxRequestHandling();
+
+        return self::returnResponseBasedOnBool(
+            $qr->update(
+                [
+                    'id'    => $qr->getID(),
+                    'usage_address' => $value
+                ]
+            )
+        );
+    }
+
+    public static function ajaxSetNotes(): string
+    {
+        list($qr, $value) = self::prepareVarsForAjaxRequestHandling();
+
+        return self::returnResponseBasedOnBool(
+            $qr->update(
+                [
+                    'id'    => $qr->getID(),
+                    'notes' => $value
+                ]
+            )
+        );
+    }
+
+    private static function prepareVarsForAjaxRequestHandling(): array
+    {
+        $id    = IserviceToolBox::getInputVariable('id');
+        $value = IserviceToolBox::getInputVariable('value');
+
+        $qr = new self();
+        $qr->getFromDB($id);
+
+        return [
+            $qr,
+            $value,
+        ];
+    }
+
+    public static function returnResponseBasedOnBool($bool): ?string
+    {
+        if (!$bool) {
+            return _t('An error occurred!');
+        }
+
+        die(IserviceToolBox::RESPONSE_OK);
+    }
+
 }
