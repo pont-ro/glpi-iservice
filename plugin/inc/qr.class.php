@@ -660,20 +660,6 @@ class PluginIserviceQr extends CommonDBTM
         return $message;
     }
 
-    public static function ajaxSetUsageAddress(): string
-    {
-        list($qr, $value) = self::prepareVarsForAjaxRequestHandling();
-
-        return self::returnResponseBasedOnBool(
-            $qr->update(
-                [
-                    'id'    => $qr->getID(),
-                    'usage_address' => $value
-                ]
-            )
-        );
-    }
-
     public static function ajaxSetNotes(): string
     {
         list($qr, $value) = self::prepareVarsForAjaxRequestHandling();
