@@ -24,6 +24,10 @@ class Qrs extends View
             return 'border border-danger';
         }
 
+        if ($row_data['printer_is_deleted']) {
+            return 'bg-danger';
+        }
+
         return '';
     }
 
@@ -69,8 +73,9 @@ class Qrs extends View
                         , qrs.code
                         , p.supplier_name as partner
                         , u.name as technician
-                        , qrs.usage_address
+                        , p.usage_address_field
                         , qrs.notes
+                        , p.is_deleted as printer_is_deleted
                     from glpi_plugin_iservice_qrs qrs
                     left join glpi_plugin_iservice_printers p on p.id = qrs.items_id
                     left join glpi_users u on u.id = qrs.users_id_tech
@@ -81,7 +86,7 @@ class Qrs extends View
                         and qrs.itemtype = 'printer'
                         and ((p.supplier_name is null and '[partner]' = '%%') or p.supplier_name like '[partner]')
                         and ((u.name is null and '[technician]' = '%%') or u.name like '[technician]')
-                        and ((qrs.usage_address is null and '[usage_address]' = '%%') or qrs.usage_address like '[usage_address]')
+                        and ((p.usage_address_field is null and '[usage_address_field]' = '%%') or p.usage_address_field like '[usage_address_field]')
                         and ((qrs.notes is null and '[notes]' = '%%')) or qrs.notes like '[notes]'
                 ",
             'default_limit' => 50,
@@ -117,11 +122,11 @@ class Qrs extends View
                     'format' => '%%%s%%',
                     'header'         => 'technician',
                 ],
-                'usage_address' => [
+                'usage_address_field' => [
                     'type'           => self::FILTERTYPE_TEXT,
                     'caption'        => __('Usage address'),
                     'format' => '%%%s%%',
-                    'header'         => 'usage_address',
+                    'header'         => 'usage_address_field',
                 ],
                 'notes' => [
                     'type'           => self::FILTERTYPE_TEXT,
@@ -157,14 +162,8 @@ class Qrs extends View
                 'technician'      => [
                     'title'  => _t('Technician'),
                 ],
-                'usage_address'      => [
+                'usage_address_field'      => [
                     'title'  => _t('Usage address'),
-                    'editable' => true,
-                    'edit_settings' => [
-                        'callback' => 'manageItem',
-                        'itemType' => 'PluginIserviceQr',
-                        'operation' => 'SetUsageAddress'
-                    ]
                 ],
                 'notes'      => [
                     'title'  => _t('Notes'),
