@@ -15,6 +15,16 @@ class PluginIserviceDB extends DB
         parent::__construct();
     }
 
+    public static function escapeString(string $text, ?\DBmysql $db = null): string
+    {
+        if ($db === null) {
+            global $DB;
+            $db = $DB;
+        }
+
+        return $db->escape($text);
+    }
+
     public static function runScriptFile($scriptPath, ?\DBmysql $db = null): void
     {
         if ($db === null) {

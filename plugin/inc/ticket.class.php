@@ -1596,12 +1596,12 @@ class PluginIserviceTicket extends Ticket
 
     public static function preProcessPostData($post): bool|array
     {
-        if (isset($post['content'])) {
-            $post['content'] = IserviceToolBox::clearNotAllowedTags($post['content']);
+                if (isset($post['content'])) {
+            $post['content'] = PluginIserviceDB::escapeString(IserviceToolBox::clearNotAllowedTags($post['content']));
         }
 
         if (isset($post['_followup_content'])) {
-            $post['_followup']['content'] = IserviceToolBox::clearNotAllowedTags($post['_followup_content']);
+            $post['_followup']['content'] = PluginIserviceDB::escapeString(IserviceToolBox::clearNotAllowedTags($post['_followup_content']));
             unset($post['_followup_content']);
         }
 
