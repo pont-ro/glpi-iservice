@@ -1344,14 +1344,13 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-//        if (isset($this->fields['items_id']['Printer'][0])) {
-//            $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
-//        }
-//
-//        if (isset($input['items_id']['Printer'][0])) {
-//            $input['items_id'] = $input['items_id']['Printer'][0];
-//        }
-
+        // if (isset($this->fields['items_id']['Printer'][0])) {
+        // $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
+        // }
+        //
+        // if (isset($input['items_id']['Printer'][0])) {
+        // $input['items_id'] = $input['items_id']['Printer'][0];
+        // }
         if (($ticketPrinter = $this->getFirstPrinter()) && $ticketPrinter->isNewItem() && isset($input['items_id']['Printer'][0])) {
             $ticketPrinter->getFromDB($input['items_id']['Printer'][0]);
         };
@@ -1596,12 +1595,12 @@ class PluginIserviceTicket extends Ticket
 
     public static function preProcessPostData($post): bool|array
     {
-                if (isset($post['content'])) {
-            $post['content'] = PluginIserviceDB::escapeString(IserviceToolBox::clearNotAllowedTags($post['content']));
+        if (isset($post['content'])) {
+            $post['content'] = IserviceToolBox::clearNotAllowedTags($post['content']);
         }
 
         if (isset($post['_followup_content'])) {
-            $post['_followup']['content'] = PluginIserviceDB::escapeString(IserviceToolBox::clearNotAllowedTags($post['_followup_content']));
+            $post['_followup']['content'] = IserviceToolBox::clearNotAllowedTags($post['_followup_content']);
             unset($post['_followup_content']);
         }
 

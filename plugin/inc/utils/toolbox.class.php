@@ -271,7 +271,7 @@ class ToolBox
 
     public static function clearNotAllowedTags(string $string, array $allowedTags = null): string
     {
-        return strip_tags($string, $allowedTags ?? ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>']);
+        return PluginIserviceDB::escapeString(strip_tags($string, $allowedTags ?? ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>']));
     }
 
     public static function unlinkRecursively($filePath): void
