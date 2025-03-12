@@ -1344,14 +1344,13 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-//        if (isset($this->fields['items_id']['Printer'][0])) {
-//            $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
-//        }
-//
-//        if (isset($input['items_id']['Printer'][0])) {
-//            $input['items_id'] = $input['items_id']['Printer'][0];
-//        }
-
+        // if (isset($this->fields['items_id']['Printer'][0])) {
+        // $this->fields['items_id'] = $this->fields['items_id']['Printer'][0];
+        // }
+        //
+        // if (isset($input['items_id']['Printer'][0])) {
+        // $input['items_id'] = $input['items_id']['Printer'][0];
+        // }
         if (($ticketPrinter = $this->getFirstPrinter()) && $ticketPrinter->isNewItem() && isset($input['items_id']['Printer'][0])) {
             $ticketPrinter->getFromDB($input['items_id']['Printer'][0]);
         };
