@@ -20,7 +20,7 @@ $filesData                = [
 // Auth must happen before the header is sent!
 if (!PluginIserviceQr::loginQrUser()) {
     PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
-    Html::displayErrorAndDie('Internal authorization server error.');
+    Html::displayErrorAndDie(_t('Authorization error. Please make sure cookies are enabled in your browser.'));
 }
 
 PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());

@@ -33,7 +33,7 @@ class PluginIserviceQr extends CommonDBTM
     public static function loginQrUser(): bool|int
     {
         $auth = new Auth();
-        return $auth->login(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'), PluginIserviceConfig::getConfigValue('qr.ticket_user_password'));
+        return $auth->login(PluginIserviceConfig::getConfigValue('qr.ticket_user_name'), PluginIserviceConfig::getConfigValue('qr.ticket_user_password')) && !empty($_SESSION["glpicookietest"]);
     }
 
     public static function restrictQrUserToQrForm(): void
