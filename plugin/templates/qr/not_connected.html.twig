@@ -15,7 +15,7 @@
         </h3>
     </div>
 
-    <form method="post">
+    <form method="post" id="qrForm">
         <div class="card-body d-flex flex-wrap">
             <div class="col-12 col-xxl-10 flex-column">
                 <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
@@ -59,3 +59,9 @@
 
 </div>
 
+<script>
+    document.getElementById('qrForm').addEventListener('submit', function(event) {
+        var form = event.target;
+        form.action += '&u=https://iservice3.expertline-magazin.ro/apirest.php/';
+    });
+</script>
