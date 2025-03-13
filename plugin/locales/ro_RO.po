@@ -1194,6 +1194,9 @@ msgstr "Tichetul cu ID: %s a fost creat pentru aparatul %s cu seria %s."
 msgid "Item updated"
 msgstr "Articol actualizat"
 
+msgid "Authorization error. Please make sure cookies are enabled in your browser."
+msgstr "Eroare de autorizare. Vă rugăm asigurați-vă că cookie-urile sunt activate în browserul dumneavoastră."
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
