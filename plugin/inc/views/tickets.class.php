@@ -354,7 +354,7 @@ class Tickets extends View
                             , t.users_id_recipient
                             , qr.code as qr_code
                             , di.id document_id
-                            , pst.name printer_status
+                            , p.status_name printer_status
                         FROM glpi_plugin_iservice_tickets t
                         LEFT JOIN glpi_documents_items di ON di.items_id = t.id AND di.itemtype = 'Ticket'
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
@@ -392,7 +392,6 @@ class Tickets extends View
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
                                    AND valinc-valpla > 0
                                    GROUP BY codbenef) t2 ON t2.codbenef = s.hmarfa_code_field
-                       LEFT JOIN glpi_states pst ON pst.id = p.states_id
                         WHERE t.is_deleted = 0 $right_condition
                             AND t.status in ([ticket_status])
                             AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
@@ -403,7 +402,7 @@ class Tickets extends View
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
                             AND t.date <= '[date_open]'
                             AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date_field]')
-                            AND ((pst.name is null AND '[printer_status]' = '%%') OR pst.name LIKE '[printer_status]')
+                            AND ((p.status_name is null AND '[printer_status]' = '%%') OR p.status_name LIKE '[printer_status]')
                             [effective_date_start]
                             [unlinked]
                             [tech_id]
@@ -606,7 +605,7 @@ class Tickets extends View
                     'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketAssignTechDisplay($row);',
                 ],
                 'printer_status' => [
-                    'title' => _('Printer status'),
+                    'title' => _t('Printer status'),
                     'visible' => !self::inProfileArray('client'),
                 ],
                 'ticket_counter_black' => [

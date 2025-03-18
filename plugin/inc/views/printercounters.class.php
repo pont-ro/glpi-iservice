@@ -317,9 +317,8 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , concat('<span title=\"', coalesce(ccc.cids, 'nu există cartușe compatibile'), '\">', @changeable_count, '</span> / <span title=\"', coalesce(ccpc.pids, 'nu există aparate compatibile'), '\">', @compatible_printer_count, '</span>') in_stock
                   , getPrinterDailyAverage(p.id, 0) cdba
                   , getPrinterDailyAverage(p.id, 1) cdca
-                  , pst.name printer_status
+                  , p.status_name printer_status
                 from glpi_plugin_iservice_printers p
-                left join glpi_states pst on pst.id = p.states_id
                 left join glpi_plugin_fields_printerprintercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
                 left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id
                 left join glpi_locations l on l.id = p.locations_id
