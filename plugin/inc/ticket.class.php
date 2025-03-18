@@ -508,6 +508,7 @@ class PluginIserviceTicket extends Ticket
             $templateParams['minEffectiveDate'] = $lastClosedTicket->customfields->fields['effective_date_field'] ?? null;
 
             $templateParams['printer']        = $this->printer;
+            $templateParams['printerStatus']     = $this->printer?->getPrinterStatusName();
             $this->total2BlackRequiredMinimum = $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
             $this->total2ColorRequiredMinimum = $templateParams['total2ColorRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_color_field'] ?? 0;
 

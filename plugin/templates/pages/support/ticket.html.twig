@@ -58,6 +58,10 @@
                             </div>
 
                             <div class="pt-2 mt-2">
+                                {{ include('@iservice/pages/support/components/ticket_documents.html.twig') }}
+                            </div>
+
+                            <div class="pt-2 mt-2">
                                 {{ include('@iservice/pages/support/components/title_content.html.twig') }}
                             </div>
 
@@ -80,6 +84,17 @@
                             <div class="pt-2 mt-2">
                                 {{ include('@iservice/pages/support/components/status_and_checkboxes.html.twig') }}
                             </div>
+
+                            {% if printerStatus > 0 %}
+                                <div class="pt-2 mt-2">
+                                    {{ fields.readOnlyField(
+                                        'printer_status',
+                                        printerStatus,
+                                        __('Printer status'),
+                                        field_options
+                                    ) }}
+                                </div>
+                            {% endif %}
 
                             <div class="pt-2 mt-2">
                                 {{ include('@iservice/pages/support/components/export_type.html.twig') }}
@@ -111,10 +126,6 @@
                                     ) }}
                                 </div>
                             {% endif %}
-
-                            <div class="pt-2 mt-2">
-                                {{ include('@iservice/pages/support/components/ticket_documents.html.twig') }}
-                            </div>
 
                             {% if verifyLastTonerInstalation %}
                                 <div class="pt-2 mt-2">

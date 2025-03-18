@@ -760,6 +760,14 @@ class PluginIservicePrinter extends Printer
         return $this->getFromDB(array_pop($result)['id']);
     }
 
+    public function getPrinterStatusName()
+    {
+        $printerState = new State();
+        $printerState->getFromDB($this->fields['states_id']);
+
+        return $printerState->fields['name'] ?? '';
+    }
+
     public function getSpacelessSerial(): string
     {
         if (empty($this->fields['serial'])) {

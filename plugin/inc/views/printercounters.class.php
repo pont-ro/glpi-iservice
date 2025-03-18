@@ -317,7 +317,9 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , concat('<span title=\"', coalesce(ccc.cids, 'nu există cartușe compatibile'), '\">', @changeable_count, '</span> / <span title=\"', coalesce(ccpc.pids, 'nu există aparate compatibile'), '\">', @compatible_printer_count, '</span>') in_stock
                   , getPrinterDailyAverage(p.id, 0) cdba
                   , getPrinterDailyAverage(p.id, 1) cdca
+                  , pst.name printer_status
                 from glpi_plugin_iservice_printers p
+                left join glpi_states pst on pst.id = p.states_id
                 left join glpi_plugin_fields_printerprintercustomfields cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
                 left join glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id
                 left join glpi_locations l on l.id = p.locations_id
@@ -360,6 +362,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
               AND supplier_name LIKE '[supplier_name]'
               AND min_days_to_visit < [min_days_to_visit]
               AND consumable_type in ([consumable_type])
+              AND ((printer_status is null AND '[printer_status]' = '%%') OR printer_status LIKE '[printer_status]')
               [tech_id]
               [supplier_id]
               [below_limit_exists]
@@ -371,6 +374,11 @@ class PrinterCounters extends PluginIserviceViewPrinter
             'type' => self::FILTERTYPE_TEXT,
             'format' => '%%%s%%',
             'header' => 'costcenter'
+        ];
+        $settings['filters']['printer_status']             = [
+            'type' => self::FILTERTYPE_TEXT,
+            'format' => '%%%s%%',
+            'header' => 'printer_status'
         ];
         $settings['filters']['below_limit_exists'] = [
             'type' => self::FILTERTYPE_SELECT,
@@ -410,6 +418,10 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $settings['columns']['ticket_status']['title'] = 'Acțiuni';
         $settings['columns']['costcenter']             = [
             'title' => 'Centru de cost',
+        ];
+        $settings['columns']['printer_status']           = [
+            'title' => _t('Printer status'),
+            'align' => 'center',
         ];
         $settings['columns']['below_limit_exists']     = [
             'title' => 'Sub limită',
