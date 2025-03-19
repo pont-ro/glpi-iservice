@@ -203,7 +203,7 @@ class GlobalReadCounter extends View
                         LEFT JOIN glpi_plugin_iservice_printers_last_closed_tickets plct on plct.printers_id = p.id
                         LEFT JOIN glpi_infocoms i ON i.items_id = p.id and i.itemtype = 'Printer'
                         LEFT JOIN glpi_suppliers s ON s.id = i.suppliers_id
-                        WHERE $printer_condition
+                        WHERE p.is_deleted = 0 AND $printer_condition
                         ",
             'show_filter_buttons' => false,
             'itemtype' => 'printer',
