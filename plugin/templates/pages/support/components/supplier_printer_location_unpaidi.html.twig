@@ -83,6 +83,18 @@
     ) }}
 {% endif %}
 
+{% if item.printer.fields['users_id_tech'] > 0 %}
+    {{ fields.dropdownArrayField(
+        'users_id_tech',
+        item.printer.fields['users_id_tech'],
+        technicians,
+        __('Technician in charge of the hardware'),
+        field_options|merge({
+            'readonly': true,
+        })
+    ) }}
+{% endif %}
+
 {% if assignedVisible %}
     {{ fields.dropdownArrayField(
         '_users_id_assign',

@@ -169,18 +169,27 @@ class Tickets extends View
 
     public static function getTicketIdDisplay($row_data): string
     {
+        $title = '';
+        $href  = '';
+        $class = '';
+
         switch ($row_data['ticket_export_type']) {
         case 'factura':
         case 'aviz':
         case 'comanda':
             if ($row_data['ordered_consumables']) {
-                return "<a title='Vezi comenzi interne' href='views.php?view=Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$row_data[ticket_id]'>$row_data[ticket_id]</a>";
+                $title = _t('See internal orders');
+                $href  = "views.php?view=Intorders&intorders0[order_status]=1,2,3,4,5&intorders0[ticket_id]=$row_data[ticket_id]";
             }
-
-            // Here is an intentioned fallthrough to default!
-        default:
-            return $row_data['ticket_id'];
         }
+
+        if (!empty($row_data['document_id'])) {
+            $title .= !empty($title) ? "\n" : '';
+            $title .= _t('Ticket has attached document(s)');
+            $class .= 'fw-bold';
+        }
+
+        return !empty($href) ? "<a href='$href' title='$title' class='$class'>$row_data[ticket_id]</a>" : "<span title='$title' class='$class'>$row_data[ticket_id]</span>";
     }
 
     public static function getTicketAssignTechDisplay($row_data): string
@@ -319,7 +328,6 @@ class Tickets extends View
                             , coalesce(t.total2_black_field, 0) + coalesce(t.total2_color_field, 0) ticket_counter_total
                             , t.total2_black_field ticket_counter_black
                             , t.total2_color_field ticket_counter_color
-                            , i.name ticket_category
                             , t.plugin_fields_ticketexporttypedropdowns_id ticket_export_type
                             , t.exported_field ticket_exported
                             , p.id printer_id
@@ -345,7 +353,10 @@ class Tickets extends View
                             , t2.unpaid_invoices_value
                             , t.users_id_recipient
                             , qr.code as qr_code
+                            , di.id document_id
+                            , p.status_name printer_status
                         FROM glpi_plugin_iservice_tickets t
+                        LEFT JOIN glpi_documents_items di ON di.items_id = t.id AND di.itemtype = 'Ticket'
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
                         LEFT JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
                         LEFT JOIN glpi_plugin_iservice_printers p ON p.id = it.items_id
@@ -391,13 +402,13 @@ class Tickets extends View
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
                             AND t.date <= '[date_open]'
                             AND (t.effective_date_field IS NULL OR t.effective_date_field <= '[effective_date_field]')
+                            AND ((p.status_name is null AND '[printer_status]' = '%%') OR p.status_name LIKE '[printer_status]')
                             [effective_date_start]
                             [unlinked]
                             [tech_id]
                             [assigned_only]
                             [observer_id]
                             [printer_id]
-                            [ticket_category]
                             [no_travel]
                             [without_paper]
                         GROUP BY t.id
@@ -519,11 +530,11 @@ class Tickets extends View
                     'format' => '%%%s%%',
                     'header' => 'printer_serial',
                 ],
-                'ticket_category' => [
-                    'type' => self::FILTERTYPE_SELECT,
-                    'glpi_class' => 'ITILCategory',
-                    'format' => 'AND i.id = %d',
-                    'header' => 'ticket_category',
+                'printer_status' => [
+                    'type' => self::FILTERTYPE_TEXT,
+                    'caption' => 'Status',
+                    'format' => '%%%s%%',
+                    'header' => 'printer_status',
                 ],
             ],
             'columns' => [
@@ -593,8 +604,9 @@ class Tickets extends View
                     'title' => 'Tehnician alocat',
                     'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketAssignTechDisplay($row);',
                 ],
-                'ticket_category' => [
-                    'title' => 'Categorie'
+                'printer_status' => [
+                    'title' => _t('Printer status'),
+                    'visible' => !self::inProfileArray('client'),
                 ],
                 'ticket_counter_black' => [
                     'title' => 'Contor bk',
