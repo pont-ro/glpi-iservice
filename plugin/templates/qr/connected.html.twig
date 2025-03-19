@@ -75,8 +75,10 @@
                                 {{ fields.textField(
                                     'qr_ticket_data[contact_person]',
                                     '',
-                                    _t('Contact Person'),
-                                    field_options
+                                    _t('Contact Person/Phone'),
+                                    field_options|merge({
+                                        'required': true,
+                                    })
                                 ) }}
 
                                 {{ include('@iservice/pages/support/components/ticket_documents.html.twig', { 'customLabel': _t('Document/Relevant pictures')}) }}

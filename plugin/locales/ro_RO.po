@@ -1206,8 +1206,8 @@ msgstr "Tichetul are document(e) atașat(e)"
 msgid "Printer status"
 msgstr "Status aparat"
 
-msgid "Contact Person"
-msgstr "Persoană de contact"
+msgid "Contact Person/Phone"
+msgstr "Persoană de contact/Telefon"
 
 #, fuzzy
 #~| msgid "Pending emails"
