@@ -708,14 +708,19 @@ class PluginIserviceTicket extends Ticket
         return [];
     }
 
-    public static function getCountersDefaultValues(PluginIservicePrinter $printer, null|PluginIserviceTicket $ticket, PluginIserviceTicket $lastClosedTicket): array
+    public static function getCountersDefaultValues(PluginIservicePrinter $printer, null|PluginIserviceTicket $ticket, PluginIserviceTicket $lastClosedTicket, bool $forQrTicket = false): array
     {
         if (empty($printer)) {
             return [];
         }
 
         $defaultsFromCsv    = self::getCounterDefaultsValuesFromCsv($printer, $lastClosedTicket);
-        $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer, 0.75);
+        if ($forQrTicket) {
+            $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer, 0);
+        } else {
+            $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer, 0.75);
+        }
+
 
         return [
             'blackCounterDefaultValue' => $defaultsFromCsv['blackCounterDefaultValue'] ?? $dataFromEstimation[1] ?? 0,

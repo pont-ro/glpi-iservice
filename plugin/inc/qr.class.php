@@ -21,7 +21,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginIserviceQr extends CommonDBTM
 {
     public const QR_TICKET_NAME                  = 'Citire QR';
-    public const QR_TICKETS_NUMBER_LIMIT_PER_DAY = 50;
+    public const QR_TICKETS_NUMBER_LIMIT_PER_DAY = 30;
 
     public static $rightname = 'plugin_iservice_view_qrs';
 
@@ -134,7 +134,7 @@ class PluginIserviceQr extends CommonDBTM
             'total2ColorRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_color_field'] ?? null,
         ];
 
-        $data['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($printer, new PluginIserviceTicket(),  $lastClosedTicketForPrinter) ?? [];
+        $data['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($printer, new PluginIserviceTicket(),  $lastClosedTicketForPrinter, true) ?? [];
 
         echo TemplateRenderer::getInstance()->render('@iservice/qr/connected.html.twig', $data);
     }
@@ -224,7 +224,8 @@ class PluginIserviceQr extends CommonDBTM
         $printer = new PluginIservicePrinter();
         $printer->getFromDB($qr->fields['items_id']);
 
-        $message            = $qrTicketData['message'] ?? null;
+        $message            = $qrTicketData['contact_person'] ? (_t('Contact Person') . ": $qrTicketData[contact_person]<br><br>") : '';
+        $message            .= $qrTicketData['message'] ?? null;
         $replacedCartridges = [];
 
         if (!empty($qrTicketData['replaced_cartridges'])) {
@@ -397,7 +398,7 @@ class PluginIserviceQr extends CommonDBTM
     {
         $tickets = (new PluginIserviceTicket())->find(
             [
-                'name' => self::QR_TICKET_NAME,
+                'name' => ['LIKE' , "%" . self::QR_TICKET_NAME . "%"],
                 'date_creation' => ['>=', date('Y-m-d H:i:s', strtotime('-1 day'))],
             ]
         );

@@ -72,6 +72,13 @@
                                     })
                                 ) }}
 
+                                {{ fields.textField(
+                                    'qr_ticket_data[contact_person]',
+                                    '',
+                                    _t('Contact Person'),
+                                    field_options
+                                ) }}
+
                                 {{ include('@iservice/pages/support/components/ticket_documents.html.twig', { 'customLabel': _t('Document/Relevant pictures')}) }}
 
                             {% endblock %}
