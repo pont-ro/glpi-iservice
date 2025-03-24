@@ -6,19 +6,21 @@
     </label>
     <div class="col-xxl-8 field-container mt-2">
         {% if ticketDocuments %}
-            {% for document in ticketDocuments %}
-                <input type="hidden" name="documents_id" value="{{ document.id }}">
-                <a href="/front/document.send.php?docid={{ document.id }}"
-                   alt="{{ document.filename }}"
-                   title="{{ document.filename }}"
-                   target='_blank'>
-                    <span class='b'>{{ document.filename }}</span>
-                </a>
-                <button type="submit" class="btn btn-sm btn-ghost-secondary" name="delete_document" value="1" title="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Delete permanently') }}">
-                    <i class="ti ti-trash"></i>
-                </button>
-                <br>
-            {% endfor %}
+            <div class="bg-info p-3">
+                {% for document in ticketDocuments %}
+                    <input type="hidden" name="documents_id" value="{{ document.id }}">
+                    <a href="/front/document.send.php?docid={{ document.id }}"
+                       alt="{{ document.filename }}"
+                       title="{{ document.filename }}"
+                       target='_blank'>
+                        <span class='b'>{{ document.filename }}</span>
+                    </a>
+                    <button type="submit" class="btn btn-sm btn-ghost-secondary" name="delete_document" value="1" title="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Delete permanently') }}">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                    <br>
+                {% endfor %}
+            </div>
         {% endif %}
         <hr>
         {{ fields.fileField(

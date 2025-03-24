@@ -1206,6 +1206,9 @@ msgstr "Tichetul are document(e) atașat(e)"
 msgid "Printer status"
 msgstr "Status aparat"
 
+msgid "Contact Person/Phone"
+msgstr "Persoană de contact/Telefon"
+
 msgid "'Inbound Lot Price Deviation Verifier"
 msgid_plural "Stock verifiers"
 msgstr[0] "Verificator deviație preț lot intrare"
