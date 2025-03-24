@@ -1209,6 +1209,27 @@ msgstr "Status aparat"
 msgid "Contact Person/Phone"
 msgstr "Persoană de contact/Telefon"
 
+msgid "'Inbound Lot Price Deviation Verifier"
+msgid_plural "Stock verifiers"
+msgstr[0] "Verificator deviație preț lot intrare"
+msgstr[1] "Verificatori deviație preț lot intrare"
+msgstr[2] "Verificatori deviație preț lot intrare"
+
+msgid "Verifies inbound lot price deviations and sends email"
+msgstr "Verifică deviația prețurilor în loturile de intrare și trimite email"
+
+msgid "Deviation threshold"
+msgstr "Limită deviație"
+
+msgid "Following deviations were detected in inbound lots"
+msgstr "Următoarele deviații au fost detectate în loturile de intrare"
+
+msgid "Material code: %1$s, Mat. name: %2$s, Current price: %3$s, Previous price: %4$s, Deviation: %5$s%%, Transaction: %6$s, Other transaction: %7$s"
+msgstr "Cod material: %1$s, Nume material: %2$s, Preț curent: %3$s, Preț anterior: %4$s, Deviație: %5$s%%, Tranzacție: %6$s, Cealaltă tranzacție: %7$s"
+
+msgid "Inbound lot price deviations detected"
+msgstr "Deviații de preț în loturile de intrare detectate"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
