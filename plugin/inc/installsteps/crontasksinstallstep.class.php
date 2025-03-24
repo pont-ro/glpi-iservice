@@ -82,6 +82,16 @@ class CronTasksInstallStep
                 'hourmin'   => 5,
                 'hourmax'   => 8,
                 'comment'   => 'service@expertline.ro',
+            ], [
+                'itemtype'  => 'PluginIserviceInboundLotPriceDeviationVerifier',
+                'name'      => 'inboundLotPriceDeviationVerify',
+                'mode'      => CronTask::MODE_EXTERNAL,
+                'frequency' => 86400,
+                'param'     => 5, // Default value for deviation percentage
+                'state'     => 1,
+                'hourmin'   => 5,
+                'hourmax'   => 8,
+                'comment'   => 'zoltan.szegedi@expertline.ro',
             ],
         ];
 
