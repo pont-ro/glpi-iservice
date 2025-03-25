@@ -119,7 +119,7 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
         foreach ($deviations as $deviation) {
             $siteUrl        = PluginIserviceConfig::getConfigValue('site_url');
             $line           = sprintf(
-                _t('Material code: %1$s, Mat. name: %2$s, Current price: %3$s, Previous price: %4$s, Deviation: %5$s%%, Transaction: %6$s, Other transaction: %7$s'),
+                _t('Mat. name: %1$s, Current price: %2$s, Previous price: %3$s, <b>Deviation: %4$s%%</b>, Transaction: %5$s, Other transaction: %6$s'),
                 $deviation['denumire_material'],
                 $deviation['pcont'],
                 $deviation['compared_pcont'],

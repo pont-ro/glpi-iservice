@@ -131,6 +131,18 @@ class Tickets extends View
                 'title' => _t('Unpaid invoices'),
                 'visible' => Session::haveRight('plugin_iservice_view_partners', READ),
             ],
+            'cartridges_replaced' => [
+                'link' => "views.php?view=Cartridges&cartridges0[printer_name]=" . urlencode($row_data['printer_serial'])
+                    . "&filtering=1"
+                    . "&cartridges0[date_in]=" . urlencode(date('Y-m-d'))
+                    . "&cartridges0[date_use]=" . urlencode(date('Y-m-d'))
+                    . "&cartridges0[date_out]=" . urlencode(date('Y-m-d'))
+                    . "&cartridges0[date_use_null]=0"
+                    . "&cartridges0[date_out_null]=0",
+                'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/toolbox_blue.png',
+                'title' => _t('Replaced cartridges'),
+                'visible' => Session::haveRight('plugin_iservice_view_cartridges', READ),
+            ],
         ];
 
         if (($movement_id = PluginIserviceMovement::getOpenFor('Printer', $row_data['printer_id'])) !== false) {

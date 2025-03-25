@@ -152,7 +152,8 @@ class Cartridges extends View
         if ($row_data['printer_deleted']) {
             return "<span style='color:red' title='Aparat șters'>$row_data[printer_name]</span>";
         } else {
-            return $row_data['printer_name'];
+            global $CFG_PLUGIN_ISERVICE;
+            return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=$row_data[printer_id]' target='_blank'>$row_data[printer_name]</a>";
         }
     }
 
@@ -317,6 +318,7 @@ class Cartridges extends View
                           , ll.name location_parent_name
                           , p.is_deleted printer_deleted
                           , CONCAT (p.serial, ' (', p.name, ')') printer_name
+                          , p.id printer_id
                           , pt.name printer_type
                           , ct.plugin_iservice_consumables_id consumable_id
                           , ct.tickets_id ticket_id
@@ -360,7 +362,11 @@ class Cartridges extends View
                         ",
             'default_limit' => 50,
             // 'show_limit' => !self::isRestrictedMode(),
-            // 'show_filter_buttons' => !self::isRestrictedMode(),
+             'show_filter_buttons' => [
+                 'reset' => [
+                     'onClick' => 'changeValByName("filtering", "0");'
+                 ]
+             ],
             'use_cache' => false,
             'cache_timeout' => 43200, // 12 hours
             'cache_query' => "SELECT *  FROM {table_name}
