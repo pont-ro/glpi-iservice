@@ -98,7 +98,7 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
                     l2.nrtran AS compared_nrtran,
                     l2.pcont AS compared_pcont,
                     CASE WHEN l2.pcont = 0 THEN NULL
-                         ELSE ROUND(ABS(l1.pcont - l2.pcont) / l2.pcont * 100, 2)
+                         ELSE ROUND((l1.pcont - l2.pcont) / l2.pcont * 100, 2)
                     END AS deviance_percentage
                 FROM filtered_lots l1
                 JOIN filtered_lots l2 ON 
@@ -119,8 +119,7 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
         foreach ($deviations as $deviation) {
             $siteUrl        = PluginIserviceConfig::getConfigValue('site_url');
             $line           = sprintf(
-                _t('Material code: %1$s, Mat. name: %2$s, Current price: %3$s, Previous price: %4$s, Deviation: %5$s%%, Transaction: %6$s, Other transaction: %7$s'),
-                $deviation['codmat'],
+                _t('Mat. name: %1$s, Current price: %2$s, Previous price: %3$s, Deviation: %4$s%%, Transaction: %5$s, Other transaction: %6$s'),
                 $deviation['denumire_material'],
                 $deviation['pcont'],
                 $deviation['compared_pcont'],
