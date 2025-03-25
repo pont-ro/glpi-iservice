@@ -875,7 +875,7 @@ class View extends \CommonGLPI
 
     private function getFilterButtonOnClickAction(mixed $config, string $buttonName)
     {
-        if (!is_array($config) || !isset($config[$buttonName]['onClick'])) {
+        if (!isset($config[$buttonName]['onClick'])) {
             return '';
         }
 
