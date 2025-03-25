@@ -873,6 +873,15 @@ class View extends \CommonGLPI
         }
     }
 
+    private function getFilterButtonOnClickAction(mixed $config, string $buttonName)
+    {
+        if (!is_array($config) || !isset($config[$buttonName]['onClick'])) {
+            return '';
+        }
+
+        return "onClick='{$config[$buttonName]['onClick']}'";
+    }
+
     protected function displayResultsTable($data, $readonly = false): void
     {
         global $CFG_GLPI;
@@ -915,7 +924,12 @@ class View extends \CommonGLPI
 
                 if ($this->show_filter_buttons) {
                     echo " <input type='submit' class='submit noprint' name='filter' value='" . __('Filter', 'views') . "'/>";
-                    echo " <input type='submit' class='submit noprint' name='{$this->getRequestArrayName()}[reset]' value='" . __('Reset filters', 'views') . "'/>";
+                    echo " <input 
+                        type='submit' 
+                        class='submit noprint' 
+                        name='{$this->getRequestArrayName()}[reset]' 
+                        " . $this->getFilterButtonOnClickAction($this->show_filter_buttons, 'reset') . "
+                        value='" . __('Reset filters', 'views') . "'/>";
                 }
 
                 if (isset($this->filters['filter_buttons_postfix'])) {

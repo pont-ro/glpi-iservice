@@ -802,6 +802,9 @@ msgstr "E-Maintenance"
 msgid "Installable cartridges"
 msgstr "Cartușe ce pot fi instalate"
 
+msgid "Replaced cartridges"
+msgstr "Cartușe golite"
+
 #: inc/views/emaintenance.class.php:152 inc/views/operations.class.php:45
 #: inc/views/tickets.class.php:100
 msgid "Close ticket"
