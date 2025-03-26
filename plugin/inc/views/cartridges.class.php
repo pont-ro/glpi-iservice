@@ -244,7 +244,7 @@ class Cartridges extends View
 
     protected function getSettings(): array
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
         if (null !== ($printer_model_id = IserviceToolBox::getInputVariable('pmi'))) {
             $printer_model_join = "INNER JOIN glpi_cartridgeitems_printermodels cip ON cip.cartridgeitems_id = ci.id AND cip.printermodels_id = $printer_model_id";
@@ -364,7 +364,7 @@ class Cartridges extends View
             // 'show_limit' => !self::isRestrictedMode(),
              'show_filter_buttons' => [
                  'reset' => [
-                     'onClick' => 'changeValByName("filtering", "0");'
+                    'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges"
                  ]
              ],
             'use_cache' => false,

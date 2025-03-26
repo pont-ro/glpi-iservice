@@ -873,13 +873,9 @@ class View extends \CommonGLPI
         }
     }
 
-    private function getFilterButtonOnClickAction(mixed $config, string $buttonName)
+    private function getResetButtonLink(mixed $config)
     {
-        if (!isset($config[$buttonName]['onClick'])) {
-            return '';
-        }
-
-        return "onClick='{$config[$buttonName]['onClick']}'";
+        return $config['reset']['link'] ?? false;
     }
 
     protected function displayResultsTable($data, $readonly = false): void
@@ -924,12 +920,15 @@ class View extends \CommonGLPI
 
                 if ($this->show_filter_buttons) {
                     echo " <input type='submit' class='submit noprint' name='filter' value='" . __('Filter', 'views') . "'/>";
-                    echo " <input 
-                        type='submit' 
-                        class='submit noprint' 
-                        name='{$this->getRequestArrayName()}[reset]' 
-                        " . $this->getFilterButtonOnClickAction($this->show_filter_buttons, 'reset') . "
-                        value='" . __('Reset filters', 'views') . "'/>";
+                    if ($this->getResetButtonLink($this->show_filter_buttons)) {
+                        echo "<a href='{$this->getResetButtonLink($this->show_filter_buttons)}' class='vsubmit noprint ms-1'>" . __('Reset filters', 'views') . "</a>";
+                    } else {
+                        echo " <input 
+                            type='submit' 
+                            class='submit noprint' 
+                            name='{$this->getRequestArrayName()}[reset]' 
+                            value='" . __('Reset filters', 'views') . "'/>";
+                    }
                 }
 
                 if (isset($this->filters['filter_buttons_postfix'])) {
