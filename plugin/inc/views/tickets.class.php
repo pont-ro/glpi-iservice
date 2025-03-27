@@ -133,6 +133,7 @@ class Tickets extends View
             ],
             'cartridges_replaced' => [
                 'link' => "views.php?view=Cartridges&cartridges0[printer_name]=" . urlencode($row_data['printer_serial'])
+                    . "&cartridges0[partner_name]=" . urlencode($row_data['supplier_name'])
                     . "&filtering=1"
                     . "&cartridges0[date_in]=" . urlencode(date('Y-m-d'))
                     . "&cartridges0[date_use]=" . urlencode(date('Y-m-d'))
