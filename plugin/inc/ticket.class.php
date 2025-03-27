@@ -508,7 +508,7 @@ class PluginIserviceTicket extends Ticket
             $templateParams['minEffectiveDate'] = $lastClosedTicket->customfields->fields['effective_date_field'] ?? null;
 
             $templateParams['printer']        = $this->printer;
-            $templateParams['printerStatus']     = $this->printer?->getPrinterStatusName();
+            $templateParams['printerStatus']  = $this->printer?->getPrinterStatusName();
             $this->total2BlackRequiredMinimum = $templateParams['total2BlackRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_black_field'] ?? 0;
             $this->total2ColorRequiredMinimum = $templateParams['total2ColorRequiredMinimum'] = $lastClosedTicket->customfields->fields['total2_color_field'] ?? 0;
 
@@ -714,13 +714,17 @@ class PluginIserviceTicket extends Ticket
             return [];
         }
 
-        $defaultsFromCsv    = self::getCounterDefaultsValuesFromCsv($printer, $lastClosedTicket);
+        $defaultsFromCsv = self::getCounterDefaultsValuesFromCsv($printer, $lastClosedTicket);
         if ($forQrTicket) {
             $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer, 0);
-        } else {
-            $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer, 0.75);
+
+            return [
+                'blackCounterDefaultValue' => max($defaultsFromCsv['blackCounterDefaultValue'] ?? 0, $dataFromEstimation[1] ?? 0),
+                'colorCounterDefaultValue' => max($defaultsFromCsv['colorCounterDefaultValue'] ?? 0, $dataFromEstimation[2] ?? 0)
+            ];
         }
 
+        $dataFromEstimation = self::getEstimatedData($lastClosedTicket, $ticket, $printer, 0.75);
 
         return [
             'blackCounterDefaultValue' => $defaultsFromCsv['blackCounterDefaultValue'] ?? $dataFromEstimation[1] ?? 0,
