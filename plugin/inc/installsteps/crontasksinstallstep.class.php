@@ -84,7 +84,7 @@ class CronTasksInstallStep
                 'comment'   => 'service@expertline.ro',
             ], [
                 'itemtype'  => 'PluginIserviceInboundLotPriceDeviationVerifier',
-                'name'      => 'inboundLotPriceDeviationVerify',
+                'name'      => 'mailInboundLotPriceDeviationVerify',
                 'mode'      => CronTask::MODE_EXTERNAL,
                 'frequency' => 86400,
                 'param'     => 5, // Default value for deviation percentage

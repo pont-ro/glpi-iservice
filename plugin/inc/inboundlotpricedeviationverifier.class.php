@@ -25,7 +25,7 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
     {
 
         switch ($name) {
-        case 'inboundLotPriceDeviationVerify' :
+        case 'mailInboundLotPriceDeviationVerify' :
             return [
                 'description' => _t('Verifies inbound lot price deviations and sends email'),
                 'parameter'   => __('Deviation threshold')
@@ -36,13 +36,13 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
     }
 
     /**
-     * Cron action on inboundLotPriceDeviationVerify
+     * Cron action on mailInboundLotPriceDeviationVerify
      *
      * @param $task
      *
      * @return -1 : done but not finish 1 : done with success
      * */
-    public static function cronInboundLotPriceDeviationVerify($task): int
+    public static function cronMailInboundLotPriceDeviationVerify($task): int
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
