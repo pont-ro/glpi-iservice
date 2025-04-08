@@ -109,6 +109,7 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
                    CASE WHEN l2.pcont = 0 THEN NULL
                          ELSE ABS(l1.pcont - l2.pcont) / l2.pcont * 100 
                    END > " . (!empty($task->fields['param']) ? $task->fields['param'] : 5)
+            . " ORDER BY l1.nrtran DESC"
         );
 
         if (empty($deviations)) {
@@ -116,24 +117,51 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
         }
 
         $email_message = "<b>" . _t('Following deviations were detected in inbound lots') . "</b>:<br>";
+        $email_message .= "<table border='1' style='border-collapse: collapse; width: 100%;'>";
+        $email_message .= "<thead>
+    <tr>
+        <th>" . _t('Transaction') . "</th>
+        <th>" . _t('Date') . "</th>
+        <th>" . _t('Other Transaction') . "</th>
+        <th>" . _t('Material Name') . "</th>
+        <th>" . _t('Current Price') . "</th>
+        <th>" . _t('Previous Price') . "</th>
+        <th>" . _t('Deviation (%)') . "</th>
+        <th>" . _t('Material Code') . "</th>
+    </tr>
+</thead>";
+        $email_message .= "<tbody>";
+
         foreach ($deviations as $deviation) {
-            $siteUrl        = PluginIserviceConfig::getConfigValue('site_url');
-            $line           = sprintf(
-                _t('Mat. name: %1$s, Current price: %2$s, Previous price: %3$s, <b>Deviation: %4$s%%</b>, Transaction: %5$s, Other transaction: %6$s'),
+            $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
+            $detailsLink = sprintf(
+                "<a href='$siteUrl$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=InboundLots&inboundlots0[codmat]=%1\$s' target='_blank'>%s</a>",
+                $deviation['codmat'],
+            );
+
+            $email_message .= sprintf(
+                "<tr>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s%%</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                </tr>",
+                $deviation['nrtran'],
+                $deviation['dataint'],
+                $deviation['compared_nrtran'],
                 $deviation['denumire_material'],
                 $deviation['pcont'],
                 $deviation['compared_pcont'],
                 $deviation['deviance_percentage'],
-                $deviation['nrtran'],
-                $deviation['compared_nrtran']
+                $detailsLink
             );
-            $email_message .=
-                sprintf(
-                    "<a href='$siteUrl$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=InboundLots&inboundlots0[codmat]=%1\$s' target='_blank'>%1\$s</a> - %2\$s<br>",
-                    $deviation['codmat'],
-                    $line
-                );
         }
+
+        $email_message .= "</tbody></table>";
 
         $task->addVolume(count($deviations));
         $task->log(count($deviations) . " deviations detected.\n");

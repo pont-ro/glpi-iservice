@@ -1227,11 +1227,29 @@ msgstr "Limită deviație"
 msgid "Following deviations were detected in inbound lots"
 msgstr "Următoarele deviații au fost detectate în loturile de intrare"
 
-msgid "Mat. name: %1$s, Current price: %2$s, Previous price: %3$s, <b>Deviation: %4$s%%</b>, Transaction: %5$s, Other transaction: %6$s"
-msgstr "Nume material: %1$s, Preț curent: %2$s, Preț anterior: %3$s, <b>Deviație: %4$s%%</b>, Tranzacție: %5$s, Cealaltă tranzacție: %6$s"
-
 msgid "Inbound lot price deviations detected"
 msgstr "Deviații de preț în loturile de intrare detectate"
+
+msgid "Transaction"
+msgstr "Tranzacție"
+
+msgid "Other Transaction"
+msgstr "Cealaltă tranzacție"
+
+msgid "Material Name"
+msgstr "Denumire material"
+
+msgid "Current Price"
+msgstr "Preț curent"
+
+msgid "Previous Price"
+msgstr "Preț anterior"
+
+msgid "Deviation (%)"
+msgstr "Deviație (%)"
+
+msgid "Material Code"
+msgstr "Cod Mat."
 
 #, fuzzy
 #~| msgid "Pending emails"
