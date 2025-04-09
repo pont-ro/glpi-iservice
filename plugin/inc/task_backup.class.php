@@ -95,6 +95,10 @@ class PluginIserviceTask_Backup
             return $result;
         }
 
+        if ($paletteOverride = PluginIserviceConfig::getValueFromArray('config_override.core.palette', PluginIserviceConfig::getLocalConfig())) {
+            $_SESSION['glpipalette'] = $paletteOverride;
+        }
+
         return $this->getResponseDiv("Restore sucessfull" . ($import_failed ?? '') . ".");
     }
 
