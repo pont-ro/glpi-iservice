@@ -133,7 +133,7 @@ class Operations extends View
                                 LEFT JOIN glpi_plugin_iservice_tickets t ON t.id = cat.tickets_id
                                 LEFT JOIN glpi_cartridges c ON c.id = cat.cartridges_id
                                 LEFT JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
-                                LEFT JOIN glpi_plugin_fields_cartridgeitemtypedropdowns cid on cid.id = ci.plugin_fields_cartridgeitemtypedropdowns_id
+                                LEFT JOIN glpi_plugin_fields_cartridgeitemtypedropdowns cid on cid.id = cat.plugin_fields_cartridgeitemtypedropdowns_id
                                 GROUP BY cat.tickets_id
                               ) ct ON ct.tickets_id = t.id
                     WHERE t.is_deleted = 0
