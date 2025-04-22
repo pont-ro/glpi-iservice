@@ -75,6 +75,11 @@ class PluginIserviceTask_Backup
 
     protected function restoreDB($backup_file_path)
     {
+        if ($paletteOverride = PluginIserviceConfig::getValueFromArray('config_override.core.palette', PluginIserviceConfig::getLocalConfig())) {
+            PluginIserviceConfig::overrideConfig(PluginIserviceConfig::getLocalConfig());
+            $_SESSION['glpipalette'] = $paletteOverride;
+        }
+
         if (false === ($import_command = $this->getImportCommandForFilePath($backup_file_path))) {
             return $this->getResponseDiv("The given file was not a valid backup");
         }
@@ -93,10 +98,6 @@ class PluginIserviceTask_Backup
 
         if (true !== ($result = $this->shellExecute($this->getImportCommandForFilePath(PLUGIN_ISERVICE_DIR . '/install/sql/create_stored_procedures.sql'), "Could not create stored procedures in <b>$this->database</b> database."))) {
             return $result;
-        }
-
-        if ($paletteOverride = PluginIserviceConfig::getValueFromArray('config_override.core.palette', PluginIserviceConfig::getLocalConfig())) {
-            $_SESSION['glpipalette'] = $paletteOverride;
         }
 
         return $this->getResponseDiv("Restore sucessfull" . ($import_failed ?? '') . ".");
