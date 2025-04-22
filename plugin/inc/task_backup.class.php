@@ -38,6 +38,10 @@ class PluginIserviceTask_Backup
         } elseif ($restore) {
             set_time_limit(0);
             echo $this->restoreDB($restore), "<br><br>";
+            if ($paletteOverride = PluginIserviceConfig::getValueFromArray('config_override.core.palette', PluginIserviceConfig::getLocalConfig())) {
+                PluginIserviceConfig::overrideConfig(PluginIserviceConfig::getLocalConfig());
+                $_SESSION['glpipalette'] = $paletteOverride;
+            }
         }
 
         Html::header(_t('Backup/restore'));
@@ -75,11 +79,6 @@ class PluginIserviceTask_Backup
 
     protected function restoreDB($backup_file_path)
     {
-        if ($paletteOverride = PluginIserviceConfig::getValueFromArray('config_override.core.palette', PluginIserviceConfig::getLocalConfig())) {
-            PluginIserviceConfig::overrideConfig(PluginIserviceConfig::getLocalConfig());
-            $_SESSION['glpipalette'] = $paletteOverride;
-        }
-
         if (false === ($import_command = $this->getImportCommandForFilePath($backup_file_path))) {
             return $this->getResponseDiv("The given file was not a valid backup");
         }
