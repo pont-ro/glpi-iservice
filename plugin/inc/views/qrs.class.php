@@ -87,7 +87,7 @@ class Qrs extends View
                         and ((p.supplier_name is null and '[partner]' = '%%') or p.supplier_name like '[partner]')
                         and ((u.name is null and '[technician]' = '%%') or u.name like '[technician]')
                         and ((p.usage_address_field is null and '[usage_address_field]' = '%%') or p.usage_address_field like '[usage_address_field]')
-                        and ((qrs.notes is null and '[notes]' = '%%')) or qrs.notes like '[notes]'
+                        and ((qrs.notes is null and '[notes]' = '%%') or qrs.notes like '[notes]')
                 ",
             'default_limit' => 50,
             'row_class' => 'function:\GlpiPlugin\Iservice\Views\Qrs::getRowBackgroundClass($row_data);',
