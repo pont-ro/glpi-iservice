@@ -500,7 +500,7 @@ select
      , ccf.plugin_fields_cartridgeitemtypedropdowns_id
      , round(avg(if(ccf.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), ccf.printed_pages_color_field, ccf.printed_pages_color_field + ccf.printed_pages_field)) / avg(cicf.atc_field), 2) uc
      , cicf.atc_field
-     , group_concat(concat('- între ', c.date_use, ' și ', c.date_out, ' au fost printate ', if(`ccf`.`plugin_fields_cartridgeitemtypedropdowns_id` in (2, 3, 4), `ccf`.`printed_pages_color_field`, `ccf`.`printed_pages_color_field` + `ccf`.`printed_pages_field`), ' pagini cu cartușul ', c.id) separator '\n') as `explanation`
+     , group_concat(concat('- între ', c.date_use, ' și ', c.date_out, ' au fost printate ', if(`ccf`.`plugin_fields_cartridgeitemtypedropdowns_id` in (2, 3, 4), `ccf`.`printed_pages_color_field`, `ccf`.`printed_pages_color_field` + `ccf`.`printed_pages_field`), ' pagini cu cartușul ', c.id) separator '\n') collate utf8mb4_unicode_ci  as `explanation`
 from glpi_cartridges c
     join glpi_cartridgeitems ci on ci.id = c.cartridgeitems_id and (ci.ref like '%cton%' or ci.ref like '%ccat%')
     join glpi_plugin_fields_cartridgecartridgecustomfields ccf on ccf.items_id = c.cartridgeitems_id and ccf.itemtype = 'Cartridge'
