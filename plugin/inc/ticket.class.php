@@ -2287,10 +2287,11 @@ class PluginIserviceTicket extends Ticket
                 unset($ticketData['_dont_close']);
             }
 
-            if (IserviceToolBox::inProfileArray(['client', 'superclient', 'admin', 'super-admin'])) {
-                $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
-            } else {
+            if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
                 $ticketData['_users_id_assign'] = IserviceToolBox::getUserIdByName('Cititor');
+                $ticketData['name']             = _t('Global read counter client');
+            } else {
+                $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
             }
 
             if ($track->add(array_merge($ticketData, $track->fields, ['add' => 'add', '_no_message' => 1]))) {

@@ -916,6 +916,9 @@ msgstr "Aparate"
 msgid "Read counter"
 msgstr "Citire contor"
 
+msgid "Read counter - toner replacement"
+msgstr "Citire contor - inlocuire toner"
+
 #: inc/views/printers.class.php:215 inc/views/printers.class.php:218
 #, php-format
 msgid "Client has an unpaid invoice in value of %s RON"
@@ -1250,6 +1253,9 @@ msgstr "Deviație (%)"
 
 msgid "Material Code"
 msgstr "Cod Mat."
+
+msgid "Global read counter client"
+msgstr "Citire globală client"
 
 #, fuzzy
 #~| msgid "Pending emails"
