@@ -43,7 +43,7 @@ class Printers extends View
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         $export_color                  = $row_data['invoice_expiry_date_field'] < date("Y-m-d", strtotime("-14days")) ? '_red' : '_green';
         $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
-        $createTicketParams            = "items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&without_paper_field=1&no_travel_field=1";
+        $createTicketParams            = "?items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&without_paper_field=1&no_travel_field=1";
 
         if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
             $createTicketParams .= "&_users_id_assign=" . IserviceToolBox::getUserIdByName('Cititor');
@@ -56,7 +56,7 @@ class Printers extends View
 
         $actions = [
             'add' => [
-                'link' => "ticket.form.php?&_users_id_assign=$createTicketParams",
+                'link' => "ticket.form.php$createTicketParams",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_add.png',
                 'title' => __('New ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, CREATE) || Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_READCOUNTER, CREATE),
