@@ -43,9 +43,20 @@ class Printers extends View
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         $export_color                  = $row_data['invoice_expiry_date_field'] < date("Y-m-d", strtotime("-14days")) ? '_red' : '_green';
         $operations_filter_description = urlencode("$row_data[printer_name] ($row_data[serial]) - $row_data[usage_address_field] - $row_data[supplier_name]");
-        $actions                       = [
+        $createTicketParams            = "?items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&without_paper_field=1&no_travel_field=1";
+
+        if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
+            $createTicketParams .= "&_users_id_assign=" . IserviceToolBox::getUserIdByName('Cititor');
+            $createTicketParams .= '&title=' . _t('Read counter - toner replacement');
+            $createTicketParams .= '&content=' . _t('Read counter');
+            $createTicketParams .= "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('Sesizare externa');
+        } else {
+            $createTicketParams .= "&_users_id_assign=$row_data[tech_id]";
+        }
+
+        $actions = [
             'add' => [
-                'link' => "ticket.form.php?items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]&_users_id_assign=" . (IserviceToolBox::inProfileArray(['client', 'superclient']) ? IserviceToolBox::getUserIdByName('Cititor') : $row_data['tech_id']) . (IserviceToolBox::inProfileArray(['client', 'superclient']) ? ('&title=' . _t('Read counter') . '&content=' . _t('Read counter') . "&itilcategories_id=" . PluginIserviceTicket::getItilCategoryId('Sesizare externa')) : ''),
+                'link' => "ticket.form.php$createTicketParams",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_add.png',
                 'title' => __('New ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, CREATE) || Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_READCOUNTER, CREATE),
@@ -123,29 +134,52 @@ class Printers extends View
         }
 
         $out = "<div id='row_actions_$row_data[printer_id]' class='actions collapsible' style='display:none'>";
+
+        if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
+            $actionIcons      = '';
+            $actionIconsCount = 0;
+        }
+
         foreach ($actions as $action) {
+            $actionOut = '';
             if (!isset($action['visible']) || $action['visible']) {
                 if (isset($action['onclick'])) {
                     if ($action['onclick'] !== 'ajaxCall') {
-                        $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='$action[onclick]'>\r\n";
+                        $actionOut .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='$action[onclick]'>\r\n";
                     } else {
-                        $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='ajaxCall(\"$action[link]\", \"$action[confirm]\", $action[success]);'>\r\n";
+                        $actionOut .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='ajaxCall(\"$action[link]\", \"$action[confirm]\", $action[success]);'>\r\n";
                     }
                 } else {
-                    $onclick = $action['link_onclick'] ?? '';
-                    $out    .= "<a href='$action[link]' $onclick target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                    $onclick    = $action['link_onclick'] ?? '';
+                    $actionOut .= "<a href='$action[link]' $onclick target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
                 }
 
                 if (isset($action['suffix'])) {
-                    $out .= $action['suffix'];
+                    $actionOut .= $action['suffix'];
+                }
+
+                if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
+                    $actionIcons .= $actionOut;
+                    $actionIconsCount++;
+                } else {
+                    $out .= $actionOut;
                 }
             }
         }
 
-        $out .= "<br><div id='ajax_selector_$row_data[printer_id]'></div>";
+        if (IserviceToolBox::inProfileArray(['client', 'superclient'])) {
+            $out  = "<div class='actions' style='min-width: " . $actionIconsCount * 34 . "px;'>";
+            $out .= "$actionIcons&nbsp;";
+            if (!empty($row_data['ticket_status'])) {
+                $out .= "&nbsp;" . Ticket::getStatusIcon($row_data['ticket_status']);
+            }
+        } else {
+            $out .= "<br><div id='ajax_selector_$row_data[printer_id]'></div>";
+        }
+
         $out .= "</div>";
 
-        if (!empty($row_data['ticket_status'])) {
+        if (!empty($row_data['ticket_status']) && !IserviceToolBox::inProfileArray(['client', 'superclient'])) {
             $out .= "&nbsp;" . Ticket::getStatusIcon($row_data['ticket_status']);
         }
 
