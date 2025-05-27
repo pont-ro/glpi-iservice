@@ -751,7 +751,7 @@ class PluginIserviceEmaintenance extends MailCollector
         return false;
     }
 
-    public function autoAddTonerBottleReplacementTicket($ememail_id, $extended_data)
+    protected function autoAddTonerBottleReplacementTicket($ememail_id, $extended_data)
     {
         if (false === ($ticket = $this->autoAddTicket(
             $ememail_id, $extended_data, [
@@ -796,7 +796,7 @@ class PluginIserviceEmaintenance extends MailCollector
         return true;
     }
 
-    public function autoAddTicketIfNoChangeableCartridge($ememail_id, $extended_data): bool
+    protected function autoAddTicketIfNoChangeableCartridge($ememail_id, $extended_data): bool
     {
         if (empty($ememail_id)) {
             return false;
@@ -852,7 +852,7 @@ class PluginIserviceEmaintenance extends MailCollector
         return true;
     }
 
-    public function autoAddTicket($ememail_id, $extended_data, $override_data = []): PluginIserviceTicket|bool
+    protected function autoAddTicket($ememail_id, $extended_data, $override_data = []): PluginIserviceTicket|bool
     {
         if (empty($ememail_id)) {
             return false;
