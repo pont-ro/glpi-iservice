@@ -1,5 +1,7 @@
 <?php
 
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+
 // Imported from iService2, needs refactoring.
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -751,7 +753,13 @@ class PluginIserviceEmaintenance extends MailCollector
 
     protected function autoAddTonerBottleReplacementTicket($ememail_id, $extended_data)
     {
-        if (false === ($ticket = $this->autoAddTicket($ememail_id, $extended_data, ['_users_id_assign' => PluginIserviceTicket::USER_ID_READER]))) {
+        if (false === ($ticket = $this->autoAddTicket(
+            $ememail_id, $extended_data, [
+                '_users_id_assign' => IserviceToolBox::getUserIdByName('Cititor'),
+                'itilcategories_id' => PluginIserviceTicket::getItilCategoryId('Inlocuire toner')
+            ]
+        ))
+        ) {
             return false;
         }
 
@@ -833,7 +841,7 @@ class PluginIserviceEmaintenance extends MailCollector
             return false;
         } elseif ($cartridge_item_index === null) {
             // If there is no changeable cartridge, create a ticket.
-            if (!$this->autoAddTicket($ememail_id, $extended_data)) {
+            if (!$this->autoAddTicket($ememail_id, $extended_data, ['itilcategories_id' => PluginIserviceTicket::getItilCategoryId('Interventie regulata')])) {
                 return false;
             }
         }
@@ -878,13 +886,14 @@ class PluginIserviceEmaintenance extends MailCollector
             // This field value will be needed to get the changeable cartridges.
             'items_id' => ['Printer' => [$extended_data['printers_id']]],
             'locations_id' => $extended_data['printer']->fields['locations_id'],
-            '_users_id_assign' => $extended_data['users_id_tech'],
+            '_users_id_assign' => IserviceToolBox::getUserIdByName('Cititor'),
             'name' => $extended_data['subject_parts'][0],
             'content' => self::getContentForTicket($extended_data, false),
             'em_mail_id_field' => $ememail_id,
             '_without_moving' => 1,
             '_without_papers' => 1,
             'effective_date_field' => $effective_date_field->format('Y-m-d H:i:s'),
+            'itilcategories_id' => $override_data['itilcategories_id'] ?? PluginIserviceTicket::getItilCategoryId('Defect'),
         ];
         if (!empty($extended_data['suppliers_id'])) {
             // This field value will be needed to get the changeable cartridges.
