@@ -72,7 +72,6 @@ function plugin_iservice_redefine_menus($menus): array
 function plugin_iservice_pre_Ticket_add(Ticket $item): void
 {
     // If status has to be changed use $_SESSION['saveInput']['Ticket']['status'], as it will be used to inhibit automatic GLPI status changes.
-
     plugin_iservice_remove_new_lines_from_content($item->input);
 
     if (PluginIserviceTicket::isTicketClosing($item)) {
@@ -96,7 +95,8 @@ function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_add(PluginFiel
     plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update($item);
 }
 
-function plugin_iservice_post_Ticket_prepareadd(Ticket $item) {
+function plugin_iservice_post_Ticket_prepareadd(Ticket $item)
+{
     plugin_iservice_ticket_restore_status_from_session($item);
 }
 
@@ -121,9 +121,9 @@ function plugin_iservice_pre_PluginFieldsPrintercustomfield_update(PluginFieldsP
 
     if (!IserviceToolBox::isPrinterColorOrPlotter($item->input['items_id'] ?? $item->fields['items_id'] ?? 0)) {
         $item->input['daily_color_average_field'] = 0;
-        $item->input['uc_cyan_field'] = 0;
-        $item->input['uc_magenta_field'] = 0;
-        $item->input['uc_yellow_field'] = 0;
+        $item->input['uc_cyan_field']             = 0;
+        $item->input['uc_magenta_field']          = 0;
+        $item->input['uc_yellow_field']           = 0;
     }
 
 }
@@ -140,9 +140,11 @@ function plugin_iservice_pre_PluginFieldsSuppliercustomfield_update(PluginFields
         $suppliers = array_merge([$item->input['items_id']], $suppliers);
     }
 
-    array_walk($suppliers, function(&$value) {
-        $value = intval(trim($value, "' \t\n\r\0\x0B"));
-    });
+    array_walk(
+        $suppliers, function (&$value) {
+            $value = intval(trim($value, "' \t\n\r\0\x0B"));
+        }
+    );
 
     $item->input['group_field'] = implode(',', array_unique(array_filter($suppliers)));
 }
@@ -157,22 +159,28 @@ function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update(PluginF
     if (empty($item->input['compatible_mercury_codes_field']) || !in_array($item->input['mercury_code_field'], $mercuryCodes)) {
         $mercuryCodes = array_merge([$item->input['mercury_code_field']], $mercuryCodes);
     }
-    array_walk($mercuryCodes, function(&$value) {
-        $value = str_replace(["'", '"'], "", stripslashes($value));
-    });
+
+    array_walk(
+        $mercuryCodes, function (&$value) {
+            $value = str_replace(["'", '"'], "", stripslashes($value));
+        }
+    );
 
     $mercuryCodes = array_unique(array_filter($mercuryCodes));
-    array_walk($mercuryCodes, function(&$value) {
-        $value = addslashes("'" . trim($value, "' \t\n\r\0\x0B") . "'");
-    });
+    array_walk(
+        $mercuryCodes, function (&$value) {
+            $value = addslashes("'" . trim($value, "' \t\n\r\0\x0B") . "'");
+        }
+    );
 
     $item->input['compatible_mercury_codes_field'] = implode(',', $mercuryCodes);
 
-
     $supported_types = explode(',', $item->input['supported_types_field']);
-    array_walk($supported_types, function(&$value) {
-        $value = intval(trim($value, "' \t\n\r\0\x0B"));
-    });
+    array_walk(
+        $supported_types, function (&$value) {
+            $value = intval(trim($value, "' \t\n\r\0\x0B"));
+        }
+    );
     $item->input['supported_types_field'] = implode(',', array_unique(array_filter($supported_types)));
 }
 
@@ -180,6 +188,7 @@ function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update(PluginF
  * Restore the status from $_SESSION
  * Do not allow automatic status changes coded in GLPI: change back to the originally saved status if it wasn`t deleted due to inability to close the ticket because there is an older one opened.
  * Do not allow empty status, default it to INCOMING
+ *
  * @param Ticket $item
  */
 function plugin_iservice_ticket_restore_status_from_session(Ticket $item): void
@@ -210,10 +219,11 @@ function plugin_iservice_Printer_update(Printer $item): void
     if (!in_array('locations_id', $item->updates)) {
         return;
     }
+
     $cartridge_object = new PluginIserviceCartridge();
-    // Move all the installed cartridges to the new location
+    // Move all the installed cartridges to the new location.
     foreach ($cartridge_object->find(["date_out is null AND not date_use is null AND printers_id = " . $item->getID()]) as $cartridge) {
-        $cartridge_object->update(array('id' => $cartridge['id'], 'locations_id_field' => $item->fields['locations_id'] ?: '0'));
+        $cartridge_object->update(['id' => $cartridge['id'], 'locations_id_field' => $item->fields['locations_id'] ?: '0']);
     }
 }
 
@@ -224,9 +234,9 @@ function plugin_iservice_Infocom_update($item): void
     }
 
     $cartridge_object = new PluginIserviceCartridge();
-    // Move all the installed cartridges to the new partner
+    // Move all the installed cartridges to the new partner.
     foreach ($cartridge_object->find(["NOT date_use IS null AND date_out IS null AND suppliers_id_field = {$item->oldvalues['suppliers_id']} AND printers_id = {$item->fields['items_id']}"]) as $cartridge) {
-        $cartridge_object->update(array('id' => $cartridge['id'], 'suppliers_id_field' => $item->fields['suppliers_id'] ?? 0));
+        $cartridge_object->update(['id' => $cartridge['id'], 'suppliers_id_field' => $item->fields['suppliers_id'] ?? 0]);
     }
 }
 
@@ -321,9 +331,18 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
     // Do not allow to close a ticket if it has older effective date then the last closed ticket.
     $last_closed_ticket_id = PluginIserviceTicket::getLastIdForItemWithInput($item, false);
     $last_closed_ticket    = new PluginIserviceTicket();
-    if ($last_closed_ticket->getFromDB($last_closed_ticket_id) && $last_closed_ticket->customfields->fields['effective_date_field'] >= $item->input['effective_date_field']) {
-        $can_close = false;
-        Session::addMessageAfterRedirect("Tichetul nu poate fi închis deoarece are data efectivă mai mică decât ultimul tichet închis (<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' target='_blank'>$last_closed_ticket_id</a>)!", true, WARNING);
+    if ($last_closed_ticket->getFromDB($last_closed_ticket_id)) {
+        if ($last_closed_ticket->customfields->fields['effective_date_field'] >= $item->input['effective_date_field']) {
+            $can_close = false;
+            Session::addMessageAfterRedirect("Tichetul nu poate fi închis deoarece are data efectivă mai mică decât ultimul tichet închis (<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' target='_blank'>$last_closed_ticket_id</a>)!", true, WARNING);
+        }
+
+        if (($last_closed_ticket->customfields->fields['total2_black_field'] ?? 0) > ($item->input['total2_black_field'] ?? 0)
+            || ($last_closed_ticket->customfields->fields['total2_color_field'] ?? 0) > ($item->input['total2_color_field'] ?? 0)
+        ) {
+            $can_close = false;
+            Session::addMessageAfterRedirect(_t('The ticket can not be closed because counters are lower than on the last closed ticket: ') . "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id' target='_blank'>$last_closed_ticket_id</a>!", true, WARNING);
+        }
     }
 
     if (!$can_close) {
@@ -334,12 +353,13 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
 
 /**
  * Do not allow the deletion of a ticket if it delivers a consumbale or installs a cartridge
+ *
  * @param Ticket $item
  */
 function plugin_iservice_ticket_disable_delete_if_has_consumables_or_cartridges(Ticket $item)
 {
     $ticket_consumable = new PluginIserviceConsumable_Ticket();
-    $ticket_cartridge = new PluginIserviceCartridge_Ticket();
+    $ticket_cartridge  = new PluginIserviceCartridge_Ticket();
     if ($ticket_consumable->find(["tickets_id = {$item->getID()}"]) || $ticket_cartridge->find(["tickets_id = {$item->getID()}"])) {
         $item->input = null;
         Session::addMessageAfterRedirect("Nu puteți șterge un ticket daca acesta livrează un consumabil sau instalează un cartuș!", true, ERROR);
