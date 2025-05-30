@@ -67,46 +67,36 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
         return $result;
     }
 
-    public static function getUsageCoefficientDisplay($column, $row_data): string
+    public static function getUsageCoefficientDisplay($row_data): string
     {
-        if ($column !== 'bk' && $row_data['printer_types_id'] != PluginIservicePrinter::ID_COLOR_TYPE) {
-            return '';
-        }
-
         if ($row_data['consumable_type'] === 'consumable') {
             return '';
         }
 
-        $title = "Pentru mediu printabil $row_data[average_total_counter]:\n" . $row_data["calc_uc{$column}_explanation"];
+        $consumableCodes = explode('<br>', $row_data['consumable_codes']);
 
-        $class = 'pointer';
-        if (empty($row_data["calc_uc$column"])) {
-            $title                      = 'Nu există cartușe golite ce pot fi folosite pentru calcul';
-            $row_data["calc_uc$column"] = '?';
-            $color                      = 'blue';
-        } elseif (abs($row_data["uc_{$column}_field"] - $row_data["calc_uc$column"]) > $row_data["uc_{$column}_field"] * 0.25) {
-            $color  = "red";
-            $class .= " average-alert";
-        } elseif (abs($row_data["uc_{$column}_field"] - $row_data["calc_uc$column"]) > $row_data["uc_{$column}_field"] * 0.12) {
-            $color  = "orange";
-            $class .= " average-alert";
-        } else {
-            $color = "green";
-        }
+        $result = '';
 
-        $class .= " uc{$column}_link_$row_data[printer_id]";
+        foreach ($consumableCodes as $code) {
+            $code = trim($code);
+            if (empty($code)) {
+                continue;
+            }
 
-        global $CFG_PLUGIN_ISERVICE;
-        if (self::inProfileArray('tehnician', 'admin', 'super-admin')) {
-            $result  = "<a id='uc{$column}_link_$row_data[printer_id]_$row_data[consumable_type]' class='$class' onclick='$(\"#uc{$column}_span_$row_data[printer_id]_$row_data[consumable_type]\").show();$(this).hide();' style='color:$color;'>{$row_data["uc_{$column}_field"]}</a>";
-            $result .= "<span id='uc{$column}_span_$row_data[printer_id]_$row_data[consumable_type]' style='display:none; white-space: nowrap;'>";
-            $result .= "<input id='uc{$column}_edit_$row_data[printer_id]_$row_data[consumable_type]' class='uc{$column}_edit_$row_data[printer_id]' name='item_values[printer][$row_data[printer_id]][uc_{$column}_field]' style='width:2em;' type='text' value='{$row_data["calc_uc$column"]}' />&nbsp;";
-            $result .= "<i class='fa fa-check-circle' onclick='setDailyAverage(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/managePrinter.php?operation=set_uc$column\", $row_data[printer_id], $(\"#uc{$column}_edit_$row_data[printer_id]_$row_data[consumable_type]\").val(), \"uc{$column}\", \"_$row_data[consumable_type]\");' style='color:green'></i>&nbsp;";
-            $result .= "<i class='fa fa-times' onclick='$(\"#uc{$column}_link_$row_data[printer_id]_$row_data[consumable_type]\").show();$(\"#uc{$column}_span_$row_data[printer_id]_$row_data[consumable_type]\").hide();'></i>";
-            $result .= "</span><br/>";
-            $result .= "<span title='$title' style='white-space:nowrap'>({$row_data["calc_uc$column"]})</span>";
-        } else {
-            $result = "<a id='{$column}_link_$row_data[printer_id]_$row_data[consumable_type]' class='$class' onclick='return false;' style='color:$color;' title='$title'>{$row_data["uc_{$column}_field"]}</a>";
+            $ucSpan = '';
+            foreach (['bk', 'c', 'm', 'y'] as $type) {
+                if (empty($row_data["calc_uc_$type"]) || empty($row_data["calc_uc_$type" . '_ref']) || $code != $row_data["calc_uc_$type" . '_ref']) {
+                    continue;
+                }
+
+                $uc      = $row_data["calc_uc_$type"];
+                $ref     = $row_data["calc_uc_$type" . '_ref'];
+                $details = $row_data["calc_uc_$type" . '_values_detail'] ?? '';
+                $type    = strtoupper($type);
+                $ucSpan  = "<span title='$ref: $details'>$type: $uc</span>";
+            }
+
+            $result .= "$ucSpan<br/>";
         }
 
         return $result;
@@ -258,14 +248,23 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                   , cfp.usage_address_field
                   , cfp.no_invoice_field
                   , cfp.cost_center_field costcenter
-                  , pbuc.uc calc_ucbk
-                  , pbuc.explanation calc_ucbk_explanation
-                  , pcuc.uc calc_ucc
-                  , pcuc.explanation calc_ucc_explanation
-                  , pmuc.uc calc_ucm
-                  , pmuc.explanation calc_ucm_explanation
-                  , pyuc.uc calc_ucy
-                  , pyuc.explanation calc_ucy_explanation
+                  
+                  , pbuc.usage_coefficient calc_uc_bk
+                  , pbuc.values_detail calc_uc_bk_values_detail
+                  , pbuc.ref calc_uc_bk_ref
+                  
+                  , pcuc.usage_coefficient calc_uc_c
+                  , pcuc.values_detail calc_uc_c_values_detail
+                  , pcuc.ref calc_uc_c_ref
+                  
+                  , pmuc.usage_coefficient calc_uc_m
+                  , pmuc.values_detail calc_uc_m_values_detail
+                  , pmuc.ref calc_uc_m_ref
+                    
+                  , pyuc.usage_coefficient calc_uc_y
+                  , pyuc.values_detail calc_uc_y_values_detail
+                  , pyuc.ref calc_uc_y_ref
+                  
                   , l.completename location_complete_name
                   , s.id supplier_id
                   , s.name supplier_name
@@ -288,10 +287,12 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                   , @consumableType := if (ci.ref like 'CTON%' or ci.ref like 'CCA%', 'cartridge', 'consumable') consumable_type
                   , @atc := if(coalesce(cfci.atc_field, 0) = 0, 1000, cfci.atc_field) average_total_counter
                   , @lc := if(coalesce(cfci.life_coefficient_field, 0) = 0, 1, cfci.life_coefficient_field) life_coefficient
-                  , @ucc := if (coalesce(cfp.uc_cyan_field, 0) = 0, 0.75, cfp.uc_cyan_field) uc_cyan_field
-                  , @ucm := if (coalesce(cfp.uc_magenta_field, 0) = 0, 0.75, cfp.uc_magenta_field) uc_magenta_field
-                  , @ucy := if (coalesce(cfp.uc_yellow_field, 0) = 0, 0.75, cfp.uc_yellow_field) uc_yellow_field
-                  , @ucbk := if (coalesce(cfp.uc_bk_field, 0) = 0, 0.75, cfp.uc_bk_field) uc_bk_field
+                  
+                  , @ucc := if (coalesce(pcuc.usage_coefficient, cfp.uc_cyan_field, 0) = 0, 0.75, coalesce(pcuc.usage_coefficient, cfp.uc_cyan_field)) uc_cyan_field
+                  , @ucm := if (coalesce(pmuc.usage_coefficient, cfp.uc_magenta_field, 0) = 0, 0.75, coalesce(pmuc.usage_coefficient, cfp.uc_magenta_field)) uc_magenta_field
+                  , @ucy := if (coalesce(pyuc.usage_coefficient, cfp.uc_yellow_field, 0) = 0, 0.75, coalesce(pyuc.usage_coefficient, cfp.uc_yellow_field)) uc_yellow_field
+                  , @ucbk := if (coalesce(pbuc.usage_coefficient, cfp.uc_bk_field, 0) = 0, 0.75, coalesce(pbuc.usage_coefficient, cfp.uc_bk_field)) uc_bk_field
+                  
                   , @uc := if(@consumableType = 'consumable', 1, case cfci.plugin_fields_cartridgeitemtypedropdowns_id
                                                                     when 2 then @ucc
                                                                     when 3 then @ucm
@@ -334,10 +335,10 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                 left join glpi_plugin_iservice_consumable_changeable_counts ccc on ccc.id = c.id
                 left join glpi_tickets it on it.id = cfc.tickets_id_use_field
                 left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = it.id and cft.itemtype = 'Ticket'
-                left join glpi_plugin_iservice_printer_usage_coefficients pbuc on pbuc.printers_id = p.id and pbuc.plugin_fields_cartridgeitemtypedropdowns_id = 1 
-                left join glpi_plugin_iservice_printer_usage_coefficients pcuc on pcuc.printers_id = p.id and pcuc.plugin_fields_cartridgeitemtypedropdowns_id = 2 
-                left join glpi_plugin_iservice_printer_usage_coefficients pmuc on pmuc.printers_id = p.id and pmuc.plugin_fields_cartridgeitemtypedropdowns_id = 3 
-                left join glpi_plugin_iservice_printer_usage_coefficients pyuc on pyuc.printers_id = p.id and pyuc.plugin_fields_cartridgeitemtypedropdowns_id = 4 
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pbuc on pbuc.printers_id = p.id and pbuc.plugin_fields_cartridgeitemtypedropdowns_id = 1 AND s.id = pbuc.suppliers_id
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pcuc on pcuc.printers_id = p.id and pcuc.plugin_fields_cartridgeitemtypedropdowns_id = 2 AND s.id = pcuc.suppliers_id
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pmuc on pmuc.printers_id = p.id and pmuc.plugin_fields_cartridgeitemtypedropdowns_id = 3 AND s.id = pmuc.suppliers_id
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pyuc on pyuc.printers_id = p.id and pyuc.plugin_fields_cartridgeitemtypedropdowns_id = 4 AND s.id = pyuc.suppliers_id
                 left join (select codbenef, count(codbenef) numar_facturi_neplatite, sum(valinc-valpla) unpaid_invoices_value
                            from hmarfa_facturi 
                            where (codl = 'f' or stare like 'v%') and tip like 'tf%'
@@ -347,7 +348,6 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                 order by p.id, consumable_type, $last_order_by
             ) t
             group by t.printer_id, t.consumable_type
-            limit 100
             ";
         $settings['use_cache']           = true;
         $settings['ignore_control_hash'] = true;
@@ -460,9 +460,10 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
         ];
 
         $settings['columns']['ucbk'] = [
-            'title' => 'Coef. bk',
+            'title' => 'Coef',
             'align' => 'center',
-            'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCountersV3::getUsageCoefficientDisplay("bk", $row);',
+            'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCountersV3::getUsageCoefficientDisplay($row);',
+            'style' => 'width:6em;'
         ];
 
         return $settings;
