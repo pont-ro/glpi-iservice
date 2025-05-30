@@ -1257,6 +1257,9 @@ msgstr "Cod Mat."
 msgid "Global read counter client"
 msgstr "Citire globală client"
 
+msgid "The ticket can not be closed because counters are lower than on the last closed ticket: "
+msgstr "Tichetul nu poate fi închis deoarece contoarele sunt mai mici decât pe ultimul tichet închis: "
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
