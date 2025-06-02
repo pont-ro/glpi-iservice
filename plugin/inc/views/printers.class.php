@@ -376,8 +376,9 @@ class Printers extends View
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
-        $printer_counters_button = IserviceToolBox::inProfileArray('client') ? '' :
-            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . _t('Printer counters') . " v2</a>";
+        $printer_counters_buttons = IserviceToolBox::inProfileArray('client') ? '' :
+            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . _t('Printer counters') . " v2</a>" .
+            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCountersV3' target='_blank'>" . _t('Printer counters') . " v3</a>";
 
         $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
         if ($this->enable_emaintenance_data_import) {
@@ -541,7 +542,7 @@ class Printers extends View
                 ],
             ],
             'filters' => [
-                'filter_buttons_prefix' => "$import_button $printer_counters_button",
+                'filter_buttons_prefix' => "$import_button $printer_counters_buttons",
                 'supplier_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => "AND s.id = %d",
