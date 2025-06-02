@@ -512,15 +512,16 @@ where c.date_in is not null
 group by c.printers_id, ccf.plugin_fields_cartridgeitemtypedropdowns_id;
 
 create or replace view glpi_plugin_iservice_printer_usage_coefficients_v3 as
-with rankedcartridges as (
-    select
-        c.*,
-        c.suppliers_id_field suppliers_id,
-        row_number() over (partition by c.suppliers_id_field, c.printers_id, c.cartridgeitems_id order by c.date_out desc) as row_num
-    from glpi_plugin_iservice_cartridges c
-             join glpi_printers p on p.id = c.printers_id
-    where c.date_out is not null
-),
+     with rankedcartridges as (
+         select
+             c.*,
+             c.suppliers_id_field suppliers_id,
+             row_number() over (partition by c.suppliers_id_field, c.printers_id, c.cartridgeitems_id order by c.date_out desc) 
+     as row_num
+         from glpi_plugin_iservice_cartridges c
+                  join glpi_printers p on p.id = c.printers_id
+         where c.date_out is not null
+     ),
      initialaverage as (
          select
              suppliers_id,
@@ -569,19 +570,19 @@ with rankedcartridges as (
          group by printers_id, cartridgeitems_id, plugin_fields_cartridgeitemtypedropdowns_id
      )
 
-select
-    printers_id,
-    suppliers_id,
-    plugin_fields_cartridgeitemtypedropdowns_id,
-    cartridgeitems_id,
-    avg_printed_pages,
-    total_cartridges,
-    cartridges_in_calculation,
-    atc_field,
-    initial_avg,
-    if((avg_printed_pages * atc_field) > 0, ROUND(avg_printed_pages/atc_field, 2), null) as usage_coefficient,
-    values_detail,
-    ref
-from averagecalculation
-where cartridges_in_calculation > 1
+    select
+        printers_id,
+        suppliers_id,
+        plugin_fields_cartridgeitemtypedropdowns_id,
+        cartridgeitems_id,
+        avg_printed_pages,
+        total_cartridges,
+        cartridges_in_calculation,
+        atc_field,
+        initial_avg,
+        if((avg_printed_pages * atc_field) > 0, ROUND(avg_printed_pages/atc_field, 2), null) as usage_coefficient,
+        values_detail,
+        ref
+    from averagecalculation
+    where cartridges_in_calculation > 1
 
