@@ -585,5 +585,5 @@ create or replace view glpi_plugin_iservice_printer_usage_coefficients_v3 as
         values_detail,
         ref
     from averagecalculation
-    where cartridges_in_calculation > 0
+    where cartridges_in_calculation > 1
 
