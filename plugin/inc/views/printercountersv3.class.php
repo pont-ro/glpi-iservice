@@ -73,33 +73,7 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
             return '';
         }
 
-        $consumableCodes = explode('<br>', $row_data['consumable_codes']);
-
-        $result = '';
-
-        foreach ($consumableCodes as $code) {
-            $code = trim($code);
-            if (empty($code)) {
-                continue;
-            }
-
-            $ucSpan = '';
-            foreach (['bk', 'c', 'm', 'y'] as $type) {
-                if (empty($row_data["calc_uc_$type"]) || empty($row_data["calc_uc_$type" . '_ref']) || $code != $row_data["calc_uc_$type" . '_ref']) {
-                    continue;
-                }
-
-                $uc      = $row_data["calc_uc_$type"];
-                $ref     = $row_data["calc_uc_$type" . '_ref'];
-                $details = $row_data["calc_uc_$type" . '_values_detail'] ?? '';
-                $type    = strtoupper($type);
-                $ucSpan  = "<span title='$ref: $details'>$type: $uc</span>";
-            }
-
-            $result .= "$ucSpan<br/>";
-        }
-
-        return $result;
+        return $row_data['calculated_coefficients'] ?? '';
     }
 
     public static function getMinDaysToVisitDisplay($row_data): string
@@ -182,7 +156,7 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
             'estimate_percentages' => 'available_percentage_estimate'
         ][$order_by] ?? 'cfci.plugin_fields_cartridgeitemtypedropdowns_id';
 
-        $settings['query']               = "
+        $settings['query'] = "
             select
                 t.*
               , group_concat(t.consumable_code separator '<br>') consumable_codes
@@ -202,6 +176,27 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                   ) estimate_percentages
               , 'lastClosedCounter + daysSinceLastClose * da' estimated_counter_formula
               , '1 - (estimateCounter - installedCounter) / (atc * lc * uc)' estimate_percentage_formula
+              , group_concat(
+                concat(
+                    '<span title=\'',
+                    concat(
+                        IF(t.calc_uc_bk_ref IS NOT NULL AND LENGTH(t.calc_uc_bk_ref) > 0, concat(calc_uc_bk_ref, ': '), ''),
+                        IF(t.calc_uc_c_ref IS NOT NULL AND LENGTH(t.calc_uc_c_ref) > 0, concat(calc_uc_c_ref, ': '), ''),
+                        IF(t.calc_uc_m_ref IS NOT NULL AND LENGTH(t.calc_uc_m_ref) > 0, concat(calc_uc_m_ref, ': '), ''),
+                        IF(t.calc_uc_y_ref IS NOT NULL AND LENGTH(t.calc_uc_y_ref) > 0, concat(calc_uc_y_ref, ': '), '')
+                    ),
+                    coalesce(t.calc_uc_bk_values_detail, t.calc_uc_c_values_detail, t.calc_uc_m_values_detail, t.calc_uc_y_values_detail, ''),
+                    '\'>',
+                    concat(
+                        IF(t.calc_uc_bk IS NOT NULL AND LENGTH(t.calc_uc_bk) > 0, 'BK: ', ''),
+                        IF(t.calc_uc_c IS NOT NULL AND LENGTH(t.calc_uc_c) > 0, 'C: ', ''),
+                        IF(t.calc_uc_m IS NOT NULL AND LENGTH(t.calc_uc_m) > 0, 'M: ', ''),
+                        IF(t.calc_uc_y IS NOT NULL AND LENGTH(t.calc_uc_y) > 0, 'Y: ', '')
+                    ),
+                    coalesce(t.calc_uc_bk, t.calc_uc_c, t.calc_uc_m, t.calc_uc_y, ' '),
+                     '</span>'
+                    )
+                  separator '<br>') calculated_coefficients
               , concat( 
                   '<span style=\'display:none;\'>',
                   group_concat(lpad(1000000 + t.days_to_visit, 7, 0) separator '<br>'),
@@ -335,10 +330,10 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                 left join glpi_plugin_iservice_consumable_changeable_counts ccc on ccc.id = c.id
                 left join glpi_tickets it on it.id = cfc.tickets_id_use_field
                 left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = it.id and cft.itemtype = 'Ticket'
-                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pbuc on pbuc.printers_id = p.id and pbuc.plugin_fields_cartridgeitemtypedropdowns_id = 1 AND s.id = pbuc.suppliers_id
-                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pcuc on pcuc.printers_id = p.id and pcuc.plugin_fields_cartridgeitemtypedropdowns_id = 2 AND s.id = pcuc.suppliers_id
-                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pmuc on pmuc.printers_id = p.id and pmuc.plugin_fields_cartridgeitemtypedropdowns_id = 3 AND s.id = pmuc.suppliers_id
-                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pyuc on pyuc.printers_id = p.id and pyuc.plugin_fields_cartridgeitemtypedropdowns_id = 4 AND s.id = pyuc.suppliers_id
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pbuc on pbuc.printers_id = p.id and pbuc.plugin_fields_cartridgeitemtypedropdowns_id = 1 AND s.id = pbuc.suppliers_id AND c.cartridgeitems_id = pbuc.cartridgeitems_id
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pcuc on pcuc.printers_id = p.id and pcuc.plugin_fields_cartridgeitemtypedropdowns_id = 2 AND s.id = pcuc.suppliers_id AND c.cartridgeitems_id = pcuc.cartridgeitems_id
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pmuc on pmuc.printers_id = p.id and pmuc.plugin_fields_cartridgeitemtypedropdowns_id = 3 AND s.id = pmuc.suppliers_id AND c.cartridgeitems_id = pmuc.cartridgeitems_id
+                left join glpi_plugin_iservice_printer_usage_coefficients_v3 pyuc on pyuc.printers_id = p.id and pyuc.plugin_fields_cartridgeitemtypedropdowns_id = 4 AND s.id = pyuc.suppliers_id AND c.cartridgeitems_id = pyuc.cartridgeitems_id
                 left join (select codbenef, count(codbenef) numar_facturi_neplatite, sum(valinc-valpla) unpaid_invoices_value
                            from hmarfa_facturi 
                            where (codl = 'f' or stare like 'v%') and tip like 'tf%'
@@ -459,7 +454,7 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
             'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCountersV3::getDailyAverageDisplay("dca", $row);',
         ];
 
-        $settings['columns']['ucbk'] = [
+        $settings['columns']['calculated_coefficients'] = [
             'title' => 'Coef',
             'align' => 'center',
             'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCountersV3::getUsageCoefficientDisplay($row);',

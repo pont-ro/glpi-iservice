@@ -512,63 +512,64 @@ where c.date_in is not null
 group by c.printers_id, ccf.plugin_fields_cartridgeitemtypedropdowns_id;
 
 create or replace view glpi_plugin_iservice_printer_usage_coefficients_v3 as
-     with rankedcartridges as (
-         select
-             c.*,
-             c.suppliers_id_field suppliers_id,
-             row_number() over (partition by c.suppliers_id_field, c.printers_id, c.cartridgeitems_id order by c.date_out desc) 
-     as row_num
-         from glpi_plugin_iservice_cartridges c
-                  join glpi_printers p on p.id = c.printers_id
-         where c.date_out is not null
-     ),
-     initialaverage as (
-         select
-             suppliers_id,
-             printers_id,
-             cartridgeitems_id,
-             avg(printed_pages_field + printed_pages_color_field) as initial_avg
-         from rankedcartridges
-         where row_num <= 4
-         group by suppliers_id, printers_id, cartridgeitems_id
-     ),
-     filteredvalues as (
-         select
-             r.suppliers_id,
-             r.printers_id,
-             r.cartridgeitems_id,
-             r.printed_pages_field + r.printed_pages_color_field printed_pages_total,
-             r.date_out,
-             r.row_num,
-             r.plugin_fields_cartridgeitemtypedropdowns_id,
-             ia.initial_avg,
-             if (ci.atc_field * ia.initial_avg > 0, abs(r.printed_pages_field  + printed_pages_color_field - ia.initial_avg) / ia.initial_avg <= 0.3 and abs(r.printed_pages_field  + printed_pages_color_field - ci.atc_field) / ci.atc_field <= 0.6, FALSE) as within_range,
-             ci.atc_field,
-             ci.ref
-         from rankedcartridges r
-                  left join glpi_plugin_iservice_cartridge_items ci on ci.id = r.cartridgeitems_id
-                  join initialaverage ia on r.cartridgeitems_id = ia.cartridgeitems_id
-             and r.printers_id = ia.printers_id
-             and r.suppliers_id = ia.suppliers_id
-         where r.row_num <= 4
-     ),
-     averagecalculation as (
-         select
-             printers_id,
-             suppliers_id,
-             plugin_fields_cartridgeitemtypedropdowns_id,
-             cartridgeitems_id,
-             avg(case when within_range then printed_pages_total else null end) as avg_printed_pages,
-             count(*) as total_cartridges,
-             sum(within_range) as cartridges_in_calculation,
-             atc_field,
-             initial_avg,
-             ref,
-             group_concat(concat(printed_pages_total, if(within_range, '', ' (ignored)'))
-                          order by row_num separator ', ') as values_detail
-         from filteredvalues
-         group by printers_id, cartridgeitems_id, plugin_fields_cartridgeitemtypedropdowns_id
-     )
+    with rankedcartridges as (
+        select
+            c.*,
+            c.suppliers_id_field suppliers_id,
+            row_number() over (partition by c.suppliers_id_field, c.printers_id, c.cartridgeitems_id order by c.date_out DESC)
+                as row_num
+        from glpi_plugin_iservice_cartridges c
+                 join glpi_printers p on p.id = c.printers_id
+        where c.date_out is not NULL
+    ),
+         initialaverage as (
+             select
+                 suppliers_id,
+                 printers_id,
+                 cartridgeitems_id,
+                 avg(if(plugin_fields_cartridgeitemtypedropdowns_id = 1, printed_pages_field + printed_pages_color_field, printed_pages_color_field)) as initial_avg
+             from rankedcartridges
+             where row_num <= 4
+             group by suppliers_id, printers_id, cartridgeitems_id
+         ),
+         filteredvalues as (
+             select
+                 r.suppliers_id,
+                 r.printers_id,
+                 r.cartridgeitems_id,
+                 if(r.plugin_fields_cartridgeitemtypedropdowns_id = 1, r.printed_pages_field + printed_pages_color_field, printed_pages_color_field) printed_pages_total,
+                 r.date_out,
+                 r.row_num,
+                 r.plugin_fields_cartridgeitemtypedropdowns_id,
+                 ia.initial_avg,
+                 if (ci.atc_field * ia.initial_avg > 0, abs(if(r.plugin_fields_cartridgeitemtypedropdowns_id = 1, r.printed_pages_field + printed_pages_color_field, printed_pages_color_field) - ia.initial_avg) / ia.initial_avg <= 0.3
+                     and abs(if(r.plugin_fields_cartridgeitemtypedropdowns_id = 1, r.printed_pages_field + printed_pages_color_field, printed_pages_color_field) - ci.atc_field) / ci.atc_field <= 0.6, FALSE) as within_range,
+                 ci.atc_field,
+                 ci.ref
+             from rankedcartridges r
+                      left join glpi_plugin_iservice_cartridge_items ci on ci.id = r.cartridgeitems_id
+                      join initialaverage ia on r.cartridgeitems_id = ia.cartridgeitems_id
+                 and r.printers_id = ia.printers_id
+                 and r.suppliers_id = ia.suppliers_id
+             where r.row_num <= 4
+         ),
+         averagecalculation as (
+             select
+                 printers_id,
+                 suppliers_id,
+                 plugin_fields_cartridgeitemtypedropdowns_id,
+                 cartridgeitems_id,
+                 avg(case when within_range then printed_pages_total else null end) as avg_printed_pages,
+                 count(*) as total_cartridges,
+                 sum(within_range) as cartridges_in_calculation,
+                 atc_field,
+                 initial_avg,
+                 ref,
+                 group_concat(concat(printed_pages_total, if(within_range, '', ' (ignored)'))
+                              order by row_num separator ', ') as values_detail
+             from filteredvalues
+             group by printers_id, suppliers_id, cartridgeitems_id, plugin_fields_cartridgeitemtypedropdowns_id
+         )
 
     select
         printers_id,
