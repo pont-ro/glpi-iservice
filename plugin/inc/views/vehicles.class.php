@@ -10,7 +10,7 @@ use PluginIserviceVehicleExpirable;
 class Vehicles extends View
 {
 
-    public static $rightname = 'plugin_iservice_vehicle';
+    public static $rightname = 'plugin_iservice_view_vehicles';
 
     public static $icon = 'ti ti-car';
 
@@ -74,7 +74,7 @@ class Vehicles extends View
                         , COUNT(ve.id) as expirables_count
                         , MIN(CASE WHEN ve.expiration_date >= CURDATE() THEN ve.expiration_date END) as next_expiration
                     from glpi_plugin_iservice_vehicles v
-                    left join glpi_plugin_iservice_vehicleexpirables ve on ve.vehicle_id = v.id
+                    left join glpi_plugin_iservice_vehicle_expirables ve on ve.vehicle_id = v.id
                     where 1
                         and cast(v.id as char) like '[id]'
                         and ((v.name is null and '[name]' = '%%') or v.name like '[name]')

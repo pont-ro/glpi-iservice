@@ -71,7 +71,7 @@ class PluginIserviceVehiclesVerifier extends CommonDBTM
                 DATEDIFF(ve.expiration_date, CURDATE()) as days_until_expiration,
                 v.name as vehicle_name,
                 v.license_plate
-            FROM glpi_plugin_iservice_vehicleexpirables ve
+            FROM glpi_plugin_iservice_vehicle_expirables ve
             LEFT JOIN glpi_plugin_iservice_vehicles v ON v.id = ve.vehicle_id
             WHERE ve.expiration_date <= '$futureDate'
             ORDER BY ve.expiration_date ASC";

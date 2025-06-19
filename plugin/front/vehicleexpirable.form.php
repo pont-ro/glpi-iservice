@@ -5,7 +5,7 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 require "../inc/includes.php";
 
-Session::checkRight("plugin_iservice_vehicleexpirable", READ);
+Session::checkRight("plugin_iservice_vehicle_expirable", READ);
 
 $expirableId     = IserviceToolBox::getInputVariable('id');
 $vehicleId       = IserviceToolBox::getInputVariable('vehicle_id');

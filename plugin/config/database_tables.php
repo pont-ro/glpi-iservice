@@ -904,7 +904,7 @@ return [
             ],
         ],
     ],
-    'glpi_plugin_iservice_vehicles_expirables' => [
+    'glpi_plugin_iservice_vehicle_expirables' => [
         'columns' => [
             'id' => 'int unsigned not null auto_increment',
             'vehicle_id' => 'int unsigned not null',
@@ -922,11 +922,6 @@ return [
                 'name' => 'vehicle_id',
                 'type' => 'index',
                 'columns' => "(`vehicle_id`)",
-            ],
-            [
-                'name' => 'itemtype',
-                'type' => 'index',
-                'columns' => "(`itemtype`)",
             ],
             [
                 'name' => 'expiration_date',

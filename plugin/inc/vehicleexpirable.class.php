@@ -9,7 +9,7 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 class PluginIserviceVehicleExpirable extends CommonDBTM
 {
-    public static $rightname = 'plugin_iservice_vehicleexpirable';
+    public static $rightname = 'plugin_iservice_vehicle_expirable';
 
     const EXPIRATION_SOON_DAYS = 7;
 

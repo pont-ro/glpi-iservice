@@ -8,7 +8,7 @@ use PluginIserviceVehicleExpirable;
 class VehicleExpirables extends View
 {
 
-    public static $rightname = 'plugin_iservice_vehicleexpirable';
+    public static $rightname = 'plugin_iservice_view_vehicle_expirables';
 
     public static $icon = 'ti ti-clock-exclamation';    public static function getName(): string
     {
@@ -62,7 +62,7 @@ class VehicleExpirables extends View
                             ELSE 'valid'
                         END as status_computed
                         , DATEDIFF(ve.expiration_date, CURDATE()) as days_until_expiration
-                    from glpi_plugin_iservice_vehicleexpirables ve
+                    from glpi_plugin_iservice_vehicle_expirables ve
                     left join glpi_plugin_iservice_vehicles v on v.id = ve.vehicle_id
                     where 1
                         and cast(ve.id as char) like '[id]'

@@ -25,7 +25,7 @@ $vehicle = new PluginIserviceVehicle();
  *
  * @return bool                 True if duplicate found, false otherwise
  */
-function checkDuplicateVehicleField($post, $field, $excludeId = null)
+function isDuplicateVehicleField($post, $field, $excludeId = null)
 {
     if (empty($post[$field])) {
         return false;
@@ -55,11 +55,7 @@ if (!empty($addVehicle)) {
     } else {
         $vehicle->check(-1, CREATE, $post);
 
-        $error = false;
-        $error = checkDuplicateVehicleField($post, 'license_plate') || $error;
-        $error = checkDuplicateVehicleField($post, 'vin') || $error;
-
-        if (empty($error)) {
+        if (!isDuplicateVehicleField($post, 'license_plate') && !isDuplicateVehicleField($post, 'vin')) {
             unset($post['id']);
 
             if (($vehicleId = $vehicle->add($post)) !== false) {
@@ -73,11 +69,7 @@ if (!empty($addVehicle)) {
 } elseif (!empty($updateVehicle)) {
     $vehicle->check($post['id'], UPDATE);
 
-    $error = false;
-    $error = checkDuplicateVehicleField($post, 'license_plate', $post['id']) || $error;
-    $error = checkDuplicateVehicleField($post, 'vin', $post['id']) || $error;
-
-    if (empty($error)) {
+    if (!isDuplicateVehicleField($post, 'license_plate') && !isDuplicateVehicleField($post, 'vin')) {
         if ($vehicle->update($post)) {
             Session::addMessageAfterRedirect(__('Vehicle updated successfully', 'iservice'), true, INFO, true);
             Event::log($vehicleId, "vehicles", 4, "inventory", sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
