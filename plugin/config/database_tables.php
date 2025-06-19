@@ -872,4 +872,67 @@ return [
             ],
         ],
     ],
+    'glpi_plugin_iservice_vehicles' => [
+        'columns' => [
+            'id' => 'int unsigned not null auto_increment',
+            'name' => 'varchar(100) not null default \'\'',
+            'description' => 'text null default null',
+            'users_id' => 'int unsigned null default null',
+            'license_plate' => 'varchar(20) null default null',
+            'vin' => 'varchar(20) null default null',
+        ],
+        'indexes' => [
+            [
+                'name' => 'primary key',
+                'type' => '',
+                'columns' => "(`id`)",
+            ],
+            [
+                'name' => 'users_id',
+                'type' => 'index',
+                'columns' => "(`users_id`)",
+            ],
+            [
+                'name' => 'license_plate',
+                'type' => 'index',
+                'columns' => "(`license_plate`)",
+            ],
+            [
+                'name' => 'vin',
+                'type' => 'index',
+                'columns' => "(`vin`)",
+            ],
+        ],
+    ],
+    'glpi_plugin_iservice_vehicles_expirables' => [
+        'columns' => [
+            'id' => 'int unsigned not null auto_increment',
+            'vehicle_id' => 'int unsigned not null',
+            'name' => 'varchar(100) not null default \'\'',
+            'description' => 'text null default null',
+            'expiration_date' => 'date null default null',
+        ],
+        'indexes' => [
+            [
+                'name' => 'primary key',
+                'type' => '',
+                'columns' => "(`id`)",
+            ],
+            [
+                'name' => 'vehicle_id',
+                'type' => 'index',
+                'columns' => "(`vehicle_id`)",
+            ],
+            [
+                'name' => 'itemtype',
+                'type' => 'index',
+                'columns' => "(`itemtype`)",
+            ],
+            [
+                'name' => 'expiration_date',
+                'type' => 'index',
+                'columns' => "(`expiration_date`)",
+            ],
+        ],
+    ],
 ];

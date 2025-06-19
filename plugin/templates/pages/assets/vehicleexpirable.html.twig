@@ -1,0 +1,90 @@
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{% import '@iservice/components/fields_macros.html.twig' as fieldsIservice %}
+{% set params  = params ?? [] %}
+{% set no_header = no_header|default(not item.isNewItem() and not _get._in_modal|default(false)) %}
+{% set bg = '' %}
+{% if item.isDeleted() %}
+   {% set bg = 'asset-deleted' %}
+{% endif %}
+
+<div class="asset {{ bg }}">
+   {{ include('components/form/header.html.twig', {'in_twig': true}) }}
+
+   {% set rand = random() %}
+   {% set params  = params ?? [] %}
+   {% set withtemplate = params['withtemplate'] ?? '' %}
+   {% set item_type = item.getType() %}
+   {% set field_options = {
+      'locked_fields': item.getLockedFields(),
+   } %}
+
+   <div class="card-body d-flex flex-wrap">
+      <div class="col-12 col-xxl-12 flex-column">
+         <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+            <div class="row flex-row align-items-start flex-grow-1">
+               <div class="row flex-row">                  {% block form_fields %}
+                     {{ fields.dropdownField(
+                        'PluginIserviceVehicle',
+                        'vehicle_id',
+                        item.fields['vehicle_id'],
+                        _t('Vehicle'),
+                        field_options|merge({'required': true})
+                     ) }}
+
+                     {{ fields.dropdownArrayField(
+                        'name',
+                        item.fields['name'],
+                         params.expirable_dropdown_elements,
+                        __('Name'),
+                        field_options|merge({'required': true})
+                     ) }}
+
+                     {{ fields.textareaField(
+                        'description',
+                        item.fields['description'],
+                        __('Description'),
+                        field_options|merge({'rows': 3})
+                     ) }}
+
+                     {{ fields.dateField(
+                        'expiration_date',
+                        item.fields['expiration_date'],
+                        _t('Expiration Date'),
+                        field_options|merge({'required': true})
+                     ) }}                     {% if not item.isNewItem() %}
+                        {% set expiration_date = item.fields['expiration_date'] %}
+                        {% if expiration_date %}
+                           {% set current_date = "now"|date("Y-m-d") %}
+                           {% set days_diff = ((expiration_date|date("U") - current_date|date("U")) / 86400)|round %}
+                           
+                           <div class="row mt-3">
+                              <div class="col-12">
+                                 {% if days_diff < 0 %}
+                                    <div class="alert alert-danger">
+                                       <i class="ti ti-alert-triangle"></i>
+                                       {{ _t('Expired %d days ago')|replace({'%d': (days_diff * -1)}) }}
+                                    </div>
+                                 {% elseif days_diff <= EXPIRATION_SOON_DAYS %}
+                                    <div class="alert alert-warning">
+                                       <i class="ti ti-clock-exclamation"></i>
+                                       {{ _t('Will expire in %d days')|replace({'%d': days_diff}) }}
+                                    </div>
+                                 {% else %}
+                                    <div class="alert alert-success">
+                                       <i class="ti ti-check"></i>
+                                       {{ _t('Will expire in %d days')|replace({'%d': days_diff}) }}
+                                    </div>
+                                 {% endif %}
+                              </div>
+                           </div>
+                        {% endif %}
+                     {% endif %}
+                  {% endblock %}
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   {{ include('components/form/buttons.html.twig') }}
+</div>
