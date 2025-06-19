@@ -269,6 +269,16 @@ class ToolBox
         return empty($dateValue) || trim($dateValue) === '0000-00-00' || trim($dateValue) === '0000-00-00 00:00:00';
     }
 
+    public static function isValidDate($dateValue): bool
+    {
+        if (self::isDateEmpty($dateValue)) {
+            return false;
+        }
+
+        $date = DateTime::createFromFormat('Y-m-d', $dateValue);
+        return $date && $date->format('Y-m-d') === $dateValue;
+    }
+
     public static function clearNotAllowedTags(string $string, array $allowedTags = null): string
     {
         return PluginIserviceDB::escapeString(strip_tags($string, $allowedTags ?? ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>']));

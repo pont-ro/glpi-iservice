@@ -65,6 +65,10 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_admintask_DataIntegrityTest' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
 
             'plugin_iservice_view_qrs' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_vehicle' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_view_vehicles' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_vehicle_expirable' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_view_vehicle_expirables' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_tickets' => right_array(ALLSTANDARDRIGHT, $all_profiles),
             'plugin_iservice_view_operations' => right_array(ALLSTANDARDRIGHT, array_merge($elevated_profiles)),
             'plugin_iservice_view_printers' => right_array(ALLSTANDARDRIGHT, $all_profiles),
