@@ -59,22 +59,22 @@ if (!empty($addVehicle)) {
             unset($post['id']);
 
             if (($vehicleId = $vehicle->add($post)) !== false) {
-                Session::addMessageAfterRedirect(__('Vehicle added successfully', 'iservice'), true, INFO, true);
+                Session::addMessageAfterRedirect(_t('Vehicle added successfully'), true, INFO, true);
                 Html::redirect($vehicle->getFormURL() . "?id=$vehicleId");
             } else {
-                Session::addMessageAfterRedirect(__('Error creating vehicle', 'iservice'), true, ERROR);
+                Session::addMessageAfterRedirect(_t('Error creating vehicle'), true, ERROR);
             }
         }
     }
 } elseif (!empty($updateVehicle)) {
     $vehicle->check($post['id'], UPDATE);
 
-    if (!isDuplicateVehicleField($post, 'license_plate') && !isDuplicateVehicleField($post, 'vin')) {
+    if (!isDuplicateVehicleField($post, 'license_plate', $post['id']) && !isDuplicateVehicleField($post, 'vin', $post['id'])) {
         if ($vehicle->update($post)) {
-            Session::addMessageAfterRedirect(__('Vehicle updated successfully', 'iservice'), true, INFO, true);
+            Session::addMessageAfterRedirect(_t('Vehicle updated successfully'), true, INFO, true);
             Event::log($vehicleId, "vehicles", 4, "inventory", sprintf(__('%s updates an item'), $_SESSION["glpiname"]));
         } else {
-            Session::addMessageAfterRedirect(__('Error updating vehicle', 'iservice'), true, ERROR);
+            Session::addMessageAfterRedirect(_t('Error updating vehicle'), true, ERROR);
         }
     }
 

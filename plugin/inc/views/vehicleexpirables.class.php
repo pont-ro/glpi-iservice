@@ -139,11 +139,16 @@ class VehicleExpirables extends View
                     'title'  => _t('License Plate'),
                 ],
                 'name'      => [
-                    'title'  => _t('Name'),
+                    'title'  => __('Name'),
                     'format' => 'function:\GlpiPlugin\Iservice\Views\VehicleExpirables::getNameDisplay($row);',
+                    'link' => [
+                        'title' => '[id]',
+                        'href' => 'vehicleexpirable.form.php?id=[id]',
+                        'target' => '_blank',
+                    ],
                 ],
                 'description'      => [
-                    'title'  => _t('Description'),
+                    'title'  => __('Description'),
                 ],
                 'expiration_date'      => [
                     'title'  => _t('Expiration Date'),

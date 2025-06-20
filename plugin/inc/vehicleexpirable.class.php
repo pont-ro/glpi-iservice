@@ -27,6 +27,10 @@ class PluginIserviceVehicleExpirable extends CommonDBTM
         return _tn('Vehicle expirable', 'Vehicle expirables', $nb);
     }
 
+    public static function getTable($classname = null) {
+        return 'glpi_plugin_iservice_vehicle_expirables';
+    }
+
     public function prepareInputForAdd($input)
     {
         $input = parent::prepareInputForAdd($input);

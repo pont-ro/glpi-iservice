@@ -16,7 +16,7 @@ class Vehicles extends View
 
     public static function getName(): string
     {
-        return _t('Vehicles');
+        return _tn('Vehicle', 'Vehicles', 2);
     }
 
     protected function getSettings(): array
@@ -104,8 +104,7 @@ class Vehicles extends View
                 ],
                 'license_plate' => [
                     'type'           => self::FILTERTYPE_TEXT,
-//                    'caption'        => _t('License Plate'),
-                    'caption'        => 'vsdfsf', //__('License Plate', 'iService'),
+                    'caption'        => _t('License Plate'),
                     'format' => '%%%s%%',
                     'header'         => 'license_plate',
                 ],
@@ -125,7 +124,7 @@ class Vehicles extends View
                         'target' => '_blank',
                     ],
                 ],                'name'      => [
-                    'title'  => _t('Name'),
+                    'title'  => __('Name'),
                     'link' => [
                         'title' => '[id]',
                         'href' => 'vehicle.form.php?id=[id]',
@@ -133,7 +132,7 @@ class Vehicles extends View
                     ],
                 ],
                 'description'      => [
-                    'title'  => _t('Description'),
+                    'title'  => __('Description'),
                 ],
                 'license_plate'      => [
                     'title'  => __('License Plate', 'iservice'),
@@ -144,7 +143,7 @@ class Vehicles extends View
                     ],
                 ],
                 'vin'      => [
-                    'title'  => _t('VIN'),
+                    'title'  => _t('VIN number'),
                 ],
                 'expirables_count'      => [
                     'title'  => _t('Expirables Count'),
