@@ -57,24 +57,22 @@
                         {% if expiration_date %}
                            {% set current_date = "now"|date("U") %}
                            {% set expiration_ts = expiration_date|date("U") %}
-                           {% set days_diff = ((expiration_ts - current_date) / 86400)|round %}
+                           {% set diff_seconds = expiration_ts - current_date %}
+                           {% set days = (diff_seconds // 86400) %}
+                           {% set hours = ((diff_seconds % 86400) // 3600) %}
+                           {% set minutes = ((diff_seconds % 3600) // 60) %}
                            <div class="row mt-3">
                               <div class="col-12">
                                  <div><strong>{{ _t('Expiration Date') }}:</strong> {{ expiration_date|date('Y-m-d H:i') }}</div>
-                                 {% if days_diff < 0 %}
+                                 {% if diff_seconds < 0 %}
                                     <div class="alert alert-danger">
                                        <i class="ti ti-alert-triangle"></i>
-                                       {{ _t('Expired %d days ago')|replace({'%d': (days_diff * -1)}) }}
-                                    </div>
-                                 {% elseif days_diff <= EXPIRATION_SOON_DAYS %}
-                                    <div class="alert alert-warning">
-                                       <i class="ti ti-clock-exclamation"></i>
-                                       {{ _t('Will expire in %d days')|replace({'%d': days_diff}) }}
+                                       {{ _t('Expired %d days ago')|replace({'%d': days * -1}) }}
                                     </div>
                                  {% else %}
-                                    <div class="alert alert-success">
-                                       <i class="ti ti-check"></i>
-                                       {{ _t('Will expire in %d days')|replace({'%d': days_diff}) }}
+                                    <div class="alert alert-warning">
+                                       <i class="ti ti-clock-exclamation"></i>
+                                       {{ _t('Will expire in %d days, %h hours, %m minutes')|replace({'%d': days, '%h': hours, '%m': minutes}) }}
                                     </div>
                                  {% endif %}
                               </div>

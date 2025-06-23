@@ -1991,3 +1991,6 @@ msgstr "Notificare expirare documente vehicul"
 
 msgid "Expiration Date and Time"
 msgstr "Data și ora expirării"
+
+msgid "Will expire in %d days, %h hours, %m minutes"
+msgstr "Va expira în %d zile, %h ore, %m minute"
