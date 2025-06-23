@@ -1,7 +1,5 @@
 <?php
 global $CFG_GLPI;
-// Check if there are anu printers in glpi_printers table with serial or name that has double space or leading/trailing spaces
-
 return [
     'query' => "
         SELECT
