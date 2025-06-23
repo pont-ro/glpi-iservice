@@ -1988,3 +1988,6 @@ msgstr "Acesta este un mesaj automat din sistem. Vă rugăm să nu răspundeți 
 
 msgid "Vehicle documents expiration notification"
 msgstr "Notificare expirare documente vehicul"
+
+msgid "Expiration Date and Time"
+msgstr "Data și ora expirării"

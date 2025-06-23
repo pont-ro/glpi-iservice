@@ -46,19 +46,21 @@
                         field_options|merge({'rows': 3})
                      ) }}
 
-                     {{ fields.dateField(
+                     {{ fields.datetimeField(
                         'expiration_date',
                         item.fields['expiration_date'],
-                        _t('Expiration Date'),
+                        _t('Expiration Date and Time'),
                         field_options|merge({'required': true})
-                     ) }}                     {% if not item.isNewItem() %}
+                     ) }}
+                     {% if not item.isNewItem() %}
                         {% set expiration_date = item.fields['expiration_date'] %}
                         {% if expiration_date %}
-                           {% set current_date = "now"|date("Y-m-d") %}
-                           {% set days_diff = ((expiration_date|date("U") - current_date|date("U")) / 86400)|round %}
-                           
+                           {% set current_date = "now"|date("U") %}
+                           {% set expiration_ts = expiration_date|date("U") %}
+                           {% set days_diff = ((expiration_ts - current_date) / 86400)|round %}
                            <div class="row mt-3">
                               <div class="col-12">
+                                 <div><strong>{{ _t('Expiration Date') }}:</strong> {{ expiration_date|date('Y-m-d H:i') }}</div>
                                  {% if days_diff < 0 %}
                                     <div class="alert alert-danger">
                                        <i class="ti ti-alert-triangle"></i>

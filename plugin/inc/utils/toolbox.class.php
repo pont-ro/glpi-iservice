@@ -269,14 +269,14 @@ class ToolBox
         return empty($dateValue) || trim($dateValue) === '0000-00-00' || trim($dateValue) === '0000-00-00 00:00:00';
     }
 
-    public static function isValidDate($dateValue): bool
+    public static function isValidDateTime($dateValue): bool
     {
         if (self::isDateEmpty($dateValue)) {
             return false;
         }
 
-        $date = DateTime::createFromFormat('Y-m-d', $dateValue);
-        return $date && $date->format('Y-m-d') === $dateValue;
+        $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateValue);
+        return $date && $date->format('Y-m-d H:i:s') === $dateValue;
     }
 
     public static function clearNotAllowedTags(string $string, array $allowedTags = null): string

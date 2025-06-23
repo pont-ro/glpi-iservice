@@ -27,8 +27,7 @@ if (!empty($addExpirable)) {
     } else {
         $expirable->check(-1, CREATE, $post);
 
-        // Validate expiration date.
-        if (!IserviceToolBox::isValidDate($post['expiration_date'])) {
+        if (!IserviceToolBox::isValidDateTime($post['expiration_date'])) {
             Session::addMessageAfterRedirect(_t('Invalid expiration date format'), true, ERROR);
             $error = true;
         }
@@ -47,8 +46,7 @@ if (!empty($addExpirable)) {
 } elseif (!empty($updateExpirable)) {
     $expirable->check($post['id'], UPDATE);
 
-    // Validate expiration date.
-    if (!empty($post['expiration_date']) && !IserviceToolBox::isValidDate($post['expiration_date'])) {
+    if (!empty($post['expiration_date']) && !IserviceToolBox::isValidDateTime($post['expiration_date'])) {
         Session::addMessageAfterRedirect(_t('Invalid expiration date format'), true, ERROR);
         $error = true;
     }

@@ -57,11 +57,11 @@ class VehicleExpirables extends View
                         , ve.description
                         , ve.expiration_date as expiration_date
                         , CASE 
-                            WHEN ve.expiration_date < CURDATE() THEN 'expired'
-                            WHEN ve.expiration_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 'expiring_soon'
+                            WHEN ve.expiration_date < NOW() THEN 'expired'
+                            WHEN ve.expiration_date <= DATE_ADD(NOW(), INTERVAL 30 DAY) THEN 'expiring_soon'
                             ELSE 'valid'
                         END as status_computed
-                        , DATEDIFF(ve.expiration_date, CURDATE()) as days_until_expiration
+                        , TIMESTAMPDIFF(DAY, NOW(), ve.expiration_date) as days_until_expiration
                     from glpi_plugin_iservice_vehicle_expirables ve
                     left join glpi_plugin_iservice_vehicles v on v.id = ve.vehicle_id
                     where 1
@@ -151,7 +151,7 @@ class VehicleExpirables extends View
                     'title'  => __('Description'),
                 ],
                 'expiration_date'      => [
-                    'title'  => _t('Expiration Date'),
+                    'title'  => _t('Expiration Date and Time'),
                     'default_sort' => 'ASC',
                 ],                'days_until_expiration'      => [
                     'title'  => _t('Days Until Expiration'),

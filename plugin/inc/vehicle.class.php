@@ -66,7 +66,7 @@ class PluginIserviceVehicle extends CommonDBTM
         return $expirable->find(
             [
                 'vehicle_id' => $this->getID(),
-                'expiration_date' => ['<', date('Y-m-d')]
+                'expiration_date' => ['<', date('Y-m-d H:i:s')]
             ], ['expiration_date ASC']
         );
     }
@@ -85,12 +85,13 @@ class PluginIserviceVehicle extends CommonDBTM
         }
 
         $expirable  = new PluginIserviceVehicleExpirable();
-        $futureDate = date('Y-m-d', strtotime("+{$days} days"));
+        $futureDate = date('Y-m-d H:i:s', strtotime("+{$days} days"));
+        $now        = date('Y-m-d H:i:s');
 
         return $expirable->find(
             [
                 'vehicle_id' => $this->getID(),
-                'expiration_date' => ['BETWEEN', [date('Y-m-d'), $futureDate]]
+                'expiration_date' => ['BETWEEN', [$now, $futureDate]]
             ], ['expiration_date ASC']
         );
     }
