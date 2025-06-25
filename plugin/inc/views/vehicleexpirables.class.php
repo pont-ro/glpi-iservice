@@ -114,7 +114,7 @@ class VehicleExpirables extends View
                 ],
                 'expiration_date' => [
                     'type'           => self::FILTERTYPE_DATE,
-                    'caption'        => _t('Expiration Date'),
+                    'caption'        => _t('Expiration Date and Time'),
                     'format' => '%%%s%%',
                     'header'         => 'expiration_date',
                 ],

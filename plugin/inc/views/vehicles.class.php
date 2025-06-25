@@ -56,7 +56,7 @@ class Vehicles extends View
             $defaultDate,
             false,
             [
-                'placeholder' => _t('Expiration Date')
+                'placeholder' => _t('Expiration Date and Time')
             ]
         );
 

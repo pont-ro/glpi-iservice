@@ -92,7 +92,7 @@ class PluginIserviceVehiclesVerifier extends CommonDBTM
                 <th>" . _t('Vehicle') . "</th>
                 <th>" . _t('License Plate') . "</th>
                 <th>" . _t('Document Type') . "</th>
-                <th>" . _t('Expiration Date') . "</th>
+                <th>" . _t('Expiration Date and Time') . "</th>
                 <th>" . _t('Status') . "</th>
                 <th>" . _t('Days') . "</th>
                 <th>" . _t('Description') . "</th>

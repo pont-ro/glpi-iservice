@@ -1926,9 +1926,6 @@ msgstr "Eroare la crearea expirabilului pentru vehiculul %d"
 msgid "Expirables created successfully"
 msgstr "Expirabile create cu succes"
 
-msgid "Expiration Date"
-msgstr "Data Expirării"
-
 msgid "Error deleting expirable %d"
 msgstr "Eroare la ștergerea expirabilului %d"
 
