@@ -2,9 +2,6 @@
 
 namespace GlpiPlugin\Iservice\Views;
 
-use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
-;
-
 // Imported from iService2, needs refactoring.
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");

@@ -17,6 +17,8 @@ return [
             'GlpiPlugin\Iservice\Views\RouteManifest',
             'GlpiPlugin\Iservice\Views\PriceList',
             'GlpiPlugin\Iservice\Views\Qrs',
+            'GlpiPlugin\Iservice\Views\Vehicles',
+            'GlpiPlugin\Iservice\Views\VehicleExpirables',
         ],
     ],
     'specialViews' => [

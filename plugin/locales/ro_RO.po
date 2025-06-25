@@ -1724,3 +1724,270 @@ msgstr "Tichetul nu poate fi închis deoarece contoarele sunt mai mici decât pe
 
 #~ msgid "Read counter / replace toner"
 #~ msgstr "Citire contor / înlocuire toner"
+
+# Vehicle management translations
+msgid "Vehicle"
+msgid_plural "Vehicles"
+msgstr[0] "Vehicul"
+msgstr[1] "Vehicule"
+msgstr[2] "Vehicule"
+
+msgid "Vehicle expirable"
+msgid_plural "Vehicle expirables"
+msgstr[0] "Expirabil vehicul"
+msgstr[1] "Expirabile vehicul"
+msgstr[2] "Expirabile vehicul"
+
+msgid "VIN number"
+msgstr "Numărul de șasiu (VIN)"
+
+msgid "VIN number too long"
+msgstr "Numărul de șasiu (VIN) prea lung"
+
+msgid "License plate"
+msgstr "Numărul de înmatriculare"
+
+msgid "License plate too long"
+msgstr "Numărul de înmatriculare prea lung"
+
+msgid "Assigned user"
+msgstr "Utilizator alocat"
+
+msgid "Vehicle is required"
+msgstr "Vehiculul este obligatoriu"
+
+msgid "Invalid vehicle"
+msgstr "Vehicul invalid"
+
+msgid "Invalid expiration date"
+msgstr "Data de expirare invalidă"
+
+msgid "Expiration date"
+msgstr "Data de expirare"
+
+msgid "expired"
+msgstr "expirat"
+
+msgid "expiring soon"
+msgstr "expiră curând"
+
+msgid "Insurance"
+msgstr "Asigurare"
+
+msgid "Road tax"
+msgstr "Taxa de drum"
+
+msgid "Casco"
+msgstr "Casco"
+
+msgid "Leasing"
+msgstr "Leasing"
+
+msgid "MOT"
+msgstr "ITP"
+
+msgid "Parking prepayment"
+msgstr "Preplată parcare"
+
+msgid "Other"
+msgstr "Altele"
+
+# Form-related translations
+msgid "Please enter a name"
+msgstr "Vă rugăm să introduceți un nume"
+
+msgid "A vehicle with license plate %s already exists!"
+msgstr "Un vehicul cu numărul de înmatriculare %s există deja!"
+
+msgid "A vehicle with VIN %s already exists!"
+msgstr "Un vehicul cu VIN-ul %s există deja!"
+
+msgid "Vehicle added successfully"
+msgstr "Vehicul adăugat cu succes"
+
+msgid "Error creating vehicle"
+msgstr "Eroare la crearea vehiculului"
+
+msgid "Vehicle updated successfully"
+msgstr "Vehicul actualizat cu succes"
+
+msgid "Error updating vehicle"
+msgstr "Eroare la actualizarea vehiculului"
+
+msgid "Please select a vehicle"
+msgstr "Vă rugăm să selectați un vehicul"
+
+msgid "Please select an expirable type"
+msgstr "Vă rugăm să selectați un tip de expirabil"
+
+msgid "Please enter an expiration date"
+msgstr "Vă rugăm să introduceți o dată de expirare"
+
+msgid "Invalid expiration date format"
+msgstr "Format de dată de expirare invalid"
+
+msgid "Invalid issue date format"
+msgstr "Format de dată de emitere invalid"
+
+msgid "Issue date cannot be after expiration date"
+msgstr "Data de emitere nu poate fi după data de expirare"
+
+msgid "Cost must be a valid number"
+msgstr "Costul trebuie să fie un număr valid"
+
+msgid "Vehicle expirable added successfully"
+msgstr "Expirabil vehicul adăugat cu succes"
+
+msgid "Error creating vehicle expirable"
+msgstr "Eroare la crearea expirabilului pentru vehicul"
+
+msgid "Vehicle expirable updated successfully"
+msgstr "Expirabil vehicul actualizat cu succes"
+
+msgid "Error updating vehicle expirable"
+msgstr "Eroare la actualizarea expirabilului pentru vehicul"
+
+# View-related translations
+msgid "Vehicle Expirables"
+msgstr "Expirabile vehicule"
+
+msgid "Vehicle ID"
+msgstr "ID vehicul"
+
+msgid "Vehicle Name"
+msgstr "Nume vehicul"
+
+msgid "Registration"
+msgstr "Înmatriculare"
+
+msgid "Days Until Expiration"
+msgstr "Zile până la expirare"
+
+msgid "days"
+msgstr "zile"
+
+msgid "Expirables Count"
+msgstr "Numărul de expirabile"
+
+msgid "Next Expiration"
+msgstr "Următoarea expirare"
+
+msgid "Create Expirable"
+msgstr "Creează expirabil"
+
+msgid "Delete Vehicles"
+msgstr "Șterge vehicule"
+
+msgid "Are you sure you want to delete the selected vehicles?"
+msgstr "Sunteți sigur că doriți să ștergeți vehiculele selectate?"
+
+msgid "Create Vehicle"
+msgstr "Creează vehicul"
+
+msgid "View All Expirables"
+msgstr "Vezi toate expirabilele"
+
+msgid "Delete Expirables"
+msgstr "Șterge expirabile"
+
+msgid "Are you sure you want to delete the selected expirables?"
+msgstr "Sunteți sigur că doriți să ștergeți expirabilele selectate?"
+
+msgid "View Vehicles"
+msgstr "Vezi vehicule"
+
+msgid "Add Expirable"
+msgstr "Adaugă expirabil"
+
+msgid "Inactive"
+msgstr "Inactiv"
+
+msgid "Maintenance"
+msgstr "Mentenanță"
+
+msgid "Retired"
+msgstr "Retras"
+
+msgid "Expired %d days ago"
+msgstr "A expirat cu %d zile în urmă"
+
+msgid "Will expire in %d days"
+msgstr "Va expira în %d zile"
+
+msgid "Error deleting vehicle %d"
+msgstr "Eroare la ștergerea vehiculului %d"
+
+msgid "Vehicles deleted successfully"
+msgstr "Vehicule șterse cu succes"
+
+msgid "Error creating expirable for vehicle %d"
+msgstr "Eroare la crearea expirabilului pentru vehiculul %d"
+
+msgid "Expirables created successfully"
+msgstr "Expirabile create cu succes"
+
+msgid "Error deleting expirable %d"
+msgstr "Eroare la ștergerea expirabilului %d"
+
+msgid "Expirables deleted successfully"
+msgstr "Expirabile șterse cu succes"
+
+msgid "Expired"
+msgstr "Expirat"
+
+msgid "Expiring Soon"
+msgstr "Expiră curând"
+
+msgid "Valid"
+msgstr "Valid"
+
+msgid "No expirables found for this vehicle."
+msgstr "Nu s-au găsit expirabile pentru acest vehicul."
+
+msgid "Vehicles Expirables Verifier"
+msgstr "Verificator expirabile vehicule"
+
+msgid "Verifies expiring vehicle documents and sends email"
+msgstr "Verifică documentele vehiculelor care expiră și trimite email"
+
+msgid "Days threshold (will check expirables expiring within this many days)"
+msgstr "Pragul de zile (va verifica expirabilele care expiră în acest număr de zile)"
+
+msgid "The following vehicle documents are expired or about to expire"
+msgstr "Următoarele documente ale vehiculelor au expirat sau sunt pe cale să expire"
+
+msgid "License Plate"
+msgstr "Numărul de înmatriculare"
+
+msgid "Document Type"
+msgstr "Tipul documentului"
+
+msgid "Status"
+msgstr "Stare"
+
+msgid "Days"
+msgstr "Zile"
+
+msgid "Actions"
+msgstr "Acțiuni"
+
+msgid "Details"
+msgstr "Detalii"
+
+msgid "days ago"
+msgstr "zile în urmă"
+
+msgid "days left"
+msgstr "zile rămase"
+
+msgid "This is an automated message from the system. Please do not reply to this email."
+msgstr "Acesta este un mesaj automat din sistem. Vă rugăm să nu răspundeți la acest email."
+
+msgid "Vehicle documents expiration notification"
+msgstr "Notificare expirare documente vehicul"
+
+msgid "Expiration Date and Time"
+msgstr "Data și ora expirării"
+
+msgid "Will expire in %d days, %h hours, %m minutes"
+msgstr "Va expira în %d zile, %h ore, %m minute"

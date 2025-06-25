@@ -87,11 +87,21 @@ class CronTasksInstallStep
                 'name'      => 'mailInboundLotPriceDeviationVerify',
                 'mode'      => CronTask::MODE_EXTERNAL,
                 'frequency' => 86400,
-                'param'     => 5, // Default value for deviation percentage
+                'param'     => 5, // Default value for deviation percentage.
                 'state'     => 1,
                 'hourmin'   => 5,
                 'hourmax'   => 8,
                 'comment'   => 'zoltan.szegedi@expertline.ro',
+            ], [
+                'itemtype'  => 'PluginIserviceVehiclesVerifier',
+                'name'      => 'mailVehiclesVerify',
+                'mode'      => CronTask::MODE_EXTERNAL,
+                'frequency' => 86400,
+                'param'     => \PluginIserviceVehicleExpirable::EXPIRATION_SOON_DAYS,
+                'state'     => 1,
+                'hourmin'   => 5,
+                'hourmax'   => 8,
+                'comment'   => 'financiar@expertline.ro',
             ],
         ];
 
