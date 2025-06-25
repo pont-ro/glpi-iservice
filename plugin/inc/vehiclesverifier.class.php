@@ -59,7 +59,7 @@ class PluginIserviceVehiclesVerifier extends CommonDBTM
 
         $task->log("Verifying vehicle expirables that will expire within $daysThreshold days\n");
 
-        $futureDate = date('Y-m-d', strtotime("+$daysThreshold days"));
+        $futureDate = date('Y-m-d H:i:s', strtotime("+$daysThreshold days"));
 
         // Query all expirables that are expired or will expire within the threshold.
         $query = "SELECT 
@@ -68,7 +68,7 @@ class PluginIserviceVehiclesVerifier extends CommonDBTM
                 ve.name,
                 ve.description,
                 ve.expiration_date,
-                DATEDIFF(ve.expiration_date, CURDATE()) as days_until_expiration,
+                TIMESTAMPDIFF(DAY, NOW(), ve.expiration_date) as days_until_expiration,
                 v.name as vehicle_name,
                 v.license_plate
             FROM glpi_plugin_iservice_vehicle_expirables ve
@@ -92,7 +92,7 @@ class PluginIserviceVehiclesVerifier extends CommonDBTM
                 <th>" . _t('Vehicle') . "</th>
                 <th>" . _t('License Plate') . "</th>
                 <th>" . _t('Document Type') . "</th>
-                <th>" . _t('Expiration Date') . "</th>
+                <th>" . _t('Expiration Date and Time') . "</th>
                 <th>" . _t('Status') . "</th>
                 <th>" . _t('Days') . "</th>
                 <th>" . _t('Description') . "</th>

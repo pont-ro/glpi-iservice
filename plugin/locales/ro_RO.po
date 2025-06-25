@@ -1926,9 +1926,6 @@ msgstr "Eroare la crearea expirabilului pentru vehiculul %d"
 msgid "Expirables created successfully"
 msgstr "Expirabile create cu succes"
 
-msgid "Expiration Date"
-msgstr "Data Expirării"
-
 msgid "Error deleting expirable %d"
 msgstr "Eroare la ștergerea expirabilului %d"
 
@@ -1988,3 +1985,9 @@ msgstr "Acesta este un mesaj automat din sistem. Vă rugăm să nu răspundeți 
 
 msgid "Vehicle documents expiration notification"
 msgstr "Notificare expirare documente vehicul"
+
+msgid "Expiration Date and Time"
+msgstr "Data și ora expirării"
+
+msgid "Will expire in %d days, %h hours, %m minutes"
+msgstr "Va expira în %d zile, %h ore, %m minute"

@@ -27,7 +27,8 @@ class PluginIserviceVehicleExpirable extends CommonDBTM
         return _tn('Vehicle expirable', 'Vehicle expirables', $nb);
     }
 
-    public static function getTable($classname = null) {
+    public static function getTable($classname = null)
+    {
         return 'glpi_plugin_iservice_vehicle_expirables';
     }
 
@@ -44,10 +45,10 @@ class PluginIserviceVehicleExpirable extends CommonDBTM
         if (!$vehicle->getFromDB($input['vehicle_id'])) {
             Session::addMessageAfterRedirect(_t('Invalid vehicle'), false, ERROR);
             return false;
-        }        // Validate expiration date
+        }
 
         if (isset($input['expiration_date']) && !empty($input['expiration_date'])) {
-            if (!IserviceToolBox::isValidDate($input['expiration_date'])) {
+            if (!IserviceToolBox::isValidDateTime($input['expiration_date'])) {
                 Session::addMessageAfterRedirect(_t('Invalid expiration date'), false, ERROR);
                 return false;
             }
@@ -105,7 +106,8 @@ class PluginIserviceVehicleExpirable extends CommonDBTM
             return false;
         }
 
-        return $this->fields['expiration_date'] < date('Y-m-d');
+        $expDate = new \DateTime($this->fields['expiration_date']);
+        return $expDate < new \DateTime();
     }
 
     public static function getIcon()
