@@ -23,9 +23,9 @@ class VehicleExpirables extends View
             $warningDate    = (clone $currentDate)->add(new \DateInterval('P' . PluginIserviceVehicleExpirable::EXPIRATION_SOON_DAYS . 'D'));
 
             if ($expirationDate < $currentDate) {
-                return 'bg-danger';
+                return 'border border-danger border-2';
             } elseif ($expirationDate <= $warningDate) {
-                return 'bg-warning';
+                return 'border border-warning border-2';
             }
         }
 
@@ -125,7 +125,6 @@ class VehicleExpirables extends View
                     'link' => [
                         'title' => '[id]',
                         'href' => 'vehicleexpirable.form.php?id=[id]',
-                        'target' => '_blank',
                     ],
                 ],
                 'vehicle_name'      => [
@@ -133,7 +132,6 @@ class VehicleExpirables extends View
                     'link' => [
                         'title' => '[vehicle_name]',
                         'href' => 'vehicle.form.php?id=[vehicle_id]',
-                        'target' => '_blank',
                     ],
                 ],                'license_plate'      => [
                     'title'  => _t('License Plate'),
@@ -144,7 +142,6 @@ class VehicleExpirables extends View
                     'link' => [
                         'title' => '[id]',
                         'href' => 'vehicleexpirable.form.php?id=[id]',
-                        'target' => '_blank',
                     ],
                 ],
                 'description'      => [

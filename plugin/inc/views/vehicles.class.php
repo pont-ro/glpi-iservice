@@ -72,7 +72,7 @@ class Vehicles extends View
                         , v.license_plate
                         , v.vin
                         , COUNT(ve.id) as expirables_count
-                        , MIN(CASE WHEN ve.expiration_date >= NOW() THEN ve.expiration_date END) as next_expiration
+                        , MIN(CASE WHEN ve.expiration_date <= NOW() THEN ve.expiration_date END) as next_expiration
                     from glpi_plugin_iservice_vehicles v
                     left join glpi_plugin_iservice_vehicle_expirables ve on ve.vehicle_id = v.id
                     where 1
@@ -121,14 +121,12 @@ class Vehicles extends View
                     'link' => [
                         'title' => '[id]',
                         'href' => 'vehicle.form.php?id=[id]',
-                        'target' => '_blank',
                     ],
                 ],                'name'      => [
                     'title'  => __('Name'),
                     'link' => [
                         'title' => '[id]',
                         'href' => 'vehicle.form.php?id=[id]',
-                        'target' => '_blank',
                     ],
                 ],
                 'description'      => [
@@ -139,7 +137,6 @@ class Vehicles extends View
                     'link' => [
                         'title' => '[id]',
                         'href' => 'vehicle.form.php?id=[id]',
-                        'target' => '_blank',
                     ],
                 ],
                 'vin'      => [
@@ -150,7 +147,6 @@ class Vehicles extends View
                     'link' => [
                         'title' => '[expirables_count]',
                         'href' => 'views.php?view=VehicleExpirables&vehicleexpirables0[vehicle_id]=[id]',
-                        'target' => '_blank',
                     ],
                 ],
                 'next_expiration'      => [
@@ -197,9 +193,9 @@ class Vehicles extends View
             $daysUntilExpiration = $today->diff($expirationDate)->days;
 
             if ($expirationDate < $today) {
-                return 'bg-danger';
+                return 'border border-danger border-2';
             } elseif ($daysUntilExpiration <= PluginIserviceVehicleExpirable::EXPIRATION_SOON_DAYS) {
-                return 'bg-warning';
+                return 'border border-warning border-2';
             }
         }
 
