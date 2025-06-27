@@ -825,7 +825,7 @@ class PluginIservicePrinter extends Printer
             return _t('No ID provided for removing spaces from name or serial.');
         }
 
-        $partner = new self();
+        $partner = new Printer();
 
         if ($partner->getFromDB($id)) {
             if ($partner->update(
