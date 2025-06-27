@@ -1992,8 +1992,8 @@ msgstr "Data și ora expirării"
 msgid "Will expire in %d days, %h hours, %m minutes"
 msgstr "Va expira în %d zile, %h ore, %m minute"
 
-msgid "No IDs provided for removing spaces from names"
-msgstr "Nu s-au furnizat ID-uri pentru eliminarea spațiilor din nume"
+msgid "No ID provided for removing spaces from name."
+msgstr "Nu s-a furnizat ID pentru eliminarea spațiilor din nume."
 
 msgid "No name was updated."
 msgstr "Niciun nume nu a fost actualizat."

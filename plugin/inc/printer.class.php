@@ -828,13 +828,15 @@ class PluginIservicePrinter extends Printer
         $partner = new self();
 
         if ($partner->getFromDB($id)) {
-            $name   = trim(preg_replace('/\s+/', ' ', $partner->fields['name']));
-            $serial = trim(preg_replace('/\s+/', ' ', $partner->fields['serial']));
-            if ($name !== $partner->fields['name']) {
-                $partner->fields['name'] = $name;
-                if ($partner->update(['id' => $id, 'name' => $name, 'serial' => $serial])) {
-                    return IserviceToolBox::RESPONSE_OK;
-                }
+            if ($partner->update(
+                [
+                    'id' => $id,
+                    'name' => trim(preg_replace('/\s+/', ' ', $partner->fields['name'])),
+                    'serial' => trim(preg_replace('/\s+/', ' ', $partner->fields['serial']))
+                ]
+            )
+            ) {
+                return IserviceToolBox::RESPONSE_OK;
             }
         }
 
