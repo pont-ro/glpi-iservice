@@ -246,7 +246,8 @@ class Tickets extends View
             $link = "<span style='color:blue;'><i>$link</i></span>";
         }
 
-        return $link;
+        $copyLink = IserviceToolBox::getSerialCopyButton($row_data['printer_serial']);
+        return $link . ' ' . $copyLink;
     }
 
     public static function getSupplierDisplay($row_data)
