@@ -19,6 +19,11 @@ class Vehicles extends View
         return _tn('Vehicle', 'Vehicles', 2);
     }
 
+    public static function getNextExpirationDisplay($row_data): string
+    {
+        return !empty($row_data['expired_expiration']) ? "<span class='text-danger'>$row_data[expired_expiration]</span>" : $row_data['next_expiration'] ?? '';
+    }
+
     protected function getSettings(): array
     {
         if (IserviceToolBox::getInputVariable('mass_action_delete') && !empty(IserviceToolBox::getArrayInputVariable('item')['Vehicles'])) {
@@ -48,10 +53,10 @@ class Vehicles extends View
             ]
         );
 
-        $defaultDate = date('Y-m-d', strtotime('+1 year'));
+        $defaultDate = date('Y-m-d H:i:s', strtotime('+1 year'));
 
         $expirationDatePicker = (new PluginIserviceHtml())->generateField(
-            PluginIserviceHtml::FIELDTYPE_DATE,
+            PluginIserviceHtml::FIELDTYPE_DATETIME,
             'expiration_date',
             $defaultDate,
             false,
@@ -72,7 +77,8 @@ class Vehicles extends View
                         , v.license_plate
                         , v.vin
                         , COUNT(ve.id) as expirables_count
-                        , MIN(CASE WHEN ve.expiration_date <= NOW() THEN ve.expiration_date END) as next_expiration
+                        , MIN(CASE WHEN ve.expiration_date >= NOW() THEN ve.expiration_date END) as next_expiration
+                        , MIN(CASE WHEN ve.expiration_date <= NOW() THEN ve.expiration_date END) as expired_expiration
                     from glpi_plugin_iservice_vehicles v
                     left join glpi_plugin_iservice_vehicle_expirables ve on ve.vehicle_id = v.id
                     where 1
@@ -151,6 +157,7 @@ class Vehicles extends View
                 ],
                 'next_expiration'      => [
                     'title'  => _t('Next Expiration'),
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Vehicles::getNextExpirationDisplay($row);',
                 ],
             ],
             'mass_actions' => [
