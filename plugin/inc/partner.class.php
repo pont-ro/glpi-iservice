@@ -326,4 +326,25 @@ Expert Line srl
         echo "<li id='partner-title'$class>{$this->fields['name']} - {$this->customfields->fields['uic_field']}</li>";
     }
 
+    public static function ajaxRemoveSpacesFromName()
+    {
+        $id = IserviceToolBox::getInputVariable('id', null);
+        if (empty($id)) {
+            return _t('No ID provided for removing spaces from name.');
+        }
+
+        $partner = new self();
+        if ($partner->update(
+            [
+                'id' => $id,
+                'name' => trim(preg_replace('/\s+/', ' ', $partner->fields['name']))
+            ]
+        )
+        ) {
+            return IserviceToolBox::RESPONSE_OK;
+        }
+
+        return _t('No name was updated.');
+    }
+
 }

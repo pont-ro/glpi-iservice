@@ -818,4 +818,29 @@ class PluginIservicePrinter extends Printer
         );
     }
 
+    public static function ajaxRemoveSpacesFromNameAndSerial()
+    {
+        $id = IserviceToolBox::getInputVariable('id', null);
+        if (empty($id)) {
+            return _t('No ID provided for removing spaces from name or serial.');
+        }
+
+        $partner = new self();
+
+        if ($partner->getFromDB($id)) {
+            if ($partner->update(
+                [
+                    'id' => $id,
+                    'name' => trim(preg_replace('/\s+/', ' ', $partner->fields['name'])),
+                    'serial' => trim(preg_replace('/\s+/', ' ', $partner->fields['serial']))
+                ]
+            )
+            ) {
+                return IserviceToolBox::RESPONSE_OK;
+            }
+        }
+
+        return _t('No name or serial was updated.');
+    }
+
 }

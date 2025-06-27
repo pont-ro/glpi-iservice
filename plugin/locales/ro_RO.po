@@ -1991,3 +1991,17 @@ msgstr "Data și ora expirării"
 
 msgid "Will expire in %d days, %h hours, %m minutes"
 msgstr "Va expira în %d zile, %h ore, %m minute"
+
+msgid "No ID provided for removing spaces from name."
+msgstr "Nu s-a furnizat ID pentru eliminarea spațiilor din nume."
+
+msgid "No name was updated."
+msgstr "Niciun nume nu a fost actualizat."
+
+msgid "No ID provided for removing spaces from name or serial."
+msgstr "Nu s-a furnizat ID pentru eliminarea spațiilor din nume sau serie."
+
+msgid "No name or serial was updated."
+msgstr "Niciun nume sau serie nu a fost actualizat."
+
+
