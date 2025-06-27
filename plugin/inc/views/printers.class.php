@@ -338,8 +338,9 @@ class Printers extends View
             $style = "";
         }
 
-        $link = "<a href='printer.form.php?id=$row_data[printer_id]' title='" . _t('Manage printer') . "$gps' $style>$row_data[serial]</a>";
-        return $link;
+        $link     = "<a href='printer.form.php?id=$row_data[printer_id]' title='" . _t('Manage printer') . "$gps' $style>$row_data[serial]</a>";
+        $copyLink = IserviceToolBox::getSerialCopyButton($row_data['serial']);
+        return $link . ' ' . $copyLink;
     }
 
     public static function getInvoiceExpiryDateFieldDisplay($row_data): string

@@ -510,4 +510,24 @@ class ToolBox
         return (new PluginFieldsCartridgeitemtypeDropdown())->getById($colorId)->fields['completename'] ?? '';
     }
 
+    public static function getSerialCopyButton($serial, $url = 'https://www.srv.ygles.com/ccb/Login'): string
+    {
+        if (empty($serial)) {
+            return '';
+        }
+
+        $js = "
+        navigator.clipboard.writeText(\"" . preg_replace('/\s+/', '', $serial) . "\");
+        window.open('$url', '_blank');
+        ";
+
+        return "<a 
+            href='javascript:void(0);' 
+            onclick=\"" . htmlspecialchars($js, ENT_QUOTES) . "\"
+            title='" . _t(' Copy') . "' 
+            class='noprint'>
+                <i class='ti ti-copy'></i>
+            </a>";
+    }
+
 }
