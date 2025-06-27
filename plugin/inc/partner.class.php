@@ -333,15 +333,17 @@ Expert Line srl
             return _t('No ID provided for removing spaces from name.');
         }
 
-        $partner = new self();
-        if ($partner->update(
-            [
-                'id' => $id,
-                'name' => trim(preg_replace('/\s+/', ' ', $partner->fields['name']))
-            ]
-        )
-        ) {
-            return IserviceToolBox::RESPONSE_OK;
+        $partner = new Supplier();
+        if ($partner->getFromDB($id)) {
+            if ($partner->update(
+                [
+                    'id'   => $id,
+                    'name' => trim(preg_replace('/\s+/', '', $partner->fields['name']))
+                ]
+            )
+            ) {
+                return IserviceToolBox::RESPONSE_OK;
+            }
         }
 
         return _t('No name was updated.');
