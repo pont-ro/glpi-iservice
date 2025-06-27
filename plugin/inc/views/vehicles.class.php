@@ -194,7 +194,7 @@ class Vehicles extends View
 
     public static function getRowBackgroundClass($rowData): string
     {
-        if (!empty($row_data['expired_expiration'])) {
+        if (!empty($rowData['expired_expiration'])) {
             return 'border border-danger border-2';
         }
 
