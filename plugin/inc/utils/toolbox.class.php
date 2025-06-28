@@ -530,4 +530,34 @@ class ToolBox
             </a>";
     }
 
+    public static function insertArrayValuesAndKeysAfterKey(string $key, array $originalArray, array $arrayToInsert): array
+    {
+        $newColumns = [];
+
+        foreach ($originalArray as $originalKey => $value) {
+            $newColumns[$originalKey] = $value;
+
+            if ($originalKey === $key) {
+                foreach ($arrayToInsert as $extraKey => $extraValue) {
+                    $newColumns[$extraKey] = $extraValue;
+                }
+            }
+        }
+
+        return $newColumns;
+
+    }
+
+    public static function cleanHtml(string $html): string
+    {
+        $text = preg_replace('/<p[^>]*>(.*?)<\/p>/is', "$1\n", $html);
+        $text = preg_replace('/<br[^>]*>/i', "\n", $text);
+
+        $text = strip_tags($text);
+
+        $text = preg_replace('/\n{3,}/', "\n\n", $text);
+
+        return trim($text);
+    }
+
 }

@@ -356,27 +356,7 @@ class View extends \CommonGLPI
             }
 
             $request_values = IserviceToolBox::getArrayInputVariable($this->getRequestArrayName(), []);
-            foreach ($this->filters as $filter_name => $filter_data) {
-                if (in_array($filter_name, $this->getIgnoredFilterNames())) {
-                    continue;
-                }
-
-                if (isset($filter_data['header']) && isset($this->columns[$filter_data['header']])) {
-                    $filter_in_header = true;
-                    if (!isset($this->columns[$filter_data['header']]['filter'])) {
-                        $this->columns[$filter_data['header']]['filter'] = '';
-                    }
-                } else {
-                    $filter_in_header = false;
-                }
-
-                $filter_widget = $this->getFilterWidget($filter_data, $filter_name, $filter_in_header ? 'header' : 'normal', $request_values);
-                if ($filter_in_header) {
-                    $this->columns[$filter_data['header']]['filter'] .= (empty($filter_data['no_break_before']) ? '<br/>' : '') . "$filter_widget";
-                } else {
-                    $filter .= $filter_widget;
-                }
-            }
+            $this->processFilters($this->filters, $request_values, $filter);
 
             $filter .= isset($this->filters['postfix']) ? $this->filters['postfix'] : '';
             $filter .= "</div>"; // View-filter.
@@ -388,6 +368,36 @@ class View extends \CommonGLPI
         }
 
         return true;
+    }
+
+    protected function processFilters(array $filters, array $request_values, string &$filter): void
+    {
+        foreach ($filters as $filter_name => $filter_data) {
+            if (in_array($filter_name, $this->getIgnoredFilterNames())) {
+                continue;
+            }
+
+            if (str_contains($filter_name, 'filter_group_')) {
+                $this->processFilters($filter_data, $request_values, $filter);
+                continue;
+            }
+
+            if (isset($filter_data['header']) && isset($this->columns[$filter_data['header']])) {
+                $filter_in_header = true;
+                if (!isset($this->columns[$filter_data['header']]['filter'])) {
+                    $this->columns[$filter_data['header']]['filter'] = '';
+                }
+            } else {
+                $filter_in_header = false;
+            }
+
+            $filter_widget = $this->getFilterWidget($filter_data, $filter_name, $filter_in_header ? 'header' : 'normal', $request_values);
+            if ($filter_in_header) {
+                $this->columns[$filter_data['header']]['filter'] .= (empty($filter_data['no_break_before']) ? '<br/>' : '') . "$filter_widget";
+            } else {
+                $filter .= $filter_widget;
+            }
+        }
     }
 
     protected function getFilterWidget($filter_data, $filter_name, $filter_position = 'normal', $params = [])

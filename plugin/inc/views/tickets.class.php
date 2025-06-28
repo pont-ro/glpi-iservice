@@ -205,6 +205,35 @@ class Tickets extends View
         return !empty($href) ? "<a href='$href' title='$title' class='$class'>$row_data[ticket_id]</a>" : "<span title='$title' class='$class'>$row_data[ticket_id]</span>";
     }
 
+    public static function getTicketNameDisplay($rowData): string
+    {
+        global $CFG_GLPI;
+        $tooltip  = !empty($rowData['ticket_content']) ? IserviceToolBox::cleanHtml($rowData['ticket_content']) : '';
+        $tooltip .= !empty($rowData['ticket_content']) && !empty($rowData['ticket_followups']) ? "\n\n" : '';
+        $tooltip .= !empty($rowData['ticket_followups']) ? "Descriere followup-uri:\n" . IserviceToolBox::cleanHtml($rowData['ticket_followups']) : '';
+        $href     = $CFG_GLPI['root_doc'] . '/front/ticket.form.php?id=[ticket_id]';
+
+        $style = '';
+        if (!empty($rowData['ticket_content']) || !empty($rowData['ticket_followups'])) {
+            $style = "style='color: red;'";
+        }
+
+        if (Session::haveRight('plugin_iservice_interface_original', READ)) {
+            return "<a href='$href' title='$tooltip' class='text-decoration-none' $style>$rowData[ticket_name]</a>";
+        }
+
+        return "<span title='$tooltip' class='text-decoration-none' $style>[ticket_name]</span>";
+    }
+
+    public static function getDateOpenDisplay($rowData): string
+    {
+        if (!empty($rowData['no_travel_field'])) {
+            return "<span class='text-danger' title='" . _t('No travel') . "'>$rowData[date_open]</span>";
+        }
+
+        return $rowData['date_open'];
+    }
+
     public static function getTicketAssignTechDisplay($row_data): string
     {
         global $CFG_GLPI;
@@ -276,7 +305,7 @@ class Tickets extends View
 
     protected function getSettings(): array
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
         $ticket_status_options = [
             '1,2,3,4,5,6,9' => '---',
@@ -330,10 +359,7 @@ class Tickets extends View
             $prefix       .= "&nbsp;|&nbsp;<a href='views.php?view=Movements&movements0[finalized]=0' target='_blank'>Număr mutări nefinalizate: $mo_count</a>";
         }
 
-        return [
-            'name' => self::getName(),
-            'prefix' => $prefix,
-            'query' => "
+        $queryWithoutWhere = "
                         SELECT
                               t.status
                             , t.id ticket_id
@@ -369,6 +395,7 @@ class Tickets extends View
                             , qr.code as qr_code
                             , di.id document_id
                             , p.status_name printer_status
+                            , t.no_travel_field
                         FROM glpi_plugin_iservice_tickets t
                         LEFT JOIN glpi_documents_items di ON di.items_id = t.id AND di.itemtype = 'Ticket'
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
@@ -406,6 +433,15 @@ class Tickets extends View
                                    WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
                                    AND valinc-valpla > 0
                                    GROUP BY codbenef) t2 ON t2.codbenef = s.hmarfa_code_field
+        ";
+
+        $version      = str_replace('V', '', IserviceToolBox::getInputVariable('v', 1));
+        $otherVersion = $version == 1 ? 2 : 1;
+
+        $settingsV1 = [
+            'name' => self::getName() . " V$version",
+            'prefix' => $prefix,
+            'query' => $queryWithoutWhere . "
                         WHERE t.is_deleted = 0 $right_condition
                             AND t.status in ([ticket_status])
                             AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
@@ -429,6 +465,7 @@ class Tickets extends View
                         ",
             'default_limit' => self::inProfileArray('subtehnician', 'superclient', 'client') ? 20 : 50,
             'filters' => [
+                'prefix' => "<input type='submit' class='submit noprint me-1' name='v' value='V$otherVersion' onclick='this.form.action=\"views.php?view=Tickets&v=$otherVersion\"'>" ,
                 'printer_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => 'AND p.id = %d'
@@ -564,11 +601,7 @@ class Tickets extends View
                 ],
                 'ticket_name' => [
                     'title' => 'Titlu',
-                    'tooltip' => "[ticket_content]\n\nDescriere followup-uri:\n[ticket_followups]",
-                    'link' => [
-                        'href' => $CFG_GLPI['root_doc'] . '/front/ticket.form.php?id=[ticket_id]',
-                        'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
-                    ]
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketNameDisplay($row);',
                 ],
                 'printer_name' => [
                     'title' => 'Nume aparat',
@@ -608,6 +641,7 @@ class Tickets extends View
                     'title' => 'Data deschiderii',
                     'default_sort' => 'DESC',
                     'align' => 'center',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getDateOpenDisplay($row);',
                 ],
                 'effective_date_field' => [
                     'title' => 'Data efectivă',
@@ -633,6 +667,92 @@ class Tickets extends View
                 ],
             ],
         ];
+        $settingsV2 = $settingsV1;
+        unset(
+            $settingsV2['columns']['tech_assign_name'],
+            $settingsV2['filters']['tech_id'],
+            $settingsV2['filters']['assigned_only'],
+            $settingsV2['columns']['effective_date_field'],
+            $settingsV2['filters']['effective_date_field'],
+            $settingsV2['columns']['printer_status'],
+            $settingsV2['filters']['printer_status'],
+            $settingsV2['columns']['ticket_counter_black'],
+            $settingsV2['filters']['ticket_counter_black'],
+            $settingsV2['columns']['ticket_counter_color'],
+            $settingsV2['filters']['ticket_counter_color'],
+            $settingsV2['columns']['ticket_counter_total'],
+            $settingsV2['filters']['ticket_counter_total']
+        );
+
+        $settingsV2['filters']['filter_group_1']['tech_id'] = [
+            'type' => self::FILTERTYPE_SELECT,
+            'caption' => 'Tehnician alocat',
+            'format' => 'AND (a.id = %d OR a.id IS NULL)',
+            'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
+            'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
+            'class' => 'mx-1',
+        ];
+
+        $settingsV2['filters']['filter_group_1']['assigned_only'] = [
+            'type' => self::FILTERTYPE_CHECKBOX,
+            'format' => 'AND NOT a.id IS NULL',
+            'caption' => 'Doar alocate ',
+            'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
+            'class' => 'mx-1',
+        ];
+
+        $settingsV2['filters']['ticket_content'] = [
+            'type' => self::FILTERTYPE_TEXT,
+            'caption' => 'Descriere',
+            'format' => '%%%s%%',
+            'header' => 'ticket_content',
+        ];
+
+        $settingsV2['filters']['ticket_followups'] = [
+            'type' => self::FILTERTYPE_TEXT,
+            'format' => '%%%s%%',
+            'header' => 'ticket_followups',
+        ];
+
+        $settingsV2['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
+            'ticket_name',
+            $settingsV2['columns'],
+            [
+                'ticket_content' => [
+                    'title' => 'Descriere',
+                ],
+                'ticket_followups' => [
+                    'title' => 'Followupuri',
+                ],
+            ]
+        );
+
+        $settingsV2['query'] = "SELECT * FROM ($queryWithoutWhere" . "
+                        WHERE t.is_deleted = 0 $right_condition
+                            AND t.status in ([ticket_status])
+                            AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
+                            AND t.name LIKE '[ticket_name]'
+                            AND ((p.name_and_location IS NULL AND '[printer_name]' = '%%') OR p.name_and_location LIKE '[printer_name]')
+                            AND ((p.usage_address_field is null AND '[usage_address_field]' = '%%') OR p.usage_address_field LIKE '[usage_address_field]')
+                            AND ((s.name IS NULL AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
+                            AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
+                            AND t.date <= '[date_open]'
+                            AND t.content LIKE '[ticket_content]'
+                            [effective_date_start]
+                            [unlinked]
+                            [tech_id]
+                            [assigned_only]
+                            [observer_id]
+                            [printer_id]
+                            [no_travel]
+                            [without_paper]
+                        GROUP BY t.id
+                        ) t
+                WHERE 1=1
+                  AND ((t.ticket_followups IS null AND '[ticket_followups]' = '%%') OR t.ticket_followups LIKE '[ticket_followups]')
+                ";
+
+        return ${"settingsV$version"} ?? $settingsV1;
     }
 
 }
