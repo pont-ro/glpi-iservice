@@ -771,7 +771,7 @@ class PluginIserviceEmaintenance extends MailCollector
     {
         $ememail = new PluginIserviceEMEmail();
         if (empty($extended_data['body_lines']['toner mercury code'])) {
-            $ememail->update(['id' => $ememail_id, 'read' => 0, 'process_result' => "Could not detect Toner Mercury Code"]);
+            $ememail->update(['id' => $ememail_id, 'read' => 1, 'process_result' => "Could not detect Toner Mercury Code"]);
             return false;
         }
 
@@ -781,15 +781,15 @@ class PluginIserviceEmaintenance extends MailCollector
 
         $error_message = '';
         if (empty($cartridge_item_ids)) {
-            $ememail->update(['id' => $ememail_id, 'read' => 0, 'process_result' => "Cartridge with mercury code {$extended_data['body_lines']['toner mercury code']['ending']} could not be found in iService"]);
+            $ememail->update(['id' => $ememail_id, 'read' => 1, 'process_result' => "Cartridge with mercury code {$extended_data['body_lines']['toner mercury code']['ending']} could not be found in iService"]);
             return false;
         } elseif ($cartridge_item_index === null) {
             $error_message .= "Cartridge with mercury code {$extended_data['body_lines']['toner mercury code']['ending']} could not be added to the ticket as it is not compatible or stock is 0";
             $error_message .= "###Changeable cartridges:<pre>" . print_r($changeable_cartridges, true) . "</pre>";
-            $ememail->update(['id' => $ememail_id, 'read' => 0, 'process_result' => $error_message]);
+            $ememail->update(['id' => $ememail_id, 'read' => 1, 'process_result' => $error_message]);
             return false;
         } elseif (!$ticket->addCartridge($error_message, $cartridge_item_index, $extended_data['suppliers_id'], $extended_data['printers_id'])) {
-            $ememail->update(['id' => $ememail_id, 'read' => 0, 'process_result' => $error_message]);
+            $ememail->update(['id' => $ememail_id, 'read' => 1, 'process_result' => $error_message]);
             return false;
         }
 
