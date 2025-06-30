@@ -213,16 +213,16 @@ class Tickets extends View
         $tooltip .= !empty($rowData['ticket_followups']) ? "Descriere followup-uri:\n" . IserviceToolBox::cleanHtml($rowData['ticket_followups']) : '';
         $href     = $CFG_GLPI['root_doc'] . '/front/ticket.form.php?id=[ticket_id]';
 
-        $style = '';
+        $extraClass = '';
         if (!empty($rowData['ticket_content']) || !empty($rowData['ticket_followups'])) {
-            $style = "style='color: red;'";
+            $extraClass = "text-red'";
         }
 
         if (Session::haveRight('plugin_iservice_interface_original', READ)) {
-            return "<a href='$href' title='$tooltip' class='text-decoration-none' $style>$rowData[ticket_name]</a>";
+            return "<a href='$href' title='$tooltip' class='text-decoration-none $extraClass'>$rowData[ticket_name]</a>";
         }
 
-        return "<span title='$tooltip' class='text-decoration-none' $style>[ticket_name]</span>";
+        return "<span title='$tooltip' class='text-decoration-none $extraClass'>[ticket_name]</span>";
     }
 
     public static function getDateOpenDisplay($rowData): string
@@ -435,11 +435,11 @@ class Tickets extends View
                                    GROUP BY codbenef) t2 ON t2.codbenef = s.hmarfa_code_field
         ";
 
-        $version      = str_replace('V', '', IserviceToolBox::getInputVariable('v', 1));
+        $version      = intval(str_replace('v', '',  preg_replace('/.*\s/', '', IserviceToolBox::getInputVariable('v', 1))));
         $otherVersion = $version == 1 ? 2 : 1;
 
         $settingsV1 = [
-            'name' => self::getName() . " V$version",
+            'name' => self::getName() . " v$version",
             'prefix' => $prefix,
             'query' => $queryWithoutWhere . "
                         WHERE t.is_deleted = 0 $right_condition
@@ -465,7 +465,7 @@ class Tickets extends View
                         ",
             'default_limit' => self::inProfileArray('subtehnician', 'superclient', 'client') ? 20 : 50,
             'filters' => [
-                'prefix' => "<input type='submit' class='submit noprint me-1' name='v' value='V$otherVersion' onclick='this.form.action=\"views.php?view=Tickets&v=$otherVersion\"'>" ,
+                'prefix' => "<input type='submit' class='submit noprint me-1' name='v' value='" . _t('Tickets') . " v$otherVersion' onclick='this.form.action=\"views.php?view=Tickets&v=$otherVersion\"'>" ,
                 'printer_id' => [
                     'type' => self::FILTERTYPE_HIDDEN,
                     'format' => 'AND p.id = %d'
