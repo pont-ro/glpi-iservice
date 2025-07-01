@@ -910,7 +910,7 @@ return [
             'vehicle_id' => 'int unsigned not null',
             'name' => 'varchar(100) not null default \'\'',
             'description' => 'text null default null',
-            'expiration_date' => 'datetime null default null',
+            'expiration_date' => 'timestamp null default null',
         ],
         'indexes' => [
             [
