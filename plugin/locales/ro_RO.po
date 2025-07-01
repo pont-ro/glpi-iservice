@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2024-10-29 11:51+0200\n"
+"PO-Revision-Date: 2025-06-30 17:01+0300\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 3.6\n"
 "X-Poedit-KeywordsList: _t;_tn:1,2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -28,9 +28,7 @@ msgstr "Nu aveți cartușe compatibile!"
 msgid "Invalid cartridge id: %d"
 msgstr "Id cartuș invalid: %d"
 
-#: ajax/manageCartridge.php:39 ajax/manageConsumable.php:27
-#: ajax/manageDataintegrityTest.php:20 ajax/manageEMMail.php:30
-#: ajax/managePrinter.php:44
+#: ajax/manageCartridge.php:39 ajax/manageConsumable.php:27 ajax/manageDataintegrityTest.php:20 ajax/manageEMMail.php:30 ajax/managePrinter.php:44
 #, php-format
 msgid "Invalid operation: %s"
 msgstr "Operație invalidă: %s"
@@ -54,8 +52,7 @@ msgstr "Cartușul %d este gol, nu este instalat pe un aparat"
 msgid "Could not delete cartridge from the database."
 msgstr "Nu s-a putut șterge cartușul din baza de date."
 
-#: ajax/manageCartridge.php:141 ajax/manageConsumable.php:68
-#: ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45 ajax/managePrinter.php:177
+#: ajax/manageCartridge.php:141 ajax/manageConsumable.php:68 ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45 ajax/managePrinter.php:177
 #, php-format
 msgid "Operation not implemented: %s"
 msgstr "Operația %s nu este implementată"
@@ -146,8 +143,7 @@ msgstr[0] "Listă specială"
 msgstr[1] "Liste speciale"
 msgstr[2] "Liste speciale"
 
-#: config/menu.php:35 front/config.form.php:5 front/monthlyplan.php:11 front/views.php:21
-#: inc/menu.class.php:14 inc/utils/iservicemenu.class.php:15
+#: config/menu.php:35 front/config.form.php:5 front/monthlyplan.php:11 front/views.php:21 inc/menu.class.php:14 inc/utils/iservicemenu.class.php:15
 msgid "iService"
 msgstr "iService"
 
@@ -155,13 +151,11 @@ msgstr "iService"
 msgid "Inquiry"
 msgstr "Solicitare"
 
-#: front/hmarfaexport.form.php:18 inc/printer.class.php:292 inc/ticket.class.php:1999
-#: inc/views/printers.class.php:57
+#: front/hmarfaexport.form.php:18 inc/printer.class.php:292 inc/ticket.class.php:1999 inc/views/printers.class.php:57
 msgid "hMarfa export"
 msgstr "export hMarfa"
 
-#: front/movement.form.php:18 front/movement.form.php:183 inc/movement.class.php:116
-#: inc/movement.class.php:264 inc/printer.class.php:303 inc/views/printers.class.php:107
+#: front/movement.form.php:18 front/movement.form.php:183 inc/movement.class.php:116 inc/movement.class.php:264 inc/printer.class.php:303 inc/views/printers.class.php:107
 msgid "Move"
 msgstr "Mută"
 
@@ -242,8 +236,7 @@ msgstr[0] "Verificator cartușe"
 msgstr[1] "Verificatori cartușe"
 msgstr[2] "Verificatori cartușe"
 
-#: inc/consumable_ticket.class.php:128 inc/consumable_ticket.class.php:202
-#: inc/intorder.class.php:174 inc/intorder_extorder.class.php:187
+#: inc/consumable_ticket.class.php:128 inc/consumable_ticket.class.php:202 inc/intorder.class.php:174 inc/intorder_extorder.class.php:187
 msgid "Amount"
 msgstr "Cantitate"
 
@@ -284,19 +277,15 @@ msgstr "Adresa %s respinsă"
 msgid "Email with subject \"%s\" rejected"
 msgstr "Emailul cu subiectul \"%s\" a fost respins"
 
-#: inc/extorder.class.php:22 inc/extorder.class.php:27 inc/views/extorders.class.php:19
-#: inc/views/extorders.class.php:28 inc/views/extorders.class.php:53
-#: inc/views/intorders.class.php:83
+#: inc/extorder.class.php:22 inc/extorder.class.php:27 inc/views/extorders.class.php:19 inc/views/extorders.class.php:28 inc/views/extorders.class.php:53 inc/views/intorders.class.php:83
 msgid "External order"
 msgid_plural "External orders"
 msgstr[0] "Comandă externă"
 msgstr[1] "Comenzi externe"
 msgstr[2] "Comenzi externe"
 
-#: inc/extorder.class.php:125 inc/intorder.class.php:22 inc/intorder.class.php:27
-#: inc/intorder_extorder.class.php:184 inc/intorder_view.class.php:21
-#: inc/views/extorders.class.php:33 inc/views/intorders.class.php:22
-#: inc/views/intorders.class.php:79 inc/views/intorders.class.php:103
+#: inc/extorder.class.php:125 inc/intorder.class.php:22 inc/intorder.class.php:27 inc/intorder_extorder.class.php:184 inc/intorder_view.class.php:21 inc/views/extorders.class.php:33
+#: inc/views/intorders.class.php:22 inc/views/intorders.class.php:79 inc/views/intorders.class.php:103
 msgid "Internal order"
 msgid_plural "Internal orders"
 msgstr[0] "Comandă internă"
@@ -317,10 +306,8 @@ msgstr[0] "Stare comandă"
 msgstr[1] "Stări comandă"
 msgstr[2] "Stări comandă"
 
-#: inc/hmarfa.class.php:619 inc/movement.class.php:280 inc/printer.class.php:364
-#: inc/views/globalreadcounter.class.php:236 inc/views/printers.class.php:548
-#: inc/views/printers.class.php:592 inc/views/tickets.class.php:469
-#: inc/views/tickets.class.php:552
+#: inc/hmarfa.class.php:619 inc/movement.class.php:280 inc/printer.class.php:364 inc/views/globalreadcounter.class.php:236 inc/views/printers.class.php:548 inc/views/printers.class.php:592
+#: inc/views/tickets.class.php:469 inc/views/tickets.class.php:552
 msgid "Usage address"
 msgstr "Adresa de exploatare"
 
@@ -348,8 +335,7 @@ msgstr "Procent mediu"
 msgid "Last sales to the partner"
 msgstr "Ultimele vânzări către partener"
 
-#: inc/hmarfa.class.php:1332 inc/intorder.class.php:171 inc/intorder_extorder.class.php:186
-#: inc/views/extorders.class.php:151 inc/views/intorders.class.php:342
+#: inc/hmarfa.class.php:1332 inc/intorder.class.php:171 inc/intorder_extorder.class.php:186 inc/views/extorders.class.php:151 inc/views/intorders.class.php:342
 msgid "Consumable"
 msgid_plural "Consumables"
 msgstr[0] "Consumabil"
@@ -415,8 +401,7 @@ msgstr "Luna anterioară"
 msgid "2 month ago"
 msgstr "Acum 2 luni"
 
-#: inc/monthlyplan.class.php:199 inc/views/globalreadcounter.class.php:22
-#: inc/views/globalreadcounter.class.php:180 inc/views/printers.class.php:481
+#: inc/monthlyplan.class.php:199 inc/views/globalreadcounter.class.php:22 inc/views/globalreadcounter.class.php:180 inc/views/printers.class.php:481
 msgid "Global read counter"
 msgstr "Citire globală"
 
@@ -428,8 +413,7 @@ msgstr "Săptămâna"
 msgid "Open tickets"
 msgstr "Tichete deschise"
 
-#: inc/monthlyplan.class.php:207 inc/views/printers.class.php:83
-#: inc/views/tickets.class.php:132 inc/views/unpaidinvoices.class.php:18
+#: inc/monthlyplan.class.php:207 inc/views/printers.class.php:83 inc/views/tickets.class.php:132 inc/views/unpaidinvoices.class.php:18
 msgid "Unpaid invoices"
 msgstr "Facturi neplătite"
 
@@ -437,9 +421,8 @@ msgstr "Facturi neplătite"
 msgid "Total unpaid"
 msgstr "Total neplătit"
 
-#: inc/movement.class.php:23 inc/printer.class.php:244 inc/printer.class.php:303
-#: inc/printer.class.php:355 inc/printer.class.php:676 inc/printer.class.php:681
-#: inc/ticket.class.php:169 inc/views/printers.class.php:107
+#: inc/movement.class.php:23 inc/printer.class.php:244 inc/printer.class.php:303 inc/printer.class.php:355 inc/printer.class.php:676 inc/printer.class.php:681 inc/ticket.class.php:169
+#: inc/views/printers.class.php:107
 msgid "Printer"
 msgstr "Aparat"
 
@@ -455,8 +438,7 @@ msgstr "Partener nou"
 msgid "View"
 msgstr "Vizualizează"
 
-#: inc/movement.class.php:184 inc/movement.class.php:383 inc/printer.class.php:495
-#: inc/printer.class.php:594
+#: inc/movement.class.php:184 inc/movement.class.php:383 inc/printer.class.php:495 inc/printer.class.php:594
 msgid "Modify"
 msgstr "Modifică"
 
@@ -492,8 +474,7 @@ msgstr "Închideți tichetul pentru a finaliza mutarea"
 msgid "Weight"
 msgstr "Ordine"
 
-#: inc/pendingemail.class.php:19 inc/pendingemail.class.php:24
-#: inc/views/pendingemails.class.php:23 inc/views/pendingemails.class.php:105
+#: inc/pendingemail.class.php:19 inc/pendingemail.class.php:24 inc/views/pendingemails.class.php:23 inc/views/pendingemails.class.php:105
 msgid "Pending email"
 msgid_plural "Pending emails"
 msgstr[0] "Email în așteptare"
@@ -507,18 +488,15 @@ msgstr[0] "Actualizator emailuri în așteptare"
 msgstr[1] "Actualizatori emailuri în așteptare"
 msgstr[2] "Actualizatori emailuri în așteptare"
 
-#: inc/printer.class.php:43 inc/ticket.class.php:2071 inc/views/movements.class.php:135
-#: inc/views/printers.class.php:295 inc/views/tickets.class.php:223
+#: inc/printer.class.php:43 inc/ticket.class.php:2071 inc/views/movements.class.php:135 inc/views/printers.class.php:295 inc/views/tickets.class.php:223
 msgid "Manage printer"
 msgstr "Administrare aparat"
 
-#: inc/printer.class.php:288 inc/views/emaintenance.class.php:158
-#: inc/views/operations.class.php:39
+#: inc/printer.class.php:288 inc/views/emaintenance.class.php:158 inc/views/operations.class.php:39
 msgid "New quick ticket"
 msgstr "Tichet rapid nou"
 
-#: inc/printer.class.php:299 inc/ticket.class.php:2060 inc/views/emaintenance.class.php:38
-#: inc/views/printers.class.php:63 inc/views/tickets.class.php:112
+#: inc/printer.class.php:299 inc/ticket.class.php:2060 inc/views/emaintenance.class.php:38 inc/views/printers.class.php:63 inc/views/tickets.class.php:112
 msgid "Operations list"
 msgstr "Lista lucrări"
 
@@ -536,9 +514,7 @@ msgstr "Contract global"
 
 #: inc/printer.class.php:396
 msgid "Select if the printer is not billed individually, but together with other printers"
-msgstr ""
-"Bifați aici în cazul în care aparatul NU se factureaza individual, ci este facturat "
-"împreună cu mai multe aparate"
+msgstr "Bifați aici în cazul în care aparatul NU se factureaza individual, ci este facturat împreună cu mai multe aparate"
 
 #: inc/stockverifier.class.php:22
 msgid "Stock verifier"
@@ -594,12 +570,8 @@ msgstr "%d ticket(e) salvat(e)."
 
 #: inc/ticket.class.php:524
 #, php-format
-msgid ""
-"Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges "
-"from that ticket."
-msgstr ""
-"Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi cartușele de pe "
-"acel tichet."
+msgid "Warning. There is a newer ticket %1$d with installed cartridges. First remove cartridges from that ticket."
+msgstr "Atenție. Există un tichet mai nou %1$d cu cartușe instalate. Ștergeți întâi cartușele de pe acel tichet."
 
 #: inc/ticket.class.php:541 inc/ticket.class.php:2371
 msgid "Notice"
@@ -625,8 +597,7 @@ msgid "Estimation"
 msgstr "Estimare"
 
 #: inc/ticket.class.php:855
-msgid ""
-"You can not install this cartridge because it is already installed with an other ticket!"
+msgid "You can not install this cartridge because it is already installed with an other ticket!"
 msgstr "Nu puteți instala acest cartuș deoarece este deja instalat cu un alt tichet!"
 
 #: inc/ticket.class.php:908
@@ -753,8 +724,7 @@ msgstr "Factură servicii"
 #: inc/ticket.class.php:2287
 #, php-format
 msgid "There is an unfinished movement for this printer, please finish movement %s first!"
-msgstr ""
-"O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea %s întâi!"
+msgstr "O mutare nefinalizată există pentru acest aparat, vă rugăm finalizați mutarea %s întâi!"
 
 #: inc/ticket.class.php:2295 inc/ticket.class.php:2299
 #, php-format
@@ -797,16 +767,14 @@ msgstr "Cartuș șters din baza de date"
 msgid "E-Maintenance"
 msgstr "E-Maintenance"
 
-#: inc/views/emaintenance.class.php:52 inc/views/printers.class.php:75
-#: inc/views/tickets.class.php:124
+#: inc/views/emaintenance.class.php:52 inc/views/printers.class.php:75 inc/views/tickets.class.php:124
 msgid "Installable cartridges"
 msgstr "Cartușe ce pot fi instalate"
 
 msgid "Replaced cartridges"
 msgstr "Cartușe golite"
 
-#: inc/views/emaintenance.class.php:152 inc/views/operations.class.php:45
-#: inc/views/tickets.class.php:100
+#: inc/views/emaintenance.class.php:152 inc/views/operations.class.php:45 inc/views/tickets.class.php:100
 msgid "Close ticket"
 msgstr "Închidere tichet"
 
@@ -895,8 +863,7 @@ msgstr "%d emailuri nu au fost trimise"
 msgid "Price List"
 msgstr "Lista de prețuri"
 
-#: inc/views/printercounters.class.php:169 inc/views/printers.class.php:69
-#: inc/views/printers.class.php:334 inc/views/tickets.class.php:118
+#: inc/views/printercounters.class.php:169 inc/views/printers.class.php:69 inc/views/printers.class.php:334 inc/views/tickets.class.php:118
 msgid "Printer counters"
 msgstr "Contoare aparate"
 
@@ -1260,6 +1227,291 @@ msgstr "Citire globală client"
 msgid "The ticket can not be closed because counters are lower than on the last closed ticket: "
 msgstr "Tichetul nu poate fi închis deoarece contoarele sunt mai mici decât pe ultimul tichet închis: "
 
+# Vehicle management translations
+msgid "Vehicle"
+msgid_plural "Vehicles"
+msgstr[0] "Vehicul"
+msgstr[1] "Vehicule"
+msgstr[2] "Vehicule"
+
+msgid "Vehicle expirable"
+msgid_plural "Vehicle expirables"
+msgstr[0] "Expirabil vehicul"
+msgstr[1] "Expirabile vehicul"
+msgstr[2] "Expirabile vehicul"
+
+msgid "VIN number"
+msgstr "Numărul de șasiu (VIN)"
+
+msgid "VIN number too long"
+msgstr "Numărul de șasiu (VIN) prea lung"
+
+msgid "License plate"
+msgstr "Numărul de înmatriculare"
+
+msgid "License plate too long"
+msgstr "Numărul de înmatriculare prea lung"
+
+msgid "Assigned user"
+msgstr "Utilizator alocat"
+
+msgid "Vehicle is required"
+msgstr "Vehiculul este obligatoriu"
+
+msgid "Invalid vehicle"
+msgstr "Vehicul invalid"
+
+msgid "Invalid expiration date"
+msgstr "Data de expirare invalidă"
+
+msgid "Expiration date"
+msgstr "Data de expirare"
+
+msgid "expired"
+msgstr "expirat"
+
+msgid "expiring soon"
+msgstr "expiră curând"
+
+msgid "Insurance"
+msgstr "Asigurare"
+
+msgid "Road tax"
+msgstr "Taxa de drum"
+
+msgid "Casco"
+msgstr "Casco"
+
+msgid "Leasing"
+msgstr "Leasing"
+
+msgid "MOT"
+msgstr "ITP"
+
+msgid "Parking prepayment"
+msgstr "Preplată parcare"
+
+msgid "Other"
+msgstr "Altele"
+
+# Form-related translations
+msgid "Please enter a name"
+msgstr "Vă rugăm să introduceți un nume"
+
+msgid "A vehicle with license plate %s already exists!"
+msgstr "Un vehicul cu numărul de înmatriculare %s există deja!"
+
+msgid "A vehicle with VIN %s already exists!"
+msgstr "Un vehicul cu VIN-ul %s există deja!"
+
+msgid "Vehicle added successfully"
+msgstr "Vehicul adăugat cu succes"
+
+msgid "Error creating vehicle"
+msgstr "Eroare la crearea vehiculului"
+
+msgid "Vehicle updated successfully"
+msgstr "Vehicul actualizat cu succes"
+
+msgid "Error updating vehicle"
+msgstr "Eroare la actualizarea vehiculului"
+
+msgid "Please select a vehicle"
+msgstr "Vă rugăm să selectați un vehicul"
+
+msgid "Please select an expirable type"
+msgstr "Vă rugăm să selectați un tip de expirabil"
+
+msgid "Please enter an expiration date"
+msgstr "Vă rugăm să introduceți o dată de expirare"
+
+msgid "Invalid expiration date format"
+msgstr "Format de dată de expirare invalid"
+
+msgid "Invalid issue date format"
+msgstr "Format de dată de emitere invalid"
+
+msgid "Issue date cannot be after expiration date"
+msgstr "Data de emitere nu poate fi după data de expirare"
+
+msgid "Cost must be a valid number"
+msgstr "Costul trebuie să fie un număr valid"
+
+msgid "Vehicle expirable added successfully"
+msgstr "Expirabil vehicul adăugat cu succes"
+
+msgid "Error creating vehicle expirable"
+msgstr "Eroare la crearea expirabilului pentru vehicul"
+
+msgid "Vehicle expirable updated successfully"
+msgstr "Expirabil vehicul actualizat cu succes"
+
+msgid "Error updating vehicle expirable"
+msgstr "Eroare la actualizarea expirabilului pentru vehicul"
+
+# View-related translations
+msgid "Vehicle Expirables"
+msgstr "Expirabile vehicule"
+
+msgid "Vehicle ID"
+msgstr "ID vehicul"
+
+msgid "Vehicle Name"
+msgstr "Nume vehicul"
+
+msgid "Registration"
+msgstr "Înmatriculare"
+
+msgid "Days Until Expiration"
+msgstr "Zile până la expirare"
+
+msgid "days"
+msgstr "zile"
+
+msgid "Expirables Count"
+msgstr "Numărul de expirabile"
+
+msgid "Next Expiration"
+msgstr "Următoarea expirare"
+
+msgid "Create Expirable"
+msgstr "Creează expirabil"
+
+msgid "Delete Vehicles"
+msgstr "Șterge vehicule"
+
+msgid "Are you sure you want to delete the selected vehicles?"
+msgstr "Sunteți sigur că doriți să ștergeți vehiculele selectate?"
+
+msgid "Create Vehicle"
+msgstr "Creează vehicul"
+
+msgid "View All Expirables"
+msgstr "Vezi toate expirabilele"
+
+msgid "Delete Expirables"
+msgstr "Șterge expirabile"
+
+msgid "Are you sure you want to delete the selected expirables?"
+msgstr "Sunteți sigur că doriți să ștergeți expirabilele selectate?"
+
+msgid "View Vehicles"
+msgstr "Vezi vehicule"
+
+msgid "Add Expirable"
+msgstr "Adaugă expirabil"
+
+msgid "Inactive"
+msgstr "Inactiv"
+
+msgid "Maintenance"
+msgstr "Mentenanță"
+
+msgid "Retired"
+msgstr "Retras"
+
+msgid "Expired %d days ago"
+msgstr "A expirat cu %d zile în urmă"
+
+msgid "Will expire in %d days"
+msgstr "Va expira în %d zile"
+
+msgid "Error deleting vehicle %d"
+msgstr "Eroare la ștergerea vehiculului %d"
+
+msgid "Vehicles deleted successfully"
+msgstr "Vehicule șterse cu succes"
+
+msgid "Error creating expirable for vehicle %d"
+msgstr "Eroare la crearea expirabilului pentru vehiculul %d"
+
+msgid "Expirables created successfully"
+msgstr "Expirabile create cu succes"
+
+msgid "Error deleting expirable %d"
+msgstr "Eroare la ștergerea expirabilului %d"
+
+msgid "Expirables deleted successfully"
+msgstr "Expirabile șterse cu succes"
+
+msgid "Expired"
+msgstr "Expirat"
+
+msgid "Expiring Soon"
+msgstr "Expiră curând"
+
+msgid "Valid"
+msgstr "Valid"
+
+msgid "No expirables found for this vehicle."
+msgstr "Nu s-au găsit expirabile pentru acest vehicul."
+
+msgid "Vehicles Expirables Verifier"
+msgstr "Verificator expirabile vehicule"
+
+msgid "Verifies expiring vehicle documents and sends email"
+msgstr "Verifică documentele vehiculelor care expiră și trimite email"
+
+msgid "Days threshold (will check expirables expiring within this many days)"
+msgstr "Pragul de zile (va verifica expirabilele care expiră în acest număr de zile)"
+
+msgid "The following vehicle documents are expired or about to expire"
+msgstr "Următoarele documente ale vehiculelor au expirat sau sunt pe cale să expire"
+
+msgid "License Plate"
+msgstr "Numărul de înmatriculare"
+
+msgid "Document Type"
+msgstr "Tipul documentului"
+
+msgid "Status"
+msgstr "Stare"
+
+msgid "Days"
+msgstr "Zile"
+
+msgid "Actions"
+msgstr "Acțiuni"
+
+msgid "Details"
+msgstr "Detalii"
+
+msgid "days ago"
+msgstr "zile în urmă"
+
+msgid "days left"
+msgstr "zile rămase"
+
+msgid "This is an automated message from the system. Please do not reply to this email."
+msgstr "Acesta este un mesaj automat din sistem. Vă rugăm să nu răspundeți la acest email."
+
+msgid "Vehicle documents expiration notification"
+msgstr "Notificare expirare documente vehicul"
+
+msgid "Expiration Date and Time"
+msgstr "Data și ora expirării"
+
+msgid "Will expire in %d days, %h hours, %m minutes"
+msgstr "Va expira în %d zile, %h ore, %m minute"
+
+msgid "No ID provided for removing spaces from name."
+msgstr "Nu s-a furnizat ID pentru eliminarea spațiilor din nume."
+
+msgid "No name was updated."
+msgstr "Niciun nume nu a fost actualizat."
+
+msgid "No ID provided for removing spaces from name or serial."
+msgstr "Nu s-a furnizat ID pentru eliminarea spațiilor din nume sau serie."
+
+msgid "No name or serial was updated."
+msgstr "Niciun nume sau serie nu a fost actualizat."
+
+msgid "Back"
+msgstr "Înapoi"
+
+msgid "Tickets"
+msgstr "Tichete"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
@@ -1621,12 +1873,8 @@ msgstr "Tichetul nu poate fi închis deoarece contoarele sunt mai mici decât pe
 #~ msgid "Are you sure you want to reset custom fields to default settings?"
 #~ msgstr "Sigur vreți să resetați câmpurile adiționale la setările implicite?"
 
-#~ msgid ""
-#~ "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual "
-#~ "processing, %5$d refused, %6$d errors."
-#~ msgstr ""
-#~ "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare "
-#~ "manuală, %5$d refuzate, %6$d eronate."
+#~ msgid "%1$d messages of %2$d read: %3$d automatically processed, %4$d imported for manual processing, %5$d refused, %6$d errors."
+#~ msgstr "%1$d mesaje citite din %2$d: %3$d procesate automat, %4$d importate pentru procesare manuală, %5$d refuzate, %6$d eronate."
 
 #~ msgid "last intervention"
 #~ msgstr "ultima intervenție"
@@ -1724,286 +1972,3 @@ msgstr "Tichetul nu poate fi închis deoarece contoarele sunt mai mici decât pe
 
 #~ msgid "Read counter / replace toner"
 #~ msgstr "Citire contor / înlocuire toner"
-
-# Vehicle management translations
-msgid "Vehicle"
-msgid_plural "Vehicles"
-msgstr[0] "Vehicul"
-msgstr[1] "Vehicule"
-msgstr[2] "Vehicule"
-
-msgid "Vehicle expirable"
-msgid_plural "Vehicle expirables"
-msgstr[0] "Expirabil vehicul"
-msgstr[1] "Expirabile vehicul"
-msgstr[2] "Expirabile vehicul"
-
-msgid "VIN number"
-msgstr "Numărul de șasiu (VIN)"
-
-msgid "VIN number too long"
-msgstr "Numărul de șasiu (VIN) prea lung"
-
-msgid "License plate"
-msgstr "Numărul de înmatriculare"
-
-msgid "License plate too long"
-msgstr "Numărul de înmatriculare prea lung"
-
-msgid "Assigned user"
-msgstr "Utilizator alocat"
-
-msgid "Vehicle is required"
-msgstr "Vehiculul este obligatoriu"
-
-msgid "Invalid vehicle"
-msgstr "Vehicul invalid"
-
-msgid "Invalid expiration date"
-msgstr "Data de expirare invalidă"
-
-msgid "Expiration date"
-msgstr "Data de expirare"
-
-msgid "expired"
-msgstr "expirat"
-
-msgid "expiring soon"
-msgstr "expiră curând"
-
-msgid "Insurance"
-msgstr "Asigurare"
-
-msgid "Road tax"
-msgstr "Taxa de drum"
-
-msgid "Casco"
-msgstr "Casco"
-
-msgid "Leasing"
-msgstr "Leasing"
-
-msgid "MOT"
-msgstr "ITP"
-
-msgid "Parking prepayment"
-msgstr "Preplată parcare"
-
-msgid "Other"
-msgstr "Altele"
-
-# Form-related translations
-msgid "Please enter a name"
-msgstr "Vă rugăm să introduceți un nume"
-
-msgid "A vehicle with license plate %s already exists!"
-msgstr "Un vehicul cu numărul de înmatriculare %s există deja!"
-
-msgid "A vehicle with VIN %s already exists!"
-msgstr "Un vehicul cu VIN-ul %s există deja!"
-
-msgid "Vehicle added successfully"
-msgstr "Vehicul adăugat cu succes"
-
-msgid "Error creating vehicle"
-msgstr "Eroare la crearea vehiculului"
-
-msgid "Vehicle updated successfully"
-msgstr "Vehicul actualizat cu succes"
-
-msgid "Error updating vehicle"
-msgstr "Eroare la actualizarea vehiculului"
-
-msgid "Please select a vehicle"
-msgstr "Vă rugăm să selectați un vehicul"
-
-msgid "Please select an expirable type"
-msgstr "Vă rugăm să selectați un tip de expirabil"
-
-msgid "Please enter an expiration date"
-msgstr "Vă rugăm să introduceți o dată de expirare"
-
-msgid "Invalid expiration date format"
-msgstr "Format de dată de expirare invalid"
-
-msgid "Invalid issue date format"
-msgstr "Format de dată de emitere invalid"
-
-msgid "Issue date cannot be after expiration date"
-msgstr "Data de emitere nu poate fi după data de expirare"
-
-msgid "Cost must be a valid number"
-msgstr "Costul trebuie să fie un număr valid"
-
-msgid "Vehicle expirable added successfully"
-msgstr "Expirabil vehicul adăugat cu succes"
-
-msgid "Error creating vehicle expirable"
-msgstr "Eroare la crearea expirabilului pentru vehicul"
-
-msgid "Vehicle expirable updated successfully"
-msgstr "Expirabil vehicul actualizat cu succes"
-
-msgid "Error updating vehicle expirable"
-msgstr "Eroare la actualizarea expirabilului pentru vehicul"
-
-# View-related translations
-msgid "Vehicle Expirables"
-msgstr "Expirabile vehicule"
-
-msgid "Vehicle ID"
-msgstr "ID vehicul"
-
-msgid "Vehicle Name"
-msgstr "Nume vehicul"
-
-msgid "Registration"
-msgstr "Înmatriculare"
-
-msgid "Days Until Expiration"
-msgstr "Zile până la expirare"
-
-msgid "days"
-msgstr "zile"
-
-msgid "Expirables Count"
-msgstr "Numărul de expirabile"
-
-msgid "Next Expiration"
-msgstr "Următoarea expirare"
-
-msgid "Create Expirable"
-msgstr "Creează expirabil"
-
-msgid "Delete Vehicles"
-msgstr "Șterge vehicule"
-
-msgid "Are you sure you want to delete the selected vehicles?"
-msgstr "Sunteți sigur că doriți să ștergeți vehiculele selectate?"
-
-msgid "Create Vehicle"
-msgstr "Creează vehicul"
-
-msgid "View All Expirables"
-msgstr "Vezi toate expirabilele"
-
-msgid "Delete Expirables"
-msgstr "Șterge expirabile"
-
-msgid "Are you sure you want to delete the selected expirables?"
-msgstr "Sunteți sigur că doriți să ștergeți expirabilele selectate?"
-
-msgid "View Vehicles"
-msgstr "Vezi vehicule"
-
-msgid "Add Expirable"
-msgstr "Adaugă expirabil"
-
-msgid "Inactive"
-msgstr "Inactiv"
-
-msgid "Maintenance"
-msgstr "Mentenanță"
-
-msgid "Retired"
-msgstr "Retras"
-
-msgid "Expired %d days ago"
-msgstr "A expirat cu %d zile în urmă"
-
-msgid "Will expire in %d days"
-msgstr "Va expira în %d zile"
-
-msgid "Error deleting vehicle %d"
-msgstr "Eroare la ștergerea vehiculului %d"
-
-msgid "Vehicles deleted successfully"
-msgstr "Vehicule șterse cu succes"
-
-msgid "Error creating expirable for vehicle %d"
-msgstr "Eroare la crearea expirabilului pentru vehiculul %d"
-
-msgid "Expirables created successfully"
-msgstr "Expirabile create cu succes"
-
-msgid "Error deleting expirable %d"
-msgstr "Eroare la ștergerea expirabilului %d"
-
-msgid "Expirables deleted successfully"
-msgstr "Expirabile șterse cu succes"
-
-msgid "Expired"
-msgstr "Expirat"
-
-msgid "Expiring Soon"
-msgstr "Expiră curând"
-
-msgid "Valid"
-msgstr "Valid"
-
-msgid "No expirables found for this vehicle."
-msgstr "Nu s-au găsit expirabile pentru acest vehicul."
-
-msgid "Vehicles Expirables Verifier"
-msgstr "Verificator expirabile vehicule"
-
-msgid "Verifies expiring vehicle documents and sends email"
-msgstr "Verifică documentele vehiculelor care expiră și trimite email"
-
-msgid "Days threshold (will check expirables expiring within this many days)"
-msgstr "Pragul de zile (va verifica expirabilele care expiră în acest număr de zile)"
-
-msgid "The following vehicle documents are expired or about to expire"
-msgstr "Următoarele documente ale vehiculelor au expirat sau sunt pe cale să expire"
-
-msgid "License Plate"
-msgstr "Numărul de înmatriculare"
-
-msgid "Document Type"
-msgstr "Tipul documentului"
-
-msgid "Status"
-msgstr "Stare"
-
-msgid "Days"
-msgstr "Zile"
-
-msgid "Actions"
-msgstr "Acțiuni"
-
-msgid "Details"
-msgstr "Detalii"
-
-msgid "days ago"
-msgstr "zile în urmă"
-
-msgid "days left"
-msgstr "zile rămase"
-
-msgid "This is an automated message from the system. Please do not reply to this email."
-msgstr "Acesta este un mesaj automat din sistem. Vă rugăm să nu răspundeți la acest email."
-
-msgid "Vehicle documents expiration notification"
-msgstr "Notificare expirare documente vehicul"
-
-msgid "Expiration Date and Time"
-msgstr "Data și ora expirării"
-
-msgid "Will expire in %d days, %h hours, %m minutes"
-msgstr "Va expira în %d zile, %h ore, %m minute"
-
-msgid "No ID provided for removing spaces from name."
-msgstr "Nu s-a furnizat ID pentru eliminarea spațiilor din nume."
-
-msgid "No name was updated."
-msgstr "Niciun nume nu a fost actualizat."
-
-msgid "No ID provided for removing spaces from name or serial."
-msgstr "Nu s-a furnizat ID pentru eliminarea spațiilor din nume sau serie."
-
-msgid "No name or serial was updated."
-msgstr "Niciun nume sau serie nu a fost actualizat."
-
-msgid "Back"
-msgstr "Înapoi"
-
