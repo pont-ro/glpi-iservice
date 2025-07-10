@@ -291,7 +291,7 @@ return [
         'columns' => [
             'cod' => 'varchar(15) not null',
             'denum' => 'varchar(30) null default null',
-            'descr' => 'varchar(60) null default null',
+            'descr' => 'varchar(120) null default null',
             'um' => 'varchar(3) null default null',
             'masan' => 'double null default null',
             'grupa' => 'varchar(6) null default null',
