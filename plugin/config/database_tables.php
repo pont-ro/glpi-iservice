@@ -55,7 +55,7 @@ return [
             'nrtran' => 'varchar(6) null default null',
             'cent' => 'varchar(4) null default null',
             'centlot' => 'varchar(11) null default null',
-            'descr' => 'varchar(250) null default null',
+            'descr' => 'varchar(300) null default null',
             'obs1' => 'varchar(30) null default null',
             'cant' => 'double null default null',
             'pucont' => 'double null default null',
@@ -193,7 +193,7 @@ return [
         'columns' => [
             'cod' => 'varchar(4) null default null',
             'denum' => 'varchar(30) null default null',
-            'descr' => 'varchar(100) null default null',
+            'descr' => 'varchar(300) null default null',
             'nb_upd' => 'int null default null',
         ],
     ],
@@ -291,7 +291,7 @@ return [
         'columns' => [
             'cod' => 'varchar(15) not null',
             'denum' => 'varchar(30) null default null',
-            'descr' => 'varchar(120) null default null',
+            'descr' => 'varchar(300) null default null',
             'um' => 'varchar(3) null default null',
             'masan' => 'double null default null',
             'grupa' => 'varchar(6) null default null',
