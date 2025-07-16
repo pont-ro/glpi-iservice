@@ -405,6 +405,9 @@ msgstr "Acum 2 luni"
 msgid "Global read counter"
 msgstr "Citire globală"
 
+msgid "Global read counter extended"
+msgstr "Citire globală extinsă"
+
 #: inc/monthlyplan.class.php:199
 msgid "Week"
 msgstr "Săptămâna"

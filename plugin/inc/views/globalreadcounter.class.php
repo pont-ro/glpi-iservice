@@ -5,6 +5,7 @@ namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\View;
+use \PluginIserviceDB;
 use \Session;
 use \PluginIserviceTicket;
 use \PluginIserviceEmaintenance;
@@ -129,14 +130,33 @@ class GlobalReadCounter extends View
         return $param_data['row_data']['no_invoice_field'] ? 'Aparat exclus din facturare' : '';
     }
 
+    public static function getPartnersOtherPrinterIds($printerIds)
+    {
+        $query = "
+            SELECT DISTINCT i.items_id
+            FROM glpi_infocoms i
+            WHERE i.itemtype = 'Printer' AND i.suppliers_id IN (
+                SELECT DISTINCT i2.suppliers_id
+                FROM glpi_infocoms i2
+                WHERE i2.itemtype = 'Printer' AND i2.items_id IN (" . implode(',', $printerIds) . ")
+            )";
+        $ids   = PluginIserviceDB::getQueryResult($query);
+        if (is_array($ids) && count($ids)) {
+            return array_column($ids, 'items_id');
+        }
+
+        return $printerIds;
+    }
+
     protected function getSettings(): array
     {
         global $CFG_GLPI;
-        $items                  = IserviceToolBox::getArrayInputVariable('globalreadcounter0', null);
-        $import                 = IserviceToolBox::getInputVariable('import');
-        $iwm_import             = IserviceToolBox::getInputVariable('iwm_import');
-        $avitum_import          = IserviceToolBox::getInputVariable('avitum_import');
-        $mass_action_group_read = IserviceToolBox::getInputVariable('mass_action_group_read');
+        $items                           = IserviceToolBox::getArrayInputVariable('globalreadcounter0', null);
+        $import                          = IserviceToolBox::getInputVariable('import');
+        $iwm_import                      = IserviceToolBox::getInputVariable('iwm_import');
+        $avitum_import                   = IserviceToolBox::getInputVariable('avitum_import');
+        $mass_action_group_read          = IserviceToolBox::getInputVariable('mass_action_group_read');
+        $mass_action_group_read_extended = IserviceToolBox::getInputVariable('mass_action_group_read_extended');
         if (!empty($import)) {
             $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
             $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv(IserviceToolBox::getInputVariable('import_file'));
@@ -146,7 +166,7 @@ class GlobalReadCounter extends View
         } elseif (!empty($avitum_import)) {
             $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
             $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'AVITUM');
-        } elseif (!empty($mass_action_group_read)) {
+        } elseif (!empty($mass_action_group_read) || !empty($mass_action_group_read_extended)) {
             $items = IserviceToolBox::getArrayInputVariable('item', []);
         }
 
@@ -157,6 +177,9 @@ class GlobalReadCounter extends View
         if ($items !== null) {
             if (isset($items['printer']) && is_array($items['printer'])) {
                 $accessible_printer_ids = array_keys($items['printer']);
+                if (!empty($mass_action_group_read_extended)) {
+                    $accessible_printer_ids = self::getPartnersOtherPrinterIds($accessible_printer_ids);
+                }
             } else {
                 $accessible_printer_ids = [];
             }

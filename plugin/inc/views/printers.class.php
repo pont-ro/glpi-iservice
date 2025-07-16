@@ -531,6 +531,10 @@ class Printers extends View
                     'caption' => _t('Global read counter'),
                     'action' => 'views.php?view=GlobalReadCounter',
                 ],
+                'group_read_extended' => [
+                    'caption' => _t('Global read counter extended'),
+                    'action' => 'views.php?view=GlobalReadCounter',
+                ],
                 'mass_invoice' => [
                     'caption' => 'Facturează',
                     'action' => 'hmarfaexport.form.php?mode=3',
