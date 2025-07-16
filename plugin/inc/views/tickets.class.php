@@ -303,6 +303,12 @@ class Tickets extends View
         }
     }
 
+    public static function getTicketConsumablesDisplay($row_data): string
+    {
+        $row_data['plugin_fields_ticketexporttypedropdowns_id'] = $row_data['ticket_export_type'] ?? '';
+        return Operations::getTicketConsumablesDisplay($row_data);
+    }
+
     protected function getSettings(): array
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
@@ -359,7 +365,7 @@ class Tickets extends View
             $prefix       .= "&nbsp;|&nbsp;<a href='views.php?view=Movements&movements0[finalized]=0' target='_blank'>Număr mutări nefinalizate: $mo_count</a>";
         }
 
-        $queryWithoutWhere = "
+        $querySelect = "
                         SELECT
                               t.status
                             , t.id ticket_id
@@ -395,7 +401,8 @@ class Tickets extends View
                             , qr.code as qr_code
                             , di.id document_id
                             , p.status_name printer_status
-                            , t.no_travel_field
+                            , t.no_travel_field";
+        $queryFrom   = "
                         FROM glpi_plugin_iservice_tickets t
                         LEFT JOIN glpi_documents_items di ON di.items_id = t.id AND di.itemtype = 'Ticket'
                         LEFT JOIN glpi_itilcategories i ON i.id = t.itilcategories_id
@@ -441,7 +448,7 @@ class Tickets extends View
         $settingsV1 = [
             'name' => self::getName() . " v$version",
             'prefix' => $prefix,
-            'query' => $queryWithoutWhere . "
+            'query' => $querySelect . $queryFrom . "
                         WHERE t.is_deleted = 0 $right_condition
                             AND t.status in ([ticket_status])
                             AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
@@ -708,26 +715,59 @@ class Tickets extends View
             'header' => 'ticket_content',
         ];
 
-        $settingsV2['filters']['ticket_followups'] = [
+        $settingsV2['filters']['ticket_followups']      = [
             'type' => self::FILTERTYPE_TEXT,
             'format' => '%%%s%%',
             'header' => 'ticket_followups',
         ];
+        $settingsV2['filters']['ticket_consumables']    = [
+            'type' => self::FILTERTYPE_TEXT,
+            'format' => '%%%s%%',
+            'header' => 'ticket_consumables',
+        ];
+            $settingsV2['filters']['ticket_cartridges'] = [
+                'type' => self::FILTERTYPE_TEXT,
+                'format' => '%%%s%%',
+                'header' => 'ticket_cartridges',
+            ];
 
-        $settingsV2['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
-            'ticket_name',
-            $settingsV2['columns'],
-            [
-                'ticket_content' => [
-                    'title' => 'Descriere',
-                ],
-                'ticket_followups' => [
-                    'title' => 'Followupuri',
-                ],
-            ]
-        );
+            $settingsV2['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
+                'ticket_name',
+                $settingsV2['columns'],
+                [
+                    'ticket_content' => [
+                        'title' => 'Descriere',
+                    ],
+                    'ticket_followups' => [
+                        'title' => 'Followupuri',
+                    ],
+                    'ticket_consumables' => [
+                        'title' => 'Cartușe livrate',
+                        'class' => 'no-wrap',
+                        'align' => 'center',
+                        'format' => 'function:default',  // This will call PluginIserviceView_Operations::getTicketConsumablesDisplay($row).
+                    ],
+                    'ticket_cartridges' => [
+                        'title' => 'Cartușe instalate',
+                        'align' => 'center'
+                    ],
+                ]
+            );
 
-        $settingsV2['query'] = "SELECT * FROM ($queryWithoutWhere" . "
+        $settingsV2['query'] = "SELECT * FROM ($querySelect" . "
+                        , (SELECT GROUP_CONCAT(CONCAT(ct.plugin_iservice_consumables_id, '<br>(', TRIM(ct.amount) + 0, COALESCE(CONCAT(': ', REPLACE(ct.new_cartridge_ids, '|', '')), ''), ')') SEPARATOR '<br>') ticket_consumables
+                           FROM glpi_plugin_iservice_consumables_tickets ct
+                           WHERE ct.tickets_id = t.id) ticket_consumables
+                        , ct.cartridges ticket_cartridges
+                        $queryFrom
+                        LEFT JOIN ( SELECT cat.tickets_id, GROUP_CONCAT(CONCAT(ci.ref, '&nbsp;<span title=\"', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, coalesce(t.total2_black_field, 0) + coalesce(t.total2_color_field, 0)), ' + (', ci.atc_field, ' * ', ci.life_coefficient_field, ')', '\">(pana&nbsp;', IF(ci.plugin_fields_cartridgeitemtypedropdowns_id IN (2,3,4), t.total2_color_field, t.total2_black_field + coalesce(t.total2_color_field, 0)) + ROUND(ci.atc_field * ci.life_coefficient_field), ')</span><br>[', c.id,COALESCE(CONCAT(' -> ',cat.cartridges_id_emptied),' -> <span style=\"color:red;\" title=\"nu golește nimic\">!!!</span>'),'] (', cid.completename, ')') SEPARATOR '<br>') cartridges
+                                FROM glpi_plugin_iservice_cartridges_tickets cat
+                                LEFT JOIN glpi_plugin_iservice_tickets t ON t.id = cat.tickets_id
+                                LEFT JOIN glpi_cartridges c ON c.id = cat.cartridges_id
+                                LEFT JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
+                                LEFT JOIN glpi_plugin_fields_cartridgeitemtypedropdowns cid on cid.id = cat.plugin_fields_cartridgeitemtypedropdowns_id
+                                GROUP BY cat.tickets_id
+                              ) ct ON ct.tickets_id = t.id
                         WHERE t.is_deleted = 0 $right_condition
                             AND t.status in ([ticket_status])
                             AND CAST(t.id AS CHAR) LIKE '[ticket_id]'
@@ -738,6 +778,7 @@ class Tickets extends View
                             AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
                             AND t.date <= '[date_open]'
                             AND t.content LIKE '[ticket_content]'
+                            
                             [effective_date_start]
                             [unlinked]
                             [tech_id]
@@ -750,6 +791,8 @@ class Tickets extends View
                         ) t
                 WHERE 1=1
                   AND ((t.ticket_followups IS null AND '[ticket_followups]' = '%%') OR t.ticket_followups LIKE '[ticket_followups]')
+                  AND ((t.ticket_consumables IS null AND '[ticket_consumables]' = '%%') OR t.ticket_consumables LIKE '[ticket_consumables]')
+                  AND ((t.ticket_cartridges IS null AND '[ticket_cartridges]' = '%%') OR t.ticket_cartridges LIKE '[ticket_cartridges]')
                 ";
 
         return ${"settingsV$version"} ?? $settingsV1;
