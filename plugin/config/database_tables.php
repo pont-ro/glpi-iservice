@@ -55,7 +55,7 @@ return [
             'nrtran' => 'varchar(6) null default null',
             'cent' => 'varchar(4) null default null',
             'centlot' => 'varchar(11) null default null',
-            'descr' => 'varchar(125) null default null',
+            'descr' => 'varchar(250) null default null',
             'obs1' => 'varchar(30) null default null',
             'cant' => 'double null default null',
             'pucont' => 'double null default null',
