@@ -137,6 +137,10 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                 'action' => 'views.php?view=PrinterCountersV3',
                 'onClick' => 'if (confirm("' . _t('Warning! This operation will block the database for 5 minutes! Proceed?') . '") !== true) { return false; }',
             ],
+            'group_read_extended' => [
+                'caption' => _t('Global read counter extended'),
+                'action' => 'views.php?view=GlobalReadCounter',
+            ],
         ];
         foreach (array_keys($settings['filters']) as $filter_id) {
             if (!in_array($filter_id, ['supplier_id', 'printer_name', 'supplier_name', 'printer_location', 'serial', 'otherserial', 'tech_id'])) {
@@ -156,7 +160,7 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
             'estimate_percentages' => 'available_percentage_estimate'
         ][$order_by] ?? 'cfci.plugin_fields_cartridgeitemtypedropdowns_id';
 
-        $settings['query'] = "
+        $settings['query']               = "
             select
                 t.*
               , group_concat(t.consumable_code separator '<br>') consumable_codes

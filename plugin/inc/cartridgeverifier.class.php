@@ -99,6 +99,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
     public static function verifyCartridges($task, $target_email): void
     {
         Views::getView('PrinterCounters')->refreshCachedData();
+        Views::getView('PrinterCountersV3')->refreshCachedData();
 
         $task->log("Verify cartridges\n");
 
