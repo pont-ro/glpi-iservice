@@ -338,7 +338,7 @@ Expert Line srl
             if ($partner->update(
                 [
                     'id'   => $id,
-                    'name' => trim(preg_replace('/\s+/', '', $partner->fields['name']))
+                    'name' => trim(preg_replace('/\s+/', ' ', $partner->fields['name']))
                 ]
             )
             ) {
