@@ -950,7 +950,7 @@ class PluginIserviceHmarfa
             $currency_error = $ex->getMessage();
         }
 
-        $currency_rate = IserviceToolBox::getInputVariable('currency_rate', $currency_error == null ? $official_currency->EuroCaNumar : $currency_error);
+        $currency_rate = floatval(IserviceToolBox::getInputVariable('currency_rate', $currency_error == null ? $official_currency->EuroCaNumar : $currency_error));
 
         $ticket->fields['_users_id_assign'] = $ticket->getFirstAssignedUser()->getID();
 

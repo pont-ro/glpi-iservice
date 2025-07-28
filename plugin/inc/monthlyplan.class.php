@@ -331,6 +331,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                         $color = isset($printer['multiple']) ? "darkgreen" : "green";
                                     }
 
+                                    $title = "";
                                     $style = "color:$color;";
                                     if (isset($enterprise['moved'])) {
                                         $style .= "font-style:italic;font-weight:bold;";
