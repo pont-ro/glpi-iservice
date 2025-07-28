@@ -951,6 +951,7 @@ class PluginIserviceHmarfa
         }
 
         $currency_rate = floatval(IserviceToolBox::getInputVariable('currency_rate', $currency_error == null ? $official_currency->EuroCaNumar : $currency_error));
+        $currency_needed = false;
 
         $ticket->fields['_users_id_assign'] = $ticket->getFirstAssignedUser()->getID();
 
@@ -1177,6 +1178,7 @@ class PluginIserviceHmarfa
             $ticket_consumable['Pret_Rec'] = empty($processed_pret_stoc) ? $average_delivery_price : number_format($ticket_consumable['Pret_Stoc'] * $consumable_gain, 2, '.', '');
             // Euro price.
             if ($ticket_consumable['euro_price']) {
+                $currency_needed = true;
                 $ticket_consumable['Pret_Euro'] = number_format($ticket_consumable['price'], 2, '.', '');
             } else {
                 $ticket_consumable['Pret_Euro'] = 0;
@@ -1296,6 +1298,10 @@ class PluginIserviceHmarfa
             ];
             $partner_customfields       = new PluginFieldsSuppliersuppliercustomfield();
             $partner_customfields->update($partner_customfields_input);
+        }
+
+        if ($currency_needed && empty($currency_rate)) {
+            $acknowledge_disabled_reason = $import_disabled_reason = $add_disabled_reason = $wait_disabled_reason = $export_disabled_reason = "Eroare la preluarea cursului BNR. Setați manual cursul BNR, apasați butonul actualizare, apoi modificați manual și Pret_Vanz din tabel.";
         }
 
         if (!$ticket->customfields->fields['delivered_field']) {

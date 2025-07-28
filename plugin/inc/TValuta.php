@@ -82,7 +82,7 @@ class TValuta{
 		$preluare_corecta = true;
 		
         if (!file_exists($fisier_cursv) || date("d", @filemtime($fisier_cursv)) != date("d")) { //daca data ultimei modificari a fisierului ce retine cursul valutar este diferita de ziua data de azi, il preluam
-            $sursa_date = "http://www.bnro.ro/nbrfxrates.xml";
+            $sursa_date = "https://curs.bnr.ro/nbrfxrates.xml";
         } else {
             $sursa_date = $fisier_cursv;
         }
