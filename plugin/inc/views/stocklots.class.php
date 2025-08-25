@@ -82,7 +82,7 @@ class StockLots extends View
                       GROUP BY cm.plugin_iservice_consumables_id
                     ) mn ON mn.plugin_iservice_consumables_id = l.codmat
                 LEFT JOIN glpi_plugin_iservice_minimum_stocks m on m.plugin_iservice_consumables_id = l.codmat
-                WHERE stoci-iesiri > [stoc]
+                WHERE stoci - COALESCE(iesiri, 0) > [stoc]
                     AND n.denum LIKE '[denum]'
                     AND codmat LIKE '[cod]'
                     AND obs LIKE '[obs]'
