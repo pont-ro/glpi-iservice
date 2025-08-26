@@ -160,7 +160,12 @@ class PluginIserviceHMarfaImporter extends CommonDBTM
         $dbf_data = new DBFhandler($dbf_path, $fpt_path);
         $columns  = self::getColumnsFromDbf($dbf_path, $fields);
 
-        while (($record = $dbf_data->GetNextRecord(true)) && !empty($record) && empty($record['*'])) {
+        while (($record = $dbf_data->GetNextRecord(true)) && !empty($record)) {
+            if (!empty($record['*'])) {
+                $task->log("Skipping deleted record in $table, record: " . print_r($record, true));
+                continue;
+            }
+
             if (($record['NRFAC'] ?? '') === '018422' && ($record['CODBENEF'] ?? '') === 'AVITUMB') {
                 continue;
             }
