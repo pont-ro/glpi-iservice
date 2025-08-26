@@ -186,6 +186,21 @@ class Emaintenance extends View
         return PluginIserviceEmaintenance::getContentForTicket($row_data, $html_format);
     }
 
+    public static function getSerialDisplay($row_data): ?string
+    {
+        if (!Session::haveRight('plugin_iservice_interface_original', READ)) {
+            return $row_data['printer_serial'];
+        }
+
+        $link = "<a href='printer.form.php?id=$row_data[printers_id]' title='" . _t('Manage printer') . "'>$row_data[printer_serial]</a>";
+        if (isset($row_data['printer_gps']) && !empty($row_data['printer_gps'])) {
+            $link = "<span style='color:blue;'><i>$link</i></span>";
+        }
+
+        $copyLink = IserviceToolBox::getSerialCopyButton($row_data['printer_serial']);
+        return $link . ' ' . $copyLink;
+    }
+
     protected function getSettings(): array
     {
         global $CFG_GLPI;
@@ -345,12 +360,7 @@ class Emaintenance extends View
                 ],
                 'printer_serial' => [
                     'title' => 'Serie',
-                    'format' => '%s',
-                    'link' => [
-                        'href' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=[printers_id]",
-                        'target' => '_blank',
-                        'visible' => Session::haveRight('plugin_iservice_interface_original', READ),
-                    ]
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Emaintenance::getSerialDisplay($row);',
                 ],
                 'costcenter' => [
                     'title' => 'Centru de cost'
