@@ -1242,7 +1242,7 @@ class PluginIserviceHmarfa
             }
         }
 
-        $vat                  = IserviceToolBox::getInputVariable('vat', 19);
+        $vat                  = IserviceToolBox::getInputVariable('vat', PluginIserviceConfig::getConfigValue('default_vat', 21));
         $vatField             = $form->generateField(PluginIserviceHtml::FIELDTYPE_TEXT, 'vat', $vat, false, ['style' => 'width: 3em;', 'class' => 'p-2']);
         $total_vat_value      = number_format($total_amount * $vat / 100, 2, '.', '');
         $total_value_with_vat = number_format($total_vat_value + $total_amount, 2, '.', '');

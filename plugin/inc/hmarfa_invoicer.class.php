@@ -805,7 +805,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     // Display the updated fields.
                     foreach (['printers', 'routers'] as $itemType) {
                         if (isset($items[$itemType][$data[0]])) {
-                            $items[$itemType][$data[0]]->tableData['data_ult_fact'] = $data[1];
+                            $items[$itemType][$data[0]]->tableData['data_ult_fact']             = $data[1];
                             $items[$itemType][$data[0]]->tableData['invoice_expiry_date_field'] = $data[2];
                             if ($data[3] !== '' && isset($items[$itemType][$data[0]]->tableData['invoiced_total_black_field'])) {
                                 $items[$itemType][$data[0]]->tableData['invoiced_total_black_field'] = $data[3];
@@ -1013,15 +1013,16 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $mailData    = $frontendData['mailData'];
         $invoiceData = $frontendData['invoiceData'];
         /**/
-        $magic_link_label = "Link magic partener:";
-        $magic_link_button_name = "Genereaza";
+        $magic_link_label        = "Link magic partener:";
+        $magic_link_button_name  = "Genereaza";
         $magic_link_button_class = "";
         if (!empty($items['first']['supplier']->customfields->fields['magic_link_field'])) {
-            $magic_link = $items['first']['supplier']->getMagicLink();
-            $magic_link_label = "<a href='$magic_link' target='_blank'>$magic_link_label</a>";
+            $magic_link              = $items['first']['supplier']->getMagicLink();
+            $magic_link_label        = "<a href='$magic_link' target='_blank'>$magic_link_label</a>";
             $magic_link_button_name .= " nou";
             $magic_link_button_class = " new";
         }
+
         $magic_link_button = "<input type='submit' name='generate_magic_link' class='submit$magic_link_button_class' value='$magic_link_button_name'>";
         if (empty($items['first']['supplier']->customfields->fields['uic_field'])) {
             $magic_link_button = "<span style='color: red'>Partenerul nu are CUI!</span>";
@@ -1049,9 +1050,10 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             "Tip contract:",
             $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $items['first']['contract']['contract_type'] ?? '')
         );
+        $vat = PluginIserviceConfig::getConfigValue('default_vat', 21);
         $form->displayFieldTableRow(
             "Total factura:",
-            "$items[invoice_total] + 19% TVA = <b>" . self::numberFormat($items['invoice_total'] * 1.19) . "</b> RON"
+            "$items[invoice_total] + $vat% TVA = <b>" . self::numberFormat($items['invoice_total'] * (1 + $vat / 100)) . "</b> RON"
         );
         $form->displayFieldTableRow(
             "<a href='mailto:$invoiceData[email_for_invoices_field]?subject=$mailData[subject]&body=$mailData[body]'>Trimite email</a> către:",
@@ -1147,7 +1149,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             . '</span>'
         );
 
-        $contractNum = $items['first']['contract']['num'] ?? '<span class="text-danger">???</span>';
+        $contractNum            = $items['first']['contract']['num'] ?? '<span class="text-danger">???</span>';
         $firstLineUpdaterScript = "
 <script>
   function updateFirstLine() {
@@ -1399,9 +1401,11 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $form->displayTableRow(
                 [
                     'Perioadă de la (exp. fact.)',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][invoice_expiry_date_field]", $printer->tableData['invoice_expiry_date_field'],
-            false,
-                    ['style' => "width: 180px;"]),
+                    $form->generateField(
+                        PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][invoice_expiry_date_field]", $printer->tableData['invoice_expiry_date_field'],
+                        false,
+                        ['style' => "width: 180px;"]
+                    ),
                     'Tip contract',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contract_type'], true)
                 ],
@@ -1409,9 +1413,11 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $form->displayTableRow(
                 [
                     'Data expirare factură',
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][data_fact_until]", $printer->tableData['rows']['until'],
-                    false,
-                    ['style' => "width: 180px;"]),
+                    $form->generateField(
+                        PluginIserviceHtml::FIELDTYPE_DATE, "item[printer][{$printer->tableData['id']}][data_fact_until]", $printer->tableData['rows']['until'],
+                        false,
+                        ['style' => "width: 180px;"]
+                    ),
                     'Divizor copii',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['divizor_copii'], true)
                 ]
@@ -1440,10 +1446,11 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 $additionalColorCopies = '';
             }
 
+            $bkUsage = "&nbsp;(<span style='color:#2f3f64'>" . ($printer->tableData['contor_bk_ui'] - $printer->tableData['contor_bk_uf']) . " copii consumate</span>)";
             $form->displayTableRow(
                 [
                     ($printer->isPlotter() ? 'ml cerneală ' : 'Contor bk ') . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_bk_ui'], true),
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_bk_ui'], true) . $bkUsage,
                     'Nr copii col incluse',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['included_copies_col_field'] . $additionalColorCopies, true)
                 ]
@@ -1456,10 +1463,12 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['included_copy_value_field'], true)
                 ]
             );
+
+            $colUsage = "&nbsp;(<span style='color:#2f3f64'>" . ($printer->tableData['contor_col_ui'] - $printer->tableData['contor_col_uf']) . " copii consumate</span>)";
             $form->displayTableRow(
                 [
                     ($printer->isPlotter() ? 'mp supraf prnt ' : 'Contor col ') . $form->generateNewTabLink('ultima intervenție', "$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id={$printer->lastTicket()->getID()}"),
-                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_col_ui'], true),
+                    $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['contor_col_ui'] .  $colUsage, true),
                     'Valoare contract',
                     $form->generateField(PluginIserviceHtml::FIELDTYPE_LABEL, "", $printer->tableData['monthly_fee_field'], true)
                 ]

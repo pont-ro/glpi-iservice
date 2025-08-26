@@ -38,4 +38,5 @@ return [
     'ajax_limit_count' => 1,
     'qr.ticket_user_name' => 'Cititor',
     'qr.ticket_user_password' => '6PrDatF23b0P12X',
+    'default_vat' => 21,
 ];

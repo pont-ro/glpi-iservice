@@ -284,21 +284,20 @@ Serviciul Financiar";
             default:
                 $mail_body = "Buna ziua,
 
-Va atasam factura pt serviciile curente
+Va atasam factura.
 Rog confirmare de primire.
 
-In evidentele noastre figureaza urmatoarele datorii, inclusiv cea atasata
+In evidentele noastre figureaza urmatoarele datorii anterioare
 {$this->fields['name']}
 Cod fiscal: {$this->customfields->fields['uic_field']}
 Numar facturi neachitate: $unpaid_invoices_count
 Valoare facturi neachitate: $unpaid_invoices_value
 $unpaid_invoices_list
 
-Pentru a vedea situatia ultimelor 10 facturi si a le descarca in format pdf, accesati link-ul urmator:
+Pentru a vedea situația ultimelor 10 facturi și a le descarca in format pdf, accesati link-ul urmator:
 {$siteUrl}{$this->getMagicLink()}
 
 Va rog pastrati acest link deoarece datele de pe acest link vor fi in permananenta actualizate, deci va putea fi folosit pe viitor.
-In cazul in care vi se cere o parola suplimentara pentru a accesa serverul Expert Line va rugam trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366
 
 Expert Line incarca in sistemul e-factura toate facturile, in conditiile legii.
  

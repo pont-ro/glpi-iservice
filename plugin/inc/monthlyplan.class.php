@@ -347,8 +347,11 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                         global $CFG_GLPI;
                                         $siteUrl     = PluginIserviceConfig::getConfigValue('site_url');
                                         $body        = "Buna ziua!\r\n";
-                                        $body       .= "Va rog sa completati starea contoarelor copiatoarelor aflate la dvs. pe interfata web: $siteUrl\r\n";
-                                        $body       .= "In cazul in care nu aveti cont de utilizator, sau vi se cere o parola suplimentara pentru a accesa serverul Expert Line, va rog trimiteti o solicitare pe SMS sau WhatsApp la numarul 0722323366\r\n\r\n";
+                                        $body       .= "Va rugam sa ne trimiteti starea contoarelor copiatoarelor aflate la dvs. folosind una din metodele de mai jos: \r\n";
+                                        $body       .= "- prin scanarea codului QR aplicat de tehnicienii noștri pe aparat\r\n";
+                                        $body       .= "- pe interfata web: $siteUrl\r\n";
+                                        $body       .= "- raspunzand la acest mail\r\n";
+                                        $body       .= "In cazul in care nu aveti cod QR aplicat / cont de utilizator, sau pentru asistenta tehnica, va rog trimiteti o  solicitare pe SMS sau WhatsApp la numarul 0722323366.\r\n\r\n";
                                         $body       .= "Cu multumiri,\r\nCarmen";
                                         $mail_body   = str_replace('+', ' ', urlencode($body));
                                         $mailto_link = "mailto:$enterprise[enterprise_email_facturi]?subject=Citire contor/contoare copiatoare - $enterprise[enterprise_name]&body=$mail_body";
