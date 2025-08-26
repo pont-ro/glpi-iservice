@@ -294,7 +294,7 @@ Numar facturi neachitate: $unpaid_invoices_count
 Valoare facturi neachitate: $unpaid_invoices_value
 $unpaid_invoices_list
 
-Pentru a vedea situația ultimelor 10 facturi și a le descarca in format pdf, accesati link-ul urmator:
+Pentru a vedea situatia ultimelor 10 facturi si a le descarca in format pdf, accesati link-ul urmator:
 {$siteUrl}{$this->getMagicLink()}
 
 Va rog pastrati acest link deoarece datele de pe acest link vor fi in permananenta actualizate, deci va putea fi folosit pe viitor.
