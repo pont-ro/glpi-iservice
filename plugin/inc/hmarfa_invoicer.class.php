@@ -962,7 +962,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             [
                 'id' => 'hmarfa-invoicer-form',
                 'name' => 'hmarfa-invoicer-form',
-                'class' => 'hmarfa-invoicer-form iservice-form',
+                'class' => 'hmarfa-invoicer-form iservice-form compress-data-before-submit',
                 'method' => 'post',
             ]
         );
