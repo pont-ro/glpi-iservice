@@ -1660,7 +1660,6 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
 
         echo "                    </select>";
-        echo "                    <i class='pointer fa fa-trash' onclick='$(\"[name=delete]\").click();' style='color:red;'></i><input name='delete' type='submit' style='display: none;'/>";
         echo "                    <input class='submit" . (empty($frontendData['import_disabled_reason']) ? '' : ' disabled') . "' name='import' style='color:red;' title='" . ($frontendData['import_disabled_reason'] ?: 'ATENȚIE! Apăsând butonul ștergeți fișierele csv!') . "' type='submit' value='Importat în hMarfa' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
         echo "                    <input class='submit" . (empty($frontendData['import_disabled_reason']) ? '' : ' disabled') . "' name='update' style='color:red;' title='" . ($frontendData['import_disabled_reason'] ?: '') . "' type='submit' value='Update facturare' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
         echo "                    <a id='send_mail_2' class='vsubmit' href='mailto:{$frontendData['invoiceData']['email_for_invoices_field']}?subject={$frontendData['mailData']['subject']}&body={$frontendData['mailData']['body']}' title='Trimite email către: {$frontendData['invoiceData']['email_for_invoices_field']}'>Trimite email</a>";
