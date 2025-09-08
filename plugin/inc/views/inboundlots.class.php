@@ -29,10 +29,12 @@ class InboundLots extends View
 									, l.stoci
 									, f.initiale as denumire_partener
 									, n.denum as denumire_material
+								    , cd.description AS model_description
 								FROM {$this->table_prefix}hmarfa_lotm l
 								LEFT JOIN {$this->table_prefix}hmarfa_tran t ON t.nrtran = l.nrtran
 								LEFT JOIN {$this->table_prefix}hmarfa_firme f ON f.cod = t.furnizor
 								LEFT JOIN {$this->table_prefix}hmarfa_nommarfa n ON n.cod = l.codmat
+								LEFT JOIN glpi_plugin_iservice_consumabledescriptions cd ON cd.plugin_iservice_consumables_id = l.codmat
 								WHERE (f.initiale LIKE '[denum_part]' or f.denum is null)
 									AND t.datadoc >= '[start_date]'
 									AND t.datadoc <= '[end_date]'
@@ -99,6 +101,7 @@ class InboundLots extends View
                 ],
                 'codmat' => [
                     'title' => 'Cod material',
+                    'tooltip' => '[model_description]'
                 ],
                 'grupa' => [
                     'title' => 'Grupa',

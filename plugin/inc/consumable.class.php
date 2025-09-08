@@ -30,6 +30,7 @@ class PluginIserviceConsumable extends CommonDBTM
         if (isset($this->fields[static::getIndexName()])) {
             return $this->fields[static::getIndexName()];
         }
+
         return -1;
     }
 

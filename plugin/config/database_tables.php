@@ -710,6 +710,25 @@ return [
             ],
         ],
     ],
+    'glpi_plugin_iservice_consumabledescriptions' => [
+        'columns' => [
+            'id' => 'int unsigned not null auto_increment',
+            'plugin_iservice_consumables_id' => 'varchar(15) not null default \'0\'',
+            'description' => 'varchar(200) not null default \'0\'',
+        ],
+        'indexes' => [
+            [
+                'name' => 'primary key',
+                'type' => '',
+                'columns' => "(`id`)",
+            ],
+            [
+                'name' => 'plugin_iservice_consumables_id',
+                'type' => 'index',
+                'columns' => "(`plugin_iservice_consumables_id`)",
+            ],
+        ],
+    ],
     'glpi_plugin_iservice_minimum_stocks' => [
         'columns' => [
             'id' => 'int unsigned not null auto_increment',

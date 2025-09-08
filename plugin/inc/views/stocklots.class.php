@@ -3,6 +3,7 @@
 namespace GlpiPlugin\Iservice\Views;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use PluginIserviceConfig;
 use PluginIserviceConsumable_Model;
 
 // Imported from iService2, needs refactoring. Original file: "Loturi_Stoc.php".
@@ -32,6 +33,15 @@ class StockLots extends View
         return PluginIserviceConsumable_Model::showForConsumable($row_data['Cod_Articol'], $consumable_data, true);
     }
 
+    public static function getCodmatDisplay($row_data): string
+    {
+        global $CFG_PLUGIN_ISERVICE;
+
+        return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=InboundLots&inboundlots0[codmat]=$row_data[Cod_Articol]' target='_blank'><i class='ti ti-transfer-in'></i></a> "
+            . $row_data['Cod_Articol']
+            . " <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=OutboundLots&outboundlots0[codmat]=$row_data[Cod_Articol]' target='_blank'><i class='ti ti-transfer-out'></i></a>";
+    }
+
     public static function getMinimumStockDisplay($row_data): string
     {
         if (empty($row_data['minimum_stock'])) {
@@ -55,13 +65,13 @@ class StockLots extends View
     {
         return [
             'name' => self::getName(),
+            'id_field' => 'Cod_Articol',
             'query' => "
                 SELECT
                       l.nrtran AS Nr_receptie
                     , t.dataint AS Data_Receptie
                     , codmat AS Cod_Articol
                     , n.denum AS Denumire
-                    , l.gest AS Gest
                     , tipgest AS Tip_Gest
                     , l.grupa AS Grupa
                     , ROUND(pcont,2) AS Pret_unitar
@@ -70,39 +80,36 @@ class StockLots extends View
                     , stoci-iesiri AS Stoc
                     , (stoci-iesiri)*pcont AS Valoare
                     , obs as Observatii
-                    , mn.model_names
+                    /*, mn.model_names*/ /* Temporarily disabled EXL-546 */
+                    , cd.description AS model_description
                     , m.minimum_stock
                 FROM {$this->table_prefix}hmarfa_lotm l
                 LEFT JOIN {$this->table_prefix}hmarfa_nommarfa n ON l.codmat=n.cod
                 INNER JOIN {$this->table_prefix}hmarfa_tran t USING (nrtran)
-                LEFT JOIN
+                /*LEFT JOIN
                     ( SELECT GROUP_CONCAT(CONCAT(pm.id, ':', pm.name) SEPARATOR '<br>') model_names, cm.plugin_iservice_consumables_id
                       FROM glpi_plugin_iservice_consumables_models cm
                       LEFT JOIN glpi_printermodels pm on pm.id = cm.printermodels_id
                       GROUP BY cm.plugin_iservice_consumables_id
-                    ) mn ON mn.plugin_iservice_consumables_id = l.codmat
+                    ) mn ON mn.plugin_iservice_consumables_id = l.codmat*/ /* Temporarily disabled EXL-546 */
+                LEFT JOIN glpi_plugin_iservice_consumabledescriptions cd ON cd.plugin_iservice_consumables_id = l.codmat
                 LEFT JOIN glpi_plugin_iservice_minimum_stocks m on m.plugin_iservice_consumables_id = l.codmat
                 WHERE stoci - COALESCE(iesiri, 0) > [stoc]
                     AND n.denum LIKE '[denum]'
                     AND codmat LIKE '[cod]'
                     AND obs LIKE '[obs]'
                     AND l.grupa LIKE '[tip]'
-                    AND ((mn.model_names is null AND '[model_names]' = '%%') OR mn.model_names LIKE '[model_names]')
+                    /*AND ((mn.model_names is null AND '[model_names]' = '%%') OR mn.model_names LIKE '[model_names]')*/ /* Temporarily disabled EXL-546 */
                     AND (m.minimum_stock is null and 0 > [minimum_stock] OR m.minimum_stock > [minimum_stock])
-                    [gest]
+                    AND (l.nrtran LIKE '[nrtran]' or l.nrtran is null)
                 ",
             'default_limit' => 25,
             'filters' => [
-                'gest' => [
-                    'type' => 'select',
-                    'caption' => 'Gestiune',
-                    'options' => [
-                        '' => 'oricare',
-                        'MR' => 'MR',
-                        'MR2' => 'MR2',
-                    ],
-                    'format' => "AND l.gest = '%s'",
-                    'header' => 'Gest',
+                'nrtran' => [
+                    'type' => 'text',
+                    'caption' => 'Nrtran',
+                    'format' => '%%%s%%',
+                    'header' => "Nr_receptie",
                 ],
                 'denum' => [
                     'type' => 'text',
@@ -138,11 +145,17 @@ class StockLots extends View
                     'format' => '%%%s%%',
                     'header' => 'Observatii',
                 ],
-                'model_names' => [
+//                'model_names' => [ Temporarily disabled EXL-546
+//                    'type' => 'text',
+//                    'caption' => 'Modele compatibile',
+//                    'format' => '%%%s%%',
+//                    'header' => 'model_names',
+//                ],
+                'model_description' => [
                     'type' => 'text',
-                    'caption' => 'Modele compatibile',
+                    'caption' => _t('Product description'),
                     'format' => '%%%s%%',
-                    'header' => 'model_names',
+                    'header' => 'model_description',
                 ],
                 'minimum_stock' => [
                     'type' => 'int',
@@ -165,17 +178,24 @@ class StockLots extends View
                 ],
                 'Cod_Articol' => [
                     'title' => 'Cod articol',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\StockLots::getCodmatDisplay($row);',
                 ],
                 'Denumire' => [
                     'title' => 'Denumire',
                 ],
-                'Gest' => [
-                    'title' => 'Gest',
-                ],
-                'model_names' => [
-                    'title' => 'Modele compatibile',
-                    'align' => 'center',
-                    'format' => 'function:default', // this will call PluginIserviceView_Loturi_Stoc::getModelNamesDisplay($row);
+//                'model_names' => [ Temporarily disabled EXL-546
+//                    'title' => 'Modele compatibile',
+//                    'align' => 'center',
+//                    'format' => 'function:default', // this will call PluginIserviceView_Loturi_Stoc::getModelNamesDisplay($row);
+//                ],
+                'model_description' => [
+                    'title' => _t('Product description'),
+                    'editable' => true,
+                    'edit_settings' => [
+                        'callback' => 'manageItem',
+                        'itemType' => 'PluginIserviceConsumableDescription',
+                        'operation' => 'EditDescription'
+                    ]
                 ],
                 'Grupa' => [
                     'title' => 'Grupa',
