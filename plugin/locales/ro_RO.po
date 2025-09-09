@@ -1515,6 +1515,18 @@ msgstr "Înapoi"
 msgid "Tickets"
 msgstr "Tichete"
 
+msgid "Product description"
+msgstr "Descriere produs"
+
+msgid "Failed to update product description"
+msgstr "Actualizarea descrierii produsului a eșuat"
+
+msgid "Consumable Description"
+msgid_plural "Consumable Descriptions"
+msgstr[0] "Descriere consumabil"
+msgstr[1] "Descrieri consumabil"
+msgstr[2] "Descrieri consumabil"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"

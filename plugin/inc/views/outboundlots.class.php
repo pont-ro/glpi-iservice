@@ -32,10 +32,12 @@ class OutboundLots extends View
                     , fr.cant AS Cant
                     , IF(fr.tip='AIMFS' OR fr.tip='TAIM', 0, fr.puliv) AS Pret_Liv
                     , IF(fr.tip='AIMFS' OR fr.tip='TAIM', -(ROUND(fr.puini*fr.cant,2)), ROUND(fr.cant*(fr.puliv-fr.puini),2)) AS Adaos
+                    , cd.description AS model_description
                 FROM {$this->table_prefix}hmarfa_facrind fr
                 LEFT JOIN {$this->table_prefix}hmarfa_facturi fa ON fa.nrfac = fr.nrfac
                 LEFT JOIN {$this->table_prefix}hmarfa_firme fi ON fi.cod = fa.codbenef
                 LEFT JOIN {$this->table_prefix}hmarfa_nommarfa n ON fr.codmat = n.cod
+                LEFT JOIN glpi_plugin_iservice_consumabledescriptions cd ON cd.plugin_iservice_consumables_id = fr.codmat
                 WHERE fr.tip IN ('TFAC','AIMFS','TFACR','TAIM')
                     AND fa.datafac >= '[start_date]'
                     AND fa.datafac <= '[end_date]'
@@ -115,6 +117,7 @@ class OutboundLots extends View
                 ],
                 'Cod' => [
                     'title' => 'Cod material',
+                    'tooltip' => '[model_description]'
                 ],
                 'Denumire_Articol' => [
                     'title' => 'Denumire articol',
