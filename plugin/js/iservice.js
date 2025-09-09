@@ -650,7 +650,7 @@ jQuery(document).ready(
             }
         );
 
-        $('form .compress-data-before-submit').each(
+        $('form.compress-data-before-submit, form .compress-data-before-submit').each(
             function() {
                 $(this).closest('form').on('submit', function(e) {
                     e.preventDefault();
