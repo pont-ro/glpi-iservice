@@ -17,6 +17,7 @@ class OutboundLots extends View
 
     protected function getSettings(): array
     {
+        global $CFG_PLUGIN_ISERVICE;
         return [
             'name' => self::getName(),
             'query' => "
@@ -49,6 +50,11 @@ class OutboundLots extends View
                     AND fr.descr LIKE '[descr]'
                 ",
             'default_limit' => 25,
+            'show_filter_buttons' => [
+                'show_full_list_button' => [
+                    'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=OutboundLots"
+                ]
+            ],
             'filters' => [
                 'start_date' => [
                     'type' => 'date',

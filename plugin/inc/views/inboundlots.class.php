@@ -17,6 +17,7 @@ class InboundLots extends View
 
     protected function getSettings(): array
     {
+        global $CFG_PLUGIN_ISERVICE;
         return [
             'name' => self::getName(),
             'query' => "
@@ -44,6 +45,11 @@ class InboundLots extends View
 									AND (n.denum LIKE '[denum_mat]' or n.denum is null)
 								",
             'default_limit' => 25,
+            'show_filter_buttons' => [
+                'show_full_list_button' => [
+                    'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=InboundLots"
+                ]
+            ],
             'filters' => [
                 'start_date' => [
                     'type' => 'date',

@@ -422,6 +422,10 @@ class View extends \CommonGLPI
         $required     = !empty($filter_data['required']);
         $filter_reset = $this->reset !== null || IserviceToolBox::getInputVariable('reset') !== null;
         $filter_value = ($filter_reset && !$required) ? null : ($params[$filter_name] ?? $filter_data['default'] ?? null);
+        if (!empty($params[$filter_name])) {
+            $filter_data['type'] = self::FILTERTYPE_LABEL; // This will make the filter read-only.
+        }
+
         if ($required && empty($filter_value)) {
             ob_end_clean();
             echo "<div class='error'>";
@@ -883,9 +887,9 @@ class View extends \CommonGLPI
         }
     }
 
-    private function getResetButtonLink(mixed $config)
+    private function showFullListButton(mixed $config)
     {
-        return $config['reset']['link'] ?? false;
+        return $config['show_full_list_button']['link'] ?? false;
     }
 
     protected function displayResultsTable($data, $readonly = false): void
@@ -930,15 +934,15 @@ class View extends \CommonGLPI
 
                 if ($this->show_filter_buttons) {
                     echo " <input type='submit' class='submit noprint' name='filter' value='" . __('Filter', 'views') . "'/>";
-                    if ($this->getResetButtonLink($this->show_filter_buttons)) {
-                        echo "<a href='{$this->getResetButtonLink($this->show_filter_buttons)}' class='vsubmit noprint ms-1'>" . __('Reset filters', 'views') . "</a>";
-                    } else {
-                        echo " <input 
-                            type='button' 
-                            class='submit noprint' 
-                            name='{$this->getRequestArrayName()}[reset]' 
-                            onclick='keepViewParamAndReload(); return false;'
-                            value='" . __('Reset filters', 'views') . "'/>";
+
+                    echo " <input 
+                        type='submit' 
+                        class='submit noprint' 
+                        name='{$this->getRequestArrayName()}[reset]' 
+                        value='" . __('Reset filters', 'views') . "'/>";
+
+                    if ($this->showFullListButton($this->show_filter_buttons)) {
+                        echo "<a href='{$this->showFullListButton($this->show_filter_buttons)}' class='vsubmit noprint ms-1'>" . __('Full list', 'views') . "</a>";
                     }
                 }
 

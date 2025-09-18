@@ -363,7 +363,7 @@ class Cartridges extends View
             'default_limit' => 50,
             // 'show_limit' => !self::isRestrictedMode(),
              'show_filter_buttons' => [
-                 'reset' => [
+                 'show_full_list_button' => [
                     'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges"
                  ]
              ],
