@@ -5,6 +5,38 @@ $(document).ready(
     }
 );
 
+// Remove all url params except 'view' and reload the page
+window.keepViewParamAndReload = function() {
+    try {
+        const current = new URL(window.location.href);
+
+        const hash = current.hash || '';
+
+        const view = current.searchParams.get('view');
+
+        let rebuilt = current.origin + current.pathname;
+
+        if (view !== null) {
+            rebuilt += '?view=' + encodeURIComponent(view);
+        }
+
+        const finalUrl = (() => {
+            try {
+                return decodeURI(rebuilt + hash);
+            } catch (e) {
+                return rebuilt + hash;
+            }
+        })();
+
+        window.location.replace(finalUrl);
+    } catch (e) {
+        console.error('keepViewParamAndReload: Exception:', e);
+    }
+};
+
+
+
+
 function changeLogoUrl()
 {
     let logo = $('a.navbar-brand:not(.ignore-url-change)');

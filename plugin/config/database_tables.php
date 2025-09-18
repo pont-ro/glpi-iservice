@@ -713,8 +713,8 @@ return [
     'glpi_plugin_iservice_consumabledescriptions' => [
         'columns' => [
             'id' => 'int unsigned not null auto_increment',
-            'plugin_iservice_consumables_id' => 'varchar(15) not null default \'0\'',
-            'description' => 'varchar(200) not null default \'0\'',
+            'plugin_iservice_consumables_id' => 'varchar(15) character set utf8mb4 collate utf8mb4_unicode_ci not null default \'0\'',
+            'description' => 'varchar(200) character set utf8mb4 collate utf8mb4_unicode_ci not null default \'0\'',
         ],
         'indexes' => [
             [

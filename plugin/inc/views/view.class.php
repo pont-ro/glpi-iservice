@@ -934,9 +934,10 @@ class View extends \CommonGLPI
                         echo "<a href='{$this->getResetButtonLink($this->show_filter_buttons)}' class='vsubmit noprint ms-1'>" . __('Reset filters', 'views') . "</a>";
                     } else {
                         echo " <input 
-                            type='submit' 
+                            type='button' 
                             class='submit noprint' 
                             name='{$this->getRequestArrayName()}[reset]' 
+                            onclick='keepViewParamAndReload(); return false;'
                             value='" . __('Reset filters', 'views') . "'/>";
                     }
                 }
