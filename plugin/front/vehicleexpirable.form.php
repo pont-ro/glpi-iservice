@@ -11,6 +11,7 @@ $expirableId     = IserviceToolBox::getInputVariable('id');
 $vehicleId       = IserviceToolBox::getInputVariable('vehicle_id');
 $addExpirable    = IserviceToolBox::getInputVariable('add');
 $updateExpirable = IserviceToolBox::getInputVariable('update');
+$deleteExpirable = IserviceToolBox::getInputVariable('purge');
 
 global $DB;
 
@@ -61,6 +62,16 @@ if (!empty($addExpirable)) {
     }
 
     Html::back();
+} elseif (!empty($deleteExpirable)) {
+    $expirable->check($expirableId, PURGE);
+
+    if ($expirable->delete(['id' => $expirableId])) {
+        Session::addMessageAfterRedirect(_t('Expirable deleted successfully'), true, INFO, true);
+        Html::redirect("views.php?view=VehicleExpirables&vehicleexpirables0[vehicle_id]=$vehicleId");
+    } else {
+        Session::addMessageAfterRedirect(sprintf(_t('Error deleting expirable %d'), $expirableId), false, ERROR);
+        Html::back();
+    }
 }
 
 Html::header(PluginIserviceVehicleExpirable::getTypeName(Session::getPluralNumber()), $_SERVER['PHP_SELF'], null, null);

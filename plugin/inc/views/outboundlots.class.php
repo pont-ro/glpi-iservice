@@ -49,6 +49,11 @@ class OutboundLots extends View
                     AND fr.descr LIKE '[descr]'
                 ",
             'default_limit' => 25,
+            'show_filter_buttons' => [
+                'extra_buttons' => [
+                    'self',
+                ],
+            ],
             'filters' => [
                 'start_date' => [
                     'type' => 'date',

@@ -422,6 +422,10 @@ class View extends \CommonGLPI
         $required     = !empty($filter_data['required']);
         $filter_reset = $this->reset !== null || IserviceToolBox::getInputVariable('reset') !== null;
         $filter_value = ($filter_reset && !$required) ? null : ($params[$filter_name] ?? $filter_data['default'] ?? null);
+        if (!empty($params[$filter_name])) {
+            $filter_data['type'] = self::FILTERTYPE_LABEL; // This will make the filter read-only.
+        }
+
         if ($required && empty($filter_value)) {
             ob_end_clean();
             echo "<div class='error'>";
@@ -883,9 +887,21 @@ class View extends \CommonGLPI
         }
     }
 
-    private function getResetButtonLink(mixed $config)
+    private function displayExtraButtons(array $extraButtonsConfig)
     {
-        return $config['reset']['link'] ?? false;
+        foreach ($extraButtonsConfig as $buttonName => $buttonLink) {
+            if ($buttonLink === 'self') {
+                echo "<a href='{$this->getSelfUrl()}' class='vsubmit noprint ms-1'>" . _t('Full list') . "</a>";
+            } else {
+                echo "<a href='$buttonLink' class='vsubmit noprint ms-1'>$buttonName</a>";
+            }
+        }
+    }
+
+    private function getSelfUrl()
+    {
+        global $CFG_PLUGIN_ISERVICE;
+        return "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view={$this->getMachineName()}";
     }
 
     protected function displayResultsTable($data, $readonly = false): void
@@ -930,14 +946,15 @@ class View extends \CommonGLPI
 
                 if ($this->show_filter_buttons) {
                     echo " <input type='submit' class='submit noprint' name='filter' value='" . __('Filter', 'views') . "'/>";
-                    if ($this->getResetButtonLink($this->show_filter_buttons)) {
-                        echo "<a href='{$this->getResetButtonLink($this->show_filter_buttons)}' class='vsubmit noprint ms-1'>" . __('Reset filters', 'views') . "</a>";
-                    } else {
-                        echo " <input 
-                            type='submit' 
-                            class='submit noprint' 
-                            name='{$this->getRequestArrayName()}[reset]' 
-                            value='" . __('Reset filters', 'views') . "'/>";
+
+                    echo " <input 
+                        type='submit' 
+                        class='submit noprint' 
+                        name='{$this->getRequestArrayName()}[reset]' 
+                        value='" . __('Reset filters', 'views') . "'/>";
+
+                    if (!empty($this->show_filter_buttons['extra_buttons'])) {
+                        $this->displayExtraButtons($this->show_filter_buttons['extra_buttons']);
                     }
                 }
 

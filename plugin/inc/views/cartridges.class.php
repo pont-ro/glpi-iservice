@@ -362,11 +362,12 @@ class Cartridges extends View
                         ",
             'default_limit' => 50,
             // 'show_limit' => !self::isRestrictedMode(),
-             'show_filter_buttons' => [
-                 'reset' => [
-                    'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges"
-                 ]
-             ],
+            'show_filter_buttons' => [
+                'extra_buttons' => [
+                    'self',
+                     // 'Button Name' => "button url", Example of custom button.
+                ],
+            ],
             'use_cache' => false,
             'cache_timeout' => 43200, // 12 hours
             'cache_query' => "SELECT *  FROM {table_name}

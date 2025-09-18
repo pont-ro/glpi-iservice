@@ -44,6 +44,11 @@ class InboundLots extends View
 									AND (n.denum LIKE '[denum_mat]' or n.denum is null)
 								",
             'default_limit' => 25,
+            'show_filter_buttons' => [
+                'extra_buttons' => [
+                    'self',
+                ],
+            ],
             'filters' => [
                 'start_date' => [
                     'type' => 'date',

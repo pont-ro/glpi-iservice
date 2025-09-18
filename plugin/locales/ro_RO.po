@@ -1434,6 +1434,9 @@ msgstr "Expirabile create cu succes"
 msgid "Error deleting expirable %d"
 msgstr "Eroare la ștergerea expirabilului %d"
 
+msgid "Expirable deleted successfully"
+msgstr "Expirabil șters cu succes"
+
 msgid "Expirables deleted successfully"
 msgstr "Expirabile șterse cu succes"
 
