@@ -887,9 +887,21 @@ class View extends \CommonGLPI
         }
     }
 
-    private function showFullListButton(mixed $config)
+    private function displayExtraButtons(array $extraButtonsConfig)
     {
-        return $config['show_full_list_button']['link'] ?? false;
+        foreach ($extraButtonsConfig as $buttonName => $buttonLink) {
+            if ($buttonLink === 'self') {
+                echo "<a href='{$this->getSelfUrl()}' class='vsubmit noprint ms-1'>" . _t('Full list') . "</a>";
+            } else {
+                echo "<a href='$buttonLink' class='vsubmit noprint ms-1'>$buttonName</a>";
+            }
+        }
+    }
+
+    private function getSelfUrl()
+    {
+        global $CFG_PLUGIN_ISERVICE;
+        return "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view={$this->getMachineName()}";
     }
 
     protected function displayResultsTable($data, $readonly = false): void
@@ -941,8 +953,8 @@ class View extends \CommonGLPI
                         name='{$this->getRequestArrayName()}[reset]' 
                         value='" . __('Reset filters', 'views') . "'/>";
 
-                    if ($this->showFullListButton($this->show_filter_buttons)) {
-                        echo "<a href='{$this->showFullListButton($this->show_filter_buttons)}' class='vsubmit noprint ms-1'>" . __('Full list', 'views') . "</a>";
+                    if (!empty($this->show_filter_buttons['extra_buttons'])) {
+                        $this->displayExtraButtons($this->show_filter_buttons['extra_buttons']);
                     }
                 }
 

@@ -17,7 +17,6 @@ class InboundLots extends View
 
     protected function getSettings(): array
     {
-        global $CFG_PLUGIN_ISERVICE;
         return [
             'name' => self::getName(),
             'query' => "
@@ -46,9 +45,9 @@ class InboundLots extends View
 								",
             'default_limit' => 25,
             'show_filter_buttons' => [
-                'show_full_list_button' => [
-                    'link' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=InboundLots"
-                ]
+                'extra_buttons' => [
+                    'self',
+                ],
             ],
             'filters' => [
                 'start_date' => [
