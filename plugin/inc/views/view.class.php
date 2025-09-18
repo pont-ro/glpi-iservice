@@ -422,9 +422,6 @@ class View extends \CommonGLPI
         $required     = !empty($filter_data['required']);
         $filter_reset = $this->reset !== null || IserviceToolBox::getInputVariable('reset') !== null;
         $filter_value = ($filter_reset && !$required) ? null : ($params[$filter_name] ?? $filter_data['default'] ?? null);
-        if (!empty($params[$filter_name])) {
-            $filter_data['type'] = self::FILTERTYPE_LABEL; // This will make the filter read-only.
-        }
 
         if ($required && empty($filter_value)) {
             ob_end_clean();
@@ -604,7 +601,8 @@ class View extends \CommonGLPI
 
         $field_type     = array_key_exists($filter_data['type'], $type_mapper) ? $type_mapper[$filter_data['type']] : PluginIserviceHtml::FIELDTYPE_TEXT;
         $field_name     = $param_array_name . ($filter_inline ? "[$params[itemtype]][$params[row_id]]" : "") . "[$filter_data[name]]";
-        $filter_widget .= $html->generateField($field_type, $field_name, $filter_value, $filter_data['type'] === self::FILTERTYPE_LABEL, $filter_options);
+        $readonly       = ($filter_data['type'] === self::FILTERTYPE_LABEL) || (IserviceToolBox::getArrayInputVariable($this->getRequestArrayName(), [], INPUT_GET)[$filter_name] ?? false); // Make filter readonly if set from URL.
+        $filter_widget .= $html->generateField($field_type, $field_name, $filter_value, $readonly, $filter_options);
         if ($filter_data['visible'] && isset($filter_data['post_widget'])) {
             $filter_widget .= $filter_data['post_widget'];
         }
