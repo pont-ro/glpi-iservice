@@ -84,8 +84,10 @@
       {{ fields.dropdownField(itemType, name, value, label, options) }}
    {% elseif type == 'dropdownArray' %}
      {{ fields.dropdownArrayField(name, value, elements, label, options) }}
-   {% elseif type == 'button' %}
-      {{ _self.button('', name, value, label, options) }}
+   {% elseif type == 'button'  %}
+      {{ _self.button(type, name, value, label, options) }}
+   {% elseif type == 'submit'  %}
+      {{ _self.button(type, name, value, label, options) }}
    {% endif %}
 {% endmacro %}
 
