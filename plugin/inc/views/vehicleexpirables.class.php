@@ -85,7 +85,8 @@ class VehicleExpirables extends View
                 'vehicle_id' => [
                     'type' => self::FILTERTYPE_INT,
                     'caption' => _t('Vehicle ID'),
-                    'format' => '%%%s%%',
+                    'format' => '%s',
+                    'empty_format' => '%%%s%%',
                     'header' => 'vehicle_id',
                     'class' => 'me-2',
                 ],
