@@ -1,5 +1,6 @@
 .idea
 /glpi
+/glpi-old
 /temp
 /plugin/config/local.php
 /plugin/front/cursv.txt
