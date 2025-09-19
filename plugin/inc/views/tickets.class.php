@@ -185,6 +185,7 @@ class Tickets extends View
         $title = '';
         $href  = '';
         $class = '';
+        $display = $row_data['ticket_id'];
 
         switch ($row_data['ticket_export_type']) {
         case 'factura':
@@ -200,9 +201,10 @@ class Tickets extends View
             $title .= !empty($title) ? "\n" : '';
             $title .= _t('Ticket has attached document(s)');
             $class .= 'fw-bold';
+            $display .= ' <i class="fa fa-paperclip" aria-hidden="true"></i>';
         }
 
-        return !empty($href) ? "<a href='$href' title='$title' class='$class'>$row_data[ticket_id]</a>" : "<span title='$title' class='$class'>$row_data[ticket_id]</span>";
+        return !empty($href) ? "<a href='$href' title='$title' class='$class'>$display</a>" : "<span title='$title' class='$class'>$display</span>";
     }
 
     public static function getTicketNameDisplay($rowData): string

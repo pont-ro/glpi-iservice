@@ -120,7 +120,9 @@ class Operations extends View
                            FROM glpi_plugin_iservice_consumables_tickets ct
                            WHERE ct.tickets_id = t.id) ticket_consumables
                         , ct.cartridges ticket_cartridges
+                        , di.id document_id
                     FROM glpi_plugin_iservice_tickets t
+                    LEFT JOIN glpi_documents_items di ON di.items_id = t.id AND di.itemtype = 'Ticket'
                     LEFT JOIN glpi_itilfollowups tf ON tf.items_id = t.id and tf.itemtype = 'Ticket'
                     JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer'
                     LEFT JOIN glpi_printers p ON p.id = it.items_id
@@ -218,6 +220,7 @@ class Operations extends View
                 ],
                 'ticket_id' => [
                     'title' => 'Număr',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Operations::getTicketIdDisplay($row);',
                 ],
                 'ticket_name' => [
                     'title' => 'Titlu',
@@ -267,4 +270,19 @@ class Operations extends View
         return $settings;
     }
 
+    public static function getTicketIdDisplay($row_data): string
+    {
+        $title   = '';
+        $class   = '';
+        $display = $row_data['ticket_id'];
+
+        if (!empty($row_data['document_id'])) {
+            $title   .= !empty($title) ? "\n" : '';
+            $title   .= _t('Ticket has attached document(s)');
+            $class   .= 'fw-bold';
+            $display .= ' <i class="fa fa-paperclip" aria-hidden="true"></i>';
+        }
+
+        return "<span title='$title' class='$class'>$display</span>";
+    }
 }
