@@ -369,13 +369,12 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 $data['consumablesTableSection']['buttons']['updateButton'] = [
                     'input' => [
                         'label'   => __('Update'),
-                        'type'    => 'button',
+                        'type'    => 'submit',
                         'name'    => 'update_consumable',
                         'value'   => __('Update'),
                         'options' => [
                             'class'         => 'submit',
                             'data-required' => implode(',', array_keys(array_filter($required_fields))),
-                            'on_click' => "$(this).closest('form').submit();",
                             'buttonClass'     => 'btn-primary me-2',
                             'buttonIconClass' => 'far fa-save',
                         ],
@@ -385,13 +384,12 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 $data['consumablesTableSection']['buttons']['deleteButton'] = [
                     'input' => [
                         'label'           => __('Delete'),
-                        'type'            => 'button',
+                        'type'            => 'submit',
                         'name'            => 'remove_consumable',
                         'value'           => __('Delete'),
                         'options'         => [
                             'class'         => 'submit',
                             'data-required' => implode(',', array_keys(array_filter($required_fields))),
-                            'on_click' => "$(this).closest('form').submit();",
                             'buttonClass'     => 'btn-outline-warning me-2',
                             'buttonIconClass' => 'ti ti-trash',
                         ],
