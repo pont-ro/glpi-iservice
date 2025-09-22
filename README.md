@@ -13,6 +13,7 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
 - Unpack the latest package to this new (empty) `glpi` folder.
 - Copy from the `gli-old` folder to the new `glpi` folder the following:
   - the contents of the `config` folder
+  - all extension folders (like `JPEG`, `JPG`, `PDF`, `PNG` etc.) in the `files` folder
   - the contents of the `files\_plugins` folder
   - the contents of the `plugins` folder (be aware that the `iservice` folder is a symlink created with `mklink /D iservice "..\..\plugin"` or `ln -s ../../plugin glpi/plugins/iservice`).
 - Navigate to the root URL and perform the GLPI upgrade steps
@@ -31,10 +32,6 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
         $this->validated = true;
         $this->validation_messages[] = __('Web server root directory configuration validation disabled by iService.');
         return;
-```
-- OBSOLETE: Update `validateValues()` method in `glpi/plugins/fields/inc/container.class.php` line 1387 to allow 'NULL' as number value:
-```php
-            } else if ($field['type'] == 'number' && !empty($value) && strtoupper($value) !== 'NULL' && !is_numeric($value)) {
 ```
 
 - removed custom select2 matcher from 'glpi/src/Html.php' line 4691, method: jsAdaptDropdown
