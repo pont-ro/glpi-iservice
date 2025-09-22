@@ -490,7 +490,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         $data['tableSection']['buttons'] = [
             'updateButton' => [
                 'input' => [
-                    'type' => 'button',
+                    'type' => 'submit',
                     'name' => 'update_cartridge',
                     'onclick' => 'cartridgesChanged=false;',
                     'value' => __('Update'),
@@ -498,13 +498,12 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'options' => [
                         'buttonClass' => 'btn-outline-warning m-2',
                         'buttonIconClass' => 'ti ti-trash',
-                        'on_click' => '$(this).closest("form").submit();',
                     ],
                 ],
             ],
             'removeButton' => [
                 'input' => [
-                    'type' => 'button',
+                    'type' => 'submit',
                     'name' => 'remove_cartridge',
                     'onclick' => 'cartridgesChanged=false;',
                     'value' => __('Delete'),
@@ -512,7 +511,6 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'options' => [
                         'buttonClass' => 'btn-primary m-2',
                         'buttonIconClass' => 'far fa-save',
-                        'on_click' => '$(this).closest("form").submit();',
                     ],
                 ],
             ],
