@@ -24,6 +24,8 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
 - Update `handleUserMentions()` method in `glpi/src/RichText/UserMention.php` line 80
   - from: `$previous_value = $item->fields[$content_field];` 
   - to: `$previous_value = $item->fields[$content_field] ?? null;`
+- Comment the whole `__isset()` magic method in `glpi/src/CommonITILObject.php` as it messes a lot of verifications in iService code
+  
 - OBSOLETE: If "Find menu is not working" update `glpi/src/Html.php` line 6664
   - from `if (strlen($menu['title']) > 0) {`
   - to: `if (is_array($menu) && strlen($menu['title'] ?? '') > 0) {`

@@ -146,7 +146,7 @@ trait PluginIserviceItem
 
     public function updateCustomFields($model, $input, $history = 1, $options = []): bool
     {
-        // If custom fields was updated by hooks, plugin_fields_data is not empty.
+        // If custom fields were updated by hooks, plugin_fields_data is not empty.
         if (!empty($model->plugin_fields_data)) {
             return true;
         }
