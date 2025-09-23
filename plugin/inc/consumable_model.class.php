@@ -8,9 +8,9 @@ if (!defined('GLPI_ROOT')) {
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 /**
- * Consumable_Ticket Class
+ * Consumable_Model Class
  *
- *  Relation between Tickets and Consumables
+ *  Relation between PrinterModels and Consumables
  * */
 class PluginIserviceConsumable_Model extends CommonDBRelation {
 

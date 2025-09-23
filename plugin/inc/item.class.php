@@ -125,6 +125,65 @@ trait PluginIserviceItem
         return true;
     }
 
+    public static function ajaxUpdate()
+    {
+        global $DB;
+
+        /**
+         * @var $item CommonDBTM
+         */
+        $item = new self();
+        $id   = IserviceToolBox::getInputVariable('id');
+
+        if (!$item->getFromDB($id)) {
+            return "Could not find {$item->getType()} with id $id!";
+        };
+
+        $input = [
+            'id' => $id,
+            'entities_id' => 0,
+        ];
+
+        // Item's main fields
+        $fields = array_keys($DB->listFields(self::getTable()));
+
+        foreach ($fields as $fieldName) {
+            // id was handled before, itemtype and operation are reserved for the AJAX call
+            if (in_array($fieldName, ['id', 'itemtype', 'operation'])) {
+                continue;
+            }
+
+            $fieldValue = IserviceToolBox::getInputVariable($fieldName, '#no#value#');
+            if ($fieldValue !== '#no#value#') {
+                $input[$fieldName] = $fieldValue;
+            }
+        }
+
+        // Item's custom fields
+        $fields = array_keys($DB->listFields((self::$customFieldsModelName)::getTable()));
+
+        foreach ($fields as $fieldName) {
+            // we don't want to update id and items_id, itemtype and operation are reserved for the AJAX call
+            if (in_array($fieldName, ['id', 'items_id', 'itemtype', 'operation'])) {
+                continue;
+            }
+            $fieldValue = IserviceToolBox::getInputVariable($fieldName, '#no#value#');
+            if ($fieldValue !== '#no#value#') {
+                $input[$fieldName] = $fieldValue;
+            }
+        }
+
+        if (!$item->can($id, UPDATE, $input)) {
+            return "No right to update {$item->getType()}!";
+        }
+
+        if ($item->update($input)) {
+            return $id;
+        }
+
+        return "Could not update {$item->getType()} with $id";
+    }
+
     public function prepareInputForUpdate($input)
     {
         // This should be kept here, but do not call parent::prepareInputForAdd($input) here, because it is already called in add() for the parent model.

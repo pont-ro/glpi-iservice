@@ -10,12 +10,6 @@ if (strpos($_SERVER['PHP_SELF'], "manageItem.php")) {
 
 Session::checkLoginUser();
 
-$operations = [
-    'PluginIservicePartner' => [
-        'add' => [],
-    ]
-];
-
 $itemType = IserviceToolBox::getInputVariable('itemtype');
 if (!class_exists($itemType)) {
     die(sprintf(_t('Invalid item type: %s'), $itemType));

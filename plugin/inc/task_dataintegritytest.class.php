@@ -483,7 +483,14 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_test_params['positive_result']['iteration_text'] = "";
             }
 
-            $result      = $this->formatTestResultText($case_result, $case_test_params['positive_result']['summary_text'], $case_test_params['positive_result']['iteration_text']);
+            $result      = $this->formatTestResultText(
+                $case_result,
+                $case_test_params['positive_result']['summary_text'],
+                $case_test_params['positive_result']['iteration_text'],
+                [],
+                $case_test_params['positive_result']['opening_param_separator'] ?? '[',
+                $case_test_params['positive_result']['closing_param_separator'] ?? ']'
+            );
             $result_type = $case_test_params['positive_result']['result_type'];
         } else {
             if (empty($case_test_params['zero_result']['result_type'])) {
@@ -498,7 +505,14 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_test_params['zero_result']['iteration_text'] = "";
             }
 
-            $result      = $this->formatTestResultText($case_result, $case_test_params['zero_result']['summary_text'], $case_test_params['zero_result']['iteration_text']);
+            $result      = $this->formatTestResultText(
+                $case_result,
+                $case_test_params['zero_result']['summary_text'],
+                $case_test_params['zero_result']['iteration_text'],
+                [],
+                $case_test_params['zero_result']['opening_param_separator'] ?? '[',
+                $case_test_params['zero_result']['closing_param_separator'] ?? ']'
+            );
             $result_type = $case_test_params['zero_result']['result_type'];
         }
     }
@@ -520,7 +534,12 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_test_params['negative_result']['summary_text'] = "String $string does not begin with $case_test_params[parameters]";
             }
 
-            $result      = $this->substituteValues($case_test_params['negative_result']['summary_text'], ['string' => $string, 'parameters' => $case_test_params['parameters']]);
+            $result      = $this->substituteValues(
+                $case_test_params['negative_result']['summary_text'],
+                ['string' => $string, 'parameters' => $case_test_params['parameters']],
+                $case_test_params['negative_result']['opening_param_separator'] ?? '[',
+                $case_test_params['negative_result']['closing_param_separator'] ?? ']',
+            );
             $result_type = $case_test_params['negative_result']['result_type'];
         } else {
             if (empty($case_test_params['positive_result']['result_type'])) {
@@ -531,7 +550,12 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_test_params['positive_result']['summary_text'] = "String $string begins with $case_test_params[parameters]";
             }
 
-            $result      = $this->substituteValues($case_test_params['positive_result']['summary_text'], ['string' => $string, 'parameters' => $case_test_params['parameters']]);
+            $result      = $this->substituteValues(
+                $case_test_params['positive_result']['summary_text'],
+                ['string' => $string, 'parameters' => $case_test_params['parameters']],
+                $case_test_params['positive_result']['opening_param_separator'] ?? '[',
+                $case_test_params['positive_result']['closing_param_separator'] ?? ']',
+            );
             $result_type = $case_test_params['positive_result']['result_type'];
         }
     }
@@ -551,7 +575,14 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_test_params['zero_result']['iteration_text'] = "";
             }
 
-            $result      = $this->formatTestResultText([], $case_test_params['zero_result']['summary_text'], $case_test_params['zero_result']['iteration_text'], $file_data);
+            $result      = $this->formatTestResultText(
+                [],
+                $case_test_params['zero_result']['summary_text'],
+                $case_test_params['zero_result']['iteration_text'],
+                $file_data,
+                $case_test_params['zero_result']['opening_param_separator'] ?? '[',
+                $case_test_params['zero_result']['closing_param_separator'] ?? ']',
+            );
             $result_type = $case_test_params['zero_result']['result_type'];
         } else {
             if (empty($case_test_params['positive_result']['result_type'])) {
@@ -566,7 +597,14 @@ class PluginIserviceTask_DataIntegrityTest
                 $case_test_params['positive_result']['iteration_text'] = "";
             }
 
-            $result      = $this->formatTestResultText([], $case_test_params['positive_result']['summary_text'], $case_test_params['positive_result']['iteration_text'], $file_data);
+            $result      = $this->formatTestResultText(
+                [],
+                $case_test_params['positive_result']['summary_text'],
+                $case_test_params['positive_result']['iteration_text'],
+                $file_data,
+                $case_test_params['positive_result']['opening_param_separator'] ?? '[',
+                $case_test_params['positive_result']['closing_param_separator'] ?? ']',
+            );
             $result_type = $case_test_params['positive_result']['result_type'];
         }
     }
@@ -598,18 +636,25 @@ class PluginIserviceTask_DataIntegrityTest
         $result_type = $case_test_params[$comparison_result]['result_type'] ?? 'info';
     }
 
-    function formatTestResultText($results, $summary_format, $iteration_format = '', $summary_params = [])
+    function formatTestResultText($results, $summary_format, $iteration_format = '', $summary_params = [], $opening_param_separator = '[', $closing_param_separator = ']')
     {
         $result_text = str_replace("{count}", count($results), $summary_format);
         if (!empty($summary_params)) {
-            $result_text = $this->substituteValues($result_text, $summary_params);
+            $result_text = $this->substituteValues($result_text, $summary_params, $opening_param_separator, $closing_param_separator);
         }
 
         $result_text .= " {additional_info}";
         if (!empty($iteration_format)) {
             $result_text .= "<ul>";
             foreach ($results as $result) {
-                $result_text .= "<li class='highlight-on-hover'>" . $this->substituteValues($this->getIterationFormat($iteration_format, $result), $result) . "</li>";
+                $result_text .= "<li class='highlight-on-hover'>";
+                $result_text .= $this->substituteValues(
+                    $this->getIterationFormat($iteration_format, $result, $opening_param_separator, $closing_param_separator),
+                    $result,
+                    $opening_param_separator,
+                    $closing_param_separator
+                    );
+                $result_text .= "</li>";
             }
 
             $result_text .= "</ul>";
@@ -747,11 +792,11 @@ class PluginIserviceTask_DataIntegrityTest
         return "<span id='snooze_span_$case_name'><input class='secondary' type='submit' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageDataintegrityTest.php?operation=snooze&id=$case_name&snooze=\" + $(\"#snooze_$case_name\").val() + \" $snooze_unit\", \"\", function(message) { if (isNaN(message)) {alert(message);} else { $(\"#snooze_span_$case_name\").hide(); } }); return false;' style='padding: 2px 5px;' value='snooze' /> for <input type='text' id='snooze_$case_name' style='height: 1.1em;width: 1em;' value='$default_snooze_time'> $snooze_unit</span>";
     }
 
-    protected function getIterationFormat($iteration_format, $result)
+    protected function getIterationFormat($iteration_format, $result, $opening_param_separator = '[', $closing_param_separator = ']')
     {
         if (is_array($iteration_format)) {
             foreach ($iteration_format as $condition => $format) {
-                if (eval($this->substituteValues($condition, $result))) {
+                if (eval($this->substituteValues($condition, $result, $opening_param_separator, $closing_param_separator))) {
                     return $format;
                 }
             }
