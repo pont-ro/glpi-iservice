@@ -238,6 +238,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                         'title' => $cartridge_creation_title,
                         'no_label' => true,
                     ],
+                    'mb' => '',
                 ]
             ];
 
@@ -290,6 +291,9 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                             'type' => 'hidden',
                             'name' => "_plugin_iservice_consumable_codes[$consumable[IDD]]",
                             'value' => $consumable['id'],
+                            'options' => [
+                                'include_field' => false,
+                            ]
                         ],
                     ],
                     'cartridge' => [
@@ -304,6 +308,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                             'options' => [
                                 'no_label' => true,
                                 'class' => 'full',
+                                'mb' => '',
                                 'input_class' => 'input_class',
                                 'field_class' => 'field_class',
                                 'comments' => false,
@@ -322,6 +327,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                             'options' => [
                                 'onchange' => 'consumablesChanged = true;',
                                 'style' => '',
+                                'mb' => '',
                                 'no_label' => true,
                             ],
                         ],
@@ -346,6 +352,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                             'options' => [
                                 'onchange' => 'consumablesChanged = true;',
                                 'no_label' => true,
+                                'mb' => '',
                             ],
                         ],
                     ],
@@ -358,6 +365,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                             'options' => [
                                 'onchange' => 'consumablesChanged = true;',
                                 'style' => '',
+                                'mb' => '',
                                 'no_label' => true,
                             ],
                         ],
