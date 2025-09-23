@@ -100,6 +100,7 @@ class StockLots extends View
                     AND obs LIKE '[obs]'
                     AND l.grupa LIKE '[tip]'
                     /*AND ((mn.model_names is null AND '[model_names]' = '%%') OR mn.model_names LIKE '[model_names]')*/ /* Temporarily disabled EXL-546 */
+                    AND ((cd.description is null AND '[model_description]' = '%%') OR cd.description LIKE '[model_description]')
                     AND (m.minimum_stock is null and 0 > [minimum_stock] OR m.minimum_stock > [minimum_stock])
                     AND (l.nrtran LIKE '[nrtran]' or l.nrtran is null)
                 ",
