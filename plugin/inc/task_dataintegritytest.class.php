@@ -48,10 +48,10 @@ class PluginIserviceTask_DataIntegrityTest
         return $result;
     }
 
-    function getTestCases()
+    function getTestCases(string $filter = '')
     {
         if (empty(self::$testCases)) {
-            foreach (glob(PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . '/*.php') as $file_name) {
+            foreach (glob(PluginIserviceConfig::getConfigValue('dataintegritytests.folder') . "/$filter*.php") as $file_name) {
                 self::$testCases[pathinfo($file_name)['filename']] = include $file_name;
             }
         }
@@ -192,17 +192,17 @@ class PluginIserviceTask_DataIntegrityTest
             'em_info'  => 'green',
         ];
 
+        $caseFilter = IserviceToolBox::getInputVariable('case_filter', '');
+
         if (IserviceToolBox::getInputVariable('custom_command')) {
-            $this->getTestCases();
+            $this->getTestCases($caseFilter);
             $command = 'iservice_custom_command_' . IserviceToolBox::getInputVariable('command');
             if (function_exists($command)) {
                 $command();
             }
         }
 
-        $filter = IserviceToolBox::getInputVariable('filter');
-
-        $test_results = $this->getTestResults();
+        $test_results = $this->getTestResults($caseFilter);
 
         $html = new PluginIserviceHtml();
         echo $html->openForm(['method' => 'post']);
@@ -211,6 +211,7 @@ class PluginIserviceTask_DataIntegrityTest
             echo "<h3>Test results from ", date('H:i:s', $cache_time), " <input class='submit' type='submit' name='delete_cache' value='Refresh' /><br/>({$this->getCacheFilePath()})</h3>";
         }
 
+        $filter = IserviceToolBox::getInputVariable('filter');
         if (!empty($filter)) {
             if ($excluding_filter = $filter[0] === '!') {
                 $filter = substr($filter, 1);
@@ -241,7 +242,7 @@ class PluginIserviceTask_DataIntegrityTest
         echo $html->closeForm();
     }
 
-    function getTestResults()
+    function getTestResults(string $filter = '')
     {
         if (self::$testResults === null) {
             $this->getTestResultsFromCache();
@@ -266,7 +267,7 @@ class PluginIserviceTask_DataIntegrityTest
             ];
         }
 
-        $test_cases = $this->getTestCases();
+        $test_cases = $this->getTestCases($filter);
 
         foreach ($test_cases as $case_name => $case_params) {
             if (empty($case_params['test']['type'])) {

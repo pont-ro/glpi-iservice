@@ -23,6 +23,33 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
     public static $customFieldsModelName = 'PluginFieldsCartridgeitemcartridgeitemcustomfield';
 
+    public static function ajaxGetRefSelector()
+    {
+        $id   = IserviceToolBox::getInputVariable('id');
+
+        $hMarfaCodes = [];
+        $hMarfaCodesArray = PluginIserviceDB::getQueryResult("
+            select nm.cod
+            from hmarfa_nommarfa nm
+            left join glpi_cartridgeitems ci on ci.ref = nm.cod
+            where ci.ref is null
+        ");
+        foreach ($hMarfaCodesArray as $hMarfaCode) {
+            $hMarfaCodes[$hMarfaCode['cod']] = $hMarfaCode['cod'];
+        }
+        $hMarfaCodesDropdown = Dropdown::showFromArray(
+            "choose_cartridgeitem_ref_$id",
+            $hMarfaCodes,
+            [
+                'display' => false,
+                'display_emptychoice' => true,
+            ]
+        );
+
+        global $CFG_PLUGIN_ISERVICE;
+        return "$hMarfaCodesDropdown <a class='vsubmit' style='vertical-align: middle' href='javascript:void(0);' onclick='(function(){var ref=\$(\"select[name=choose_cartridgeitem_ref_$id]\").val(); if (!ref || ref === \"0\") {alert(\"Please select a code first.\"); return;} ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=Update&id=$id&ref=\"+encodeURIComponent(ref), \"\", function(message) {if (isNaN(message)) {alert(message);} else {\$(\"#fix-cartridgetype-$id\").remove();}}); })();'>Change</a>";
+    }
+
     public function getSupportedTypes(): array
     {
         $customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();
