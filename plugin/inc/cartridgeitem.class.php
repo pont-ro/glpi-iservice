@@ -14,7 +14,9 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
  * */
 class PluginIserviceCartridgeItem extends CartridgeItem
 {
-    use PluginIserviceItem;
+    use PluginIserviceItem {
+        ajaxUpdate as ajaxUpdate_Trait;
+    }
     /*
      *
      * @var PluginFieldsCartridgeitemcartridgeitemcustomfield
@@ -22,6 +24,28 @@ class PluginIserviceCartridgeItem extends CartridgeItem
     public $customfields = null;
 
     public static $customFieldsModelName = 'PluginFieldsCartridgeitemcartridgeitemcustomfield';
+
+    public static function ajaxUpdate()
+    {
+        $id   = IserviceToolBox::getInputVariable('id');
+        $ref  = IserviceToolBox::getInputVariable('ref');
+
+        $cartridgeItem = new self();
+        if (!$cartridgeItem->getFromDB($id)) {
+            return "Could not find CartridgeItem with id $id!";
+        };
+
+        $description = new PluginIserviceConsumableDescription();
+        $descriptions = $description->find(['plugin_iservice_consumables_id' => $cartridgeItem->fields['ref']]);
+        if (count($descriptions) > 0) {
+            $description->update([
+                'id' => array_shift($descriptions)['id'],
+                'plugin_iservice_consumables_id' => $ref,
+            ]);
+        }
+
+        return self::ajaxUpdate_Trait();
+    }
 
     public static function ajaxGetRefSelector()
     {
