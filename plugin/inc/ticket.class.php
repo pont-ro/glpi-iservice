@@ -1665,6 +1665,9 @@ class PluginIserviceTicket extends Ticket
             return $partnerId;
         }
 
+        if (empty($this->printer)) {
+            $this->setPrinter();
+        }
         $partnerId = $this->printer->fields['supplier_id'] ?? $options['partnerId'] ?? null;
 
         return intval($partnerId);
@@ -1672,7 +1675,10 @@ class PluginIserviceTicket extends Ticket
 
     public function getPrinterId(): ?int
     {
-        return $this->printer ? $this->printer->getID() : null;
+        if (empty($this->printer)) {
+            $this->setPrinter();
+        }
+        return $this?->printer?->getID();
     }
 
     public function addConsumable($ticketId, $post): void
