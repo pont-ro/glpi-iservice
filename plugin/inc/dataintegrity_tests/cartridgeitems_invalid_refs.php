@@ -1,5 +1,5 @@
 <?php
-global $CFG_PLUGIN_ISERVICE;
+global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
 return [
     'query' => "
@@ -16,7 +16,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} cartridge types with inexistent hMarfa code',
-            'iteration_text' => "Cartridge type <b>[name]</b> has hMarfa code <b>[ref]</b>, that is inexistent in hMarfa. <span id='fix-cartridgetype-[ciid]'><a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=GetRefSelector&id=[ciid]\", \"\", function(message) {\$(\"#fix-cartridgetype-[ciid]\").html(message);} );'>»»» Change code «««</a></span>",
+            'iteration_text' => "Cartridge type <a target='_blank' href='$CFG_GLPI[root_doc]/front/cartridgeitem.form.php?id=[ciid]'><b>[name]</b></a> has referinta code <b>[ref]</b>, that is inexistent in hMarfa. <span id='fix-cartridgetype-[ciid]'><a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=GetRefSelector&id=[ciid]\", \"\", function(message) {\$(\"#fix-cartridgetype-[ciid]\").html(message);} );'>»»» Change referinta code «««</a></span>",
         ],
     ],
 ];

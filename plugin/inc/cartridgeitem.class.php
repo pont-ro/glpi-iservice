@@ -53,13 +53,13 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
         $hMarfaCodes = [];
         $hMarfaCodesArray = PluginIserviceDB::getQueryResult("
-            select nm.cod
+            select nm.cod, nm.denum
             from hmarfa_nommarfa nm
             left join glpi_cartridgeitems ci on ci.ref = nm.cod
             where ci.ref is null
         ");
         foreach ($hMarfaCodesArray as $hMarfaCode) {
-            $hMarfaCodes[$hMarfaCode['cod']] = $hMarfaCode['cod'];
+            $hMarfaCodes[$hMarfaCode['cod']] = "$hMarfaCode[cod] - $hMarfaCode[denum]";
         }
         $hMarfaCodesDropdown = Dropdown::showFromArray(
             "choose_cartridgeitem_ref_$id",

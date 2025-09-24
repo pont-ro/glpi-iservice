@@ -1,6 +1,6 @@
 <?php
 
-global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
+global $CFG_PLUGIN_ISERVICE;
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
