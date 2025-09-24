@@ -75,10 +75,10 @@ class StockLots extends View
                     , tipgest AS Tip_Gest
                     , l.grupa AS Grupa
                     , ROUND(pcont,2) AS Pret_unitar
-                    , stoci AS Intrat
-                    , iesiri AS Iesit
-                    , stoci-iesiri AS Stoc
-                    , (stoci-iesiri)*pcont AS Valoare
+                    , COALESCE(stoci,0) AS Intrat
+                    , COALESCE(iesiri, 0) AS Iesit
+                    , COALESCE(stoci, 0) - COALESCE(iesiri, 0) AS Stoc
+                    , (COALESCE(stoci, 0) - COALESCE(iesiri, 0))*pcont AS Valoare
                     , obs as Observatii
                     /*, mn.model_names*/ /* Temporarily disabled EXL-546 */
                     , cd.description AS model_description
@@ -94,7 +94,7 @@ class StockLots extends View
                     ) mn ON mn.plugin_iservice_consumables_id = l.codmat*/ /* Temporarily disabled EXL-546 */
                 LEFT JOIN glpi_plugin_iservice_consumabledescriptions cd ON cd.plugin_iservice_consumables_id = l.codmat
                 LEFT JOIN glpi_plugin_iservice_minimum_stocks m on m.plugin_iservice_consumables_id = l.codmat
-                WHERE stoci - COALESCE(iesiri, 0) > [stoc]
+                WHERE COALESCE(stoci, 0) - COALESCE(iesiri, 0) > [stoc]
                     AND n.denum LIKE '[denum]'
                     AND codmat LIKE '[cod]'
                     AND obs LIKE '[obs]'
