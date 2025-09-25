@@ -50,9 +50,6 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice' => right_array(READ, $all_profiles),
             'plugin_iservice_config' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
 
-            'plugin_iservice_monthly_plan' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-            'plugin_iservice_hmarfa' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-            'plugin_iservice_ticket_hmarfa_export_close' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
             'plugin_iservice_view_stock' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_unpaid_invoices' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_stock_lots' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
@@ -62,12 +59,8 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_view_outbound_lots' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_inbound_lots' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
 
-            'plugin_iservice_admintask_DataIntegrityTest' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-
             'plugin_iservice_view_qrs' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-            'plugin_iservice_vehicle' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_vehicles' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-            'plugin_iservice_vehicle_expirable' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_vehicle_expirables' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_tickets' => right_array(ALLSTANDARDRIGHT, $all_profiles),
             'plugin_iservice_view_operations' => right_array(ALLSTANDARDRIGHT, array_merge($elevated_profiles)),
@@ -84,10 +77,13 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_view_emaintenance' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_view_global_readcounter' => right_array(ALLSTANDARDRIGHT, $all_profiles),
             'plugin_iservice_view_pending_emails' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
+            'plugin_iservice_view_printercounters' => right_array(ALLSTANDARDRIGHT, array_merge($level15_profiles, $elevated_profiles)),
+
             'plugin_iservice_ticket_own_printers' => right_array(ALLSTANDARDRIGHT, $all_profiles),
             'plugin_iservice_ticket_group_printers' => right_array(ALLSTANDARDRIGHT, array_merge(['superclient'], $elevated_profiles)),
             'plugin_iservice_ticket_assigned_printers' => right_array(ALLSTANDARDRIGHT, array_merge(['subtehnician'], $elevated_profiles)),
             'plugin_iservice_ticket_all_printers' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_ticket_hmarfa_export_close' => right_array(ALLSTANDARDRIGHT, $level30_profiles),
 
             'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_NONE => [],
             'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
@@ -101,23 +97,26 @@ class PluginIserviceProfile extends Profile
             'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_HMARFAEXPORT => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE => right_array(ALLSTANDARDRIGHT, array_merge(['subtehnician'], $elevated_profiles)),
 
-            'plugin_iservice_view_printercounters' => right_array(ALLSTANDARDRIGHT, array_merge($level15_profiles, $elevated_profiles)),
-            'plugin_iservice_movement' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-            'plugin_iservice_docgenerator' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-
             'plugin_iservice_interface_original' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+
+            'plugin_iservice_admintask_DataIntegrityTest' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_admintask_Backup' => right_array(ALLSTANDARDRIGHT, ['super-admin']),
 
             'plugin_iservice_printer' => right_array(ALLSTANDARDRIGHT, array_merge(['subtehnician'], $elevated_profiles)),
             'plugin_iservice_printer_full' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
 
-            'plugin_iservice_contract' => array_merge(right_array(READ, $level20_profiles), right_array(ALLSTANDARDRIGHT, $elevated_profiles)),
-            'plugin_iservice_admintask_Backup' => right_array(ALLSTANDARDRIGHT, ['super-admin']),
-
             'plugin_iservice_emaintenance' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
-
+            'plugin_iservice_monthly_plan' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_hmarfa' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_vehicle' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_vehicle_expirable' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_movement' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_docgenerator' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_contract' => array_merge(right_array(READ, $level20_profiles), right_array(ALLSTANDARDRIGHT, $elevated_profiles)),
             'plugin_iservice_intorder' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_extorder' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
             'plugin_iservice_orderstatus' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
+            'plugin_iservice_cartridgeitem_printermodels' => right_array(ALLSTANDARDRIGHT, $elevated_profiles),
         ];
 
         $current_profile = strtolower($_SESSION['glpiactiveprofile']['name']);

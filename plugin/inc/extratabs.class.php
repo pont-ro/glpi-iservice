@@ -36,12 +36,17 @@ class PluginIserviceExtraTabs extends CommonDBTM
     {
         global $CFG_PLUGIN_ISERVICE, $CFG_GLPI;
 
+        $printerModel = new PrinterModel();
+        $cartridgeitemPrintermodel = new CartridgeItem_PrinterModel();
+
         echo TemplateRenderer::getInstance()->render(
             '@iservice/tabs/cartridgeitem-iservice.html.twig',
             [
                 'plugin_url_base' => $CFG_PLUGIN_ISERVICE['root_doc'],
                 'glpi_url_base' => $CFG_GLPI['root_doc'],
                 'cartridgeItem' => $item,
+                'allPrinterModels' => array_values($printerModel->find([], ['name'])),
+                'selectedPrinterModelIds' => array_column($cartridgeitemPrintermodel->find(['cartridgeitems_id' =>  $item->getID()]), 'printermodels_id'),
             ]
         );
     }
