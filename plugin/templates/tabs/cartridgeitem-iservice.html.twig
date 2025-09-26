@@ -15,22 +15,44 @@
         </a>
     </div>
 
+    {% import 'components/form/fields_macros.html.twig' as glpiFields %}
+    {% set locale = get_current_locale() %}
+    {% set date_selector %}
+        <input id="effective-date" name="effective_date" style="width:7.5em" type="text" value="{{ effectiveDate|verbatim_value }}"/>
+        <script>
+            $(function() {
+                $("#effective-date").flatpickr({
+                    dateFormat: 'Y-m-d',
+                    enableTime: false,
+                    weekNumbers: true,
+                    time_24hr: true,
+                    allowInput: true,
+                    clickOpens: true,
+                    locale: getFlatPickerLocale("{{ locale['language'] }}", "{{ locale['region'] }}"),
+                    onClose(dates, currentdatestring, picker) {
+                        picker.setDate(picker.altInput.value, true, picker.config.altFormat)
+                    },
+                    plugins: [
+                        CustomFlatpickrButtons()
+                    ]
+                });
+            });
+        </script>
+    {% endset %}
     <form method="post" action="{{ plugin_url_base }}/front/cartridgeitem_printermodels.form.php">
         <div class="row my-3">
             <div class="col-12">
                 <h3>{{ _t('Compatible printer models') }}</h3>
             </div>
+            <div class="col-12 d-flex align-items-center justify-content-start gap-3">
+                {{ _t('Show models with tickets newer than') }}
+                {{ date_selector }}
+                <a class="vsubmit ti ti-refresh" id="refresh-all-printers" href="javascript:void();" onclick="ajaxCall('{{ plugin_url_base }}/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=getAllPrinterModels&id={{ cartridgeItem.id }}&ticket_newer_than=' + $('#effective-date').val(), '', function (message) {$('#all-printer-models').html(message);});"></a>
+            </div>
         </div>
 
-        <div class="row">
-            {% for pm in allPrinterModels %}
-                <div class="col-6 col-sm-3 col-lg-2 m-0">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="pm_{{ pm.id }}" name="printermodels[]" value="{{ pm.id }}" {% if pm.id in selectedPrinterModelIds %}checked{% endif %}>
-                        <label class="form-check-label" for="pm_{{ pm.id }}">{{ pm.name }}</label>
-                    </div>
-                </div>
-            {% endfor %}
+        <div id="all-printer-models" class="row">
+            <i class="fas fa-spinner fa-pulse"></i> Loading, please wait...
         </div>
 
         <div class="row center my-3">
@@ -40,5 +62,7 @@
                 <button type="submit" class="btn btn-primary">{{ _t('Save') }}</button>
             </div>
         </div>
+
+        <script>$('#refresh-all-printers').click();</script>
     </form>
 </div>

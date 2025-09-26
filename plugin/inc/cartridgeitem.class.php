@@ -72,6 +72,43 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return "$hMarfaCodesDropdown <a class='vsubmit' style='vertical-align: middle' href='javascript:void(0);' onclick='(function(){var ref=\$(\"select[name=choose_cartridgeitem_ref_$id]\").val(); if (!ref || ref === \"0\") {alert(\"Please select a code first.\"); return;} ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=Update&id=$id&ref=\"+encodeURIComponent(ref), \"\", function(message) {if (isNaN(message)) {alert(message);} else {\$(\"#fix-cartridgetype-$id\").remove();}}); })();'>Change</a>";
     }
 
+    public static function ajaxGetAllPrinterModels()
+    {
+        $id   = IserviceToolBox::getInputVariable('id');
+
+        $cartridgeItem = new self();
+        if (!$cartridgeItem->getFromDB($id)) {
+            return __("Could not find CartridgeItem with id $id!", 'iservice');
+        }
+
+        $cartridgeitemPrintermodel = new CartridgeItem_PrinterModel();
+        $selectedPrinterModelIds = array_column($cartridgeitemPrintermodel->find(['cartridgeitems_id' =>  $id]), 'printermodels_id');
+
+        $ticketEffectiveDate = IserviceToolBox::getInputVariable('ticket_newer_than', '2000-01-01');
+        $selectedPrinterModelsCondition = empty($selectedPrinterModelIds) ? '' : "or pm.id in (" . implode(',', $selectedPrinterModelIds) . ")";
+        $sql = "
+            select pm.id, pm.name
+            from glpi_printermodels pm
+            join glpi_printers p on p.printermodels_id = pm.id
+            join glpi_plugin_iservice_printers_last_tickets plt on plt.printers_id = p.id
+            where plt.effective_date_field > '$ticketEffectiveDate' $selectedPrinterModelsCondition
+            group by pm.id, pm.name
+            order by pm.name
+        ";
+
+        $out = '';
+        global $CFG_GLPI;
+        foreach (PluginIserviceDB::getQueryResult($sql) as $printerModelData) {
+            $out .= "<div class='col-6 col-sm-3 col-lg-2 m-0'><div class='form-check'>";
+            $out .= "<input class='form-check-input' type='checkbox' id='pm_$printerModelData[id]' name='printermodels[]' value='$printerModelData[id]' " . (in_array($printerModelData['id'], $selectedPrinterModelIds) ? 'checked' : '' ) . ">";
+            $out .= "<label class='form-check-label' for='pm_$printerModelData[id]'>";
+            $out .= "<a href='$CFG_GLPI[root_doc]/front/printermodel.form.php?id=$printerModelData[id]' target='_blank'>$printerModelData[name]</a>";
+            $out .= "</label></div></div>";
+        }
+
+        return $out ?: "---";
+    }
+
     public function getSupportedTypes(): array
     {
         $customfields = new PluginFieldsCartridgeitemcartridgeitemcustomfield();

@@ -1,6 +1,7 @@
 <?php
 
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 class PluginIserviceExtraTabs extends CommonDBTM
 {
@@ -47,6 +48,7 @@ class PluginIserviceExtraTabs extends CommonDBTM
                 'cartridgeItem' => $item,
                 'allPrinterModels' => array_values($printerModel->find([], ['name'])),
                 'selectedPrinterModelIds' => array_column($cartridgeitemPrintermodel->find(['cartridgeitems_id' =>  $item->getID()]), 'printermodels_id'),
+                'effectiveDate' => IserviceToolBox::getInputVariable('effective_date', '2023-01-01'),
             ]
         );
     }

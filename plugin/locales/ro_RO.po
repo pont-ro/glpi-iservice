@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2025-06-30 17:01+0300\n"
+"PO-Revision-Date: 2025-09-26 13:57+0300\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-KeywordsList: _t;_tn:1,2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -28,7 +28,9 @@ msgstr "Nu aveți cartușe compatibile!"
 msgid "Invalid cartridge id: %d"
 msgstr "Id cartuș invalid: %d"
 
-#: ajax/manageCartridge.php:39 ajax/manageConsumable.php:27 ajax/manageDataintegrityTest.php:20 ajax/manageEMMail.php:30 ajax/managePrinter.php:44
+#: ajax/manageCartridge.php:39 ajax/manageConsumable.php:27
+#: ajax/manageDataintegrityTest.php:20 ajax/manageEMMail.php:30
+#: ajax/managePrinter.php:44
 #, php-format
 msgid "Invalid operation: %s"
 msgstr "Operație invalidă: %s"
@@ -52,7 +54,9 @@ msgstr "Cartușul %d este gol, nu este instalat pe un aparat"
 msgid "Could not delete cartridge from the database."
 msgstr "Nu s-a putut șterge cartușul din baza de date."
 
-#: ajax/manageCartridge.php:141 ajax/manageConsumable.php:68 ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45 ajax/managePrinter.php:177
+#: ajax/manageCartridge.php:141 ajax/manageConsumable.php:68
+#: ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45
+#: ajax/managePrinter.php:177
 #, php-format
 msgid "Operation not implemented: %s"
 msgstr "Operația %s nu este implementată"
@@ -99,8 +103,7 @@ msgid "Could not complete operation %s for printer %d"
 msgstr "Operația %s nu poate fi efectuată pentru aparatul %d"
 
 #: ajax/setContractSupplier.php:18
-#, fuzzy, php-format
-#| msgid "Invalid cartridge id: %d"
+#, php-format
 msgid "Invalid contract id: %d or supplier id: %d"
 msgstr "Id contract %d sau partener %d invalid"
 
@@ -143,7 +146,8 @@ msgstr[0] "Listă specială"
 msgstr[1] "Liste speciale"
 msgstr[2] "Liste speciale"
 
-#: config/menu.php:35 front/config.form.php:5 front/monthlyplan.php:11 front/views.php:21 inc/menu.class.php:14 inc/utils/iservicemenu.class.php:15
+#: config/menu.php:35 front/config.form.php:5 front/monthlyplan.php:11
+#: front/views.php:21 inc/menu.class.php:14 inc/utils/iservicemenu.class.php:15
 msgid "iService"
 msgstr "iService"
 
@@ -151,11 +155,14 @@ msgstr "iService"
 msgid "Inquiry"
 msgstr "Solicitare"
 
-#: front/hmarfaexport.form.php:18 inc/printer.class.php:292 inc/ticket.class.php:1999 inc/views/printers.class.php:57
+#: front/hmarfaexport.form.php:18 inc/printer.class.php:292
+#: inc/ticket.class.php:1999 inc/views/printers.class.php:57
 msgid "hMarfa export"
 msgstr "export hMarfa"
 
-#: front/movement.form.php:18 front/movement.form.php:183 inc/movement.class.php:116 inc/movement.class.php:264 inc/printer.class.php:303 inc/views/printers.class.php:107
+#: front/movement.form.php:18 front/movement.form.php:183
+#: inc/movement.class.php:116 inc/movement.class.php:264
+#: inc/printer.class.php:303 inc/views/printers.class.php:107
 msgid "Move"
 msgstr "Mută"
 
@@ -195,8 +202,6 @@ msgstr[1] "Backup cleaners"
 msgstr[2] "Backup cleaners"
 
 #: inc/cartridge.class.php:46 inc/cartridge_ticket.class.php:382
-#, fuzzy
-#| msgid "intalled on"
 msgid "installed on"
 msgstr "instalat pe"
 
@@ -236,7 +241,8 @@ msgstr[0] "Verificator cartușe"
 msgstr[1] "Verificatori cartușe"
 msgstr[2] "Verificatori cartușe"
 
-#: inc/consumable_ticket.class.php:128 inc/consumable_ticket.class.php:202 inc/intorder.class.php:174 inc/intorder_extorder.class.php:187
+#: inc/consumable_ticket.class.php:128 inc/consumable_ticket.class.php:202
+#: inc/intorder.class.php:174 inc/intorder_extorder.class.php:187
 msgid "Amount"
 msgstr "Cantitate"
 
@@ -277,36 +283,45 @@ msgstr "Adresa %s respinsă"
 msgid "Email with subject \"%s\" rejected"
 msgstr "Emailul cu subiectul \"%s\" a fost respins"
 
-#: inc/extorder.class.php:22 inc/extorder.class.php:27 inc/views/extorders.class.php:19 inc/views/extorders.class.php:28 inc/views/extorders.class.php:53 inc/views/intorders.class.php:83
+#: inc/extorder.class.php:22 inc/extorder.class.php:27
+#: inc/views/extorders.class.php:19 inc/views/extorders.class.php:28
+#: inc/views/extorders.class.php:53 inc/views/intorders.class.php:83
 msgid "External order"
 msgid_plural "External orders"
 msgstr[0] "Comandă externă"
 msgstr[1] "Comenzi externe"
 msgstr[2] "Comenzi externe"
 
-#: inc/extorder.class.php:125 inc/intorder.class.php:22 inc/intorder.class.php:27 inc/intorder_extorder.class.php:184 inc/intorder_view.class.php:21 inc/views/extorders.class.php:33
-#: inc/views/intorders.class.php:22 inc/views/intorders.class.php:79 inc/views/intorders.class.php:103
+#: inc/extorder.class.php:125 inc/intorder.class.php:22
+#: inc/intorder.class.php:27 inc/intorder_extorder.class.php:184
+#: inc/intorder_view.class.php:21 inc/views/extorders.class.php:33
+#: inc/views/intorders.class.php:22 inc/views/intorders.class.php:79
+#: inc/views/intorders.class.php:103
 msgid "Internal order"
 msgid_plural "Internal orders"
 msgstr[0] "Comandă internă"
 msgstr[1] "Comenzi interne"
 msgstr[2] "Comenzi interne"
 
-#: inc/extorder.class.php:161 inc/printer.class.php:245 inc/views/extorders.class.php:154
+#: inc/extorder.class.php:161 inc/printer.class.php:245
+#: inc/views/extorders.class.php:154
 msgid "Supplier"
 msgid_plural "Suppliers"
 msgstr[0] "Partener"
 msgstr[1] "Parteneri"
 msgstr[2] "Parteneri"
 
-#: inc/extorder.class.php:173 inc/intorder.class.php:197 inc/orderstatus.class.php:29
+#: inc/extorder.class.php:173 inc/intorder.class.php:197
+#: inc/orderstatus.class.php:29
 msgid "Order status"
 msgid_plural "Order statuses"
 msgstr[0] "Stare comandă"
 msgstr[1] "Stări comandă"
 msgstr[2] "Stări comandă"
 
-#: inc/hmarfa.class.php:619 inc/movement.class.php:280 inc/printer.class.php:364 inc/views/globalreadcounter.class.php:236 inc/views/printers.class.php:548 inc/views/printers.class.php:592
+#: inc/hmarfa.class.php:619 inc/movement.class.php:280
+#: inc/printer.class.php:364 inc/views/globalreadcounter.class.php:236
+#: inc/views/printers.class.php:548 inc/views/printers.class.php:592
 #: inc/views/tickets.class.php:469 inc/views/tickets.class.php:552
 msgid "Usage address"
 msgstr "Adresa de exploatare"
@@ -335,7 +350,9 @@ msgstr "Procent mediu"
 msgid "Last sales to the partner"
 msgstr "Ultimele vânzări către partener"
 
-#: inc/hmarfa.class.php:1332 inc/intorder.class.php:171 inc/intorder_extorder.class.php:186 inc/views/extorders.class.php:151 inc/views/intorders.class.php:342
+#: inc/hmarfa.class.php:1332 inc/intorder.class.php:171
+#: inc/intorder_extorder.class.php:186 inc/views/extorders.class.php:151
+#: inc/views/intorders.class.php:342
 msgid "Consumable"
 msgid_plural "Consumables"
 msgstr[0] "Consumabil"
@@ -401,7 +418,8 @@ msgstr "Luna anterioară"
 msgid "2 month ago"
 msgstr "Acum 2 luni"
 
-#: inc/monthlyplan.class.php:199 inc/views/globalreadcounter.class.php:22 inc/views/globalreadcounter.class.php:180 inc/views/printers.class.php:481
+#: inc/monthlyplan.class.php:199 inc/views/globalreadcounter.class.php:22
+#: inc/views/globalreadcounter.class.php:180 inc/views/printers.class.php:481
 msgid "Global read counter"
 msgstr "Citire globală"
 
@@ -416,7 +434,8 @@ msgstr "Săptămâna"
 msgid "Open tickets"
 msgstr "Tichete deschise"
 
-#: inc/monthlyplan.class.php:207 inc/views/printers.class.php:83 inc/views/tickets.class.php:132 inc/views/unpaidinvoices.class.php:18
+#: inc/monthlyplan.class.php:207 inc/views/printers.class.php:83
+#: inc/views/tickets.class.php:132 inc/views/unpaidinvoices.class.php:18
 msgid "Unpaid invoices"
 msgstr "Facturi neplătite"
 
@@ -424,7 +443,9 @@ msgstr "Facturi neplătite"
 msgid "Total unpaid"
 msgstr "Total neplătit"
 
-#: inc/movement.class.php:23 inc/printer.class.php:244 inc/printer.class.php:303 inc/printer.class.php:355 inc/printer.class.php:676 inc/printer.class.php:681 inc/ticket.class.php:169
+#: inc/movement.class.php:23 inc/printer.class.php:244
+#: inc/printer.class.php:303 inc/printer.class.php:355
+#: inc/printer.class.php:676 inc/printer.class.php:681 inc/ticket.class.php:169
 #: inc/views/printers.class.php:107
 msgid "Printer"
 msgstr "Aparat"
@@ -441,7 +462,8 @@ msgstr "Partener nou"
 msgid "View"
 msgstr "Vizualizează"
 
-#: inc/movement.class.php:184 inc/movement.class.php:383 inc/printer.class.php:495 inc/printer.class.php:594
+#: inc/movement.class.php:184 inc/movement.class.php:383
+#: inc/printer.class.php:495 inc/printer.class.php:594
 msgid "Modify"
 msgstr "Modifică"
 
@@ -477,7 +499,8 @@ msgstr "Închideți tichetul pentru a finaliza mutarea"
 msgid "Weight"
 msgstr "Ordine"
 
-#: inc/pendingemail.class.php:19 inc/pendingemail.class.php:24 inc/views/pendingemails.class.php:23 inc/views/pendingemails.class.php:105
+#: inc/pendingemail.class.php:19 inc/pendingemail.class.php:24
+#: inc/views/pendingemails.class.php:23 inc/views/pendingemails.class.php:105
 msgid "Pending email"
 msgid_plural "Pending emails"
 msgstr[0] "Email în așteptare"
@@ -491,15 +514,20 @@ msgstr[0] "Actualizator emailuri în așteptare"
 msgstr[1] "Actualizatori emailuri în așteptare"
 msgstr[2] "Actualizatori emailuri în așteptare"
 
-#: inc/printer.class.php:43 inc/ticket.class.php:2071 inc/views/movements.class.php:135 inc/views/printers.class.php:295 inc/views/tickets.class.php:223
+#: inc/printer.class.php:43 inc/ticket.class.php:2071
+#: inc/views/movements.class.php:135 inc/views/printers.class.php:295
+#: inc/views/tickets.class.php:223
 msgid "Manage printer"
 msgstr "Administrare aparat"
 
-#: inc/printer.class.php:288 inc/views/emaintenance.class.php:158 inc/views/operations.class.php:39
+#: inc/printer.class.php:288 inc/views/emaintenance.class.php:158
+#: inc/views/operations.class.php:39
 msgid "New quick ticket"
 msgstr "Tichet rapid nou"
 
-#: inc/printer.class.php:299 inc/ticket.class.php:2060 inc/views/emaintenance.class.php:38 inc/views/printers.class.php:63 inc/views/tickets.class.php:112
+#: inc/printer.class.php:299 inc/ticket.class.php:2060
+#: inc/views/emaintenance.class.php:38 inc/views/printers.class.php:63
+#: inc/views/tickets.class.php:112
 msgid "Operations list"
 msgstr "Lista lucrări"
 
@@ -507,7 +535,8 @@ msgstr "Lista lucrări"
 msgid "Printers of the client"
 msgstr "Aparatele acestui client"
 
-#: inc/printer.class.php:307 inc/ticket.class.php:2028 inc/views/clientinvoices.class.php:130
+#: inc/printer.class.php:307 inc/ticket.class.php:2028
+#: inc/views/clientinvoices.class.php:130
 msgid "Client printers"
 msgstr "Aparate client"
 
@@ -636,7 +665,8 @@ msgstr "Data ultima factură"
 msgid "Invoice expiry date"
 msgstr "Data expirare factură"
 
-#: inc/ticket.class.php:1417 inc/ticket.class.php:1418 inc/views/operations.class.php:262
+#: inc/ticket.class.php:1417 inc/ticket.class.php:1418
+#: inc/views/operations.class.php:262
 msgid "Printed surface"
 msgstr "Suprafața printată"
 
@@ -652,7 +682,8 @@ msgstr "ultima factură"
 msgid "last closed ticket"
 msgstr "ultimul tichet închis"
 
-#: inc/ticket.class.php:1419 inc/ticket.class.php:1420 inc/views/operations.class.php:261
+#: inc/ticket.class.php:1419 inc/ticket.class.php:1420
+#: inc/views/operations.class.php:261
 msgid "Consumed ink"
 msgstr "Cerneală consumată"
 
@@ -770,14 +801,16 @@ msgstr "Cartuș șters din baza de date"
 msgid "E-Maintenance"
 msgstr "E-Maintenance"
 
-#: inc/views/emaintenance.class.php:52 inc/views/printers.class.php:75 inc/views/tickets.class.php:124
+#: inc/views/emaintenance.class.php:52 inc/views/printers.class.php:75
+#: inc/views/tickets.class.php:124
 msgid "Installable cartridges"
 msgstr "Cartușe ce pot fi instalate"
 
 msgid "Replaced cartridges"
 msgstr "Cartușe golite"
 
-#: inc/views/emaintenance.class.php:152 inc/views/operations.class.php:45 inc/views/tickets.class.php:100
+#: inc/views/emaintenance.class.php:152 inc/views/operations.class.php:45
+#: inc/views/tickets.class.php:100
 msgid "Close ticket"
 msgstr "Închidere tichet"
 
@@ -866,7 +899,8 @@ msgstr "%d emailuri nu au fost trimise"
 msgid "Price List"
 msgstr "Lista de prețuri"
 
-#: inc/views/printercounters.class.php:169 inc/views/printers.class.php:69 inc/views/printers.class.php:334 inc/views/tickets.class.php:118
+#: inc/views/printercounters.class.php:169 inc/views/printers.class.php:69
+#: inc/views/printers.class.php:334 inc/views/tickets.class.php:118
 msgid "Printer counters"
 msgstr "Contoare aparate"
 
@@ -1529,6 +1563,15 @@ msgid_plural "Consumable Descriptions"
 msgstr[0] "Descriere consumabil"
 msgstr[1] "Descrieri consumabil"
 msgstr[2] "Descrieri consumabil"
+
+msgid "Could not find CartridgeItem with id"
+msgstr "Nu există Tip cartuș cu id"
+
+msgid "Compatible printer models"
+msgstr "Modele imprimantă compatibile"
+
+msgid "Show models with tickets newer than"
+msgstr "Arată modele care au ticket mai nou de"
 
 #, fuzzy
 #~| msgid "Pending emails"
