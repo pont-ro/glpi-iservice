@@ -30,7 +30,7 @@ $add_cartridges_as_negative_consumables = IserviceToolBox::getInputVariable('add
 
 $post                 = IserviceToolBox::filterVarArray(INPUT_POST) ?: [];
 $get                  = IserviceToolBox::filterVarArray(INPUT_GET) ?: [];
-$input                = $get + $post;
+$input                = $post + $get; // This was changed so that form changes are not lost when form is re-filled with GET parameters, but later changed manually.
 $options['partnerId'] = IserviceToolBox::getInputVariable('suppliers_id') ?? IserviceToolBox::getValueFromInput('_suppliers_id_assign', $get);
 $options['printerId'] = IserviceToolBox::getInputVariable('printer_id') ?? IserviceToolBox::getItemsIdFromInput($get, 'Printer');
 $options['mode']      = IserviceToolBox::getInputVariable('mode');
