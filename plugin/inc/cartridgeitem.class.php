@@ -218,7 +218,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 $index         .= "l" . $changeable_cartridge['locations_id_field'];
             }
 
-            $elements[$index] = sprintf(__('%1$s (%2$s)'), $cartridgeName, $changeable_cartridge["cpt"]);
+            $elements[$index] = sprintf('%1$s - %2$s (%3$s)', $changeable_cartridge['ref'] ?? '', $cartridgeName, $changeable_cartridge["cpt"]);
         }
 
         $data['elementsArray'] = $elements;
