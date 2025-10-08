@@ -596,7 +596,7 @@ class PluginIservicePrinter extends Printer
         }
 
         // Selector.
-        $selector_options['type'] = 'Contract';
+        $selector_options['type'] = 'PluginIserviceContract';
         $contract_id              = empty($contract->fields['id']) ? 0 : $contract->fields['id'];
         if ($printer !== null && !$printer->isNewItem()) {
             $selector_options['options']['on_change'] = "adjustPrinterChangeButtons($(this).val() == $contract_id, \"input[name=\\\"modify_contract\\\"]\", \"input[name=\\\"update_contract\\\"]\");";
@@ -604,10 +604,11 @@ class PluginIservicePrinter extends Printer
             $selector_options['options']['on_change'] = "window.location.href=\"//\" + window.location.host + window.location.pathname + \"?contract_id=\" + $(this).val();";
         }
 
-        $selector_options['options']['nochecklimit'] = true;
-        $selector_options['options']['expired']      = true;
-        $selector_options['prefix']                  = $form->generateSubmit('modify_contract', '&nbsp;', ['class' => 'grear-icon modify-contract', 'title' => _t('Modify') . ' ' . __('Contract'), 'style' => 'display:none;']);
-        $output                                     .= $form->generateFieldTableRow(__('Contract'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[id]', $contract_id, $readonly, $selector_options));
+        $selector_options['options']['markusedforgsm'] = true;
+        $selector_options['options']['nochecklimit']   = true;
+        $selector_options['options']['expired']        = true;
+        $selector_options['prefix']                    = $form->generateSubmit('modify_contract', '&nbsp;', ['class' => 'grear-icon modify-contract', 'title' => _t('Modify') . ' ' . __('Contract'), 'style' => 'display:none;']);
+        $output                                       .= $form->generateFieldTableRow(__('Contract'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[id]', $contract_id, $readonly, $selector_options));
 
         // Name.
         if (!$readonly) {
