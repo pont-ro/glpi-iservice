@@ -119,6 +119,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 'on_change'     => "$(this).append('<input type=\"hidden\" name=\"add_consumable\" value=\"1\">').closest('form').submit();",
             ];
 
+            global $CFG_PLUGIN_ISERVICE;
+
             $data['addConsumablesSection'] = [
                 'type'   => 'table',
                 'class'  => 'add-consumable-div',
@@ -145,8 +147,23 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                             'no_label' => true,
                         ],
                     ],
-                    'allConsumablesDropdown' => [
+                    'usedConsumablesDropdown' => [
                         'order'    => 3,
+                        'label'    => _t('Used consumables'),
+                        'name'     => '_plugin_iservice_consumable[plugin_iservice_used_consumables_id]',
+                        'type'     => 'dropdown',
+                        'itemType' => 'PluginIserviceConsumable',
+                        'value'    => '',
+                        'options'  => array_merge(
+                            [
+                                'url' => "$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getUsedConsumablesDropdownValuesForTicket.php",
+                                'condition' => [$items_id]
+                            ],
+                            $consumables_selector_options,
+                        )
+                    ],
+                    'allConsumablesDropdown' => [
+                        'order'    => 4,
                         'label'    => _t('Full list'),
                         'name'     => '_plugin_iservice_consumable[plugin_iservice_consumables_id]',
                         'type'     => 'dropdown',
@@ -165,7 +182,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 $consumables_selector_options['condition'] = ["id in ('" . implode("','", $compatible_consumables) . "')"];
 
                 $data['addConsumablesSection']['inputs']['compatibleConsumablesDropdown'] = [
-                    'order'    => 4,
+                    'order'    => 5,
                     'label'    => _t('Compatible cartridges list'),
                     'name'     => '_plugin_iservice_consumable[plugin_iservice_cartridge_consumables_id]',
                     'type'     => 'dropdown',

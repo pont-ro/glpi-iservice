@@ -532,7 +532,7 @@ class PluginIserviceTicket extends Ticket
                     'cartridge_link' => $this->printer ? "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}" : null,
                     'warning' => $warning ?? null,
                 ],
-                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($isClosed || ($newerTicketsWithCartridgeExists && $ID > 0))),
+                [] // PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($isClosed || ($newerTicketsWithCartridgeExists && $ID > 0))),
             );
 
             if (!empty($this->printer->fields['printermodels_id'])) {
@@ -586,7 +586,7 @@ class PluginIserviceTicket extends Ticket
         $templateParams['movementRelatedFields'] = $movementRelatedData['fields'] ?? null;
 
         $options['ticketHasConsumables']   = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
-        $templateParams['submitButtons']   = $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
+        $templateParams['submitButtons']   = []; // $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
         $templateParams['floatingButtons'] = $this->getFloatingButtonsConfig($supplier, $this->printer);
 
         if ($renderExtendedForm) {
@@ -1683,14 +1683,20 @@ class PluginIserviceTicket extends Ticket
 
     public function addConsumable($ticketId, $post): void
     {
-        if (!empty($post['_plugin_iservice_consumable']) && (!empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id']) || !empty($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id']))) {
+        if (!empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id']) ||
+            !empty($post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id']) ||
+            !empty($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id'])) {
             $this->check($ticketId, UPDATE);
 
             if (empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
                 $post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'] = $post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id'];
             }
-
             unset($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id']);
+
+            if (empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
+                $post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'] = $post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id'];
+            }
+            unset($post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id']);
 
             $plugin_iservice_consumable_ticket_data                     = $post['_plugin_iservice_consumable'];
             $plugin_iservice_consumable_ticket_data['tickets_id']       = $ticketId;
