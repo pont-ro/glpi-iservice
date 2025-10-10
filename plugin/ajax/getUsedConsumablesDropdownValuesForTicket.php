@@ -22,7 +22,7 @@ $consumables = PluginIserviceDB::getQueryResult("
         ct.plugin_iservice_consumables_id cid
       , c.name
       -- , max(case when it.items_id <> $printerId then it.items_id else null end) max_pid
-      , group_concat(case when it.items_id <> $printerId then p.name end separator ', ') printers
+      , group_concat(case when it.items_id <> $printerId then concat(p.serial, ' [', pm.name, ']') p.name end separator ', ') printers
       , a.cod used
     from glpi_plugin_iservice_consumables c
     join glpi_plugin_iservice_consumables_tickets ct on ct.plugin_iservice_consumables_id = c.id
@@ -39,6 +39,7 @@ $consumables = PluginIserviceDB::getQueryResult("
         )
     )
     join glpi_printers p on p.id = it.items_id and p.is_deleted = 0
+    join glpi_printermodels pm on pm.id = p.printermodels_id 
     left join (
         select distinct ct.plugin_iservice_consumables_id cod
         from glpi_plugin_iservice_consumables_tickets ct
@@ -61,8 +62,8 @@ foreach ($consumables as $consumable) {
     } else {
         $compatibleConsumables[] = [
             'id' => $consumable['cid'],
-            'text' => $consumable['name'] . ' (' . _t('on compatible devices') . ')',
-            'title' => $consumable['name'] . ' (' . _t('on compatible devices') . ': ' . $consumable['printers'] . ')',
+            'text' => $consumable['name'] . ' (' . _t('On compatible devices') . ')',
+            'title' => $consumable['name'] . ' (' . _t('On compatible devices') . ': ' . $consumable['printers'] . ')',
         ];
     }
 }
