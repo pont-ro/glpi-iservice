@@ -68,8 +68,8 @@ foreach ($consumables as $consumable) {
     } else {
         $compatibleConsumables[] = [
             'id' => $consumable['cid'],
-            'text' => $consumable['name'] . ' (' . _t('On compatible devices') . ')',
-            'title' => $consumable['name'] . "\n" . _t('On compatible devices') . ":\n" . $consumable['printers'],
+            'text' => $consumable['name'] . ' (' . _t('On similar devices') . ')',
+            'title' => $consumable['name'] . "\n" . _t('On similar devices') . ":\n" . $consumable['printers'],
         ];
     }
 }
@@ -77,11 +77,11 @@ foreach ($consumables as $consumable) {
 echo json_encode([
     'results' => [
         [
-            'text' => _t('On this device'),
+            'text' => _t('On this device type'),
             'children' => $usedConsumables,
         ],
         [
-            'text' => _t('On compatible devices'),
+            'text' => _t('On similar devices'),
             'children' => $compatibleConsumables,
         ]
     ],
