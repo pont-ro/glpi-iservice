@@ -21,7 +21,7 @@ $consumables = PluginIserviceDB::getQueryResult("
     select 
         ct.plugin_iservice_consumables_id cid
       , c.name
-      , group_concat(distinct(case when it.items_id <> $printerId then concat('  - ', p.serial, ' [', pm.name, ']') end) separator '\n') printers
+      , group_concat(distinct(case when it.items_id <> $printerId then concat('  - ', p.serial, '(', pm.name, ')') end) separator '\n') printers
       , a.cod used
     from glpi_plugin_iservice_consumables c
     join glpi_plugin_iservice_consumables_tickets ct on ct.plugin_iservice_consumables_id = c.id
