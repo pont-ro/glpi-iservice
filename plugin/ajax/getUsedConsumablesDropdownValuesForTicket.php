@@ -21,29 +21,35 @@ $consumables = PluginIserviceDB::getQueryResult("
     select 
         ct.plugin_iservice_consumables_id cid
       , c.name
-      -- , max(case when it.items_id <> $printerId then it.items_id else null end) max_pid
-      , group_concat(case when it.items_id <> $printerId then concat(p.serial, ' [', pm.name, ']') end separator ', ') printers
+      , group_concat(case when it.items_id <> $printerId then concat(p.serial, ' [', pm.name, ']') end separator '\n') printers
       , a.cod used
     from glpi_plugin_iservice_consumables c
     join glpi_plugin_iservice_consumables_tickets ct on ct.plugin_iservice_consumables_id = c.id
-    join glpi_plugin_fields_ticketticketcustomfields tcf on tcf.itemtype = 'Ticket' and tcf.items_id = ct.tickets_id and tcf.plugin_fields_ticketexporttypedropdowns_id = 1 and tcf.effective_date_field > '2018-01-01'
-    join glpi_items_tickets it on it.tickets_id = ct.tickets_id and it.itemtype = 'Printer' and it.items_id in
+    join glpi_plugin_fields_ticketticketcustomfields tcf on tcf.itemtype = 'Ticket'
+                                                        and tcf.items_id = ct.tickets_id
+                                                        and tcf.plugin_fields_ticketexporttypedropdowns_id = 1
+                                                        and tcf.effective_date_field > '2018-01-01'
+    join glpi_items_tickets it on it.tickets_id = ct.tickets_id and it.itemtype = 'Printer'
+    join glpi_printers p on p.id = it.items_id and p.is_deleted = 0 and p.printermodels_id in
     (
-        select distinct it.items_id
-        from glpi_items_tickets it
-        join glpi_plugin_iservice_consumables_tickets ct on ct.tickets_id = it.tickets_id
-        where it.itemtype = 'Printer' = ct.plugin_iservice_consumables_id in (
+        select distinct cipm.printermodels_id
+        from glpi_cartridgeitems_printermodels cipm
+        join glpi_cartridgeitems ci on ci.id = cipm.cartridgeitems_id and ci.ref in (
             select distinct ct.plugin_iservice_consumables_id
             from glpi_plugin_iservice_consumables_tickets ct
             join glpi_items_tickets it on it.tickets_id = ct.tickets_id and it.itemtype = 'Printer' and it.items_id = $printerId
+            where ct.plugin_iservice_consumables_id like 'CCA%' or ct.plugin_iservice_consumables_id like 'CTO%'
         )
     )
-    join glpi_printers p on p.id = it.items_id and p.is_deleted = 0
-    join glpi_printermodels pm on pm.id = p.printermodels_id 
+    join glpi_printermodels pm on pm.id = p.printermodels_id
     left join (
         select distinct ct.plugin_iservice_consumables_id cod
         from glpi_plugin_iservice_consumables_tickets ct
-        join glpi_items_tickets it on it.tickets_id = ct.tickets_id and it.itemtype = 'Printer' and it.items_id = $printerId
+        join glpi_items_tickets it on it.tickets_id = ct.tickets_id and it.itemtype = 'Printer'
+        join glpi_printers p
+             on p.id = it.items_id
+            and p.is_deleted = 0
+            and p.printermodels_id = (select printermodels_id from glpi_printers where id = $printerId)
     ) a on a.cod = ct.plugin_iservice_consumables_id
     $where
     group by ct.plugin_iservice_consumables_id, a.cod
