@@ -532,7 +532,7 @@ class PluginIserviceTicket extends Ticket
                     'cartridge_link' => $this->printer ? "views.php?view=Cartridges&pmi={$this->printer->fields['printermodels_id']}&cartridges0[filter_description]=compatibile {$this->printer->fields['name']}" : null,
                     'warning' => $warning ?? null,
                 ],
-                PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($isClosed || ($newerTicketsWithCartridgeExists && $ID > 0))),
+                [] // PluginIserviceCartridge_Ticket::getDataForTicketChangeableSection($this, $prepared_data['field_required'], false, ($isClosed || ($newerTicketsWithCartridgeExists && $ID > 0))),
             );
 
             if (!empty($this->printer->fields['printermodels_id'])) {
@@ -586,7 +586,7 @@ class PluginIserviceTicket extends Ticket
         $templateParams['movementRelatedFields'] = $movementRelatedData['fields'] ?? null;
 
         $options['ticketHasConsumables']   = !empty($templateParams['consumablesTableData']['consumablesTableSection']['rows']);
-        $templateParams['submitButtons']   = $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
+        $templateParams['submitButtons']   = []; // $this->getButtonsConfig($ID, $options, $movementRelatedData['movement'] ?? null);
         $templateParams['floatingButtons'] = $this->getFloatingButtonsConfig($supplier, $this->printer);
 
         if ($renderExtendedForm) {
