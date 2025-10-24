@@ -268,7 +268,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 LEFT JOIN glpi_printers p ON p.id = ic.items_id AND itemtype = 'Printer'
                 WHERE ic.suppliers_id = " . $ticket->getFirstAssignedPartner()->getID();
 
-            $title = $consumable['description'] ? "$consumable[description]: " : "";
+            $title = $consumable['description'];
             $ticket->consumable_data['installed_cartridges'] = [];
             if (!empty($consumable['new_cartridge_ids'])) {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
@@ -284,7 +284,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     $ticket->consumable_data['installed_cartridges'][$cartr['cartridges_id']] = ['id' => $cartr['cartridges_id'], 'ticket_use' => $cartr['tickets_id']];
                 }
 
-                $title .= str_replace(',', ', ', $cartridge_ids);
+                $title .= (empty($title) ? '' : ': ') . str_replace(',', ', ', $cartridge_ids);
             }
 
             $data['consumablesTableSection']['rows'][$key] = [
