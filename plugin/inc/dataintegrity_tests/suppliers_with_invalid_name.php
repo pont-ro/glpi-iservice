@@ -27,7 +27,7 @@ return [
         'alert' => true,
         'type' => 'compare_query_count',
         'zero_result' => [
-            'summary_text' => 'There are no partners problematic invalid name (leading/trailing spaces or double spaces)',
+            'summary_text' => 'There are no partners with problematic name (leading/trailing spaces or double spaces)',
         ],
         'positive_result' => [
             'summary_text' => 'There are {count} partners with problematic name (leading/trailing spaces or double spaces)',

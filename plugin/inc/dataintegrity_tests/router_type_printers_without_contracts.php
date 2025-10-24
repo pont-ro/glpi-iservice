@@ -1,5 +1,5 @@
 <?php
-global $CFG_GLPI;
+global $CFG_PLUGIN_ISERVICE;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 return [
@@ -28,7 +28,7 @@ return [
         ],
         'positive_result' => [
             'summary_text' => "There are {count} routers without contract not at 'Expert Line' and not 'fara cartela'",
-            'iteration_text' => "Router <a href='$CFG_GLPI[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[p_name]</a> at partner <b>[s_name]</b> ([sid]) with location <b>[l_name]</b> has no contract"
+            'iteration_text' => "Router <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=[pid]' target='_blank'>[p_name]</a> at partner <b>[s_name]</b> ([sid]) with location <b>[l_name]</b> has no contract"
         ],
     ]
 ];
