@@ -42,16 +42,23 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                  on ccf.itemtype = 'Cartridge'
                 and ccf.items_id = c.id
                 and ccf.tickets_id_out_field is not null
-                and coalesce(ccf.printed_pages_field, 0) between cicf.atc_field * cicf.life_coefficient_field / 5 and cicf.atc_field * cicf.life_coefficient_field * 2
+                and coalesce(ccf.printed_pages_field, 0) <> 0
+                and coalesce(ccf.printed_pages_field, 0) between cicf.atc_field / 5 and cicf.atc_field * 2
             join (
                 select
                     ci.id
-                  , ccf.printed_pages_field
+                  , case
+                        when pt.name = 'alb-negru' then ccf.printed_pages_field
+                        when ci.ref like 'C%' and ccf.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4) then ccf.printed_pages_color_field
+                        else ccf.printed_pages_color_field + ccf.printed_pages_field
+                    end printed_pages_field
                   , row_number() over (partition by ci.id order by ccf.printed_pages_field) rn
                   , count(*) over (partition by ci.id) cnt
                 from glpi_cartridgeitems ci
                 join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cicf on cicf.itemtype = 'Cartridgeitem' and cicf.items_id = ci.id
                 join glpi_cartridges c on c.cartridgeitems_id = ci.id
+                join glpi_printers p on p.id = c.printers_id
+                join glpi_printertypes pt on pt.id = p.printertypes_id
                 join glpi_plugin_fields_cartridgecartridgecustomfields ccf
                      on ccf.itemtype = 'Cartridge'
                     and ccf.items_id = c.id
