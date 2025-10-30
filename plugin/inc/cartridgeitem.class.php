@@ -25,7 +25,49 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
     public static $customFieldsModelName = 'PluginFieldsCartridgeitemcartridgeitemcustomfield';
 
-    public static function ajaxUpdate()
+    public static function getLcsQuery(): string
+    {
+        return "
+            select
+                ci.id
+              , count(c.id) count
+              , max(ci.ref) code
+              , max(cicf.atc_field) atc
+              , max(cicf.life_coefficient_field) lc
+              , round(avg(t.printed_pages_field) / max(cicf.atc_field), 2) calculated_lc
+            from glpi_cartridgeitems ci
+            join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cicf on cicf.itemtype = 'Cartridgeitem' and cicf.items_id = ci.id
+            join glpi_cartridges c on c.cartridgeitems_id = ci.id
+            join glpi_plugin_fields_cartridgecartridgecustomfields ccf
+                 on ccf.itemtype = 'Cartridge'
+                and ccf.items_id = c.id
+                and ccf.tickets_id_out_field is not null
+                and coalesce(ccf.printed_pages_field, 0) between cicf.atc_field * cicf.life_coefficient_field / 5 and cicf.atc_field * cicf.life_coefficient_field * 2
+            join (
+                select
+                    ci.id
+                  , ccf.printed_pages_field
+                  , row_number() over (partition by ci.id order by ccf.printed_pages_field) rn
+                  , count(*) over (partition by ci.id) cnt
+                from glpi_cartridgeitems ci
+                join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cicf on cicf.itemtype = 'Cartridgeitem' and cicf.items_id = ci.id
+                join glpi_cartridges c on c.cartridgeitems_id = ci.id
+                join glpi_plugin_fields_cartridgecartridgecustomfields ccf
+                     on ccf.itemtype = 'Cartridge'
+                    and ccf.items_id = c.id
+                    and ccf.tickets_id_out_field is not null
+                    and coalesce(ccf.printed_pages_field, 0) <> 0
+                    and coalesce(ccf.printed_pages_field, 0) between cicf.atc_field / 5 and cicf.atc_field * 2
+                where ci.ref like 'cton%' or ci.ref like 'cca%'
+            ) t on t.id = ci.id and t.rn in (floor((t.cnt + 1) / 2), ceil((t.cnt + 1) / 2))
+            group by ci.id
+            having count(c.id) > 20
+            order by code
+        ";
+    }
+
+
+    public static function ajaxUpdate(): string
     {
         $id   = IserviceToolBox::getInputVariable('id');
         $ref  = IserviceToolBox::getInputVariable('ref');
@@ -47,7 +89,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return self::ajaxUpdate_Trait();
     }
 
-    public static function ajaxGetRefSelector()
+    public static function ajaxGetRefSelector(): string
     {
         $id   = IserviceToolBox::getInputVariable('id');
 
@@ -72,7 +114,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return "$hMarfaCodesDropdown <a class='vsubmit' style='vertical-align: middle' href='javascript:void(0);' onclick='(function(){var ref=\$(\"select[name=choose_cartridgeitem_ref_$id]\").val(); if (!ref || ref === \"0\") {alert(\"Please select a code first.\"); return;} ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=Update&id=$id&ref=\"+encodeURIComponent(ref), \"\", function(message) {if (isNaN(message)) {alert(message);} else {\$(\"#fix-cartridgetype-$id\").remove();}}); })();'>Change</a>";
     }
 
-    public static function ajaxGetAllPrinterModels()
+    public static function ajaxGetAllPrinterModels(): string
     {
         $id   = IserviceToolBox::getInputVariable('id');
 
@@ -107,6 +149,18 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         }
 
         return $out ?: "---";
+    }
+
+    public static function ajaxUpdateLcs(): string
+    {
+        $lcsQuery = self::getLcsQuery();
+        $result = PluginIserviceDB::getQueryResult("
+            update glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cicf
+            join ($lcsQuery) lcs on lcs.id = cicf.items_id and cicf.itemtype = 'Cartridgeitem'
+            set cicf.life_coefficient_field = lcs.calculated_lc
+        ");
+
+        return $result ? __('Operation successful') : PluginIserviceDB::getLastError();
     }
 
     public function getSupportedTypes(): array
@@ -608,5 +662,4 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
         return array_column($ids, 'printermodels_id');
     }
-
 }

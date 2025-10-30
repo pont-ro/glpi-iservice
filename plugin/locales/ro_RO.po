@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2025-10-14 11:01+0300\n"
+"PO-Revision-Date: 2025-10-30 07:32+0200\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -1584,6 +1584,12 @@ msgstr "Pe acest model de aparat"
 
 msgid "On similar devices"
 msgstr "Pe aparate asemănătoare"
+
+msgid "Are you sure you want to adjust life coefficients of the below cartridge types?"
+msgstr "Sigur vrei sa ajustezi coeficienții de viață a tipurilor de cartușe de mai jos?"
+
+msgid "Adjust cartridge type life coefficients"
+msgstr "Ajustează coeficieții de viață a tipurilor de cartușe"
 
 #, fuzzy
 #~| msgid "Pending emails"

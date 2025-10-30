@@ -1,0 +1,32 @@
+<div class="container">
+    <div class="center my-3">
+        <a class="btn btn-primary me-2" href="#" id="adjust-lcs">
+            <span onclick="ajaxCall('{{ url_base }}/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=UpdateLcs',
+                    '{{ _t('Are you sure you want to adjust life coefficients of the below cartridge types?') }}',
+                    function(message) { alert(message);})
+                    ">{{ _t('Adjust cartridge type life coefficients') }}</span>
+        </a>
+    </div>
+    <div class="center my-3">
+        <table class="table table-striped table-hover">
+            <tr>
+                <th>{{ _t('Code') }} hMarfa</th>
+                <th>Nr. {{ _t('Cartridge') }}</th>
+                <th>ATC</th>
+                <th>Life coefficient</th>
+                <th>Calculated life coefficient</th>
+            </tr>
+            {% for row in lcs %}
+                {% if row.lc != row.calculated_lc %}
+                    <tr>
+                        <td>{{ row.code }}</td>
+                        <td>{{ row.count }}</td>
+                        <td>{{ row.atc }}</td>
+                        <td>{{ row.lc }}</td>
+                        <td>{{ row.calculated_lc }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+</div>

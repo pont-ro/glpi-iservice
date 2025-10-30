@@ -30,6 +30,7 @@ class PluginIserviceConfig extends CommonDBTM
             return [
                 1 => __('General setup'),
                 2 => __('Import'),
+                3 => _n('Cartridge type', 'Cartridge types', 1),
             ];
         default:
             break;
@@ -68,6 +69,21 @@ class PluginIserviceConfig extends CommonDBTM
         return true;
     }
 
+    public function showFormCartridgeItem(CommonGLPI $item): bool
+    {
+        global $CFG_PLUGIN_ISERVICE;
+
+        echo TemplateRenderer::getInstance()->render(
+            '@iservice/pages/admin/cartridgeitem.html.twig',
+            [
+                'url_base' => $CFG_PLUGIN_ISERVICE['root_doc'],
+                'lcs' => PluginIserviceDB::getQueryResult(PluginIserviceCartridgeItem::getLcsQuery())
+            ]
+        );
+
+        return true;
+    }
+
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0): bool
     {
         switch ($tabnum) {
@@ -76,6 +92,9 @@ class PluginIserviceConfig extends CommonDBTM
             break;
         case 2:
             $item->showFormImport($item);
+            break;
+        case 3:
+            $item->showFormCartridgeItem($item);
             break;
         default:
             break;

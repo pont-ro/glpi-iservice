@@ -53,7 +53,7 @@ class PluginIserviceDB extends DB
         }
 
         $query_result = [];
-        if (false === ($result = $db->query($query)) || $result === true || !$db->numrows($result)) {
+        if (false === ($result = $db->doQuery($query)) || $result === true || !$db->numrows($result)) {
             return is_bool($result) ? $result : $query_result;
         }
 
@@ -66,6 +66,16 @@ class PluginIserviceDB extends DB
         }
 
         return $query_result;
+    }
+
+    public static function getLastError(?\DBmysql $db = null): string
+    {
+        if ($db === null) {
+            global $DB;
+            $db = $DB;
+        }
+
+        return $db->error();
     }
 
     public static function populateByItemsId(CommonDBTM $object, int $id, string $itemtype = null): bool

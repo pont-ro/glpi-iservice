@@ -125,7 +125,7 @@ trait PluginIserviceItem
         return true;
     }
 
-    public static function ajaxUpdate()
+    public static function ajaxUpdate(): string
     {
         global $DB;
 
@@ -133,7 +133,7 @@ trait PluginIserviceItem
          * @var $item CommonDBTM
          */
         $item = new self();
-        $id   = IserviceToolBox::getInputVariable('id');
+        $id   = (string) IserviceToolBox::getInputVariable('id');
 
         if (!$item->getFromDB($id)) {
             return "Could not find {$item->getType()} with id $id!";
