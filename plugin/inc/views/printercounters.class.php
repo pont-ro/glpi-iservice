@@ -363,7 +363,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
               AND otherserial LIKE '[otherserial]'
               AND serial LIKE '[serial]'
               AND supplier_name LIKE '[supplier_name]'
-              AND min_days_to_visit < [min_days_to_visit]
+              AND min_days_to_visit > [min_days_to_visit]
               AND consumable_type in ([consumable_type])
               AND ((printer_status is null AND '[printer_status]' = '%%') OR printer_status LIKE '[printer_status]')
               [tech_id]
@@ -397,8 +397,8 @@ class PrinterCounters extends PluginIserviceViewPrinter
         ];
         $settings['filters']['min_days_to_visit']  = [
             'type' => self::FILTERTYPE_INT,
-            'header_caption' => '< ',
-            'empty_value' => '9999999',
+            'header_caption' => '> ',
+            'empty_value' => '-100',
             'zero_is_empty' => false,
             'header' => 'min_days_to_visit',
             'format' => '%d',
@@ -434,6 +434,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
             'title' => 'Urm. livrare în',
             'align' => 'right',
             'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCounters::getMinDaysToVisitDisplay($row);',
+            'default_sort' => 'ASC'
         ];
         $settings['columns']['consumable_codes']       = [
             'title' => 'Cod hMarfa',
