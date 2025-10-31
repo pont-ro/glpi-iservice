@@ -86,7 +86,7 @@
 
                                 {{ fields.textField(
                                     'qr_ticket_data[contact_person]',
-                                    '',
+                                    formData.contact,
                                     _t('Contact Person/Phone'),
                                     field_options|merge({
                                         'required': true,
@@ -97,7 +97,7 @@
 
                                 {{ fields.textField(
                                     'qr_ticket_data[send_email]',
-                                    sendEmail,
+                                    formData.email,
                                     _t('I want confirmation email'),
                                     field_options
                                 ) }}

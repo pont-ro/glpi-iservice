@@ -132,7 +132,7 @@ class PluginIserviceQr extends CommonDBTM
             'infoMessage' => sprintf(_t("You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."), $printer->fields['original_name'], $printer->fields['serial']),
             'total2BlackRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_black_field'] ?? null,
             'total2ColorRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_color_field'] ?? null,
-            'sendEmail' => $_COOKIE['iServiceSendQREmail'] ?? 'test',
+            'formData' => json_decode($_COOKIE['qrFormData']) ?? ['contact' => '', 'email' => ''],
         ];
 
         $data['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($printer, new PluginIserviceTicket(),  $lastClosedTicketForPrinter, true) ?? [];
@@ -306,7 +306,7 @@ class PluginIserviceQr extends CommonDBTM
             $ticketCreatedMessage .= $this->getTicketCreatedMessageForEmail($filesData);
             return IserviceToolBox::sendMail(
                 $qrTicketData['send_email'],
-                sprintf(_t('Data saved for %s(%s)'), $printer->fields['original_name'], $printer->fields['serial']),
+                sprintf(_t('Data saved for %s (%s)'), $printer->fields['original_name'], $printer->fields['serial']),
                 $ticketCreatedMessage);
         }
 

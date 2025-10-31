@@ -24,8 +24,15 @@ if (!PluginIserviceQr::loginQrUser()) {
 }
 
 // Cookies must be set before header is sent!
-if (!empty($qrTicketData['send_email'])) {
-    setcookie('iServiceSendQREmail', $qrTicketData['send_email'], time() + 365 * 24 * 60 * 60, '/');
+if (!empty($qrTicketData)) {
+    setcookie(
+        'qrFormData',
+        json_encode([
+            'contact' => $qrTicketData['contact_person'],
+            'email' => $qrTicketData['send_email'],
+        ]),
+        time() + 365 * 24 * 60 * 60, '/'
+    );
 }
 
 
