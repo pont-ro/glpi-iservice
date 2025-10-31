@@ -33,7 +33,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
               , count(c.id) count
               , max(ci.ref) code
               , max(cicf.atc_field) atc
-              , max(cicf.life_coefficient_field) lc
+              , round(max(cicf.life_coefficient_field), 2) lc
               , round(avg(t.printed_pages_field) / max(cicf.atc_field), 2) calculated_lc
             from glpi_cartridgeitems ci
             join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cicf on cicf.itemtype = 'Cartridgeitem' and cicf.items_id = ci.id
@@ -68,7 +68,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 where ci.ref like 'cton%' or ci.ref like 'cca%'
             ) t on t.id = ci.id and t.rn in (floor((t.cnt + 1) / 2), ceil((t.cnt + 1) / 2))
             group by ci.id
-            having count(c.id) > 20
+            having count(c.id) > 20 and round(max(cicf.life_coefficient_field), 2) <> round(avg(t.printed_pages_field) / max(cicf.atc_field), 2)
             order by code
         ";
     }
