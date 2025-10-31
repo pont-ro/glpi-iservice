@@ -23,6 +23,12 @@ if (!PluginIserviceQr::loginQrUser()) {
     Html::displayErrorAndDie(_t('Authorization error. Please make sure cookies are enabled in your browser.'));
 }
 
+// Cookies must be set before header is sent!
+if (!empty($qrTicketData['send_email'])) {
+    setcookie('iServiceSendQREmail', $qrTicketData['send_email'], time() + 365 * 24 * 60 * 60, '/');
+}
+
+
 PluginIserviceHtml::publicHeader(PluginIserviceQr::getTypeName());
 
 if (!empty($code)

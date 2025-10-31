@@ -58,7 +58,7 @@ class PluginIserviceQr extends CommonDBTM
         ];
 
         foreach ($allowedPages as $allowedPage) {
-            if (strpos($url, $allowedPage) !== false) {
+            if (str_contains($url, $allowedPage)) {
                 return true;
             }
         }
@@ -97,7 +97,7 @@ class PluginIserviceQr extends CommonDBTM
         $massInsertQuery = rtrim($massInsertQuery, ',');
         if ($DB->request($massInsertQuery)) {
             return $ids;
-        };
+        }
 
         return [];
     }
@@ -132,6 +132,7 @@ class PluginIserviceQr extends CommonDBTM
             'infoMessage' => sprintf(_t("You are connected to printer %s serial %s. Please check the toners your replaced and fill other fields if applicable. The data will be sent after pressing the \"Send\" button."), $printer->fields['original_name'], $printer->fields['serial']),
             'total2BlackRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_black_field'] ?? null,
             'total2ColorRequiredMinimum' => $lastClosedTicketForPrinter->customfields->fields['total2_color_field'] ?? null,
+            'sendEmail' => $_COOKIE['iServiceSendQREmail'] ?? 'test',
         ];
 
         $data['countersDefaultValues'] = PluginIserviceTicket::getCountersDefaultValues($printer, new PluginIserviceTicket(),  $lastClosedTicketForPrinter, true) ?? [];
@@ -224,8 +225,14 @@ class PluginIserviceQr extends CommonDBTM
         $printer = new PluginIservicePrinter();
         $printer->getFromDB($qr->fields['items_id']);
 
-        $message            = $qrTicketData['contact_person'] ? (_t('Contact Person') . ": $qrTicketData[contact_person]<br><br>") : '';
-        $message            .= $qrTicketData['message'] ?? null;
+        $message = $qrTicketData['contact_person'] ? (_t('Contact Person') . ": $qrTicketData[contact_person]") : '';
+        if (!empty($qrTicketData['message'])) {
+            $message .= "<br><br>$qrTicketData[message]";
+        }
+        if (!empty($qrTicketData['send_email'])) {
+            $message .= "<br><br>" . _t('Confirmation mail was sent to') . " $qrTicketData[send_email]";
+        }
+
         $replacedCartridges = [];
 
         if (!empty($qrTicketData['replaced_cartridges'])) {
@@ -291,18 +298,36 @@ class PluginIserviceQr extends CommonDBTM
             );
         }
 
-        self::renderMessageTemplate($this->getTicketCreatedMessage($ticketId, $printer, $replacedCartridges, $qrTicketData));
+        $ticketCreatedMessage = $this->getTicketCreatedMessage($ticketId, $printer, $replacedCartridges, $qrTicketData);
+
+        self::renderMessageTemplate($ticketCreatedMessage . $this->getTicketCreatedMessageFooter());
+
+        if ($qrTicketData['send_email']) {
+            $ticketCreatedMessage .= $this->getTicketCreatedMessageForEmail($filesData);
+            return IserviceToolBox::sendMail(
+                $qrTicketData['send_email'],
+                sprintf(_t('Data saved for %s(%s)'), $printer->fields['original_name'], $printer->fields['serial']),
+                $ticketCreatedMessage);
+        }
 
         return true;
     }
 
-    public static function renderMessageTemplate(string $message): void
+    public static function renderMessageTemplate(string $message, bool $return = false): ?string
     {
-        echo TemplateRenderer::getInstance()->render(
+        $result = TemplateRenderer::getInstance()->render(
             '@iservice/qr/message_page.html.twig',  [
                 'message' => $message,
             ]
         );
+
+        if ($return) {
+            return $result;
+        } else {
+            echo $result;
+        }
+
+        return null;
     }
 
     public static function addCartridgeBasedOnColorId(string $colorId, self $qr, PluginIserviceTicket $ticket, PluginIservicePrinter $printer, array $availableCartridges): bool|string
@@ -656,9 +681,32 @@ class PluginIserviceQr extends CommonDBTM
             $message .= "<br>" . _t('Message') . ': ' . $qrTicketData['message'];
         }
 
-        $message .= "<hr>" . _t('Close this page and scan the QR code again for a new report!');
-
         return $message;
+    }
+
+    public function getTicketCreatedMessageForEmail($filesData): string
+    {
+        if (empty($filesData)) {
+            return '';
+        }
+
+        $result = '';
+
+        foreach ($filesData['_filename'] as $index => $fileData) {
+            $result .= "<br>  - ";
+            if (!empty($filesData['_prefix_filename'][$index])) {
+                $result .= explode($filesData['_prefix_filename'][$index], $fileData)[1];
+            } else {
+                $result .= $fileData;
+            }
+        }
+
+        return '<br>' . _t('Attached files:') . $result;
+    }
+
+    public function getTicketCreatedMessageFooter(): string
+    {
+        return "<hr>" . _t('Close this page and scan the QR code again for a new report!');
     }
 
     public static function ajaxSetNotes(): string

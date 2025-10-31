@@ -560,4 +560,30 @@ class ToolBox
         return trim($text);
     }
 
+    public static function sendMail(string|array $to, string $subject, string $body, string $from = null, string $fromName = null, bool $html = true): bool
+    {
+        global $CFG_GLPI;
+
+        $mailer = new \GLPIMailer();
+
+        $mailer->AddCustomHeader("Auto-Submitted: auto-generated");
+        $mailer->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
+        $mailer->SetFrom($from ?? $CFG_GLPI["admin_email"], $fromName ?? $CFG_GLPI["admin_email_name"], false);
+
+        $toAddresses = is_array($to) ? $to : preg_split('/[,;]/', $to);
+        foreach ($toAddresses as $toAddress) {
+            $mailer->AddAddress(trim($toAddress));
+        }
+
+        $mailer->Subject = str_contains($subject, '[iService]') ? $subject : "[iService] $subject";
+
+        $mailer->isHTML($html);
+        $mailer->Body = $body . ($html ? '<br><br><hr>' : "\n\n--\n") . $CFG_GLPI['mailing_signature'];
+
+        try {
+            return $mailer->Send() ? true : $mailer->ErrorInfo;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2025-10-30 07:32+0200\n"
+"PO-Revision-Date: 2025-10-31 13:24+0200\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -1156,6 +1156,9 @@ msgstr "Ceva nu a mers bine, vă rugăm încercați mai târziu!"
 msgid "You have reached the maximum number of tickets that can be created from QR codes. Please contact the administrator if you need more tickets."
 msgstr "Ați atins numărul maxim de tichete care pot fi create din codurile QR. Vă rugăm contactați administratorul dacă aveți nevoie de mai multe tichete."
 
+msgid "Confirmation mail was sent to"
+msgstr "A fost trimis email de confirmare la adresa"
+
 msgid "We could not connect QR code to printer with serial %s."
 msgstr "Nu am putut conecta codul QR la aparatul cu seria %s."
 
@@ -1201,6 +1204,12 @@ msgstr "Notă: Codurile QR conectate la aparate trebuie deconectate înainte de 
 msgid "Ticket with ID: %s was created for printer %s serial %s."
 msgstr "Tichetul cu ID: %s a fost creat pentru aparatul %s cu seria %s."
 
+msgid "Data saved for %s(%s)"
+msgstr "Date salvate pentru %s(%s)"
+
+msgid "Attached files:"
+msgstr "Fișiere atașate:"
+
 msgid "Item updated"
 msgstr "Articol actualizat"
 
@@ -1219,8 +1228,14 @@ msgstr "Status aparat"
 msgid "Contact Person/Phone"
 msgstr "Persoană de contact/Telefon"
 
-msgid "'Inbound Lot Price Deviation Verifier"
-msgid_plural "Stock verifiers"
+msgid "please fill with real values"
+msgstr "vă rugăm completați valorile reale"
+
+msgid "I want confirmation email"
+msgstr "Doresc email de confirmare la"
+
+msgid "Inbound Lot Price Deviation Verifier"
+msgid_plural "Inbound Lot Price Deviation Verifiers"
 msgstr[0] "Verificator deviație preț lot intrare"
 msgstr[1] "Verificatori deviație preț lot intrare"
 msgstr[2] "Verificatori deviație preț lot intrare"

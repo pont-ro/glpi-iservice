@@ -27,26 +27,38 @@
                     <div class="row flex-row align-items-start flex-grow-1">
                         <div class="ms-2 flex-row">
                             {{ fieldsIservice.checkboxFieldExtended(
-                                'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_BLACK') ~ ']', 0, _t("Replaced black toner"), field_options|merge(checkboxOptions)
+                                'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_BLACK') ~ ']',
+                                0,
+                                _t("Replaced black toner"),
+                                field_options|merge(checkboxOptions)
                             ) }}
                             {% if isColorPrinter %}
                                 {{ fieldsIservice.checkboxFieldExtended(
-                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_CYAN') ~ ']', 0, _t("Replaced cyan toner"), field_options|merge(checkboxOptions)
+                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_CYAN') ~ ']',
+                                    0,
+                                    _t("Replaced cyan toner"),
+                                    field_options|merge(checkboxOptions)
                                 ) }}
 
                                 {{ fieldsIservice.checkboxFieldExtended(
-                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_MAGENTA') ~ ']', 0,  _t("Replaced magenta toner"), field_options|merge(checkboxOptions)
+                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_MAGENTA') ~ ']',
+                                    0,
+                                    _t("Replaced magenta toner"),
+                                    field_options|merge(checkboxOptions)
                                 ) }}
 
                                 {{ fieldsIservice.checkboxFieldExtended(
-                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_YELLOW') ~ ']', 0, _t("Replaced yellow toner"), field_options|merge(checkboxOptions)
+                                    'qr_ticket_data[replaced_cartridges][' ~ constant('GlpiPlugin\\Iservice\\Utils\\ToolBox::CARTRIDGE_COLOR_ID_YELLOW') ~ ']',
+                                    0,
+                                    _t("Replaced yellow toner"),
+                                    field_options|merge(checkboxOptions)
                                 ) }}
                             {% endif %}
                             {% block form_fields %}
                                 {{ fields.numberField(
                                     'qr_ticket_data[total2_black_field]',
                                     countersDefaultValues['blackCounterDefaultValue'],
-                                    _t('Black counter'),
+                                    _t('Black counter') ~ '<br>(' ~ _t('please fill with real values') ~ ')',
                                     field_options|merge({
                                         'min': total2BlackRequiredMinimum ?? 0
                                     })
@@ -56,7 +68,7 @@
                                     {{ fields.numberField(
                                         'qr_ticket_data[total2_color_field]',
                                         countersDefaultValues['colorCounterDefaultValue'],
-                                        _t('Color counter'),
+                                        _t('Color counter') ~ '<br>(' ~ _t('please fill with real values') ~ ')',
                                         field_options|merge({
                                             'min': total2ColorRequiredMinimum ?? 0
                                         })
@@ -83,6 +95,12 @@
 
                                 {{ include('@iservice/pages/support/components/ticket_documents.html.twig', { 'customLabel': _t('Document/Relevant pictures')}) }}
 
+                                {{ fields.textField(
+                                    'qr_ticket_data[send_email]',
+                                    sendEmail,
+                                    _t('I want confirmation email'),
+                                    field_options
+                                ) }}
                             {% endblock %}
                         </div>
                     </div>

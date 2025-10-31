@@ -164,6 +164,10 @@ class PluginIserviceConfig extends CommonDBTM
 
     public static function handleConfigValues(): void
     {
+        if (empty($_SESSION['glpiID'])) {
+            unset($_SESSION['plugin']['iservice']['config']);
+        }
+
         if (isset($_SESSION['plugin']['iservice']['config']) && count($_SESSION['plugin']['iservice']['config']) > 0) {
             return;
         }
