@@ -1280,6 +1280,8 @@ class PluginIserviceHmarfa
 
             if ($finished !== null) {
                 $ticket_customfields_input['exported_field'] = $finished;
+                // Sometimes it happens that the delivered field becomes 0, could this solve the problem?
+                $ticket_customfields_input['delivered_field'] = 1;
             }
 
             if (count($ticket_customfields_input) > 1) {
