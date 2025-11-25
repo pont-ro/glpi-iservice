@@ -225,7 +225,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         $used_ids   = [];
         $used       = [];
 
-        $c_result = $DB->query(
+        $c_result = $DB->doQuery(
             "SELECT 
                       ct.id IDD
                     , ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type_id
@@ -243,9 +243,10 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     , c.date_use
                     , c.date_out
                  FROM glpi_plugin_iservice_cartridges_tickets ct
-                 INNER JOIN glpi_plugin_iservice_cartridges c ON c.id = ct.cartridges_id
+                 INNER JOIN glpi_cartridges c ON c.id = ct.cartridges_id
                  INNER JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
-                 LEFT JOIN glpi_locations l ON l.id = c.locations_id_field
+                 LEFT JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
+                 LEFT JOIN glpi_locations l ON l.id = cfc.locations_id_field
                  LEFT JOIN glpi_printers p ON p.id = c.printers_id
                  WHERE ct.tickets_id = $id ORDER BY ct.id"
         );

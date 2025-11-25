@@ -26,6 +26,8 @@ class PluginIserviceTicket extends Ticket
      */
     public $customfields = null;
 
+    private $consumables = null; // do not access this directly, use getConsumbles function
+
     const MODE_NONE                = 0;
     const MODE_CREATENORMAL        = 1;
     const MODE_READCOUNTER         = 2;
@@ -1931,10 +1933,37 @@ class PluginIserviceTicket extends Ticket
         }
     }
 
+    public function getConsumables(): array
+    {
+        if ($this->consumables === null) {
+            $consumableTicket = new PluginIserviceConsumable_Ticket();
+            $this->consumables = $consumableTicket->find(['tickets_id' => $this->getID()]);
+        }
+        return $this->consumables;
+    }
+
     public function hasConsumables(): bool
     {
-        $consumableTicket = new PluginIserviceConsumable_Ticket();
-        return $consumableTicket->find(['tickets_id' => $this->getID()]) !== [];
+        return $this->getConsumables() !== [];
+    }
+
+    public function getDoesNotCreateCartridgeError($addRedSpan = false): string
+    {
+        if (empty($this->customfields->fields['delivered_field'])) {
+            return '';
+        }
+        $ids = [];
+        foreach ($this->getConsumables() as $consumable) {
+            if ($consumable['create_cartridge'] && $consumable['amount'] > 0 && empty($consumable['new_cartridge_ids'])) {
+                $ids[] = $consumable['plugin_iservice_consumables_id'];
+            }
+        }
+        if (!empty($ids)) {
+            $result = implode(', ', $ids) . ' ' . _t("does not create cartridge");
+            return $addRedSpan ? "<span class='error mx-2 my-0'>$result</span>" : $result;
+        }
+
+        return '';
     }
 
     public function getNotCloseableReasonsList(): array
@@ -1975,6 +2004,11 @@ class PluginIserviceTicket extends Ticket
         if ($this->hasConsumables()) {
             if (empty($this->customfields?->fields['delivered_field'])) {
                 $reasons[] = _t('Unfinished delivery!');
+            } else {
+                $doesNotCreateCartridgeError = $this->getDoesNotCreateCartridgeError();
+                if (!empty($doesNotCreateCartridgeError)) {
+                    $reasons[] = $doesNotCreateCartridgeError;
+                }
             }
 
             if (empty($this->customfields?->fields['exported_field'])) {

@@ -419,9 +419,9 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         }
 
         if ($supplier_id > 0) {
-            $supplier_condition = "FIND_IN_SET (c.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id))";
+            $supplier_condition = "FIND_IN_SET (cfc.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $supplier_id))";
         } else {
-            $supplier_condition = 'c.suppliers_id_field = 0';
+            $supplier_condition = 'cfc.suppliers_id_field = 0';
         }
 
         $query = "SELECT CONCAT(COUNT(*), ': ', GROUP_CONCAT(CONCAT('[', c.id, '] ', c.date_in) SEPARATOR ', ')) cpt
@@ -429,21 +429,22 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                        , ci.name
                        , ci.ref
                        , if (ci.ref like 'CTON%' or ci.ref like 'CCA%', 'cartridge', 'consumable') consumable_type
-                       , c.locations_id_field
+                       , cfc.locations_id_field
                        , GROUP_CONCAT(c.id SEPARATOR ', ') cartridge_ids
                        , l.name location_name
                        , l.completename location_completename
                        , l.locations_id location_parent_id
                        , c.printers_id
-                       , c.suppliers_id_field
-                       , c.plugin_fields_cartridgeitemtypedropdowns_id
+                       , cfc.suppliers_id_field
+                       , cfc.plugin_fields_cartridgeitemtypedropdowns_id
                   FROM glpi_cartridgeitems ci
-                  LEFT JOIN glpi_plugin_iservice_cartridges c ON c.cartridgeitems_id = ci.id $used_condition
-                  LEFT JOIN glpi_locations l ON l.id = c.locations_id_field
+                  LEFT JOIN glpi_cartridges c ON c.cartridgeitems_id = ci.id $used_condition
+                  LEFT JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc ON cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
+                  LEFT JOIN glpi_locations l ON l.id = cfc.locations_id_field
                   JOIN glpi_plugin_iservice_consumables_tickets ct ON ct.amount > 0 AND ct.new_cartridge_ids LIKE CONCAT('%|', c.id, '|%')
                   WHERE $supplier_condition $location_condition $model_condition $date_condition
                     AND c.date_use IS null AND c.date_out IS null AND c.printers_id = 0
-                  GROUP BY c.cartridgeitems_id, COALESCE(c.locations_id_field, 0), c.printers_id
+                  GROUP BY c.cartridgeitems_id, COALESCE(cfc.locations_id_field, 0), c.printers_id
                   ";
 
         if (empty($options['order_by'])) {
