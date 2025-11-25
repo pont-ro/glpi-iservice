@@ -25,12 +25,13 @@ $operations = [
 ];
 
 $id          = IserviceToolBox::getInputVariable('id');
+$ids         = IserviceToolBox::getInputVariable('ids');
 $type_id     = IserviceToolBox::getInputVariable('type_id');
 $location_id = IserviceToolBox::getInputVariable('location_id');
 $supplier_id = IserviceToolBox::getInputVariable('supplier_id');
 
 $cartridge = new PluginIserviceCartridge();
-if (!$cartridge->getFromDB($id)) {
+if (empty($ids) && !$cartridge->getFromDB($id)) {
     die(sprintf(_t('Invalid cartridge id: %d'), $id));
 }
 
@@ -129,9 +130,17 @@ case 'force_type':
     }
     break;
 case 'delete_cartridge':
-    if (!$cartridge->delete(['id' => $id])) {
-        die(printf(_t('Could not delete cartridge from the database.')));
+    $error = [];
+    foreach (explode(",", $ids) as $cid) {
+        if (!$cartridge->delete(['id' => $cid])) {
+            $error[] = $cid;
+        }
     }
+
+    if (!empty($error)) {
+        die(sprintf(_t('Could not delete the following cartridges from the database: %s'), implode(',', $error)));
+    }
+
     die(IserviceToolBox::RESPONSE_OK);
 default:
     die(sprintf(_t('Operation not implemented: %s'), $operations[$operation]));

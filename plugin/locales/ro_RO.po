@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2025-10-31 14:24+0200\n"
+"PO-Revision-Date: 2025-11-25 08:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -51,8 +51,8 @@ msgid "Cartridge %d is empty, it is not installed on a printer"
 msgstr "Cartușul %d este gol, nu este instalat pe un aparat"
 
 #: ajax/manageCartridge.php:137
-msgid "Could not delete cartridge from the database."
-msgstr "Nu s-a putut șterge cartușul din baza de date."
+msgid "Could not delete the following cartridges from the database: %s"
+msgstr "Nu s-au putut șterge următoarele cartușe din baza de date: %s"
 
 #: ajax/manageCartridge.php:141 ajax/manageConsumable.php:68
 #: ajax/manageDataintegrityTest.php:52 ajax/manageEMMail.php:45
