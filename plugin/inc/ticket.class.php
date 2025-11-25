@@ -1949,7 +1949,7 @@ class PluginIserviceTicket extends Ticket
 
     public function getDoesNotCreateCartridgeError($addRedSpan = false): string
     {
-        if (empty($this->customfields->fields['delivered_field'])) {
+        if (empty($this->customfields->fields['delivered_field']) || $this->getFirstPrinter()->hasCartridgeManagement()) {
             return '';
         }
         $ids = [];
