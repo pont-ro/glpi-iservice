@@ -27,7 +27,7 @@ class Partners extends View
     public static function getNumePartenerDisplay($row_data): string
     {
         $class = $row_data['printer_count'] ? '' : " class='error'";
-        return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank'>$row_data[Nume_Partener]</a>";
+        return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank'$class>$row_data[Nume_Partener]</a>";
     }
 
     protected function getSettings(): array
