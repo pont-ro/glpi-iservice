@@ -299,33 +299,6 @@ class ClientInvoices extends View
                         ]
                     ]
                 ],
-                'download_count' => [
-                    'title' => 'Număr descărcări',
-                    'tooltip' => 'Detalii descărcări',
-                    'align' => 'center',
-                    'visible' => !$this->client_access,
-                    'link' => [
-                        'type' => 'detail',
-                        'name' => 'Descărcări factura [nrfac]',
-                        'query' => "
-                                    SELECT *
-                                    FROM glpi_plugin_iservice_downloads
-                                    WHERE downloadtype='invoice'
-                                      AND items_id = '[nrfac]'
-                                    ORDER BY date DESC
-                                    ",
-                        'columns' => [
-                            'date' => [
-                                'title' => 'Data descărcării',
-                                'align' => 'center',
-                            ],
-                            'ip' => [
-                                'title' => 'IP',
-                                'align' => 'center',
-                            ],
-                        ],
-                    ],
-                ],
                 'data_factura' => [
                     'title' => 'Data factură',
                     'align' => 'center',
@@ -336,6 +309,15 @@ class ClientInvoices extends View
                     'title' => 'Data scadență',
                     'align' => 'center',
                     'style' => 'white-space: nowrap;',
+                ],
+                'valoare' => [
+                    'title' => 'Valoare',
+                    'align' => 'right',
+                ],
+                'valoare_neincasata' => [
+                    'title' => 'Valoare neincasată',
+                    'align' => 'right',
+                    'total' => true,
                 ],
                 'data_plata' => [
                     'title' => 'Achitat',
@@ -366,14 +348,32 @@ class ClientInvoices extends View
                         ],
                     ],
                 ],
-                'valoare' => [
-                    'title' => 'Valoare',
-                    'align' => 'right',
-                ],
-                'valoare_neincasata' => [
-                    'title' => 'Valoare neincasată',
-                    'align' => 'right',
-                    'total' => true,
+                'download_count' => [
+                    'title' => 'Număr descărcări',
+                    'tooltip' => 'Detalii descărcări',
+                    'align' => 'center',
+                    'visible' => !$this->client_access,
+                    'link' => [
+                        'type' => 'detail',
+                        'name' => 'Descărcări factura [nrfac]',
+                        'query' => "
+                                    SELECT *
+                                    FROM glpi_plugin_iservice_downloads
+                                    WHERE downloadtype='invoice'
+                                      AND items_id = '[nrfac]'
+                                    ORDER BY date DESC
+                                    ",
+                        'columns' => [
+                            'date' => [
+                                'title' => 'Data descărcării',
+                                'align' => 'center',
+                            ],
+                            'ip' => [
+                                'title' => 'IP',
+                                'align' => 'center',
+                            ],
+                        ],
+                    ],
                 ],
                 'download' => [
                     'title' => 'Descarcă',
