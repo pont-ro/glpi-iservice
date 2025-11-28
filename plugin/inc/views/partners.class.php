@@ -24,74 +24,85 @@ class Partners extends View
         ];
     }
 
+    public static function getNumePartenerDisplay($row_data): string
+    {
+        $class = $row_data['printer_count'] ? '' : " class='error'";
+        return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank'>$row_data[Nume_Partener]</a>";
+    }
+
     protected function getSettings(): array
     {
         return [
             'name' => _t('Due partner list'),
             'query' => "
-				SELECT 
-				    s.id id
-					, s.name Nume_Partener
-					, d.date Data_Ultima_Contactare
-					, sc.magic_link_field partner_magic_link
-					, t1.data Data_Ultima_Plata
-					, t1.sum Valoare_Ulitma_Plata
-					, t.codbenef
-					, t2.Numar_Facturi_Neplatite
-					, t.Data_Ultima_Factura
-					, t.Valoare_Scadenta
-					, t3.Numar_Facturi_Neplatite Numar_Facturi_Neplatite2
-					, TIMESTAMPDIFF(DAY, t1.data, NOW()) Zile_De_La_Ultima_Plata
-				FROM (SELECT
-									codbenef
-								, count(codbenef) Numar_Facturi_Neplatite
-								, MAX(datafac) Data_Ultima_Factura
-								, ROUND(SUM(valinc-valpla),2) Valoare_Scadenta
-							FROM hmarfa_facturi 
-							WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
-							GROUP BY codbenef) t
-				LEFT JOIN (SELECT
-									codbenef
-								, count(codbenef) Numar_Facturi_Neplatite
-							FROM hmarfa_facturi 
-							WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
-								AND valinc-valpla > 0
-							GROUP BY codbenef) t2 ON t2.codbenef = t.codbenef
-				LEFT JOIN (SELECT
-									pl1.partener
-								, pl1.data
-								, ROUND(SUM(pl1.suma),2) sum
-							FROM hmarfa_incpla pl1
-							JOIN (SELECT
-												partener
-											, MAX(data) data_ultima_plata
-										FROM hmarfa_incpla
-										GROUP BY partener) pl2 ON pl2.partener = pl1.partener
-																					AND pl1.data = pl2.data_ultima_plata
-							GROUP BY pl1.partener, pl1.data) t1 ON t1.partener = t.codbenef
-				LEFT JOIN (SELECT
-									codbenef
-								, COUNT(codbenef) Numar_Facturi_Neplatite
-							FROM hmarfa_facturi
-							WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
-							  AND valinc-valpla > 0 AND dscad < NOW()
-							GROUP BY codbenef) t3 ON t1.partener = t3.codbenef
-				LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields sc ON sc.hmarfa_code_field = t.codbenef and sc.itemtype = 'Supplier'
-				LEFT JOIN glpi_suppliers s ON s.id = sc.items_id and s.is_deleted = 0
-				LEFT JOIN (SELECT items_id id, MAX(date) date
-				      FROM glpi_plugin_iservice_downloads
-							WHERE downloadtype = 'partner_contacted'
-							GROUP BY items_id) d ON d.id = s.id
-				WHERE s.name LIKE '[partener]'
-					AND (t1.sum IS NULL OR t1.sum >= [val_ult_pla])
-					AND (t1.data IS NULL OR t1.data <= '[ult_pla]')
-					AND (t1.data IS NULL OR TIMESTAMPDIFF(DAY, t1.data, NOW()) > [zile_ult_pla])
-					AND t.Valoare_Scadenta > [val_scad]
-					AND t.Data_Ultima_Factura <= '[ult_fact]'
-				  AND (t2.Numar_Facturi_Neplatite IS NULL OR t2.Numar_Facturi_Neplatite > [nr_fac_nepla])
-				  AND (t3.Numar_Facturi_Neplatite IS NULL OR t3.Numar_Facturi_Neplatite > [nr_fac_nepla2])
-					AND (d.date IS NULL OR d.date <= '[ult_cont]')
-				",
+                SELECT 
+                      s.id id
+                    , s.name Nume_Partener
+                    , d.date Data_Ultima_Contactare
+                    , sc.magic_link_field partner_magic_link
+                    , t1.data Data_Ultima_Plata
+                    , t1.sum Valoare_Ulitma_Plata
+                    , t.codbenef
+                    , t2.Numar_Facturi_Neplatite
+                    , t.Data_Ultima_Factura
+                    , t.Valoare_Scadenta
+                    , t3.Numar_Facturi_Neplatite Numar_Facturi_Neplatite2
+                    , TIMESTAMPDIFF(DAY, t1.data, NOW()) Zile_De_La_Ultima_Plata
+                    , COALESCE(t4.printer_count, 0) printer_count 
+                FROM (SELECT
+                          codbenef
+                        , count(codbenef) Numar_Facturi_Neplatite
+                        , MAX(datafac) Data_Ultima_Factura
+                        , ROUND(SUM(valinc-valpla),2) Valoare_Scadenta
+                      FROM hmarfa_facturi 
+                      WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
+                      GROUP BY codbenef) t
+                LEFT JOIN (SELECT
+                                codbenef
+                              , count(codbenef) Numar_Facturi_Neplatite
+                            FROM hmarfa_facturi 
+                            WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
+                              AND valinc-valpla > 0
+                            GROUP BY codbenef) t2 ON t2.codbenef = t.codbenef
+                LEFT JOIN (SELECT
+                                pl1.partener
+                              , pl1.data
+                              , ROUND(SUM(pl1.suma),2) sum
+                            FROM hmarfa_incpla pl1
+                            JOIN (SELECT
+                                      partener
+                                    , MAX(data) data_ultima_plata
+                                  FROM hmarfa_incpla
+                                  GROUP BY partener) pl2 ON pl2.partener = pl1.partener AND pl1.data = pl2.data_ultima_plata
+                            GROUP BY pl1.partener, pl1.data) t1 ON t1.partener = t.codbenef
+                LEFT JOIN (SELECT
+                                codbenef
+                              , COUNT(codbenef) Numar_Facturi_Neplatite
+                            FROM hmarfa_facturi
+                            WHERE (codl = 'F' OR stare like 'V%') AND tip like 'TF%'
+                              AND valinc-valpla > 0 AND dscad < NOW()
+                            GROUP BY codbenef) t3 ON t1.partener = t3.codbenef
+                LEFT JOIN glpi_plugin_fields_suppliersuppliercustomfields sc ON sc.hmarfa_code_field = t.codbenef and sc.itemtype = 'Supplier'
+                LEFT JOIN glpi_suppliers s ON s.id = sc.items_id and s.is_deleted = 0
+                LEFT JOIN (SELECT suppliers_id, count(*) printer_count
+                           FROM glpi_infocoms ic
+                           WHERE ic.itemtype = 'Printer'
+                           GROUP BY ic.suppliers_id
+                          ) t4 ON t4.suppliers_id = s.id
+                LEFT JOIN (SELECT items_id id, MAX(date) date
+                      FROM glpi_plugin_iservice_downloads
+                            WHERE downloadtype = 'partner_contacted'
+                            GROUP BY items_id) d ON d.id = s.id
+                WHERE s.name LIKE '[partener]'
+                    AND (t1.sum IS NULL OR t1.sum >= [val_ult_pla])
+                    AND (t1.data IS NULL OR t1.data <= '[ult_pla]')
+                    AND (t1.data IS NULL OR TIMESTAMPDIFF(DAY, t1.data, NOW()) > [zile_ult_pla])
+                    AND t.Valoare_Scadenta > [val_scad]
+                    AND t.Data_Ultima_Factura <= '[ult_fact]'
+                    AND (t2.Numar_Facturi_Neplatite IS NULL OR t2.Numar_Facturi_Neplatite > [nr_fac_nepla])
+                    AND (t3.Numar_Facturi_Neplatite IS NULL OR t3.Numar_Facturi_Neplatite > [nr_fac_nepla2])
+                    AND (d.date IS NULL OR d.date <= '[ult_cont]')
+                ",
             'default_limit' => 25,
             'filters' => [
                 'filter_buttons_prefix' =>
@@ -178,10 +189,7 @@ class Partners extends View
                     'title' => 'Partener',
                     'sort_default_dir' => 'DESC',
                     'tooltip' => _t('See invoice list'),
-                    'link' => [
-                        'href' => 'views.php?view=ClientInvoices&clientinvoices0[partner_id]=[id]',
-                        'target' => '_blank',
-                    ],
+                    'format' => 'function:default',
                 ],
                 'Data_Ultima_Contactare' => [
                     'title' => 'Data ultima contactare',
