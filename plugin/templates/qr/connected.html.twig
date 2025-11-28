@@ -144,12 +144,14 @@
             alert('{{ _t('At least one field or checkbox must filled or checked!') }}');
             return false;
         }
+
         return true;
     }
 
     document.getElementById('qrForm').addEventListener('submit', function(event) {
         var form = event.target;
         form.action += '&u=https://iservice3.expertline-magazin.ro/apirest.php/';
+        document.querySelector('button[type="submit"]').disabled = true;
     });
 </script>
 
