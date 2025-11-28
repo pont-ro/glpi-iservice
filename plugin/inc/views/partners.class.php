@@ -95,12 +95,12 @@ class Partners extends View
                 LEFT JOIN glpi_suppliers s ON s.id = sc.items_id and s.is_deleted = 0
                 LEFT JOIN (SELECT suppliers_id, count(*) printer_count
                            FROM glpi_infocoms ic
-                           JOIN glpi_suppliers s ON s.id = ic.items_id and s.is_deleted = 0 and ic.itemtype = 'Printer'
+                           JOIN glpi_printers p ON p.id = ic.items_id and p.is_deleted = 0 and ic.itemtype = 'Printer'
                            GROUP BY ic.suppliers_id
                           ) t4 ON t4.suppliers_id = s.id
                 LEFT JOIN (SELECT suppliers_id, count(*) printer_count
                            FROM glpi_infocoms ic
-                           JOIN glpi_suppliers s ON s.id = ic.items_id and s.is_deleted = 1 and ic.itemtype = 'Printer'
+                           JOIN glpi_printers p ON p.id = ic.items_id and p.is_deleted = 1 and ic.itemtype = 'Printer'
                            GROUP BY ic.suppliers_id
                           ) t5 ON t5.suppliers_id = s.id
                 LEFT JOIN (SELECT items_id id, MAX(date) date
