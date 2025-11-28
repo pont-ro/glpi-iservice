@@ -26,7 +26,15 @@ class Partners extends View
 
     public static function getNumePartenerDisplay($row_data): string
     {
-        $class = $row_data['printer_count'] ? '' : " class='error'";
+        if ($row_data['printer_count'] === 0) {
+            if ($row_data['deleted_printer_count'] === 0) {
+                $class = " style='color:red'";
+            } else {
+                $class = " style='color:orange'";
+            }
+        } else {
+            $class = '';
+        }
         return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank'$class>$row_data[Nume_Partener]</a>";
     }
 
@@ -49,6 +57,7 @@ class Partners extends View
                     , t3.Numar_Facturi_Neplatite Numar_Facturi_Neplatite2
                     , TIMESTAMPDIFF(DAY, t1.data, NOW()) Zile_De_La_Ultima_Plata
                     , COALESCE(t4.printer_count, 0) printer_count 
+                    , COALESCE(t5.printer_count, 0) deleted_printer_count 
                 FROM (SELECT
                           codbenef
                         , count(codbenef) Numar_Facturi_Neplatite
@@ -86,9 +95,14 @@ class Partners extends View
                 LEFT JOIN glpi_suppliers s ON s.id = sc.items_id and s.is_deleted = 0
                 LEFT JOIN (SELECT suppliers_id, count(*) printer_count
                            FROM glpi_infocoms ic
-                           WHERE ic.itemtype = 'Printer'
+                           JOIN glpi_suppliers s ON s.id = ic.items_id and s.is_deleted = 0 and ic.itemtype = 'Printer'
                            GROUP BY ic.suppliers_id
                           ) t4 ON t4.suppliers_id = s.id
+                LEFT JOIN (SELECT suppliers_id, count(*) printer_count
+                           FROM glpi_infocoms ic
+                           JOIN glpi_suppliers s ON s.id = ic.items_id and s.is_deleted = 1 and ic.itemtype = 'Printer'
+                           GROUP BY ic.suppliers_id
+                          ) t5 ON t5.suppliers_id = s.id
                 LEFT JOIN (SELECT items_id id, MAX(date) date
                       FROM glpi_plugin_iservice_downloads
                             WHERE downloadtype = 'partner_contacted'
