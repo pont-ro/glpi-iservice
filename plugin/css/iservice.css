@@ -267,3 +267,19 @@ form .form-control {
 .ticket-change-cartridge-section {
     background-color: rgba(133, 205, 181, 0.45) !important;
 }
+
+.card-view .view-header {
+    margin: 0.5rem !important;
+}
+
+.card-view label {
+    margin: 0.5rem !important;
+}
+
+.card-view table {
+    width: 100%;
+}
+
+.card {
+    border-bottom: 5px solid #cbe736;
+}

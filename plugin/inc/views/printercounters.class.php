@@ -437,7 +437,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
             'default_sort' => 'ASC'
         ];
         $settings['columns']['consumable_codes']       = [
-            'title' => 'Cod hMarfa',
+            'title' => _t('hMarfa Code'),
             'align' => 'center',
         ];
         $settings['columns']['estimate_percentages']   = [

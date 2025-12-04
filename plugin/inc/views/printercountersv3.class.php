@@ -431,7 +431,7 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
             'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCountersV3::getMinDaysToVisitDisplay($row);',
         ];
         $settings['columns']['consumable_codes']       = [
-            'title' => 'Cod hMarfa',
+            'title' => _t('hMarfa Code'),
             'align' => 'center',
         ];
         $settings['columns']['estimate_percentages']   = [

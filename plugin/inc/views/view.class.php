@@ -132,6 +132,7 @@ class View extends \CommonGLPI
     protected $ignore_control_hash   = false;
     protected $visible_columns_count = 0;
     protected $import_data           = null;
+    protected $card_view             = false;
 
     public static $rightname = '';
 
@@ -356,7 +357,7 @@ class View extends \CommonGLPI
             }
 
             $request_values = IserviceToolBox::getArrayInputVariable($this->getRequestArrayName(), []);
-            $this->processFilters($this->filters, $request_values, $filter);
+            $this->processFilters($this->filters, $request_values, $filter, $this->card_view);
 
             $filter .= isset($this->filters['postfix']) ? $this->filters['postfix'] : '';
             $filter .= "</div>"; // View-filter.
@@ -370,7 +371,7 @@ class View extends \CommonGLPI
         return true;
     }
 
-    protected function processFilters(array $filters, array $request_values, string &$filter): void
+    protected function processFilters(array $filters, array $request_values, string &$filter, $cards_view = false): void
     {
         foreach ($filters as $filter_name => $filter_data) {
             if (in_array($filter_name, $this->getIgnoredFilterNames())) {
@@ -396,6 +397,10 @@ class View extends \CommonGLPI
                 $this->columns[$filter_data['header']]['filter'] .= (empty($filter_data['no_break_before']) ? '<br/>' : '') . "$filter_widget";
             } else {
                 $filter .= $filter_widget;
+            }
+
+            if ($cards_view && !str_ends_with(trim($filter), '<br/>') && !str_ends_with(trim($filter), '<br>')) {
+                $filter .= "<br/>";
             }
         }
     }
@@ -704,92 +709,30 @@ class View extends \CommonGLPI
             echo "<td style='text-align: center'>" . Html::getMassiveActionCheckBox($this->itemtype, $row[$this->id_field], ['readonly' => !eval('return ' . ($columns['#mass_action#']['enable'] ?? 'true') . ';')]) . "</td>";
         }
 
+        $data_for_export = [];
+
         foreach ($columns as $field_name => $column) {
             if (isset($column['visible']) && !$column['visible']) {
                 continue;
             }
 
-            if (empty($row[$field_name]) && isset($column['empty'])) {
-                $column = $column['empty'];
-            }
-
-            if (isset($column['value'])) {
-                $row[$field_name] = $column['value'];
-            }
-
             $tooltip = self::adjustAttribute('title', isset($column['tooltip']) ? $column['tooltip'] : null);
-            $align   = self::adjustAttribute('align', isset($column['align']) ? $column['align'] : null);
-            $class   = self::adjustAttribute('class', isset($column['class']) ? $column['class'] : null);
-            $style   = self::adjustAttribute('style', isset($column['style']) ? $column['style'] : null, ';');
+
+            $align = self::adjustAttribute('align', isset($column['align']) ? $column['align'] : null);
+
+            $class = self::adjustAttribute('class', isset($column['class']) ? $column['class'] : null);
+
+            $style = self::adjustAttribute('style', isset($column['style']) ? $column['style'] : null, ';');
+
             if (!$this->exporting) {
                 echo "<td $align$class$style$tooltip>";
             }
 
-            self::ensureArrayKey($column, 'format', '%s');
-            if ($this->exporting && isset($column['export_format'])) {
-                $column['format'] = $column['export_format'];
-            }
-
-            if (!empty($column['edit_field']) && is_array($column['edit_field'])) {
-                $data_to_print = $this->getFilterWidget($column['edit_field'], $field_name, 'inline', ['itemtype' => $this->itemtype, 'row_id' => $row[$this->id_field], 'row_data' => $row]);
-            } else {
-                $data_to_print = $row[$field_name] ?? '';
-            }
-
-            $to_print = sprintf($column['format'], $data_to_print);
-            if (strpos($to_print, 'function:default') === 0 && !$this->exporting) {
-                $to_print = eval('return ' . get_called_class() . '::get' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $field_name))) . 'Display($row);');
-            } elseif (strpos($to_print, 'function:') === 0 && !$this->exporting) {
-                $to_print = eval('return ' . substr($to_print, strlen('function:')));
-            } elseif ($this->exporting) {
-                $to_print = str_replace('<br>', ', ', $data_to_print);
-            }
-
-            if ($this->exporting) {
-                $data_for_export[] = $to_print;
-            }
-
-            if (isset($column['link'])) {
-                $title      = self::adjustAttribute('title', isset($column['link']['title']) ? $column['link']['title'] : null);
-                $target     = self::adjustAttribute('target', isset($column['link']['target']) ? $column['link']['target'] : null);
-                $link_class = self::adjustAttribute('class', isset($column['link']['class']) ? $column['link']['class'] : null);
-                $link_style = self::adjustAttribute('style', isset($column['link']['style']) ? $column['link']['style'] : null, ';');
-                $detail_key = self::ensureArrayKey($column['link'], 'detail_key', 0);
-                switch (isset($column['link']['type']) ? $column['link']['type'] : null) {
-                case 'detail':
-                    $link    = "#";
-                    $onclick = "onclick='detailSubmit(\$(this), \"{$this->getRequestArrayName()}\", \"$field_name\", \"$row_num\", \"$detail_key\", \"{$this->getRequestArrayName(1)}\");'";
-                    break;
-                default:
-                    if (!isset($column['link']['href'])) {
-                        $link = "#";
-                    } else {
-                        $link = $column['link']['href'];
-                    }
-
-                    $onclick = "";
-                    break;
-                }
-
-                if (!isset($column['link']['visible']) || $column['link']['visible']) {
-                    $to_print = "<a$link_class href='$link'$onclick$link_style$target$title>$to_print</a>";
-                }
-            }
-
-            if (!empty($column['editable'])) {
-                $to_print = $this->addEditWidget($to_print, $field_name, $data_to_print, $row[$this->id_field], $column['edit_settings']);
-            }
-
-            if (isset($column['total']) && $column['total']) {
-                if (!isset($this->totals[$field_name])) {
-                    $this->totals[$field_name] = $row[$field_name];
-                } else {
-                    $this->totals[$field_name] += $row[$field_name];
-                }
-            }
+            $to_print = $this->getFormattedCellContent($row, $row_num, $field_name, $column, $data_for_export);
 
             if (!$this->exporting) {
                 echo $to_print;
+
                 echo "</td>";
             }
         }
@@ -797,17 +740,114 @@ class View extends \CommonGLPI
         if (!empty($data_for_export)) {
             $this->export_data[] = $data_for_export;
         }
+
     }
 
-    protected function displayRowActions($settings): void
+    protected function getFormattedCellContent($row, $row_num, $field_name, $column, &$data_for_export)
     {
-        if (!is_array($settings)) {
-            return;
+
+        if (empty($row[$field_name]) && isset($column['empty'])) {
+            $column = $column['empty'];
         }
 
-        echo "<td><div class='actions'>";
+        if (isset($column['value'])) {
+            $row[$field_name] = $column['value'];
+        }
+
+        self::ensureArrayKey($column, 'format', '%s');
+
+        if ($this->exporting && isset($column['export_format'])) {
+            $column['format'] = $column['export_format'];
+        }
+
+        if (!empty($column['edit_field']) && is_array($column['edit_field'])) {
+            $data_to_print = $this->getFilterWidget($column['edit_field'], $field_name, 'inline', ['itemtype' => $this->itemtype, 'row_id' => $row[$this->id_field], 'row_data' => $row]);
+        } else {
+            $data_to_print = $row[$field_name] ?? '';
+        }
+
+        $to_print = sprintf($column['format'], $data_to_print);
+
+        if (strpos($to_print, 'function:default') === 0 && !$this->exporting) {
+            $to_print = eval('return ' . get_called_class() . '::get' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $field_name))) . 'Display($row);');
+        } elseif (strpos($to_print, 'function:') === 0 && !$this->exporting) {
+            $to_print = eval('return ' . substr($to_print, strlen('function:')));
+        } elseif ($this->exporting) {
+            $to_print = str_replace('<br>', ', ', $data_to_print);
+        }
+
+        if ($this->exporting) {
+            $data_for_export[] = $to_print;
+        }
+
+        if (isset($column['link'])) {
+            $title = self::adjustAttribute('title', isset($column['link']['title']) ? $column['link']['title'] : null);
+
+            $target = self::adjustAttribute('target', isset($column['link']['target']) ? $column['link']['target'] : null);
+
+            $link_class = self::adjustAttribute('class', isset($column['link']['class']) ? $column['link']['class'] : null);
+
+            $link_style = self::adjustAttribute('style', isset($column['link']['style']) ? $column['link']['style'] : null, ';');
+
+            $detail_key = self::ensureArrayKey($column['link'], 'detail_key', 0);
+
+            switch (isset($column['link']['type']) ? $column['link']['type'] : null) {
+            case 'detail':
+
+                $link = "#";
+
+                $onclick = "onclick='detailSubmit(\
+
+    $(this), \"{$this->getRequestArrayName()}\", \"$field_name\", \"$row_num\", \"$detail_key\", \"{$this->getRequestArrayName(1)}\");'";
+
+                break;
+
+            default:
+
+                if (!isset($column['link']['href'])) {
+                    $link = "#";
+                } else {
+                    $link = $column['link']['href'];
+                }
+
+                $onclick = "";
+
+                break;
+            }
+
+            if (!isset($column['link']['visible']) || $column['link']['visible']) {
+                $to_print = "<a$link_class href='$link'$onclick$link_style$target$title>$to_print</a>";
+            }
+        }
+
+        if (!empty($column['editable'])) {
+            $to_print = $this->addEditWidget($to_print, $field_name, $data_to_print, $row[$this->id_field], $column['edit_settings']);
+        }
+
+        if (isset($column['total']) && $column['total']) {
+            if (!isset($this->totals[$field_name])) {
+                $this->totals[$field_name] = $row[$field_name];
+            } else {
+                $this->totals[$field_name] += $row[$field_name];
+            }
+        }
+
+        return $to_print;
+
+    }
+
+    protected function getActionsHTML($settings): string
+    {
+
+        if (!is_array($settings)) {
+            return '';
+        }
+
+        $html = "<div class='actions'>";
+
         foreach ($settings as $setting) {
             self::ensureArrayKey($setting, 'title', '*');
+
             if (isset($setting['icon'])) {
                 $icon = "<img class='noprint' src='$setting[icon]' alt='$setting[title]' title='$setting[title]' />";
             } else {
@@ -815,13 +855,31 @@ class View extends \CommonGLPI
             }
 
             if (isset($setting['link']) && !empty($setting['link'])) {
-                echo "<a href='$setting[link]'>$icon</a>";
+                $html .= "<a href='$setting[link]'>$icon</a>";
             } else {
-                echo $icon;
+                $html .= $icon;
             }
         }
 
-        echo "</div></td>";
+        $html .= "</div>";
+
+        return $html;
+
+    }
+
+    protected function displayRowActions($settings): void
+    {
+
+        if (!is_array($settings)) {
+            return;
+        }
+
+        echo "<td>";
+
+        echo $this->getActionsHTML($settings);
+
+        echo "</td>";
+
     }
 
     protected function displayDataRows($data): void
@@ -902,8 +960,148 @@ class View extends \CommonGLPI
         return "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view={$this->getMachineName()}";
     }
 
+    protected function displayCardActions($settings): void
+    {
+        echo $this->getActionsHTML($settings);
+    }
+
+    protected function displayCard($row, $row_num, $columns, $actions): void
+    {
+        $row_class = $this->evalIfFunction($this->row_class ?? '', ['row_data' => $row]);
+        echo "<div class='card result-row mb-2 $row_class'>";
+        echo "<div class='card-body'>";
+
+        $data_for_export = [];
+        foreach ($columns as $field_name => $column) {
+            if (isset($column['visible']) && !$column['visible']) {
+                continue;
+            }
+
+            echo "<div class='card-field'>";
+            echo "<strong>" . ($column['title'] ?? $field_name) . ":</strong> ";
+            echo $this->getFormattedCellContent($row, $row_num, $field_name, $column, $data_for_export);
+            echo "</div>";
+        }
+
+        echo "</div>";
+
+        if (!empty($actions)) {
+            echo "<div class='card-footer'>";
+            $this->displayCardActions($actions);
+            echo "</div>";
+        }
+
+        echo "</div>";
+    }
+
+    protected function displayViewHeader($readonly = false): void
+    {
+        if ($readonly || $this->query_count === null) {
+            return;
+        }
+
+        echo "<div class='view-header'>";
+        if (isset($this->filters['filter_buttons_prefix'])) {
+            echo "<span class='filter-buttons-prefix'>" . $this->filters['filter_buttons_prefix'] . "</span>";
+        }
+
+        $style = empty($this->filter_buttons_align) || $this->filter_buttons_align === 'left' ? '' : "style='float:$this->filter_buttons_align;'";
+        echo "<div class='view-filter-buttons'$style>";
+
+        if ($this->show_export) {
+            echo " <input type='submit' class='submit noprint' name='export' value='" . __('Export', 'views') . "'/> ";
+            echo "<select name='" . $this->getRequestArrayName() . "[export_type]'>";
+            echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") . ">" . _t('Visible') . "</option> ";
+            echo "<option value='full'" . ($this->export_type == 'full' ? " selected" : "") . ">" . __('All') . "</option>";
+            echo "</select>";
+        }
+
+        if ($this->show_limit === true) {
+            echo " " . _t('Show') . " <input type='text' name='{$this->getRequestArrayName()}[limit]' value='$this->limit' style='text-align:right;width:40px'/> din $this->query_count";
+        }
+
+        if ($this->show_filter_buttons) {
+            echo " <input type='submit' class='submit noprint' name='filter' value='" . __('Filter', 'views') . "'/>";
+
+            echo " <input
+                type='submit'
+                class='submit noprint'
+                name='{$this->getRequestArrayName()}[reset]'
+                value='" . __('Reset filters', 'views') . "'/>";
+
+            if (!empty($this->show_filter_buttons['extra_buttons'])) {
+                $this->displayExtraButtons($this->show_filter_buttons['extra_buttons']);
+            }
+        }
+
+        if (isset($this->filters['filter_buttons_postfix'])) {
+            echo "<span class='filter-buttons-prefix'>" . $this->filters['filter_buttons_postfix'] . "</span>";
+        }
+
+        echo "</div>";
+        echo "<div class='mass-action'>";
+        if (!empty($this->mass_actions_column)) {
+            echo "<i class='fas fa-level-up-alt fa-rotate-180 mass-action mass-action-arrow'></i>";
+        }
+
+        foreach ($this->mass_actions as $mass_action_key => &$mass_action) {
+            self::ensureArrayKey($mass_action, 'name', $mass_action_key);
+            self::ensureArrayKey($mass_action, 'caption');
+            self::ensureArrayKey($mass_action, 'action');
+            self::ensureArrayKey($mass_action, 'prefix');
+            self::ensureArrayKey($mass_action, 'suffix');
+            self::ensureArrayKey($mass_action, 'class', '', ' submit noprint');
+            self::ensureArrayKey($mass_action, 'style');
+            self::ensureArrayKey($mass_action, 'new_tab', true);
+            $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
+            $mass_action_on_click   = $mass_action['onClick'] ?? '';
+            $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
+            $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
+            $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
+            echo "<div class='mass-action'>";
+            echo $mass_action['prefix'];
+            echo " <input type='submit' class='$mass_action[class]' id='mass_action_$mass_action[name]' name='mass_action_$mass_action[name]' onclick='$mass_action_on_click' style='$mass_action[style]' value='$mass_action[caption]'> ";
+            echo $mass_action['suffix'];
+            echo "</div>";
+        }
+
+        echo "</div>";
+        echo "</div>";
+    }
+
+    protected function displayCards($data, $readonly = false): void
+    {
+        $this->visible_columns_count = $this->mass_actions_column + (empty($this->actions) ? 0 : 1);
+        foreach ($this->columns as $column) {
+            $this->visible_columns_count += !isset($column['visible']) || $column['visible'] ? 1 : 0;
+        }
+
+        $this->displayViewHeader($readonly);
+
+        echo "<div class='view-cards-container'>";
+
+        $row_num = 0;
+        foreach ($data as $row) {
+            $new_column_settings  = $this->columns;
+            $new_actions_settings = $this->actions;
+            foreach ($row as $field_name => $field_value) {
+                $this->processSettings($new_column_settings, $field_name, $field_value);
+                $this->processSettings($new_actions_settings, $field_name, $field_value);
+            }
+
+            $this->displayCard($row, ++$row_num, $new_column_settings, $new_actions_settings);
+        }
+
+        echo "</div>";
+    }
+
     protected function displayResultsTable($data, $readonly = false): void
     {
+        if ($this->card_view) {
+            $this->displayCards($data, $readonly);
+            return;
+        }
+
         global $CFG_GLPI;
         $table_name                  = $this->getMachineName();
         $this->class[]               = 'tab_cadrehov';
@@ -923,72 +1121,7 @@ class View extends \CommonGLPI
             if (!$readonly && $this->query_count !== null) {
                 echo "<tr>";
                 echo "<th class='view-header' colspan='$this->visible_columns_count'>";
-                if (isset($this->filters['filter_buttons_prefix'])) {
-                    echo "<span class='filter-buttons-prefix'>" . $this->filters['filter_buttons_prefix'] . "</span>";
-                }
-
-                $style = empty($this->filter_buttons_align) || $this->filter_buttons_align === 'left' ? '' : "style='float:$this->filter_buttons_align;'";
-                echo "<div class='view-filter-buttons'$style>";
-
-                if ($this->show_export) {
-                    echo " <input type='submit' class='submit noprint' name='export' value='" . __('Export', 'views') . "'/> ";
-                    echo "<select name='" . $this->getRequestArrayName() . "[export_type]'>";
-                    echo "<option value='visible'" . ($this->export_type == 'visible' ? " selected" : "") . ">" . _t('Visible') . "</option> ";
-                    echo "<option value='full'" . ($this->export_type == 'full' ? " selected" : "") . ">" . __('All') . "</option>";
-                    echo "</select>";
-                }
-
-                if ($this->show_limit === true) {
-                    echo " " . _t('Show') . " <input type='text' name='{$this->getRequestArrayName()}[limit]' value='$this->limit' style='text-align:right;width:40px'/> din $this->query_count";
-                }
-
-                if ($this->show_filter_buttons) {
-                    echo " <input type='submit' class='submit noprint' name='filter' value='" . __('Filter', 'views') . "'/>";
-
-                    echo " <input 
-                        type='submit' 
-                        class='submit noprint' 
-                        name='{$this->getRequestArrayName()}[reset]' 
-                        value='" . __('Reset filters', 'views') . "'/>";
-
-                    if (!empty($this->show_filter_buttons['extra_buttons'])) {
-                        $this->displayExtraButtons($this->show_filter_buttons['extra_buttons']);
-                    }
-                }
-
-                if (isset($this->filters['filter_buttons_postfix'])) {
-                    echo "<span class='filter-buttons-prefix'>" . $this->filters['filter_buttons_postfix'] . "</span>";
-                }
-
-                echo "</div>";
-                echo "<div class='mass-action'>";
-                if (!empty($this->mass_actions_column)) {
-                    echo "<i class='fas fa-level-up-alt fa-rotate-180 mass-action mass-action-arrow'></i>";
-                }
-
-                foreach ($this->mass_actions as $mass_action_key => &$mass_action) {
-                    self::ensureArrayKey($mass_action, 'name', $mass_action_key);
-                    self::ensureArrayKey($mass_action, 'caption');
-                    self::ensureArrayKey($mass_action, 'action');
-                    self::ensureArrayKey($mass_action, 'prefix');
-                    self::ensureArrayKey($mass_action, 'suffix');
-                    self::ensureArrayKey($mass_action, 'class', '', ' submit noprint');
-                    self::ensureArrayKey($mass_action, 'style');
-                    self::ensureArrayKey($mass_action, 'new_tab', true);
-                    $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
-                    $mass_action_on_click   = $mass_action['onClick'] ?? '';
-                    $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
-                    $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
-                    $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
-                    // $mass_action_on_click .= '$(this).closest("form").delay(1000).attr("action",old_action);$(this).closest("form").delay(1000).attr("target","");';
-                    echo "<div class='mass-action'>";
-                    echo $mass_action['prefix'];
-                    echo " <input type='submit' class='$mass_action[class]' id='mass_action_$mass_action[name]' name='mass_action_$mass_action[name]' onclick='$mass_action_on_click' style='$mass_action[style]' value='$mass_action[caption]'> ";
-                    echo $mass_action['suffix'];
-                    echo "</div>";
-                }
-
-                echo "</div>";
+                $this->displayViewHeader($readonly);
                 echo "</th>";
                 echo "</tr>";
             }
@@ -1109,6 +1242,16 @@ class View extends \CommonGLPI
         return implode($glues[$type], $param_pieces);
     }
 
+    public function renderMobileDesktopSwitch(): string
+    {
+        $vParam   = $this->card_view ? '' : '&v=mobile';
+        $icon     = $this->card_view ? 'fas fa-desktop' : 'fas fa-mobile-alt';
+        $title    = $this->card_view ? _t('Switch to desktop view') : _t('Switch to mobile view');
+        $params   = $this->generateParams('get');
+        $self_url = $this->getSelfUrl();
+        return "<a href='$self_url&$params$vParam' class='vsubmit noprint me-2 d-inline' title='$title'><i class='$icon'></i></a>";
+    }
+
     public function display($readonly = false, $export = false, $detail = 0, $generate_form = true): void
     {
         $html              = new PluginIserviceHtml();
@@ -1120,6 +1263,7 @@ class View extends \CommonGLPI
 
         $this->loadSettings();
         $this->loadRequestVariables();
+        $this->card_view = IserviceToolBox::getInputVariable('v', 1) === 'mobile';
 
         if ($this->from_cache) {
             $this->use_cache = true;
@@ -1147,12 +1291,14 @@ class View extends \CommonGLPI
         $this->adjustQueryOrderBy();
 
         if (!$this->exporting) {
+            echo $this->renderMobileDesktopSwitch();
             // Keep this before the form opening to be able to put a separate form in the prefix.
             echo empty($this->prefix) ? "" : $this->prefix;
             echo "<h{$this->getHeadingLevel()} id='view-query-{$this->getRequestArrayName()}' class='mt-2'>$this->name" . (empty($this->filter_description) ? "" : " - $this->filter_description") . "</h{$this->getHeadingLevel()}>";
             echo empty($this->description) ? "" : "<div class='filter-description'>$this->description</div>";
             if ($generate_form) {
-                $html->openForm(['method' => 'post', 'class' => 'iservice-form refresh-target', 'enctype' => 'multipart/form-data']);
+                $mainClass = 'iservice-form refresh-target' . ($this->card_view ? ' card-view ' : '');
+                $html->openForm(['method' => 'post', 'class' => $mainClass, 'enctype' => 'multipart/form-data']);
                 // Default behaviour for enter is to filter.
                 echo "<input type='submit' name='filter' value='filter' style='display:none' />";
             }
