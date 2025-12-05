@@ -120,6 +120,16 @@ class PluginIserviceDB extends DB
         return true;
     }
 
+    public static function doesTableExists(string $tableName, ?\DBmysql $db = null): bool
+    {
+        if ($db === null) {
+            global $DB;
+            $db = $DB;
+        }
+
+        return $db->tableExists($tableName, false);
+    }
+
     public static function createTable(string $tableName, array $tableConfig, ?\DBmysql $db = null): bool
     {
         if ($db === null) {
