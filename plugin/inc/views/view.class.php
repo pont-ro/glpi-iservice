@@ -371,7 +371,7 @@ class View extends \CommonGLPI
         return true;
     }
 
-    protected function processFilters(array $filters, array $request_values, string &$filter, $cards_view = false): void
+    protected function processFilters(array $filters, array $request_values, string &$filter, $card_view = false): void
     {
         foreach ($filters as $filter_name => $filter_data) {
             if (in_array($filter_name, $this->getIgnoredFilterNames())) {
