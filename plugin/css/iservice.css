@@ -276,8 +276,14 @@ form .form-control {
     margin: 0.5rem !important;
 }
 
+@media only screen and (max-width: 768px) {
+    .card-view table {
+        width: 100%;
+    }
+}
+
 .card-view table {
-    width: 100%;
+    min-width: 350px;
 }
 
 .card {
