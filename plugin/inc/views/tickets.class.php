@@ -36,7 +36,7 @@ class Tickets extends View
         ];
     }
 
-    public static function getTicketStatusDisplay($row_data): string
+    public static function getTicketStatusDisplay($row_data, ?string $version = null): string
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
         switch ($row_data['ticket_export_type']) {
@@ -155,36 +155,44 @@ class Tickets extends View
             ];
         }
 
-        $out = "<div class='actions collapsible' style='display:none;'>";
-        foreach ($actions as $action) {
-            if (!isset($action['visible']) || $action['visible']) {
-                if (isset($action['onclick'])) {
-                    if ($action['onclick'] !== 'ajaxCall') {
-                        $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='$action[onclick]'>\r\n";
+        $out = '';
+        if ($version != 'mobile') {
+            $out .= "<div class='actions collapsible' style='display:none;'>";
+            foreach ($actions as $action) {
+                if (!isset($action['visible']) || $action['visible']) {
+                    if (isset($action['onclick'])) {
+                        if ($action['onclick'] !== 'ajaxCall') {
+                            $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='$action[onclick]'>\r\n";
+                        } else {
+                            $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='ajaxCall(\"$action[link]\", \"$action[confirm]\", $action[success])'>\r\n";
+                        }
                     } else {
-                        $out .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]' style='cursor: pointer;' onclick='ajaxCall(\"$action[link]\", \"$action[confirm]\", $action[success])'>\r\n";
+                        $out .= "<a href='$action[link]' target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
                     }
-                } else {
-                    $out .= "<a href='$action[link]' target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
-                }
 
-                if (isset($action['suffix'])) {
-                    $out .= $action['suffix'];
+                    if (isset($action['suffix'])) {
+                        $out .= $action['suffix'];
+                    }
                 }
             }
+
+            $out .= "</div>";
         }
 
-        $out .= "</div>";
         $out .= "&nbsp;" . Ticket::getStatusIcon($row_data['status']);
+
+        if ($actions['close']['visible']) {
+            $out .= "<a href='" . $actions['close']['link'] . "' class='btn btn-sm ms-1'>" . _t('Details') . "</a>";
+        }
 
         return $out;
     }
 
     public static function getTicketIdDisplay($row_data): string
     {
-        $title = '';
-        $href  = '';
-        $class = '';
+        $title   = '';
+        $href    = '';
+        $class   = '';
         $display = $row_data['ticket_id'];
 
         switch ($row_data['ticket_export_type']) {
@@ -198,9 +206,9 @@ class Tickets extends View
         }
 
         if (!empty($row_data['document_id'])) {
-            $title .= !empty($title) ? "\n" : '';
-            $title .= _t('Ticket has attached document(s)');
-            $class .= 'fw-bold';
+            $title   .= !empty($title) ? "\n" : '';
+            $title   .= _t('Ticket has attached document(s)');
+            $class   .= 'fw-bold';
             $display .= ' <i class="fa fa-paperclip" aria-hidden="true"></i>';
         }
 
@@ -444,11 +452,11 @@ class Tickets extends View
                                    GROUP BY codbenef) t2 ON t2.codbenef = s.hmarfa_code_field
         ";
 
-        $version      = intval(str_replace('v', '',  preg_replace('/.*\s/', '', IserviceToolBox::getInputVariable('v', 1))));
+        $version      = str_replace('v', '',  preg_replace('/.*\s/', '', IserviceToolBox::getInputVariable('v', 1)));
         $otherVersion = $version == 1 ? 2 : 1;
 
         $settingsV1 = [
-            'name' => self::getName() . " v$version",
+            'name' => self::getName() . ($version === 'mobile' ? '' : " v$version"),
             'prefix' => $prefix,
             'query' => $querySelect . $queryFrom . "
                         WHERE t.is_deleted = 0 $right_condition
@@ -676,6 +684,18 @@ class Tickets extends View
                 ],
             ],
         ];
+
+        if ($version == 2) {
+            return $this->getSettingsV2($settingsV1, $querySelect, $queryFrom, $right_condition);
+        } elseif ($version == 'mobile') {
+            return $this->getSettingsVMobile($settingsV1, $querySelect, $queryFrom, $right_condition);
+        }
+
+        return $settingsV1;
+    }
+
+    private function getSettingsV2($settingsV1, $querySelect, $queryFrom, $right_condition)
+    {
         $settingsV2 = $settingsV1;
         unset(
             $settingsV2['columns']['tech_assign_name'],
@@ -717,44 +737,44 @@ class Tickets extends View
             'header' => 'ticket_content',
         ];
 
-        $settingsV2['filters']['ticket_followups']      = [
+        $settingsV2['filters']['ticket_followups']   = [
             'type' => self::FILTERTYPE_TEXT,
             'format' => '%%%s%%',
             'header' => 'ticket_followups',
         ];
-        $settingsV2['filters']['ticket_consumables']    = [
+        $settingsV2['filters']['ticket_consumables'] = [
             'type' => self::FILTERTYPE_TEXT,
             'format' => '%%%s%%',
             'header' => 'ticket_consumables',
         ];
-            $settingsV2['filters']['ticket_cartridges'] = [
-                'type' => self::FILTERTYPE_TEXT,
-                'format' => '%%%s%%',
-                'header' => 'ticket_cartridges',
-            ];
+        $settingsV2['filters']['ticket_cartridges']  = [
+            'type' => self::FILTERTYPE_TEXT,
+            'format' => '%%%s%%',
+            'header' => 'ticket_cartridges',
+        ];
 
-            $settingsV2['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
-                'ticket_name',
-                $settingsV2['columns'],
-                [
-                    'ticket_content' => [
-                        'title' => 'Descriere',
-                    ],
-                    'ticket_followups' => [
-                        'title' => 'Followupuri',
-                    ],
-                    'ticket_consumables' => [
-                        'title' => 'Cartușe livrate',
-                        'class' => 'no-wrap',
-                        'align' => 'center',
-                        'format' => 'function:default',  // This will call PluginIserviceView_Operations::getTicketConsumablesDisplay($row).
-                    ],
-                    'ticket_cartridges' => [
-                        'title' => 'Cartușe instalate',
-                        'align' => 'center'
-                    ],
-                ]
-            );
+        $settingsV2['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
+            'ticket_name',
+            $settingsV2['columns'],
+            [
+                'ticket_content' => [
+                    'title' => 'Descriere',
+                ],
+                'ticket_followups' => [
+                    'title' => 'Followupuri',
+                ],
+                'ticket_consumables' => [
+                    'title' => 'Cartușe livrate',
+                    'class' => 'no-wrap',
+                    'align' => 'center',
+                    'format' => 'function:default',  // This will call PluginIserviceView_Operations::getTicketConsumablesDisplay($row).
+                ],
+                'ticket_cartridges' => [
+                    'title' => 'Cartușe instalate',
+                    'align' => 'center'
+                ],
+            ]
+        );
 
         $settingsV2['query'] = "SELECT * FROM ($querySelect" . "
                         , (SELECT GROUP_CONCAT(CONCAT(ct.plugin_iservice_consumables_id, '<br>(', TRIM(ct.amount) + 0, COALESCE(CONCAT(': ', REPLACE(ct.new_cartridge_ids, '|', '')), ''), ')') SEPARATOR '<br>') ticket_consumables
@@ -797,7 +817,110 @@ class Tickets extends View
                   AND ((t.ticket_cartridges IS null AND '[ticket_cartridges]' = '%%') OR t.ticket_cartridges LIKE '[ticket_cartridges]')
                 ";
 
-        return ${"settingsV$version"} ?? $settingsV1;
+        return $settingsV2;
+    }
+
+    private function getSettingsVMobile($settingsV1, $querySelect, $queryFrom, $right_condition)
+    {
+        $settingsVMobile = $settingsV1;
+
+        unset(
+            $settingsVMobile['columns']['printer_name'],
+            $settingsVMobile['columns']['effective_date_field'],
+            $settingsVMobile['columns']['ticket_counter_black'],
+            $settingsVMobile['columns']['ticket_counter_color'],
+            $settingsVMobile['columns']['ticket_counter_total'],
+            $settingsVMobile['columns']['date_open'],
+            $settingsVMobile['filters']['prefix'],
+            $settingsVMobile['filters']['printer_id'],
+            $settingsVMobile['filters']['effective_date_start'],
+            $settingsVMobile['filters']['effective_date_field'],
+            $settingsVMobile['filters']['observer_id'],
+            $settingsVMobile['filters']['unlinked'],
+            $settingsVMobile['filters']['date_open'],
+            $settingsVMobile['filters']['ticket_status']['header'],
+            $settingsVMobile['filters']['ticket_name'],
+            $settingsVMobile['filters']['printer_name'],
+            $settingsVMobile['filters']['supplier_name']['header'],
+            $settingsVMobile['filters']['usage_address_field'],
+            $settingsVMobile['filters']['tech_id']['header'],
+            $settingsVMobile['filters']['no_travel'],
+            $settingsVMobile['filters']['without_paper'],
+            $settingsVMobile['filters']['assigned_only'],
+            $settingsVMobile['filters']['printer_serial']['header'],
+            $settingsVMobile['filters']['printer_status'],
+        );
+
+        $settingsVMobile['filters']['ticket_status']['class']  = 'mx-1';
+        $settingsVMobile['filters']['supplier_name']['class']  = 'mx-1';
+        $settingsVMobile['filters']['printer_serial']['class'] = 'mx-1';
+        $settingsVMobile['columns']['ticket_id']['format']     = 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketIdDisplay($row) . " / " . \GlpiPlugin\Iservice\Views\Tickets::getDateOpenDisplay($row);';
+        $settingsVMobile['columns']['status']['format']        = 'function:\GlpiPlugin\Iservice\Views\Tickets::getTicketStatusDisplay($row, "mobile");';
+
+        $settingsVMobile['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
+            'ticket_name',
+            $settingsVMobile['columns'],
+            [
+                'ticket_content' => [
+                    'title' => 'Descriere',
+                ],
+                'ticket_followups' => [
+                    'title' => 'Followupuri',
+                ],
+            ]
+        );
+
+        $settingsVMobile['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
+            'printer_serial',
+            $settingsVMobile['columns'],
+            [
+                'printer_model' => [
+                    'title' => _t('Model'),
+                ],
+                'estimate_percentages' => [
+                    'title' => _t('Available cartridges'),
+                    'align' => 'center',
+                    'format' => 'function:\GlpiPlugin\Iservice\Views\Tickets::getCartridgesDisplay($row);',
+                ],
+            ]
+        );
+
+        $cacheTableExists = PluginIserviceDB::doesTableExists("glpi_plugin_iservice_cachetable_printercountersv3");
+        $cacheTableSelect = $cacheTableExists ? ", pc.estimate_percentages, pc.stocks, pc.consumable_codes" : "";
+
+        $settingsVMobile['query'] = $querySelect
+            . ", p.original_name printer_model "
+            . $cacheTableSelect
+            . $queryFrom
+            . ($cacheTableExists ? "LEFT JOIN glpi_plugin_iservice_cachetable_printercountersv3 pc on p.id = pc.printer_id and pc.consumable_type = 'cartridge' " : "")
+            . "
+                        WHERE t.is_deleted = 0 $right_condition
+                            AND t.status in ([ticket_status])
+                            AND ((s.name IS NULL AND '[supplier_name]' = '%%') OR s.name LIKE '[supplier_name]')
+                            AND ((p.serial IS NULL AND '[printer_serial]' = '%%') OR p.serial LIKE '[printer_serial]')
+                            [tech_id]
+                        GROUP BY t.id
+                        ";
+
+        return $settingsVMobile;
+    }
+
+    public static function getCartridgesDisplay($row)
+    {
+        if (empty($row['estimate_percentages']) && empty($row['stocks']) && empty($row['consumable_codes'])) {
+            return _t('Cache table does not exist, open PrinterCounters V3 to create it.');
+        }
+
+        $html  = '<div>';
+        $html .= '<table><tr><th style="text-align:left;">' . _t('hMarfa Code')
+            . '</th><th style="text-align:right;">' . _t('Installed')
+            . '</th><th style="text-align:right;">' . _t('Stock') . '</th></tr>';
+        $html .= "<tr><td>" . $row['consumable_codes'] ?? '' . "</td>";
+        $html .= "<td style='text-align:right;'>" . $row['estimate_percentages'] ?? '' . "</td>";
+        $html .= "<td style='text-align:right;'>" . $row['stocks'] ?? '' . "</td></tr>";
+        $html .= '</table>';
+        $html .= '</div>';
+        return $html;
     }
 
 }

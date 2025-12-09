@@ -1609,6 +1609,18 @@ msgstr "Ajustează coeficieții de viață a tipurilor de cartușe"
 msgid "does not create cartridge"
 msgstr "nu creează cartuș"
 
+msgid "hMarfa Code"
+msgstr "Cod hMarfă"
+
+msgid "Installed"
+msgstr "Instalate"
+
+msgid "Cache table does not exist, open PrinterCounters V3 to create it."
+msgstr "Tabelul de cache nu există, deschideți Contoare aparate v3 pentru a-l crea."
+
+msgid "Available cartridges"
+msgstr "Cartușe disponibile"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
