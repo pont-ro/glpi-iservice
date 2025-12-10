@@ -49,11 +49,32 @@ class ClientInvoices extends View
             if (empty($magic_link)) {
                 return "Nu exista linkul magic!";
             } else {
-                return "<a href='download.php?id=$magic_link&nrfac=$row_data[nrfac]'>Descarcă factura</a>";
+                $copyDownloadLinkButton = self::getCopyDownloadLinkButton($magic_link, $row_data);
+                return "$copyDownloadLinkButton <a href='download.php?id=$magic_link&nrfac=$row_data[nrfac]'>Descarcă factura</a>";
             }
         } else {
             return "Factură indisponibilă";
         }
+    }
+
+    private static function getCopyDownloadLinkButton($magic_link, $row_data)
+    {
+        global $CFG_PLUGIN_ISERVICE;
+        $downloadLink = $_SERVER['HTTP_HOST'] . $CFG_PLUGIN_ISERVICE['root_doc'] . "/front/download.php?id=$magic_link&nrfac=$row_data[nrfac]";
+
+        $js = "navigator.clipboard.writeText('$downloadLink').then(function() {
+                            alert('" . _t('Invoice download link copied to clipboard.') . "');
+                        }, function(err) {
+                            alert('" . _t('Error copying link to clipboard:') . " ' + err);
+                        });";
+
+        return "<a 
+                    href='javascript:void(0);' 
+                    onclick=\"" . htmlspecialchars($js, ENT_QUOTES) . "\"
+                    title='" . _t(' Copy') . "' 
+                    class='noprint'>
+                        <i class='ti ti-copy'></i>
+                    </a>";
     }
 
     public static function getName($partner = '', $client_access = true): string
@@ -127,7 +148,8 @@ class ClientInvoices extends View
                         $form->generateButton('generate_magic_link', 'Generează link magic' . (empty($magic_link) ? '' : ' nou'), $generate_magic_link_button_options),
                         empty($magic_link) ? '' : "<a href='mailto:$mail_recipient?subject=$mail_subject&body=$mail_body' class='vsubmit' style='margin:1em;'>Trimite email</a>",
                         "<a href='$contact_partner_link' class='vsubmit' style='margin:1em;' target='_blank'>Ticket plăți</a>",
-                        "<a href='$partnerPrintersLink' class='vsubmit'  target='_blank' title=\"" . _t('Printers of the client') . "\">" . _t('Client printers') . "</a>"
+                        "<a href='$partnerPrintersLink' class='vsubmit'  target='_blank' title=\"" . _t('Printers of the client') . "\">" . _t('Client printers') . "</a>",
+                        "<a href='{$partner->getMagicLink()}' class='vsubmit ms-2' target='_blank' title=\"" . _t('Client magic link') . "\">" . _t('Client magic link') . "</a>"
                     ]
                 ),
             ]
