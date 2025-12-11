@@ -1621,6 +1621,15 @@ msgstr "Tabelul cache nu există sau nu există date pentru acest aparat. Deschi
 msgid "Available cartridges"
 msgstr "Cartușe disponibile"
 
+msgid "Client magic link"
+msgstr "Link magic client"
+
+msgid "Invoice download link copied to clipboard."
+msgstr "Linkul de descărcare a facturii a fost copiat în clipboard."
+
+msgid "Error copying link to clipboard:"
+msgstr "Eroare la copierea linkului în clipboard:"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
