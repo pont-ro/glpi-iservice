@@ -1627,6 +1627,9 @@ msgstr "Link magic client"
 msgid "Invoice download link copied to clipboard."
 msgstr "Linkul de descărcare a facturii a fost copiat în clipboard."
 
+msgid "Magic link copied to clipboard."
+msgstr "Linkul magic a fost copiat în clipboard."
+
 msgid "Error copying link to clipboard:"
 msgstr "Eroare la copierea linkului în clipboard:"
 
