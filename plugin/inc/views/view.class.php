@@ -66,7 +66,8 @@ class View extends \CommonGLPI
     protected $filters;
     protected $columns;
     protected $actions;
-    protected $settings_defaults = [
+    protected bool $hasMobileVersion = false;
+    protected $settings_defaults     = [
         'prefix' => '',
         'name' => '',
         'description' => '',
@@ -143,6 +144,7 @@ class View extends \CommonGLPI
         $this->table_prefix                    = $table_prefix;
         $this->table_suffix                    = $table_suffix;
         $this->settings_defaults['show_limit'] = !(PluginIserviceConfig::getConfigValue('views.show_limit') == 'false') && self::inProfileArray('super-admin', 'admin', 'tehnician');
+        $this->hasMobileVersion                = method_exists($this, 'getSettingsVMobile');
 
         if ($load_settings) {
             $this->loadSettings();
@@ -399,7 +401,7 @@ class View extends \CommonGLPI
                 $filter .= $filter_widget;
             }
 
-            if ($cards_view && !str_ends_with(trim($filter), '<br/>') && !str_ends_with(trim($filter), '<br>')) {
+            if ($card_view && !str_ends_with(trim($filter), '<br/>') && !str_ends_with(trim($filter), '<br>')) {
                 $filter .= "<br/>";
             }
         }
@@ -1291,7 +1293,7 @@ class View extends \CommonGLPI
         $this->adjustQueryOrderBy();
 
         if (!$this->exporting) {
-            echo $this->renderMobileDesktopSwitch();
+            echo $this->hasMobileVersion ? $this->renderMobileDesktopSwitch() : '';
             // Keep this before the form opening to be able to put a separate form in the prefix.
             echo empty($this->prefix) ? "" : $this->prefix;
             echo "<h{$this->getHeadingLevel()} id='view-query-{$this->getRequestArrayName()}' class='mt-2'>$this->name" . (empty($this->filter_description) ? "" : " - $this->filter_description") . "</h{$this->getHeadingLevel()}>";

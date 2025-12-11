@@ -1615,11 +1615,20 @@ msgstr "Cod hMarfă"
 msgid "Installed"
 msgstr "Instalate"
 
-msgid "Cache table does not exist, open PrinterCounters V3 to create it."
-msgstr "Tabelul de cache nu există, deschideți Contoare aparate v3 pentru a-l crea."
+msgid "Cache table does not exist, or there is no data for this printer. Open the ticket for realtime data."
+msgstr "Tabelul cache nu există sau nu există date pentru acest aparat. Deschideți tichetul pentru date în timp real."
 
 msgid "Available cartridges"
 msgstr "Cartușe disponibile"
+
+msgid "Client magic link"
+msgstr "Link magic client"
+
+msgid "Invoice download link copied to clipboard."
+msgstr "Linkul de descărcare a facturii a fost copiat în clipboard."
+
+msgid "Error copying link to clipboard:"
+msgstr "Eroare la copierea linkului în clipboard:"
 
 #, fuzzy
 #~| msgid "Pending emails"
