@@ -798,9 +798,15 @@ class View extends \CommonGLPI
 
                 $link = "#";
 
-                $onclick = "onclick='detailSubmit(\
+                $onclick = "onclick='detailSubmit(
+                    $(this),
+                    " . json_encode($this->getRequestArrayName()) . ",
+                    " . json_encode($field_name) . ",
+                    " . json_encode((string)$row_num) . ",
+                    " . json_encode((string)$detail_key) . ",
+                    " . json_encode($this->getRequestArrayName(1)) . "
+                );'";
 
-    $(this), \"{$this->getRequestArrayName()}\", \"$field_name\", \"$row_num\", \"$detail_key\", \"{$this->getRequestArrayName(1)}\");'";
 
                 break;
 
