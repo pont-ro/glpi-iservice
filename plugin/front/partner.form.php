@@ -4,7 +4,7 @@ require "../inc/includes.php";
 
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
-$partner = new PluginIservicePartner();
+$partner = new PluginIserviceSupplier();
 
 $id                  = IserviceToolBox::getInputVariable('id');
 $update              = IserviceToolBox::getInputVariable('update');
@@ -15,7 +15,7 @@ $post = IserviceToolBox::filterVarArray(INPUT_POST);
 
 if (!empty($generate_magic_link) && !empty($id)) {
     $partner->check($id, UPDATE);
-    PluginIservicePartner::generateNewMagicLink($id);
+    PluginIserviceSupplier::generateNewMagicLink($id);
     Html::back();
 } elseif (!empty($update) && !empty($id)) {
     $partner->check($id, UPDATE);
