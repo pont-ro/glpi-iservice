@@ -101,7 +101,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
 
         return "<tr>
-            <td><a href='$siteUrl/plugins/iservice/front/view.php?view=printers&printers0[supplier_name]=$cartridge[supplier_name]'>$cartridge[supplier_name]</a></td>
+            <td>$cartridge[supplier_name]</td>
             <td><a href='$siteUrl/plugins/iservice/front/printer.form.php?id=$cartridge[printer_id]'>$cartridge[printer_model_name]</a></td>
             <td>$cartridge[usage_address_field]</td>
             <td><a href='$siteUrl/plugins/iservice/front/printer.form.php?id=$cartridge[printer_id]'>$cartridge[printer_serial_number]</a></td>
