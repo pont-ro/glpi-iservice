@@ -12,7 +12,7 @@ use Html;
 use PluginIserviceDownload;
 use PluginIserviceHtml;
 use PluginIserviceHtml_table;
-use PluginIservicePartner;
+use PluginIserviceSupplier;
 use PluginIserviceTicket;
 use \Session;
 use Supplier;
@@ -57,6 +57,25 @@ class ClientInvoices extends View
         }
     }
 
+    private static function getCopyMagicLinkButton($magic_link)
+    {
+        $downloadLink = $_SERVER['HTTP_HOST'] . $magic_link;
+
+        $js = "navigator.clipboard.writeText('$downloadLink').then(function() {
+                            alert('" . _t('Magic link copied to clipboard.') . "');
+                        }, function(err) {
+                            alert('" . _t('Error copying link to clipboard:') . " ' + err);
+                        });";
+
+        return "<a 
+                    class='vsubmit ms-2'
+                    href='javascript:void(0);' 
+                    onclick=\"" . htmlspecialchars($js, ENT_QUOTES) . "\"
+                    title='" . _t(' Copy') . "' 
+                    class='noprint'>" . _t('Client magic link') . "
+                    </a>";
+    }
+
     private static function getCopyDownloadLinkButton($magic_link, $row_data)
     {
         global $CFG_PLUGIN_ISERVICE;
@@ -85,7 +104,7 @@ class ClientInvoices extends View
 
         $name = 'Facturi ' . $partner->fields['name'];
         if ($client_access) {
-            $debt = number_format($partner->getInvoiceInfo(PluginIservicePartner::INVOICEINFO_DEBT), 2, '.', '');
+            $debt = number_format($partner->getInvoiceInfo(PluginIserviceSupplier::INVOICEINFO_DEBT), 2, '.', '');
             if ($debt > 0) {
                 $name .= " - <span style='color: red'>Valoare neîncasată: $debt RON</span>";
             } else {
@@ -130,7 +149,7 @@ class ClientInvoices extends View
         $form = new PluginIserviceHtml();
         $form->openForm(
             [
-                'action' => PluginIservicePartner::getFormURL(),
+                'action' => PluginIserviceSupplier::getFormURL(),
                 'class' => 'iservice-form two-column',
                 'method' => 'post'
             ]
@@ -149,7 +168,7 @@ class ClientInvoices extends View
                         empty($magic_link) ? '' : "<a href='mailto:$mail_recipient?subject=$mail_subject&body=$mail_body' class='vsubmit' style='margin:1em;'>Trimite email</a>",
                         "<a href='$contact_partner_link' class='vsubmit' style='margin:1em;' target='_blank'>Ticket plăți</a>",
                         "<a href='$partnerPrintersLink' class='vsubmit'  target='_blank' title=\"" . _t('Printers of the client') . "\">" . _t('Client printers') . "</a>",
-                        "<a href='{$partner->getMagicLink()}' class='vsubmit ms-2' target='_blank' title=\"" . _t('Client magic link') . "\">" . _t('Client magic link') . "</a>"
+                        self::getCopyMagicLinkButton($magic_link)
                     ]
                 ),
             ]
@@ -193,7 +212,7 @@ class ClientInvoices extends View
                 die("Partner should be given!");
             }
 
-            $this->partner = new PluginIservicePartner();
+            $this->partner = new PluginIserviceSupplier();
             $this->partner->getFromDB($request_variables['partner_id']);
             if ($this->partner->isNewItem()) {
                 Html::displayNotFoundError();

@@ -35,7 +35,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $items = self::getItemsFromInput($buttons);
 
         if ($buttons['generate_magic_link']) {
-            PluginIservicePartner::generateNewMagicLink($items['first']['supplier']);
+            PluginIserviceSupplier::generateNewMagicLink($items['first']['supplier']);
             $buttons['refresh'] = 'refresh';
         }
 
@@ -109,7 +109,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 $firstItemLocation->getFromDB($firstItem->fields['locations_id']);
                 $firstItemInfoCom = new Infocom();
                 $firstItemInfoCom->getFromDBforDevice('Printer', $itemId);
-                $firstItemSupplier = new PluginIservicePartner();
+                $firstItemSupplier = new PluginIserviceSupplier();
                 $firstItemSupplier->getFromDB($firstItemInfoCom->fields['suppliers_id']);
                 $result['first'] = [
                     'item' => $firstItem,

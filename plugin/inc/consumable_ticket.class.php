@@ -728,7 +728,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
         /*
         *
-        * @var PluginIservicePartner $assigned_supplier
+        * @var PluginIserviceSupplier $assigned_supplier
         */
         $assigned_supplier             = PluginIserviceTicket::get($input['tickets_id'])->getFirstAssignedPartner();
         $cartridge_management_enabled |= $assigned_supplier->hasCartridgeManagement();
@@ -805,7 +805,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
         /*
         *
-        * @var PluginIservicePartner $assigned_supplier
+        * @var PluginIserviceSupplier $assigned_supplier
         */
         $assigned_supplier = PluginIserviceTicket::get($consumable_ticket->fields['tickets_id'])->getFirstAssignedPartner();
         $amount            = empty($input['amount']) ? 0 : $input['amount'];

@@ -63,7 +63,7 @@ class PluginIserviceHmarfa
         $printerModel    = new PrinterModel();
         $printerLocation = new Location();
         $infoCom         = new Infocom();
-        $enterprise      = new PluginIservicePartner();
+        $enterprise      = new PluginIserviceSupplier();
 
         $printer->getFromDB($id);
         $infoCom->getFromDBforDevice('Printer', $id);
@@ -74,7 +74,7 @@ class PluginIserviceHmarfa
         $printerLocationName = $printer->customfields->fields["usage_address_field"] ?? '';
 
         if (isset($_POST['generate_magic_link'])) {
-            PluginIservicePartner::generateNewMagicLink($infoCom->fields['suppliers_id']);
+            PluginIserviceSupplier::generateNewMagicLink($infoCom->fields['suppliers_id']);
             $_POST['refresh'] = 'refresh';
         }
 

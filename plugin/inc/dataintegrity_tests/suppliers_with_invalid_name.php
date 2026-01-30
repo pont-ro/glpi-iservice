@@ -32,7 +32,7 @@ return [
         'positive_result' => [
             'summary_text' => 'There are {count} partners with problematic name (leading/trailing spaces or double spaces)',
             'iteration_text' => "Partner <a href='$CFG_GLPI[root_doc]/front/supplier.form.php?id=[sid]' target='_blank'>[name]</a> has invalid name: <span style='white-space:pre'>[invalid_value_marked]</span>
-            <a id='fix-partner-name-[sid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIservicePartner&operation=RemoveSpacesFromName&id=[sid]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-partner-name-[sid]\").remove();}});'>»»» FIX «««</a>
+            <a id='fix-partner-name-[sid]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIserviceSupplier&operation=RemoveSpacesFromName&id=[sid]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#fix-partner-name-[sid]\").remove();}});'>»»» FIX «««</a>
             ",
         ],
     ],

@@ -6,7 +6,7 @@ require "../inc/includes.php";
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 use GlpiPlugin\Iservice\Views\Views;
 
-$partner    = PluginIservicePartner::getFromMagicLink();
+$partner    = PluginIserviceSupplier::getFromMagicLink();
 $magic_link = IserviceToolBox::getInputVariable('id');
 
 if (!isset($_SESSION['magic_link_access'][$magic_link])) {
