@@ -73,34 +73,48 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         } else {
             $tech_id = '';
         }
+
         $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
-        return "Vezi lista completa a aparatelor cu consumabile goale 
+        $html    = "Vezi lista completa a aparatelor cu consumabile goale 
                 <a href='$siteUrl/plugins/iservice/front/view.php?view=printercounters2&printercounters20[order_by]=estimate_percentages&printercounters20[order_dir]=ASC$tech_id'>aici</a>
-                <br><br>Următoarele aparate au consumabile goale:<br><ul>";
+                <br><br>Următoarele aparate au consumabile goale:<br>";
+
+        $html .= "<table border='1' style='border-collapse: collapse; width: 100%;'>";
+        $html .= "
+        <thead>
+            <tr>
+                <th>" . _t('Supplier') . "</th>
+                <th>" . _t('Printer model') . "</th>
+                <th>" . _t('Usage address') . "</th>
+                <th>" . _t('Serial number') . "</th>
+                <th>" . _t('Average number bk') . "</th>
+                <th>" . _t('Average number color') . "</th>
+                <th>" . _t('Next delivery (days)') . "</th>
+            </tr>
+        </thead>";
+
+        return $html;
     }
 
     public static function getEmailMessageItemForCartridge($cartridge): string
     {
         $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
-        return "<li>
-                    Aparat: $cartridge[printer_name] - $cartridge[printer_model_name] - <a href='$siteUrl/plugins/iservice/front/ticket.form.php?mode=1&items_id[Printer][0]=$cartridge[printer_id]&_suppliers_id_assign=$cartridge[supplier_id]&_users_id_assign=$cartridge[tech_id]'>crează tichet nou</a><br>
-                    Partener: $cartridge[supplier_name]<br>
-                    Responsabil: $cartridge[tech_name]<br>
-                    Centru de cost: $cartridge[costcenter]<br>
-                    Urm. livrare în: " . intval($cartridge['min_days_to_visit']) . "<br>
-                    Consumabile instalate:<br>$cartridge[estimate_percentages]<br>
-                    Consumabil disponibil pentru:<br>$cartridge[days_to_visits]<br>
-                    Stoc  consumabile bucăți/ Număr de aparate compatibile:<br>$cartridge[stocks]<br>
-                    Numar mediu bk: $cartridge[dba]<br>
-                    Numar mediu color: $cartridge[dca]<br>
-               </li><br>";
+
+        return "<tr>
+            <td><a href='$siteUrl/plugins/iservice/front/view.php?view=printers&printers0[supplier_name]=$cartridge[supplier_name]'>$cartridge[supplier_name]</a></td>
+            <td><a href='$siteUrl/plugins/iservice/front/printer.form.php?id=$cartridge[printer_id]'>$cartridge[printer_model_name]</a></td>
+            <td>$cartridge[usage_address_field]</td>
+            <td><a href='$siteUrl/plugins/iservice/front/printer.form.php?id=$cartridge[printer_id]'>$cartridge[printer_serial_number]</a></td>
+            <td>$cartridge[dba]</td>
+            <td>$cartridge[dca]</td>
+            <td>" . intval($cartridge['min_days_to_visit']) . "</td>
+        </tr>";
     }
 
     public static function verifyCartridges($task, $target_email): void
     {
         Views::getView('PrinterCounters')->refreshCachedData();
         Views::getView('PrinterCountersV3')->refreshCachedData();
-
         $task->log("Verify cartridges\n");
 
         $blackWhitePrinterType = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'alb-negru');
@@ -108,7 +122,8 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
 
         $cartridges = PluginIserviceDB::getQueryResult(
             "
-            SELECT cpc.*, ue.email as tech_email, pm.name as printer_model_name FROM glpi_plugin_iservice_cachetable_printercounters cpc
+            SELECT cpc.*, ue.email as tech_email, pm.name as printer_model_name, p.serial as printer_serial_number
+            FROM glpi_plugin_iservice_cachetable_printercounters cpc
             JOIN glpi_printers p ON p.id = cpc.printer_id
             JOIN glpi_printermodels pm ON pm.id = p.printermodels_id
             JOIN glpi_useremails ue ON ue.users_id = cpc.tech_id
@@ -117,7 +132,8 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
               AND cpc.printer_states_id in (SELECT id FROM glpi_states WHERE name like 'COI%' OR name like 'COF%' OR name like 'Pro%')
               AND cpc.min_estimate_percentage <= 0
               AND cpc.consumable_type = 'cartridge'
-             ORDER BY cpc.tech_name, cpc.min_estimate_percentage ASC
+              AND cpc.min_days_to_visit <= 20
+             ORDER BY cpc.min_days_to_visit, cpc.usage_address_field ASC
             "
         );
 
@@ -145,7 +161,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         $task->log(count($cartridges) . " printers have empty consumables.\n");
 
         foreach ($email_messages as $target_email => $email_message) {
-            self::sendMail('Imprimante cu consumabile goale', $target_email, $email_message . "</ul>", $task);
+            self::sendMail('Imprimante cu consumabile goale', $target_email, $email_message . "</table>", $task);
         }
     }
 
