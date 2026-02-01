@@ -36,6 +36,22 @@ class Tickets extends View
         ];
     }
 
+    public static function getMenuContent(): array
+    {
+        if (!Session::haveRight(static::$rightname, READ)) {
+            return [];
+        }
+
+        global $CFG_PLUGIN_ISERVICE;
+
+        return [
+            'title' => static::getMenuName(),
+            'page' => "$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=" . substr(strrchr(static::class, "\\"), 1) . "&v=2",
+            'icon'  => static::$icon,
+            'options' => static::getAdditionalMenuOptions() ?: [],
+        ];
+    }
+
     public static function getTicketStatusDisplay($row_data, ?string $version = null): string
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
@@ -752,7 +768,7 @@ class Tickets extends View
         ];
 
         $settingsV2['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
-            'ticket_name',
+            'date_open',
             $settingsV2['columns'],
             [
                 'ticket_content' => [

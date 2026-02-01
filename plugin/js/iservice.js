@@ -9,7 +9,7 @@ function changeLogoUrl()
 {
     let logo = $('a.navbar-brand:not(.ignore-url-change)');
     if (logo.length) {
-        logo.attr('href', '/plugins/iservice/front/views.php?view=Tickets');
+        logo.attr('href', '/plugins/iservice/front/views.php?view=Tickets&v=2');
     }
 }
 

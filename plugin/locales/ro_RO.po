@@ -1633,6 +1633,15 @@ msgstr "Linkul magic a fost copiat în clipboard."
 msgid "Error copying link to clipboard:"
 msgstr "Eroare la copierea linkului în clipboard:"
 
+msgid "Average number bk"
+msgstr "Număr mediu bk"
+
+msgid "Average number color"
+msgstr "Număr mediu color"
+
+msgid "Next delivery (days)"
+msgstr "Următoarea livrare (zile)"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
