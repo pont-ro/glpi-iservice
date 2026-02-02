@@ -76,9 +76,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
 
         $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
         $html    = "Vezi lista completa a aparatelor cu consumabile goale
-                <a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCounters&printercounters0[order_by]=estimate_percentages&printercounters0[order_dir]=ASC$tech_id' target='_blank'>aici V2</a>
-                 - 
-                <a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCountersV3&printercountersv30[order_by]=min_days_to_visit&printercountersv30[order_dir]=ASC$tech_id' target='_blank'>aici V3</a>
+                <a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCountersV3&printercountersv30[order_by]=min_days_to_visit&printercountersv30[order_dir]=ASC$tech_id' target='_blank'>aici</a>
                 <br><br>Următoarele aparate au consumabile goale:<br>";
 
         $html .= "<table border='1' style='border-collapse: collapse; width: 100%;'>";
@@ -113,32 +111,21 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         </tr>";
     }
 
-    public static function verifyCartridges($task, $target_email, $regenerateCacheTables = true, $cacheTableVersion = 2, $debugMode = false): void
+    public static function verifyCartridges($task, $target_email): void
     {
-        if (!$debugMode) {
-            $task->log("Verify cartridges\n");
-        }
+        $task->log("Verify cartridges\n");
 
-        if ($regenerateCacheTables) {
-            Views::getView('PrinterCounters')->refreshCachedData();
-            Views::getView('PrinterCountersV3')->refreshCachedData();
-        }
-
-        $cacheTableName = $cacheTableVersion === 2 ? "glpi_plugin_iservice_cachetable_printercounters" : "glpi_plugin_iservice_cachetable_printercountersv3";
-
-        $blackWhitePrinterType = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'alb-negru');
-        $colorPrinterType      = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'color');
+        Views::getView('PrinterCounters')->refreshCachedData();
+        Views::getView('PrinterCountersV3')->refreshCachedData();
 
         $cartridges = PluginIserviceDB::getQueryResult(
             "
             SELECT cpc.*, ue.email as tech_email, pm.name as printer_model_name, p.serial as printer_serial_number
-            FROM $cacheTableName cpc
+            FROM glpi_plugin_iservice_cachetable_printercountersv3 cpc
             JOIN glpi_printers p ON p.id = cpc.printer_id
             JOIN glpi_printermodels pm ON pm.id = p.printermodels_id
             JOIN glpi_useremails ue ON ue.users_id = cpc.tech_id
-            WHERE cpc.cm_field = 1
-              AND cpc.printer_types_id in ($blackWhitePrinterType, $colorPrinterType)
-              AND cpc.printer_states_id in (SELECT id FROM glpi_states WHERE name like 'COI%' OR name like 'COF%' OR name like 'Pro%')
+            WHERE " . PluginIservicePrinter::getCMCondition('cpc.cm_field', 'cpc.printer_types_id', 'cpc.printer_states_id') . "
               AND cpc.min_estimate_percentage <= 0
               AND cpc.consumable_type = 'cartridge'
               AND cpc.min_days_to_visit <= 20
@@ -147,9 +134,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         );
 
         if (empty($cartridges)) {
-            if (!$debugMode) {
-                $task->log("No cartridges returned\n");
-            }
+            $task->log("No cartridges returned\n");
 
             return; // Nothing to do.
         }
