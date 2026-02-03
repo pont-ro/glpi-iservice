@@ -439,6 +439,9 @@ msgstr "Tichete deschise"
 msgid "Unpaid invoices"
 msgstr "Facturi neplătite"
 
+msgid "Invoices list"
+msgstr "Lista facturi"
+
 #: inc/monthlyplan.class.php:208
 msgid "Total unpaid"
 msgstr "Total neplătit"

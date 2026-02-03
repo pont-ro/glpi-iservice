@@ -15,7 +15,7 @@ class UnpaidInvoices extends View
 
     public static function getName(): string
     {
-        return _t('Unpaid invoices');
+        return _t('Invoices list');
     }
 
     public static function getCodDisplay($row_data): string

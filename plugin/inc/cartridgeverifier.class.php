@@ -102,7 +102,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
 
         return "<tr>
             <td>$cartridge[supplier_name]</td>
-            <td><a href='$siteUrl/plugins/iservice/front/printer.form.php?id=$cartridge[printer_id]'>$cartridge[printer_model_name]</a></td>
+            <td><a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCountersV3&printercountersv30[serial]=$cartridge[printer_serial_number]&printercountersv30[supplier_name]=$cartridge[supplier_name]' target='_blank'>$cartridge[printer_model_name]</a></td>
             <td>$cartridge[usage_address_field]</td>
             <td><a href='$siteUrl/plugins/iservice/front/printer.form.php?id=$cartridge[printer_id]'>$cartridge[printer_serial_number]</a></td>
             <td>$cartridge[dba]</td>
@@ -111,12 +111,14 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         </tr>";
     }
 
-    public static function verifyCartridges($task, $target_email): void
+    public static function verifyCartridges($task, $target_email, $debugMode = false): void
     {
-        $task->log("Verify cartridges\n");
+        if (!$debugMode) {
+            $task->log("Verify cartridges\n");
 
-        Views::getView('PrinterCounters')->refreshCachedData();
-        Views::getView('PrinterCountersV3')->refreshCachedData();
+            Views::getView('PrinterCounters')->refreshCachedData();
+            Views::getView('PrinterCountersV3')->refreshCachedData();
+        }
 
         $cartridges = PluginIserviceDB::getQueryResult(
             "
