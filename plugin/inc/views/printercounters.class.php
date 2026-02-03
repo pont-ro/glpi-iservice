@@ -398,7 +398,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
         $settings['filters']['min_days_to_visit']  = [
             'type' => self::FILTERTYPE_INT,
             'header_caption' => '> ',
-            'empty_value' => '-100',
+            'empty_value' => '-99999',
             'zero_is_empty' => false,
             'header' => 'min_days_to_visit',
             'format' => '%d',
