@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: iservice\n"
 "POT-Creation-Date: 2024-09-09 12:48+0300\n"
-"PO-Revision-Date: 2025-11-25 09:11+0200\n"
+"PO-Revision-Date: 2026-02-04 13:50+0200\n"
 "Last-Translator: \n"
 "Language-Team: PONT Systems\n"
 "Language: ro_RO\n"
@@ -1644,6 +1644,12 @@ msgstr "Număr mediu color"
 
 msgid "Next delivery (days)"
 msgstr "Următoarea livrare (zile)"
+
+msgid "Has no printers"
+msgstr "Nu are aparate"
+
+msgid "Has only deleted printers"
+msgstr "Are numai aparate șterse"
 
 #, fuzzy
 #~| msgid "Pending emails"
