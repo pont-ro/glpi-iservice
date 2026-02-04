@@ -429,6 +429,7 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
             'title' => 'Urm. livrare în',
             'align' => 'right',
             'format' => 'function:\GlpiPlugin\Iservice\Views\PrinterCountersV3::getMinDaysToVisitDisplay($row);',
+            'default_sort' => 'ASC'
         ];
         $settings['columns']['consumable_codes']       = [
             'title' => _t('hMarfa Code'),
