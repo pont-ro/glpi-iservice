@@ -29,7 +29,7 @@ class Partners extends View
         $title = self::getPartnerTitleBasedOnUnpaidInvoices((int)$row_data['Numar_Facturi_Neplatite'], $row_data['Valoare_Scadenta']);
         $style = self::getPartnerStyleBasedOnUnpaidInvoices((int)$row_data['Numar_Facturi_Neplatite']);
 
-        return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank' title='$title'$style>$row_data[Nume_Partener]</a>";
+        return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank' title='$title' style='$style'>$row_data[Nume_Partener]</a>";
     }
 
     public static function getDataUltimaFacturaDisplay($row_data): string
