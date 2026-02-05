@@ -75,7 +75,7 @@ class Printers extends View
                 'visible' => Session::haveRight('plugin_iservice_view_operations', READ),
             ],
             'counters' => [
-                'link' => "views.php?view=PrinterCountersv3&printercountersv30[supplier_name]=" . urlencode($row_data['supplier_name']),
+                'link' => "views.php?view=PrinterCounters&printercounters0[supplier_name]=" . urlencode($row_data['supplier_name']),
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/calculator.png',
                 'title' => _t('Printer counters'),
                 'visible' => Session::haveRight('plugin_iservice_view_printercounters', READ),
@@ -378,8 +378,8 @@ class Printers extends View
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
         $printer_counters_buttons = IserviceToolBox::inProfileArray('client') ? '' :
-            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . _t('Printer counters') . " v2</a>" .
-            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCountersV3' target='_blank'>" . _t('Printer counters') . " v3</a>";
+            "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . _t('Printer counters') . " v2</a>" ;
+            // . "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCountersV3' target='_blank'>" . _t('Printer counters') . " v3</a>";
 
         $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
         if ($this->enable_emaintenance_data_import) {

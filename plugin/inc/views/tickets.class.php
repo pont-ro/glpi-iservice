@@ -899,14 +899,14 @@ class Tickets extends View
             ]
         );
 
-        $cacheTableExists = PluginIserviceDB::doesTableExists("glpi_plugin_iservice_cachetable_printercountersv3");
+        $cacheTableExists = PluginIserviceDB::doesTableExists("glpi_plugin_iservice_cachetable_printercounters");
         $cacheTableSelect = $cacheTableExists ? ", pc.estimate_percentages, pc.stocks, pc.consumable_codes" : "";
 
         $settingsVMobile['query'] = $querySelect
             . ", p.original_name printer_model "
             . $cacheTableSelect
             . $queryFrom
-            . ($cacheTableExists ? "LEFT JOIN glpi_plugin_iservice_cachetable_printercountersv3 pc on p.id = pc.printer_id and pc.consumable_type = 'cartridge' " : "")
+            . ($cacheTableExists ? "LEFT JOIN glpi_plugin_iservice_cachetable_printercounters pc on p.id = pc.printer_id and pc.consumable_type = 'cartridge' " : "")
             . "
                         WHERE t.is_deleted = 0 $right_condition
                             AND t.status in ([ticket_status])
