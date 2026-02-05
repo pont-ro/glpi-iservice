@@ -20,7 +20,7 @@ return [
             'summary_text' => 'There are no cartridges older than 7 days at Expert Line.',
         ],
         'positive_result' => [
-            'summary_text' => "There are {count} cartridges older than 7 days at Expert Line. <a id='delete-all-ex-cartridges' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?operation=delete_cartridge&ids={aggregated|id}\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#delete-all-ex-cartridges\").remove();}});'>»»» ștergeți tot «««</a>",
+            'summary_text' => "There are {count} cartridges older than 7 days at Expert Line. <a id='delete-all-ex-cartridges' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?operation=delete_cartridge&ids={aggregated|id}\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#delete-all-ex-cartridges\").remove();}});'>»»» delete all «««</a>",
             'iteration_text' => "[cart_id] - [date_creation] <a id='delete-[id]' href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?operation=delete_cartridge&ids=[cart_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#delete-[id]\").remove();}});'>»»» ștergeți «««</a>",
             'lin' => "<a href=\"$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0[id]=[id]\" target=\"_blank\">[id]</a>",
         ],
