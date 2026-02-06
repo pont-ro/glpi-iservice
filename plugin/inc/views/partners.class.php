@@ -26,16 +26,27 @@ class Partners extends View
 
     public static function getNumePartenerDisplay($row_data): string
     {
+        $title = self::getPartnerTitleBasedOnUnpaidInvoices((int)$row_data['Numar_Facturi_Neplatite'], $row_data['Valoare_Scadenta']);
+        $style = self::getPartnerStyleBasedOnUnpaidInvoices((int)$row_data['Numar_Facturi_Neplatite']);
+
+        return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank' title='$title' style='$style'>$row_data[Nume_Partener]</a>";
+    }
+
+    public static function getDataUltimaFacturaDisplay($row_data): string
+    {
+        $title = '';
+        $style = '';
         if ($row_data['printer_count'] === 0) {
             if ($row_data['deleted_printer_count'] === 0) {
-                $class = " style='color:red'";
+                $style = " style='color:red'";
+                $title = _t('Has no printers');
             } else {
-                $class = " style='color:orange'";
+                $style = " style='color:orange'";
+                $title = _t('Has only deleted printers');
             }
-        } else {
-            $class = '';
         }
-        return "<a href='views.php?view=ClientInvoices&clientinvoices0[partner_id]=$row_data[id]' target='_blank'$class>$row_data[Nume_Partener]</a>";
+
+        return "<span style='$style' title='$title'>$row_data[Data_Ultima_Factura]</span>";
     }
 
     protected function getSettings(): array
@@ -226,6 +237,7 @@ class Partners extends View
                     'align' => 'center',
                     'style' => 'white-space: nowrap;',
                     'sort_default_dir' => 'DESC',
+                    'format' => 'function:default',
                 ],
                 'Valoare_Scadenta' => [
                     'title' => 'Valoare facturi neplătite',
