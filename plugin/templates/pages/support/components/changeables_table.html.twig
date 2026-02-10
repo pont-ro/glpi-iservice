@@ -14,37 +14,29 @@
         {% endif %}
         {% if tableData.addItemsSection %}
             <div class="table-responsive">
-                <table class="table">
-                    <tr>
-                        {% if tableData.addItemsSection.inputs|length > 0 %}
-                            {% for input in tableData.addItemsSection.inputs|sort((a, b) => a.order - b.order) %}
-                                <td class="align-bottom">
-                                    {{ input.no_label ? '' : input.label }}
-                                </td>
-                            {% endfor %}
-                        {% endif %}
-                    </tr>
-                    <tr class="{{ tableData.addItemsSection.class }}">
-                        {% if tableData.addItemsSection.inputs|length > 0 %}
-                            {% for input in tableData.addItemsSection.inputs|sort((a, b) => a.order - b.order) %}
-                                <td>
-                                    {{ fieldsIservice.marcoCallHelper(
-                                        input.type,
-                                        input.name,
-                                        input.value,
-                                        input.label,
-                                        field_options|merge(input.options ?? []),
-                                        input.itemType,
-                                        input.elementsArray
-                                    ) }}
-                                    {% if input.script %}
-                                        {{ input.script|raw }}
-                                    {% endif %}
-                                </td>
-                            {% endfor %}
-                        {% endif %}
-                    </tr>
-                </table>
+                {% if tableData.addItemsSection.inputs|length > 0 %}
+                    {% for input in tableData.addItemsSection.inputs|sort((a, b) => a.order - b.order) %}
+                            {{ input.no_label ? '' : input.label }}
+                    {% endfor %}
+                {% endif %}
+                {% if tableData.addItemsSection.inputs|length > 0 %}
+                    {% for input in tableData.addItemsSection.inputs|sort((a, b) => a.order - b.order) %}
+                        <div>
+                            {{ fieldsIservice.marcoCallHelper(
+                                input.type,
+                                input.name,
+                                input.value,
+                                input.label,
+                                field_options|merge(input.options ?? []),
+                                input.itemType,
+                                input.elementsArray
+                            ) }}
+                            {% if input.script %}
+                                {{ input.script|raw }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
         {% endif %}
         {% if tableData.tableSection.type == 'grid' %}

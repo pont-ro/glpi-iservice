@@ -4,7 +4,7 @@
     <label class="col-form-label col-xxl-4 text-xxl-end">
         {{ customLabel ?? __('Documents') }}
     </label>
-    <div class="col-xxl-8 field-container mt-2">
+    <div class="col-xxl-8 field-container mt-2 here">
         {% if ticketDocuments %}
             <div class="bg-info p-3">
                 {% for document in ticketDocuments %}
@@ -21,8 +21,8 @@
                     <br>
                 {% endfor %}
             </div>
+            <hr>
         {% endif %}
-        <hr>
         {{ fields.fileField(
             'filename',
             '',
@@ -31,7 +31,8 @@
                 'multiple': true,
                 'accept': 'image/*, application/pdf',
                 'disabled': isClosed,
-                'no_label': true
+                'no_label': true,
+                'full_width': true,
             }
         ) }}
     </div>

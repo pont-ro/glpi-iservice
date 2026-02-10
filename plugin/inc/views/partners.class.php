@@ -138,6 +138,7 @@ class Partners extends View
                     'caption' => '',
                     'format' => '%%%s%%',
                     'header' => 'Nume_Partener',
+                    'double_break_before' => true,
                 ],
                 'ult_cont' => [
                     'type' => self::FILTERTYPE_DATE,
@@ -145,6 +146,7 @@ class Partners extends View
                     'header_caption' => '< ',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date('Y-m-d'),
+                    'double_break_before' => true,
                 ],
                 'nr_fac_nepla' => [
                     'type' => self::FILTERTYPE_INT,
@@ -172,6 +174,7 @@ class Partners extends View
                     'header_caption' => '< ',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date('Y-m-d'),
+                    'double_break_before' => true,
                 ],
                 'val_scad' => [
                     'type' => self::FILTERTYPE_INT,
@@ -182,6 +185,7 @@ class Partners extends View
                     'style' => 'text-align:right;width:5em;',
                     'header' => 'Valoare_Scadenta',
                     'header_caption' => '> ',
+                    'double_break_before' => true,
                 ],
                 'ult_pla' => [
                     'type' => self::FILTERTYPE_DATE,
@@ -189,6 +193,7 @@ class Partners extends View
                     'header_caption' => '< ',
                     'format' => 'Y-m-d 23:59:59',
                     'empty_value' => date('Y-m-d'),
+                    'double_break_before' => true,
                 ],
                 'zile_ult_pla' => [
                     'type' => self::FILTERTYPE_INT,

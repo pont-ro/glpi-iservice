@@ -197,7 +197,7 @@ class Tickets extends View
 
         $out .= "&nbsp;" . Ticket::getStatusIcon($row_data['status']);
 
-        $out .= "<a href='" . $actions['close']['link'] . "' class='btn btn-sm ms-1'>" . _t('Details') . "</a>";
+        $out .= "<a href='" . $actions['close']['link'] . "' class='btn btn-sm ms-1 ms-lg-0 border-0'>" . _t('Details') . "</a>";
 
         return $out;
     }
