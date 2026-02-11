@@ -712,8 +712,8 @@ class Tickets extends View
     {
         $settingsV2 = $settingsV1;
         unset(
-            $settingsV2['columns']['tech_assign_name'],
-            $settingsV2['filters']['tech_id'],
+//            $settingsV2['columns']['tech_assign_name'],
+//            $settingsV2['filters']['tech_id'],
             $settingsV2['filters']['assigned_only'],
             $settingsV2['columns']['effective_date_field'],
             $settingsV2['filters']['effective_date_field'],
@@ -726,15 +726,6 @@ class Tickets extends View
             $settingsV2['columns']['ticket_counter_total'],
             $settingsV2['filters']['ticket_counter_total']
         );
-
-        $settingsV2['filters']['filter_group_1']['tech_id'] = [
-            'type' => self::FILTERTYPE_SELECT,
-            'caption' => 'Tehnician alocat',
-            'format' => 'AND (a.id = %d OR a.id IS NULL)',
-            'visible' => !self::inProfileArray('subtehnician', 'superclient', 'client'),
-            'options' => IserviceToolBox::getUsersByProfiles(['tehnician']),
-            'class' => 'mx-1',
-        ];
 
         $settingsV2['filters']['filter_group_1']['assigned_only'] = [
             'type' => self::FILTERTYPE_CHECKBOX,
@@ -768,7 +759,7 @@ class Tickets extends View
         ];
 
         $settingsV2['columns'] = IserviceToolBox::insertArrayValuesAndKeysAfterKey(
-            'date_open',
+            'tech_assign_name',
             $settingsV2['columns'],
             [
                 'ticket_content' => [
