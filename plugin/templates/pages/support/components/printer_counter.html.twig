@@ -17,9 +17,11 @@
                 csvCounterButtonConfig,
                 estimateButtonConfig,
             ],
-            'input_addclass': 'w-50 d-inline-block',
+            'input_addclass': 'flex-grow d-inline-block',
+            'center': true,
         })
     ) }}
+        {# 'center': true - is needed, otherwise parent container doesn't get d-flex class #}
 {% endif %}
 
 {% if printer.isColor() or printer.isPlotter() %}

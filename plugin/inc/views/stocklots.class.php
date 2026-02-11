@@ -192,10 +192,12 @@ class StockLots extends View
                 'model_description' => [
                     'title' => _t('Product description'),
                     'editable' => true,
+                    'class' => 'd-inline-block w-100',
                     'edit_settings' => [
                         'callback' => 'manageItem',
                         'itemType' => 'PluginIserviceConsumableDescription',
-                        'operation' => 'EditDescription'
+                        'operation' => 'EditDescription',
+                        'inputType' => 'textArea',
                     ]
                 ],
                 'Grupa' => [

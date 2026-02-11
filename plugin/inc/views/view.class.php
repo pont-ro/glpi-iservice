@@ -396,7 +396,8 @@ class View extends \CommonGLPI
 
             $filter_widget = $this->getFilterWidget($filter_data, $filter_name, $filter_in_header ? 'header' : 'normal', $request_values);
             if ($filter_in_header) {
-                $this->columns[$filter_data['header']]['filter'] .= (empty($filter_data['no_break_before']) ? '<br/>' : '') . "$filter_widget";
+                $br                                               = (!empty($filter_data['double_break_before']) && !$card_view) ? '<br/><br/>' : '<br/>';
+                $this->columns[$filter_data['header']]['filter'] .= (empty($filter_data['no_break_before']) ? $br : '') . "$filter_widget";
             } else {
                 $filter .= $filter_widget;
             }
@@ -802,11 +803,10 @@ class View extends \CommonGLPI
                     $(this),
                     " . json_encode($this->getRequestArrayName()) . ",
                     " . json_encode($field_name) . ",
-                    " . json_encode((string)$row_num) . ",
-                    " . json_encode((string)$detail_key) . ",
+                    " . json_encode((string) $row_num) . ",
+                    " . json_encode((string) $detail_key) . ",
                     " . json_encode($this->getRequestArrayName(1)) . "
                 );'";
-
 
                 break;
 
@@ -1604,7 +1604,8 @@ class View extends \CommonGLPI
     {
         global $CFG_PLUGIN_ISERVICE;
 
-        $edit_field      = "<input id='$field_name-input-$item_id' style='vertical-align: middle;' value='$field_value' />";
+        $textArea        = isset($settings['inputType']) && $settings['inputType'] === 'textArea';
+        $edit_field      = !$textArea ? "<input id='$field_name-input-$item_id' style='vertical-align: middle;' value='$field_value' />" : "<textarea id='$field_name-input-$item_id' style='vertical-align: middle;' class='d-inline-block w-100'>$field_value</textarea>";
         $on_edit_click   = $on_cancel_click = "$(\"#$field_name-edit-$item_id\").toggle();$(\"#$field_name-value-$item_id\").toggle();$(\"#$field_name-icon-$item_id\").toggle();";
         $itemType        = isset($settings['itemType']) ? "&itemtype=$settings[itemType]" : '';
         $on_accept_click = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/$settings[callback].php?id=$item_id$itemType&operation=$settings[operation]&value=\" + $(\"#$field_name-input-$item_id\").val(), \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {\$(\"#$field_name-value-$item_id\").html(\$(\"#$field_name-input-$item_id\").val());$on_edit_click}});";

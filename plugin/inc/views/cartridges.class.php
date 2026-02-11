@@ -13,7 +13,7 @@ class Cartridges extends View
 {
     public static $rightname = 'plugin_iservice_view_cartridges';
 
-    public static $icon = 'fa-fw ti ti-droplet-filled-2';
+    public static $icon = 'ti-droplet-half-2-filled';
 
     public static function getName(): string
     {

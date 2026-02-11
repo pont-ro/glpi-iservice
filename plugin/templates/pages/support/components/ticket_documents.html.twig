@@ -21,8 +21,8 @@
                     <br>
                 {% endfor %}
             </div>
+            <hr>
         {% endif %}
-        <hr>
         {{ fields.fileField(
             'filename',
             '',
@@ -31,7 +31,8 @@
                 'multiple': true,
                 'accept': 'image/*, application/pdf',
                 'disabled': isClosed,
-                'no_label': true
+                'no_label': true,
+                'full_width': true,
             }
         ) }}
     </div>

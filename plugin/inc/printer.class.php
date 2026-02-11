@@ -250,7 +250,7 @@ class PluginIservicePrinter extends Printer
 
         echo "</tr>";
 
-        echo "<tr>";
+        echo "<tr class='aa-forms'>";
         echo "<td>" . $this->generatePrinterData($printer, $accessible_printer_ids, !Session::haveRight('plugin_iservice_printer', UPDATE)) . "</td>";
         echo "<td class='bg-white'>" . $this->generateSupplierData($printer, $supplier, $supplier_customfields, !Session::haveRight('plugin_iservice_printer_full', UPDATE)) . "</td>";
         if (Session::haveRight('plugin_iservice_printer_full', UPDATE)) {
@@ -391,8 +391,8 @@ class PluginIservicePrinter extends Printer
         // State.
         $output .= $form->generateFieldTableRow(
             __('Status'),
-            $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[states_id]', $printer->fields['states_id'], $readonly || !$has_full_rights, ['type' => 'State', 'class' => 'width-auto'])
-            . '<div class="checkbox-after-input">' . $form->generateField(
+            $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[states_id]', $printer->fields['states_id'], $readonly || !$has_full_rights, ['type' => 'State'])
+            . '<div class="checkbox-after-input mt-1 ms-0">' . $form->generateField(
                 PluginIserviceHtml::FIELDTYPE_CHECKBOX, 'global_contract_field', $printer_customfields->fields['global_contract_field'],
                 $readonly || !$has_full_rights, ['postfix' => _t('Global contract'), 'title' => _t('Select if the printer is not billed individually, but together with other printers')]
             ) . '</div>',
@@ -535,7 +535,12 @@ class PluginIservicePrinter extends Printer
         $output .= $form->generateFieldTableRow(
             'Cod Fiscal',
             $form->generateField(
-                PluginIserviceHtml::FIELDTYPE_TEXT, '_customfields[supplier][uic_field]', $supplier_customfields->fields['uic_field'], $readonly, [
+                PluginIserviceHtml::FIELDTYPE_TEXT,
+                '_customfields[supplier][uic_field]',
+                $supplier_customfields->fields['uic_field'],
+                $readonly,
+                [
+                    'class' => 'w-50',
                     'postfix' => IserviceToolBox::inProfileArray(['admin', 'super-admin']) ? TemplateRenderer::getInstance()->render(
                         '@iservice/parts/aa-hmarfa-import.html.twig',
                         [

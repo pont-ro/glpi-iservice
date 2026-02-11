@@ -257,7 +257,7 @@ div.actions-wrap {
 }
 
 form .form-control {
-    padding: 0.2rem;
+    padding: 0.5rem;
 }
 
 .ticket-follow-up-section, .consumables-section {
@@ -288,4 +288,40 @@ form .form-control {
 
 .card {
     border-bottom: 5px solid #cbe736;
+}
+
+.date-field {
+    min-width: 125px;
+}
+
+.date-field .input-group input {
+    width: 85px !important;
+}
+
+.full.dropdown_wrapper .select2 {
+    min-width: 100% !important;
+}
+
+.aa-forms input:not([type="button"]):not(.checkbox-helper) {
+    width: 100%;
+}
+
+.aa-forms textarea {
+    width: 100%;
+}
+
+.aa-forms .dropdown_wrapper {
+    width: 100%;
+}
+
+.aa-forms .btn-group {
+    width: 100%;
+}
+
+.aa-forms .select2 {
+    width: 100% !important;
+}
+
+.aa-forms .select2-selection {
+    max-width: 100% !important;
 }

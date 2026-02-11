@@ -5,7 +5,7 @@
     </label>
     <div class="col-xxl-8 field-container {{ options.valueClass }}">
         <div class="table-responsive mt-1">
-            <button class="btn btn-submit btn-sm"
+            <button class="btn btn-submit btn-sm p-2"
                     onclick='if (confirm( "{{ _t("Warning! This operation will block the database for 5 minutes! Proceed?") }} ") === true) {
                             preventDefault();
                             window.open("{{ printerCartridgesConsumablesData.refreshUrl }}", "_blank").focus();

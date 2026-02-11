@@ -1533,7 +1533,7 @@ class PluginIserviceTicket extends Ticket
             ], '', '', 'th'
         );
         return new PluginIserviceHtml_table(
-            'tab_cadrehov wide80', $infoTableHeader, new PluginIserviceHtml_table_row(
+            'tab_cadrehov', $infoTableHeader, new PluginIserviceHtml_table_row(
                 '', [
                     new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_date_field'] ?? '', 'nowrap'),
                     new PluginIserviceHtml_table_cell($printer->customfields->fields['invoice_expiry_date_field'] ?? '', 'nowrap'),
@@ -1542,7 +1542,7 @@ class PluginIserviceTicket extends Ticket
                     $printer->customfields->fields['invoiced_total_black_field'] ?? '',
                     $printer->lastClosedTicket()->customfields->fields['total2_black_field'] ?? '',
                 ]
-            ), 'display: inline-block;text-align: center;'
+            ), 'display: inline-block;text-align: center; width: 100%;'
         );
     }
 
