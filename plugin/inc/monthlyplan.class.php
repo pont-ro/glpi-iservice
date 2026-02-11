@@ -189,7 +189,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
     <tbody>
     <tr>
         <?php for ($column = 1; $column < 5; $column++) { ?>
-            <td style="padding:0; vertical-align:top; width:25%;">
+            <td style="padding:0; vertical-align:top; min-width:42vw;">
                 <?php $form->openForm(['method' => 'post', 'action' => 'views.php?view=GlobalReadcounter', 'class' => 'iservice-form']); ?>
                 <table>
                     <thead>
@@ -347,7 +347,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
                                         global $CFG_GLPI;
                                         $siteUrl     = PluginIserviceConfig::getConfigValue('site_url');
                                         $body        = "Buna ziua!\r\n";
-                                        $body       .= "Va rugam sa ne trimiteti starea contoarelor copiatoarelor aflate la dvs. folosind una din metodele de mai jos: \r\n";
+                                        $body       .= "Va rugam sa ne trimiteti citirea contoarelor copiatoarelor aflate la dvs. folosind una din metodele de mai jos: \r\n";
                                         $body       .= "- prin scanarea codului QR aplicat de tehnicienii noștri pe aparat\r\n";
                                         $body       .= "- pe interfata web: $siteUrl\r\n";
                                         $body       .= "- raspunzand la acest mail\r\n";

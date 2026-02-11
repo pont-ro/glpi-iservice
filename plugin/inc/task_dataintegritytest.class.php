@@ -640,6 +640,22 @@ class PluginIserviceTask_DataIntegrityTest
     function formatTestResultText($results, $summary_format, $iteration_format = '', $summary_params = [], $opening_param_separator = '[', $closing_param_separator = ']')
     {
         $result_text = str_replace("{count}", count($results), $summary_format);
+
+        // Checks if $result_text has {aggregated|xxx} pattern, and if so, gets the aggregated values comma separated from $results, ex. {aggregated|id} should be replaced with the comma separated list of 'id' values from $results.
+        preg_match_all('/\{aggregated\|([a-zA-Z0-9_]+)\}/', $result_text, $matches);
+        if (!empty($matches) && count($matches) > 1) {
+            foreach ($matches[1] as $i => $param_name) {
+                $aggregated_values = [];
+                foreach ($results as $result) {
+                    if (isset($result[$param_name])) {
+                        $aggregated_values[] = $result[$param_name];
+                    }
+                }
+
+                $result_text = str_replace($matches[0][$i], implode(',', $aggregated_values), $result_text);
+            }
+        }
+
         if (!empty($summary_params)) {
             $result_text = $this->substituteValues($result_text, $summary_params, $opening_param_separator, $closing_param_separator);
         }
@@ -654,7 +670,7 @@ class PluginIserviceTask_DataIntegrityTest
                     $result,
                     $opening_param_separator,
                     $closing_param_separator
-                    );
+                );
                 $result_text .= "</li>";
             }
 

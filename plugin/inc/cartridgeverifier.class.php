@@ -76,7 +76,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
 
         $siteUrl = PluginIserviceConfig::getConfigValue('site_url');
         $html    = "Vezi lista completa a aparatelor cu consumabile goale
-                <a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCountersV3&printercountersv30[order_by]=min_days_to_visit&printercountersv30[order_dir]=ASC$tech_id' target='_blank'>aici</a>
+                <a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCounters&printercounters0[order_by]=min_days_to_visit&printercounters0[order_dir]=ASC$tech_id' target='_blank'>aici</a>
                 <br><br>Următoarele aparate au consumabile goale:<br>";
 
         $html .= "<table border='1' style='border-collapse: collapse; width: 100%;'>";
@@ -102,7 +102,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
 
         return "<tr>
             <td>$cartridge[supplier_name]</td>
-            <td><a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCountersV3&printercountersv30[serial]=$cartridge[printer_serial_number]&printercountersv30[supplier_name]=$cartridge[supplier_name]' target='_blank'>$cartridge[printer_model_name]</a></td>
+            <td><a href='$siteUrl/plugins/iservice/front/views.php?view=PrinterCounters&printercounters0[serial]=$cartridge[printer_serial_number]&printercounters0[supplier_name]=$cartridge[supplier_name]' target='_blank'>$cartridge[printer_model_name]</a></td>
             <td>$cartridge[usage_address_field]</td>
             <td><a href='$siteUrl/plugins/iservice/front/printer.form.php?id=$cartridge[printer_id]'>$cartridge[printer_serial_number]</a></td>
             <td>$cartridge[dba]</td>
@@ -117,13 +117,13 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
             $task->log("Verify cartridges\n");
 
             Views::getView('PrinterCounters')->refreshCachedData();
-            Views::getView('PrinterCountersV3')->refreshCachedData();
+            // Views::getView('PrinterCountersV3')->refreshCachedData();
         }
 
         $cartridges = PluginIserviceDB::getQueryResult(
             "
             SELECT cpc.*, ue.email as tech_email, pm.name as printer_model_name, p.serial as printer_serial_number
-            FROM glpi_plugin_iservice_cachetable_printercountersv3 cpc
+            FROM glpi_plugin_iservice_cachetable_printercounters cpc
             JOIN glpi_printers p ON p.id = cpc.printer_id
             JOIN glpi_printermodels pm ON pm.id = p.printermodels_id
             JOIN glpi_useremails ue ON ue.users_id = cpc.tech_id

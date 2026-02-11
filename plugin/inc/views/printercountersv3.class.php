@@ -293,10 +293,10 @@ class PrinterCountersV3 extends PluginIserviceViewPrinter
                   , @ucbk := if (coalesce(pbuc.usage_coefficient, cfp.uc_bk_field, 0) = 0, 0.75, coalesce(pbuc.usage_coefficient, cfp.uc_bk_field)) uc_bk_field
                   
                   , @uc := if(@consumableType = 'consumable', 1, case cfci.plugin_fields_cartridgeitemtypedropdowns_id
-                                                                    when 2 then @ucc
-                                                                    when 3 then @ucm
-                                                                    when 4 then @ucy
-                                                                    else @ucbk 
+                                                                    when 2 then round(@ucc, 2)
+                                                                    when 3 then round(@ucm, 2)
+                                                                    when 4 then round(@ucy, 2)
+                                                                    else round(@ucbk , 2)
                                                                  end) usage_coefficient
                   , @dba := coalesce(cfp.daily_bk_average_field, 0) dba
                   , @dca := coalesce(cfp.daily_color_average_field, 0) dca
