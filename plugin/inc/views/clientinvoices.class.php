@@ -12,7 +12,7 @@ use Html;
 use PluginIserviceDownload;
 use PluginIserviceHtml;
 use PluginIserviceHtml_table;
-use PluginIservicePartner;
+use PluginIserviceSupplier;
 use PluginIserviceTicket;
 use \Session;
 use Supplier;
@@ -104,7 +104,7 @@ class ClientInvoices extends View
 
         $name = 'Facturi ' . $partner->fields['name'];
         if ($client_access) {
-            $debt = number_format($partner->getInvoiceInfo(PluginIservicePartner::INVOICEINFO_DEBT), 2, '.', '');
+            $debt = number_format($partner->getInvoiceInfo(PluginIserviceSupplier::INVOICEINFO_DEBT), 2, '.', '');
             if ($debt > 0) {
                 $name .= " - <span style='color: red'>Valoare neîncasată: $debt RON</span>";
             } else {
@@ -149,7 +149,7 @@ class ClientInvoices extends View
         $form = new PluginIserviceHtml();
         $form->openForm(
             [
-                'action' => PluginIservicePartner::getFormURL(),
+                'action' => PluginIserviceSupplier::getFormURL(),
                 'class' => 'iservice-form two-column',
                 'method' => 'post'
             ]
@@ -212,7 +212,7 @@ class ClientInvoices extends View
                 die("Partner should be given!");
             }
 
-            $this->partner = new PluginIservicePartner();
+            $this->partner = new PluginIserviceSupplier();
             $this->partner->getFromDB($request_variables['partner_id']);
             if ($this->partner->isNewItem()) {
                 Html::displayNotFoundError();

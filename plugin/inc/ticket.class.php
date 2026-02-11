@@ -216,7 +216,7 @@ class PluginIserviceTicket extends Ticket
     public function getPartnerHMarfaCode($partnerId = null): ?string
     {
         if (!empty($partnerId)) {
-            $partner = new PluginIservicePartner();
+            $partner = new PluginIserviceSupplier();
             $partner->getFromDB($partnerId);
         } else {
             $partner = $this->getFirstAssignedPartner();
@@ -226,23 +226,23 @@ class PluginIserviceTicket extends Ticket
     }
 
     /*
-     * @return PluginIservicePartner
+     * @return PluginIserviceSupplier
      */
 
-    public function getFirstAssignedPartner(): PluginIservicePartner
+    public function getFirstAssignedPartner(): PluginIserviceSupplier
     {
         if ($this->getID() > 0) {
             $this->reloadActors();
         }
 
-        $partner = new PluginIservicePartner();
+        $partner = new PluginIserviceSupplier();
         foreach ($this->getSuppliers(CommonITILActor::ASSIGN) as $partner_data) {
             if ($partner->getFromDB($partner_data['suppliers_id']) && !$partner->isDeleted()) {
                 return $partner;
             }
         }
 
-        return new PluginIservicePartner();
+        return new PluginIserviceSupplier();
     }
 
     /*
@@ -451,7 +451,7 @@ class PluginIserviceTicket extends Ticket
         }
 
         $this->fields['_suppliers_id_assign'] = $partnerId = $this->getPartnerId($options);
-        $supplier                             = new PluginIservicePartner();
+        $supplier                             = new PluginIserviceSupplier();
         $supplier->getFromDB($partnerId);
 
         $location = $this->getLocation();
@@ -2150,7 +2150,7 @@ class PluginIserviceTicket extends Ticket
         return $buttons;
     }
 
-    public function getFloatingButtonsConfig(?PluginIservicePartner $supplier, ?PluginIservicePrinter $printer): array
+    public function getFloatingButtonsConfig(?PluginIserviceSupplier $supplier, ?PluginIservicePrinter $printer): array
     {
         if (empty($supplier) || $supplier->isNewItem()) {
             return [];

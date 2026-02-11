@@ -27,7 +27,7 @@ return [
             'iteration_text' => "Partner <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=UnpaidInvoices&unpaidinvoices0[nume_client]=[name]' target='_blank'>[name]</a> " .
                 "with hMarfa code [code] has unpaid invoices with a total of [due] RON. " .
                 "<span id='fix-partner-[-code-]'>" .
-                "<a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIservicePartner&operation=add&name=[%name%]&code=[%code%]\", \"\", function(message) {if (isNaN(message)) {alert(message);} else {\$(\"#fix-partner-[-code-]\").html(\"<a href=\\\"$CFG_GLPI[root_doc]/front/supplier.form.php?id=\" + message + \"\\\" target=\\\"_blank\\\">»»» Edit new partner «««</a>\");}});'>" .
+                "<a href='javascript:void(0);' onclick='ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?itemtype=PluginIserviceSupplier&operation=add&name=[%name%]&code=[%code%]\", \"\", function(message) {if (isNaN(message)) {alert(message);} else {\$(\"#fix-partner-[-code-]\").html(\"<a href=\\\"$CFG_GLPI[root_doc]/front/supplier.form.php?id=\" + message + \"\\\" target=\\\"_blank\\\">»»» Edit new partner «««</a>\");}});'>" .
                 "»»» Add to iService «««" .
                 "</a>" .
                 "</span>",
