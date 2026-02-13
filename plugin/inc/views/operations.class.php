@@ -25,7 +25,10 @@ class Operations extends View
 
     public static function getTicketStatusDisplay($row_data): string
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
+
+        $tickInSolvedStatus = !empty($row_data['status']) && $row_data['status'] == Ticket::SOLVED;
+
         $actions = [
             'add' => [
                 'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATENORMAL . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]",
@@ -33,16 +36,16 @@ class Operations extends View
                 'title' => __('New ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, UPDATE),
             ],
-            'add_quick' => [
+            'quickClose' => [
                 'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_lightning.png',
-                'title' => _t('New quick ticket'),
+                'title' => $tickInSolvedStatus ? _t('Close resolved ticket') : _t('Details'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, UPDATE),
             ],
-            'close' => [
+            'details' => [
                 'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
-                'title' => _t('Close ticket'),
+                'title' => $tickInSolvedStatus ? _t('Details') : _t('Close ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
             ],
             'ticketreport' => [
@@ -53,11 +56,19 @@ class Operations extends View
             ],
         ];
 
+        if ($tickInSolvedStatus) {
+            $actions['quickClose']['onclick'] = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?ids=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=CloseTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.reload();}});";
+        } else {
+            $actions['quickClose']['link'] = "ticket.form.php?id=$row_data[ticket_id]";
+        }
+
         $actionIcons      = '';
         $actionIconsCount = 0;
         foreach ($actions as $action) {
             if (!isset($action['visible']) || $action['visible']) {
-                $actionIcons .= "<a href='$action[link]' target='_blank'><img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                $actionIcons .= isset($action['onclick']) ? "<a href='javascript:void(0);' onclick='$action[onclick]'>" : "<a href='$action[link]' target='_blank'>";
+                $actionIcons .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+
                 $actionIconsCount++;
             }
         }
@@ -92,6 +103,19 @@ class Operations extends View
 
         $settings = [
             'name' => _t('Operations'),
+            'mass_actions' => [
+                'close_tickets' => [
+                    'caption' => _t('Close'),
+                    'massAjaxCall' => [
+                        'url' => '/plugins/iservice/ajax/manageItem.php?itemtype=PluginIserviceTicket&operation=CloseTickets&printer_id=' . IserviceToolBox::getArrayInputVariable('operations0')['printer_id'] ?? '',
+                        'massParams' => ['ids' => 'ticket'], // Here ids is the param that will contacted to the url, and ticket is the data to get from form data 'item[ticket][123]'.
+                        'spinnerId' => 'close_tickets_spinner',
+                    ],
+                    'prefix' => '<i id="close_tickets_spinner" class="fas fa-spinner fa-pulse d-none"></i>'
+                ],
+            ],
+            'id_field' => 'ticket_id',
+            'itemtype' => 'ticket',
             'query' => "
                 SELECT * FROM (
                     SELECT
@@ -285,4 +309,5 @@ class Operations extends View
 
         return "<span title='$title' class='$class'>$display</span>";
     }
+
 }

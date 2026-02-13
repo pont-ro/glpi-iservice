@@ -1061,11 +1061,16 @@ class View extends \CommonGLPI
             self::ensureArrayKey($mass_action, 'class', '', ' submit noprint');
             self::ensureArrayKey($mass_action, 'style');
             self::ensureArrayKey($mass_action, 'new_tab', true);
-            $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
-            $mass_action_on_click   = $mass_action['onClick'] ?? '';
-            $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
-            $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
-            $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
+            if (empty($mass_action['massAjaxCall'])) {
+                $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
+                $mass_action_on_click   = $mass_action['onClick'] ?? '';
+                $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
+                $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
+                $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
+            } else {
+                $mass_action_on_click = $this->buildAjaxCallScript($mass_action['massAjaxCall']);
+            }
+
             echo "<div class='mass-action'>";
             echo $mass_action['prefix'];
             echo " <input type='submit' class='$mass_action[class]' id='mass_action_$mass_action[name]' name='mass_action_$mass_action[name]' onclick='$mass_action_on_click' style='$mass_action[style]' value='$mass_action[caption]'> ";
@@ -1075,6 +1080,30 @@ class View extends \CommonGLPI
 
         echo "</div>";
         echo "</div>";
+    }
+
+    public function buildAjaxCallScript($settings)
+    {
+        $js  = 'event.preventDefault(); ';
+        $js .= 'var form=$(this).closest("form"); ';
+        $js .= 'var data=form.serializeArray(); console.log(data);';
+
+        // Extract item IDs from the form data based on $settings['massParams] = ['ids' => 'ticket'].
+        // Here ids is the param that will concatenate to the url, and ticket is the data to get from form data 'item[ticket][123]'.
+        // Form data: {"name": "item[ticket][169514]", "value": "1"}.
+        $js .= 'var itemIds = data.filter(function(field) { return field.name.startsWith("item[' . $settings['massParams']['ids'] . ']"); }).map(function(field) { return field.name.match(/item\[' . $settings['massParams']['ids'] . '\]\[(\d+)\]/)[1]; }); ';
+
+        // If spinner element id is provided get if by id and show it before ajax call and hide it in ajax callback by removing/adding d-none class.
+        if (!empty($settings['spinnerId'])) {
+            $js .= "var spinner = document.getElementById(\"" . $settings['spinnerId'] . "\"); if (spinner) {spinner.classList.remove(\"d-none\");} ";
+            $js .= "function hideSpinner() {if (spinner) {spinner.classList.add(\"d-none\");}} ";
+        }
+
+        // We need to send the IDs as a comma separated string in the URL. $settings['url].
+        $js .= 'var url = "' . $settings['url'] . '&ids=" + itemIds.join(","); console.log(url);';
+        $js .= "ajaxCall(url, \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message); hideSpinner();} else {window.location.reload();}});";
+
+        return $js;
     }
 
     protected function displayCards($data, $readonly = false): void

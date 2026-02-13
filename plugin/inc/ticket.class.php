@@ -1670,6 +1670,7 @@ class PluginIserviceTicket extends Ticket
         if (empty($this->printer)) {
             $this->setPrinter();
         }
+
         $partnerId = $this->printer->fields['supplier_id'] ?? $options['partnerId'] ?? null;
 
         return intval($partnerId);
@@ -1680,24 +1681,28 @@ class PluginIserviceTicket extends Ticket
         if (empty($this->printer)) {
             $this->setPrinter();
         }
+
         return $this?->printer?->getID();
     }
 
     public function addConsumable($ticketId, $post): void
     {
-        if (!empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id']) ||
-            !empty($post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id']) ||
-            !empty($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id'])) {
+        if (!empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])
+            || !empty($post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id'])
+            || !empty($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id'])
+        ) {
             $this->check($ticketId, UPDATE);
 
             if (empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
                 $post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'] = $post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id'];
             }
+
             unset($post['_plugin_iservice_consumable']['plugin_iservice_cartridge_consumables_id']);
 
             if (empty($post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'])) {
                 $post['_plugin_iservice_consumable']['plugin_iservice_consumables_id'] = $post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id'];
             }
+
             unset($post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id']);
 
             $plugin_iservice_consumable_ticket_data                     = $post['_plugin_iservice_consumable'];
@@ -1936,9 +1941,10 @@ class PluginIserviceTicket extends Ticket
     public function getConsumables(): array
     {
         if ($this->consumables === null) {
-            $consumableTicket = new PluginIserviceConsumable_Ticket();
+            $consumableTicket  = new PluginIserviceConsumable_Ticket();
             $this->consumables = $consumableTicket->find(['tickets_id' => $this->getID()]);
         }
+
         return $this->consumables;
     }
 
@@ -1952,12 +1958,14 @@ class PluginIserviceTicket extends Ticket
         if (empty($this->customfields->fields['delivered_field']) || $this->getFirstPrinter()->hasCartridgeManagement()) {
             return '';
         }
+
         $ids = [];
         foreach ($this->getConsumables() as $consumable) {
             if ($consumable['create_cartridge'] && $consumable['amount'] > 0 && empty($consumable['new_cartridge_ids'])) {
                 $ids[] = $consumable['plugin_iservice_consumables_id'];
             }
         }
+
         if (!empty($ids)) {
             $result = implode(', ', $ids) . ' ' . _t("does not create cartridge");
             return $addRedSpan ? "<span class='error mx-2 my-0'>$result</span>" : $result;
@@ -2604,6 +2612,50 @@ class PluginIserviceTicket extends Ticket
         $estimatedBlack       = $lastClosedTicket->customfields->fields['total2_black_field'] + round($printer->customfields->fields['daily_bk_average_field'] * $daysSinceLastCounter * $coefficient);
         $estimatedColor       = $lastClosedTicket->customfields->fields['total2_color_field'] + round($printer->customfields->fields['daily_color_average_field'] * $daysSinceLastCounter * $coefficient);
         return [$daysSinceLastCounter, $estimatedBlack, $estimatedColor];
+    }
+
+    public static function ajaxCloseTickets()
+    {
+        $ids = IserviceToolBox::getInputVariable('ids', '');
+
+        if (empty($ids)) {
+            return _t('No tickets selected to close!');
+        }
+
+        $ids = explode(',', $ids);
+
+        // Order the IDs to close the tickets starting with the oldest one.
+        asort($ids);
+
+        $ticket              = new PluginIserviceTicket();
+        $closeAttemptResults = [];
+        foreach ($ids as $ticketId) {
+            if ($ticket->getFromDB($ticketId)
+                && !$ticket->isClosed()
+                && $ticket->update(
+                    [
+                        PluginIserviceTicket::getIndexName() => $ticketId,
+                        'status'                             => Ticket::CLOSED,
+                    ]
+                )
+                && $ticket->getFromDB($ticketId) && $ticket->isClosed()
+            ) {
+                $closeAttemptResults['success'][] = $ticketId;
+            } else {
+                $closeAttemptResults['fail'][] = $ticketId;
+            }
+        }
+
+        if (!empty($closeAttemptResults['success'])) {
+            Session::addMessageAfterRedirect(_t('The following tickets were closed: ') . implode(', ', $closeAttemptResults['success']), false, INFO);
+        }
+
+        if (!empty($closeAttemptResults['fail'])) {
+            Session::addMessageAfterRedirect(_t('Cannot close the following tickets: ') . implode(', ', $closeAttemptResults['fail']), false, ERROR);
+        }
+
+        die(IserviceToolBox::RESPONSE_OK);
+
     }
 
 }
