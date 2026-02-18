@@ -108,7 +108,7 @@ class Operations extends View
                     'caption' => _t('Close'),
                     'massAjaxCall' => [
                         'url' => '/plugins/iservice/ajax/manageItem.php?itemtype=PluginIserviceTicket&operation=CloseTickets&printer_id=' . IserviceToolBox::getArrayInputVariable('operations0')['printer_id'] ?? '',
-                        'massParams' => ['ids' => 'ticket'], // Here ids is the param that will contacted to the url, and ticket is the data to get from form data 'item[ticket][123]'.
+                        'massParams' => ['ids' => 'ticket'], // Here ids is the param that will be concatenated to the url, and ticket is the data to get from form data 'item[ticket][123]'.
                         'spinnerId' => 'close_tickets_spinner',
                     ],
                     'prefix' => '<i id="close_tickets_spinner" class="fas fa-spinner fa-pulse d-none"></i>'
