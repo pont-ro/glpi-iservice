@@ -1089,7 +1089,7 @@ class View extends \CommonGLPI
         $js .= 'var data=form.serializeArray(); console.log(data);';
 
         // Extract item IDs from the form data based on $settings['massParams] = ['ids' => 'ticket'].
-        // Here ids is the param that will concatenate to the url, and ticket is the data to get from form data 'item[ticket][123]'.
+        // Here ids is the param that will be concatenated to the url, and ticket is the data to get from form data 'item[ticket][123]'.
         // Form data: {"name": "item[ticket][169514]", "value": "1"}.
         $js .= 'var itemIds = data.filter(function(field) { return field.name.startsWith("item[' . $settings['massParams']['ids'] . ']"); }).map(function(field) { return field.name.match(/item\[' . $settings['massParams']['ids'] . '\]\[(\d+)\]/)[1]; }); ';
 
