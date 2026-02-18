@@ -1093,7 +1093,7 @@ class View extends \CommonGLPI
         // Form data: {"name": "item[ticket][169514]", "value": "1"}.
         $js .= 'var itemIds = data.filter(function(field) { return field.name.startsWith("item[' . $settings['massParams']['ids'] . ']"); }).map(function(field) { return field.name.match(/item\[' . $settings['massParams']['ids'] . '\]\[(\d+)\]/)[1]; }); ';
 
-        // If spinner element id is provided get if by id and show it before ajax call and hide it in ajax callback by removing/adding d-none class.
+        // If spinner element id is provided, get it by id and show it before ajax call and hide it in ajax callback by removing/adding d-none class.
         if (!empty($settings['spinnerId'])) {
             $js .= "var spinner = document.getElementById(\"" . $settings['spinnerId'] . "\"); if (spinner) {spinner.classList.remove(\"d-none\");} ";
             $js .= "function hideSpinner() {if (spinner) {spinner.classList.add(\"d-none\");}} ";
