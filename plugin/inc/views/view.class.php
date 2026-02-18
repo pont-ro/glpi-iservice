@@ -1086,7 +1086,7 @@ class View extends \CommonGLPI
     {
         $js  = 'event.preventDefault(); ';
         $js .= 'var form=$(this).closest("form"); ';
-        $js .= 'var data=form.serializeArray(); console.log(data);';
+        $js .= 'var data=form.serializeArray();';
 
         // Extract item IDs from the form data based on $settings['massParams] = ['ids' => 'ticket'].
         // Here ids is the param that will be concatenated to the url, and ticket is the data to get from form data 'item[ticket][123]'.
@@ -1100,7 +1100,7 @@ class View extends \CommonGLPI
         }
 
         // We need to send the IDs as a comma separated string in the URL. $settings['url].
-        $js .= 'var url = "' . $settings['url'] . '&ids=" + itemIds.join(","); console.log(url);';
+        $js .= 'var url = "' . $settings['url'] . '&ids=" + itemIds.join(",");';
         $js .= "ajaxCall(url, \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message); hideSpinner();} else {window.location.reload();}});";
 
         return $js;

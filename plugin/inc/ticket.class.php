@@ -2622,14 +2622,12 @@ class PluginIserviceTicket extends Ticket
             return _t('No tickets selected to close!');
         }
 
-        $ids = explode(',', $ids);
-
-        // Order the IDs to close the tickets starting with the oldest one.
-        asort($ids);
+        $query                     = "SELECT id from glpi_plugin_iservice_tickets WHERE id IN ($ids) ORDER BY effective_date_field ASC";
+        $idsOrderedByEffectiveDate = PluginIserviceDB::getQueryResult($query);
 
         $ticket              = new PluginIserviceTicket();
         $closeAttemptResults = [];
-        foreach ($ids as $ticketId) {
+        foreach (array_keys($idsOrderedByEffectiveDate) as $ticketId) {
             if ($ticket->getFromDB($ticketId)
                 && !$ticket->isClosed()
                 && $ticket->update(
