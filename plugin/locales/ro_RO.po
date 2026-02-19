@@ -1279,8 +1279,8 @@ msgstr "Cod Mat."
 msgid "Global read counter client"
 msgstr "Citire globală client"
 
-msgid "The ticket can not be closed because counters are lower than on the last closed ticket: "
-msgstr "Tichetul nu poate fi închis deoarece contoarele sunt mai mici decât pe ultimul tichet închis: "
+msgid "The ticket (%s) can not be closed because counters are lower than on the last closed ticket: (%s)!"
+msgstr "Tichetul (%s) nu poate fi închis deoarece contoarele sunt mai mici decât pe ultimul tichet închis: (%s)!"
 
 # Vehicle management translations
 msgid "Vehicle"
@@ -1650,6 +1650,27 @@ msgstr "Nu are aparate"
 
 msgid "Has only deleted printers"
 msgstr "Are numai aparate șterse"
+
+msgid "Close resolved ticket"
+msgstr "Închidere ticket soluționat"
+
+msgid "No tickets selected to close!"
+msgstr "Nu s-au selectat tichete pentru închidere!"
+
+msgid "The following tickets were closed: "
+msgstr "Următoarele tichete au fost închise: "
+
+msgid "Cannot close the following tickets: "
+msgstr "Nu se pot închide următoarele tichete: "
+
+msgid "The ticket (%s) cannot be closed because there is an open ticket with an earlier effective date (%s)!"
+msgstr "Tichetul (%s) nu poate fi închis deoarece există un tichet deschis cu data efectivă mai mică (%s)!"
+
+msgid "The ticket (%s) cannot be closed without an installed cartridge!"
+msgstr "Tichetul (%s) de înlocuire cartuș nu poate fi închis fără cartuș instalat!"
+
+msgid "The ticket (%s) cannot be closed because it has an effective date earlier than the last closed ticket (%s)!"
+msgstr "Tichetul (%s) nu poate fi închis deoarece are data efectivă mai mică decât ultimul tichet închis (%s)!"
 
 #, fuzzy
 #~| msgid "Pending emails"

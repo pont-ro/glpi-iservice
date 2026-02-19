@@ -314,34 +314,63 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
     $first_open_ticket_id = PluginIserviceTicket::getFirstIdForItemWithInput($item, true);
 
     $first_open_ticket = new PluginIserviceTicket();
-    if ($first_open_ticket->getFromDB($first_open_ticket_id) && $first_open_ticket->customfields->fields['effective_date_field'] <= $item->input['effective_date_field']) {
-        if ($first_open_ticket_id > 0 && ($item->isNewID($item->getID()) || $first_open_ticket_id < $item->getID())) {
-            $can_close = false;
-            Session::addMessageAfterRedirect("Tichetul nu poate fi închis deoarece există un tichet deschis cu data efectivă mai mică (<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$first_open_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' target='_blank'>$first_open_ticket_id</a>)!", true, WARNING);
-        }
-    }
+    $current_ticket    = new PluginIserviceTicket();
+    $current_ticket_id = $item->getID();
+    $effectiveDate     = $item->input['effective_date_field'] ?? ($current_ticket->getFromDB($item->getID()) ? $current_ticket->customfields->fields['effective_date_field'] : null);
 
-    // Do not allow to close a ticket if is a toner replacement ticket and no cartridges are installed.
-    $installed_cartridges = PluginIserviceTicket::getTicketInstalledCartridgeIds($item);
-    if (empty($installed_cartridges) && preg_match("/(replacement|inlocui|înlocui)/i", $item->input['content'])) {
+    if (empty($effectiveDate)) {
+        Session::addMessageAfterRedirect("Tichetul " . $item->getID() . " nu poate fi închis deoarece nu are data efectivă setată!", true, WARNING);
         $can_close = false;
-        Session::addMessageAfterRedirect("Tichetul de înlocuire cartuș nu poate fi închis fară cartuș instalat!", true, ERROR);
-    }
-
-    // Do not allow to close a ticket if it has older effective date then the last closed ticket.
-    $last_closed_ticket_id = PluginIserviceTicket::getLastIdForItemWithInput($item, false);
-    $last_closed_ticket    = new PluginIserviceTicket();
-    if ($last_closed_ticket->getFromDB($last_closed_ticket_id)) {
-        if ($last_closed_ticket->customfields->fields['effective_date_field'] >= $item->input['effective_date_field']) {
-            $can_close = false;
-            Session::addMessageAfterRedirect("Tichetul nu poate fi închis deoarece are data efectivă mai mică decât ultimul tichet închis (<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id&mode=" . PluginIserviceTicket::MODE_CLOSE . "' target='_blank'>$last_closed_ticket_id</a>)!", true, WARNING);
+    } else {
+        if ($first_open_ticket->getFromDB($first_open_ticket_id) && $first_open_ticket->customfields->fields['effective_date_field'] <= $effectiveDate) {
+            if ($first_open_ticket_id > 0 && ($item->isNewID($current_ticket_id) || $first_open_ticket_id < $current_ticket_id)) {
+                $can_close = false;
+                Session::addMessageAfterRedirect(
+                    sprintf(
+                        _t('The ticket (%s) cannot be closed because there is an open ticket with an earlier effective date (%s)!'),
+                        "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$current_ticket_id target='_blank'>$current_ticket_id</a>",
+                        "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$first_open_ticket_id target='_blank'>$first_open_ticket_id</a>"
+                    ), true, WARNING
+                );
+            }
         }
 
-        if (($last_closed_ticket->customfields->fields['total2_black_field'] ?? 0) > ($item->input['total2_black_field'] ?? 0)
-            || ($last_closed_ticket->customfields->fields['total2_color_field'] ?? 0) > ($item->input['total2_color_field'] ?? 0)
-        ) {
+        // Do not allow to close a ticket if is a toner replacement ticket and no cartridges are installed.
+        $installed_cartridges = PluginIserviceTicket::getTicketInstalledCartridgeIds($item);
+        if (empty($installed_cartridges) && preg_match("/(replacement|inlocui|înlocui)/i", $item->input['content'])) {
             $can_close = false;
-            Session::addMessageAfterRedirect(_t('The ticket can not be closed because counters are lower than on the last closed ticket: ') . "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id' target='_blank'>$last_closed_ticket_id</a>!", true, WARNING);
+            Session::addMessageAfterRedirect(sprintf(_t("The ticket (%s) cannot be closed without an installed cartridge!"), $current_ticket_id), true, ERROR);
+        }
+
+        // Do not allow to close a ticket if it has older effective date then the last closed ticket.
+        $last_closed_ticket_id = PluginIserviceTicket::getLastIdForItemWithInput($item, false);
+        $last_closed_ticket    = new PluginIserviceTicket();
+        if ($last_closed_ticket->getFromDB($last_closed_ticket_id)) {
+            if ($last_closed_ticket->customfields->fields['effective_date_field'] >= $effectiveDate) {
+                $can_close = false;
+                Session::addMessageAfterRedirect(
+                    sprintf(
+                        _t("The ticket (%s) cannot be closed because it has an effective date earlier than the last closed ticket (%s)!"),
+                        "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$current_ticket_id target='_blank'>$current_ticket_id</a>",
+                        "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id target='_blank'>$last_closed_ticket_id</a>"
+                    ), true, WARNING
+                );
+            }
+
+            $total2_black_field = $item->input['total2_black_field'] ?? ($current_ticket->getFromDB($item->getID()) ? $current_ticket->customfields->fields['total2_black_field'] : 0);
+            $total2_color_field = $item->input['total2_color_field'] ?? ($current_ticket->getFromDB($item->getID()) ? $current_ticket->customfields->fields['total2_color_field'] : 0);
+            if (($last_closed_ticket->customfields->fields['total2_black_field'] ?? 0) > $total2_black_field
+                || ($last_closed_ticket->customfields->fields['total2_color_field'] ?? 0) > $total2_color_field
+            ) {
+                $can_close = false;
+                Session::addMessageAfterRedirect(
+                    sprintf(
+                        _t('The ticket (%s) can not be closed because counters are lower than on the last closed ticket: (%s)!'),
+                        "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$current_ticket_id target='_blank'>$current_ticket_id</a>",
+                        "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/ticket.form.php?id=$last_closed_ticket_id' target='_blank'>$last_closed_ticket_id</a>!"
+                    ), true, WARNING
+                );
+            }
         }
     }
 
