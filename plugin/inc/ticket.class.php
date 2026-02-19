@@ -2622,7 +2622,7 @@ class PluginIserviceTicket extends Ticket
             return _t('No tickets selected to close!');
         }
 
-        $query                     = "SELECT id from glpi_plugin_iservice_tickets WHERE id IN ($ids) ORDER BY effective_date_field ASC";
+        $query                     = "SELECT items_id id from glpi_plugin_fields_ticketticketcustomfields WHERE items_id IN ($ids) ORDER BY effective_date_field ASC";
         $idsOrderedByEffectiveDate = PluginIserviceDB::getQueryResult($query);
 
         $ticket              = new PluginIserviceTicket();
