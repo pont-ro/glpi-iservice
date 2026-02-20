@@ -2630,6 +2630,7 @@ class PluginIserviceTicket extends Ticket
         foreach (array_keys($idsOrderedByEffectiveDate) as $ticketId) {
             if ($ticket->getFromDB($ticketId)
                 && !$ticket->isClosed()
+                && $ticket->isCloseable()
                 && $ticket->update(
                     [
                         PluginIserviceTicket::getIndexName() => $ticketId,
@@ -2640,6 +2641,10 @@ class PluginIserviceTicket extends Ticket
             ) {
                 $closeAttemptResults['success'][] = $ticketId;
             } else {
+                if (!empty($ticket->ticketNotCloseableReasons)) { // This attribute is set in isCloseable method.
+                    Session::addMessageAfterRedirect(sprintf(_t("Ticket (%s) cannot be closed for the following reasons: ") . implode(', ', $ticket->ticketNotCloseableReasons), $ticketId), true, ERROR);
+                }
+
                 $closeAttemptResults['fail'][] = $ticketId;
             }
         }

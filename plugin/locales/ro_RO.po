@@ -1672,6 +1672,9 @@ msgstr "Tichetul (%s) de înlocuire cartuș nu poate fi închis fără cartuș i
 msgid "The ticket (%s) cannot be closed because it has an effective date earlier than the last closed ticket (%s)!"
 msgstr "Tichetul (%s) nu poate fi închis deoarece are data efectivă mai mică decât ultimul tichet închis (%s)!"
 
+msgid "Ticket (%s) cannot be closed for the following reasons: "
+msgstr "Tichetul (%s) nu poate fi închis din următoarele motive: "
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
