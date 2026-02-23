@@ -69,7 +69,7 @@ class Cartridges extends View
             'delete_cartridge' => [
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/bin_closed.png',
                 'title' => _t('Delete cartridge'),
-                'visible' => $_SESSION['glpiID'] == 8 && $row_data['ticket_id'] == null,
+                'visible' => $_SESSION['glpiID'] == IserviceToolBox::getExpertLineId() && $row_data['ticket_id'] == null,
                 'onclick' => "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageCartridge.php?id=$row_data[id]&operation=delete_cartridge\", \"Sigur vreți să ștergeți cartușul $row_data[id]?\", function(message) {if(message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {alert(\"" . _t('Cartridge deleted from database') . "\");\$(\"#row_actions_$row_data[id]\").closest(\"tr\").remove();}});",
             ],
             /**

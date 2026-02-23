@@ -2628,7 +2628,10 @@ class PluginIserviceTicket extends Ticket
         $ticket              = new PluginIserviceTicket();
         $closeAttemptResults = [];
         foreach (array_keys($idsOrderedByEffectiveDate) as $ticketId) {
-            if ($ticket->getFromDB($ticketId)
+            $ticketExists = $ticket->getFromDB($ticketId);
+            $ticket->setTicketUsersFields($ticketId);
+
+            if ($ticketExists
                 && !$ticket->isClosed()
                 && $ticket->isCloseable()
                 && $ticket->update(
