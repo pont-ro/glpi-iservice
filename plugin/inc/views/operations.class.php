@@ -60,7 +60,7 @@ class Operations extends View
         if ($ticketInSolvedStatus) {
             $actions['quickCloseReOpen']['onclick'] = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?ids=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=CloseTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.reload();}});";
         } elseif ($ticketInClosedStatus) {
-            $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTikcetIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
+            $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
             $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
             if (count($newer_closed_ticket_ids)) {
                 $confirm = count($newer_closed_ticket_ids) . _t(' closed tickets will be reopened. Are you sure you want to continue?');
