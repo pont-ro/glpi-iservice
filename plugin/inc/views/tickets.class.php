@@ -112,7 +112,7 @@ class Tickets extends View
             'close' => [
                 'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
-                'title' => _t('Close ticket'),
+                'title' => _t('Details'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE) || $row_data['users_id_recipient'] === $_SESSION['glpiID'],
             ],
             'ticketreport' => [

@@ -40,13 +40,13 @@ class Operations extends View
             'quickCloseReOpen' => [
                 'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_lightning.png',
-                'title' => $ticketInSolvedStatus ? _t('Close resolved ticket') : ($ticketInClosedStatus ? _t('Reopen ticket') : _t('Close ticket')),
+                'title' => $ticketInSolvedStatus ? _t('Close resolved ticket') : ($ticketInClosedStatus ? _t('Reopen ticket') : _t('Details')),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, UPDATE),
             ],
             'details' => [
                 'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
-                'title' => $ticketInSolvedStatus ? _t('Details') : _t('Close ticket'),
+                'title' => _t('Details'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
             ],
             'ticketreport' => [
