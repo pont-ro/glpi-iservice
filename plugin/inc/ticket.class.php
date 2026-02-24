@@ -370,7 +370,7 @@ class PluginIserviceTicket extends Ticket
         return 0;
     }
 
-    public static function getNewerClosedTikcetIds($ticket_id, $effective_date, $supplier_id, $printer_id): array
+    public static function getNewerClosedTicketIds($ticket_id, $effective_date, $supplier_id, $printer_id): array
     {
         return self::getAllIdsForPrinterOrSupplier($supplier_id, $printer_id, 'desc', false, "and (t.effective_date_field > '$effective_date' or (t.effective_date_field = '$effective_date' and t.id > $ticket_id))");
     }
@@ -2062,7 +2062,7 @@ class PluginIserviceTicket extends Ticket
         $closed  = $this->isClosed();
         if ($ID > 0) {
             if ($closed && IserviceToolBox::inProfileArray(['super-admin', 'admin', 'tehnician'])) {
-                $newer_closed_ticket_ids = self::getNewerClosedTikcetIds($this->getID(), $this->customfields->fields['effective_date_field'], $this->getPartnerId(), $this->getPrinterId());
+                $newer_closed_ticket_ids = self::getNewerClosedTicketIds($this->getID(), $this->customfields->fields['effective_date_field'], $this->getPartnerId(), $this->getPrinterId());
                 if (count($newer_closed_ticket_ids)) {
                     $confirm = count($newer_closed_ticket_ids) . _t(' closed tickets will be reopened. Are you sure you want to continue?');
                 } else {
@@ -2625,9 +2625,9 @@ class PluginIserviceTicket extends Ticket
         $query                     = "SELECT items_id id from glpi_plugin_fields_ticketticketcustomfields WHERE items_id IN ($ids) ORDER BY effective_date_field ASC";
         $idsOrderedByEffectiveDate = PluginIserviceDB::getQueryResult($query);
 
-        $ticket              = new PluginIserviceTicket();
         $closeAttemptResults = [];
         foreach (array_keys($idsOrderedByEffectiveDate) as $ticketId) {
+            $ticket = new PluginIserviceTicket();
             $ticketExists = $ticket->getFromDB($ticketId);
             $ticket->setTicketUsersFields($ticketId);
 
@@ -2648,6 +2648,10 @@ class PluginIserviceTicket extends Ticket
                     Session::addMessageAfterRedirect(sprintf(_t("Ticket (%s) cannot be closed for the following reasons: ") . implode(', ', $ticket->ticketNotCloseableReasons), $ticketId), true, ERROR);
                 }
 
+                if ($ticket->isClosed()) {
+                    Session::addMessageAfterRedirect(sprintf(_t("Ticket (%s) is already closed!"), $ticketId), true, WARNING);
+                }
+
                 $closeAttemptResults['fail'][] = $ticketId;
             }
         }
@@ -2662,6 +2666,25 @@ class PluginIserviceTicket extends Ticket
 
         die(IserviceToolBox::RESPONSE_OK);
 
+    }
+
+    public static function ajaxReOpenTickets()
+    {
+        $id = IserviceToolBox::getInputVariable('id', '');
+
+        if (empty($id)) {
+            return _t('No ticket selected to reopen!');
+        }
+
+        $ticket = new PluginIserviceTicket();
+
+        if ($ticket->getFromDB($id) && $ticket->isClosed() && $ticket->update(['status' => Ticket::SOLVED]) && $ticket->getFromDB($id) && !$ticket->isClosed()) {
+            Session::addMessageAfterRedirect(sprintf(_t('Ticket (%s) was reopened!'), $id), false, INFO);
+        } else {
+            Session::addMessageAfterRedirect(sprintf(_t('Cannot reopen ticket (%s)!'), $id), false, ERROR);
+        }
+
+        die(IserviceToolBox::RESPONSE_OK);
     }
 
 }

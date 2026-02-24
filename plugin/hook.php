@@ -276,7 +276,7 @@ function plugin_iservice_ticket_reopen_newer_tickets(Ticket $parentItem)
 
     global $CFG_PLUGIN_ISERVICE;
 
-    $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTikcetIds(
+    $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds(
         $item->getID(),
         $item->customfields->fields['effective_date_field'],
         IserviceToolBox::getInputVariable('suppliers_id'),

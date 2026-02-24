@@ -27,7 +27,8 @@ class Operations extends View
     {
         global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
-        $tickInSolvedStatus = !empty($row_data['status']) && $row_data['status'] == Ticket::SOLVED;
+        $ticketInSolvedStatus = !empty($row_data['status']) && $row_data['status'] == Ticket::SOLVED;
+        $ticketInClosedStatus = !empty($row_data['status']) && in_array($row_data['status'], Ticket::getClosedStatusArray());
 
         $actions = [
             'add' => [
@@ -36,16 +37,16 @@ class Operations extends View
                 'title' => __('New ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATENORMAL, UPDATE),
             ],
-            'quickClose' => [
+            'quickCloseReOpen' => [
                 'link' => 'ticket.form.php?mode=' . PluginIserviceTicket::MODE_CREATEQUICK . "&items_id[Printer][0]=$row_data[printer_id]&_suppliers_id_assign=$row_data[supplier_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_lightning.png',
-                'title' => $tickInSolvedStatus ? _t('Close resolved ticket') : _t('Details'),
+                'title' => $ticketInSolvedStatus ? _t('Close resolved ticket') : ($ticketInClosedStatus ? _t('Reopen ticket') : _t('Close ticket')),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CREATEQUICK, UPDATE),
             ],
             'details' => [
                 'link' => "ticket.form.php?id=$row_data[ticket_id]",
                 'icon' => $CFG_GLPI['root_doc'] . '/plugins/iservice/pics/app_check.png',
-                'title' => $tickInSolvedStatus ? _t('Details') : _t('Close ticket'),
+                'title' => $ticketInSolvedStatus ? _t('Details') : _t('Close ticket'),
                 'visible' => Session::haveRight('plugin_iservice_ticket_' . PluginIserviceTicket::MODE_CLOSE, UPDATE),
             ],
             'ticketreport' => [
@@ -56,10 +57,20 @@ class Operations extends View
             ],
         ];
 
-        if ($tickInSolvedStatus) {
-            $actions['quickClose']['onclick'] = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?ids=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=CloseTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.reload();}});";
+        if ($ticketInSolvedStatus) {
+            $actions['quickCloseReOpen']['onclick'] = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?ids=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=CloseTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.reload();}});";
+        } elseif ($ticketInClosedStatus) {
+            $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTikcetIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
+            $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
+            if (count($newer_closed_ticket_ids)) {
+                $confirm = count($newer_closed_ticket_ids) . _t(' closed tickets will be reopened. Are you sure you want to continue?');
+            } else {
+                $confirm = _t('Are you sure you want to reopen the ticket?');
+            }
+
+            $actions['quickCloseReOpen']['onclick'] = "if (confirm(\"$confirm\")) { ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?id=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=ReOpenTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.reload();}});}";
         } else {
-            $actions['quickClose']['link'] = "ticket.form.php?id=$row_data[ticket_id]";
+            $actions['quickCloseReOpen']['link'] = "ticket.form.php?id=$row_data[ticket_id]";
         }
 
         $actionIcons      = '';

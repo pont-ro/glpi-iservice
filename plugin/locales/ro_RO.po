@@ -1675,6 +1675,15 @@ msgstr "Tichetul (%s) nu poate fi închis deoarece are data efectivă mai mică 
 msgid "Ticket (%s) cannot be closed for the following reasons: "
 msgstr "Tichetul (%s) nu poate fi închis din următoarele motive: "
 
+msgid "Ticket (%s) is already closed!"
+msgstr "Tichetul (%s) este deja închis!"
+
+msgid "Ticket (%s) was reopened!"
+msgstr "Tichetul (%s) a fost redeschis!"
+
+msgid "Cannot reopen ticket (%s)!"
+msgstr "Nu se poate redeschide tichetul (%s)!"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
