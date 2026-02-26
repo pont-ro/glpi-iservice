@@ -313,10 +313,11 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
     // Do not allow to close a ticket if there is an older opened ticket.
     $first_open_ticket_id = PluginIserviceTicket::getFirstIdForItemWithInput($item, true);
 
-    $first_open_ticket = new PluginIserviceTicket();
-    $current_ticket    = new PluginIserviceTicket();
-    $current_ticket_id = $item->getID();
-    $effectiveDate     = $item->input['effective_date_field'] ?? ($current_ticket->getFromDB($item->getID()) ? $current_ticket->customfields->fields['effective_date_field'] : null);
+    $first_open_ticket        = new PluginIserviceTicket();
+    $current_ticket           = new PluginIserviceTicket();
+    $current_ticket_id        = $item->getID();
+    $is_current_ticket_loaded = $current_ticket->getFromDB($current_ticket_id);
+    $effectiveDate            = $item->input['effective_date_field'] ?? ($is_current_ticket_loaded ? $current_ticket->customfields->fields['effective_date_field'] : null);
 
     if (empty($effectiveDate)) {
         Session::addMessageAfterRedirect("Tichetul " . $item->getID() . " nu poate fi închis deoarece nu are data efectivă setată!", true, WARNING);
@@ -357,8 +358,8 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
                 );
             }
 
-            $total2_black_field = $item->input['total2_black_field'] ?? ($current_ticket->getFromDB($item->getID()) ? $current_ticket->customfields->fields['total2_black_field'] : 0);
-            $total2_color_field = $item->input['total2_color_field'] ?? ($current_ticket->getFromDB($item->getID()) ? $current_ticket->customfields->fields['total2_color_field'] : 0);
+            $total2_black_field = $item->input['total2_black_field'] ?? ($is_current_ticket_loaded ? $current_ticket->customfields->fields['total2_black_field'] : 0) ?? 0;
+            $total2_color_field = $item->input['total2_color_field'] ?? ($is_current_ticket_loaded ? $current_ticket->customfields->fields['total2_color_field'] : 0) ?? 0;
             if (($last_closed_ticket->customfields->fields['total2_black_field'] ?? 0) > $total2_black_field
                 || ($last_closed_ticket->customfields->fields['total2_color_field'] ?? 0) > $total2_color_field
             ) {
