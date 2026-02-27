@@ -312,16 +312,48 @@ form .form-control {
 
 .aa-forms .dropdown_wrapper {
     width: 100%;
+    overflow: hidden;
 }
 
 .aa-forms .btn-group {
     width: 100%;
+    display: flex !important;
+    flex-wrap: nowrap !important;
 }
 
-.aa-forms .select2 {
+.aa-forms .btn-group .select2-container {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    width: auto !important;
+}
+
+.aa-forms .btn-group .btn,
+.aa-forms .btn-group .dropdown_tooltip {
+    flex: 0 0 auto !important;
+}
+
+/* Select2 containers NOT inside a btn-group should be full width */
+.aa-forms .dropdown_wrapper > .select2-container {
     width: 100% !important;
+    display: block !important;
 }
 
 .aa-forms .select2-selection {
-    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.aa-forms .select2-selection__rendered {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.aa-forms td {
+    max-width: 25vw !important;
+}
+
+.aa-forms > td > table.two-column {
+    table-layout: fixed;
+    width: 100%;
 }
