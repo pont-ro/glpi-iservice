@@ -58,7 +58,7 @@ class Operations extends View
         ];
 
         if ($ticketInSolvedStatus) {
-            $actions['quickCloseReOpen']['onclick'] = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?ids=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=CloseTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.reload();}});";
+            $actions['quickCloseReOpen']['onclick'] = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?ids=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=CloseTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.replace(window.location.pathname + window.location.search);}});";
         } elseif ($ticketInClosedStatus) {
             $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
             $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
@@ -68,7 +68,7 @@ class Operations extends View
                 $confirm = _t('Are you sure you want to reopen the ticket?');
             }
 
-            $actions['quickCloseReOpen']['onclick'] = "if (confirm(\"$confirm\")) { ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?id=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=ReOpenTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.reload();}});}";
+            $actions['quickCloseReOpen']['onclick'] = "if (confirm(\"$confirm\")) { ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?id=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=ReOpenTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.replace(window.location.pathname + window.location.search);}});}";
         } else {
             $actions['quickCloseReOpen']['link'] = "ticket.form.php?id=$row_data[ticket_id]";
         }

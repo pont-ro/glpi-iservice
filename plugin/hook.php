@@ -338,7 +338,8 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
 
         // Do not allow to close a ticket if is a toner replacement ticket and no cartridges are installed.
         $installed_cartridges = PluginIserviceTicket::getTicketInstalledCartridgeIds($item);
-        if (empty($installed_cartridges) && preg_match("/(replacement|inlocui|înlocui)/i", $item->input['content'])) {
+        $content              = $item->input['content'] ?? ($is_current_ticket_loaded ? $current_ticket->fields['content'] : '');
+        if (empty($installed_cartridges) && preg_match("/(replacement|inlocui|înlocui)/i", $content)) {
             $can_close = false;
             Session::addMessageAfterRedirect(sprintf(_t("The ticket (%s) cannot be closed without an installed cartridge!"), $current_ticket_id), true, ERROR);
         }

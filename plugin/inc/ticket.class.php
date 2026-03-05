@@ -2249,7 +2249,7 @@ class PluginIserviceTicket extends Ticket
             $ticket->fields = $item->input;
         } else {
             $operation      = 'uninstallWithType';
-            $ticket->fields = PluginIserviceTicket::preProcessPostData($_POST);
+            $ticket->fields = !empty($_POST) ? PluginIserviceTicket::preProcessPostData($_POST) : $ticket->fields;
         }
 
         $cartridge_ticket = new PluginIserviceCartridge_Ticket();

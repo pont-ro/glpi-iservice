@@ -1101,7 +1101,7 @@ class View extends \CommonGLPI
 
         // We need to send the IDs as a comma separated string in the URL. $settings['url].
         $js .= 'var url = "' . $settings['url'] . '&ids=" + itemIds.join(",");';
-        $js .= "ajaxCall(url, \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message); hideSpinner();} else {window.location.reload();}});";
+        $js .= "ajaxCall(url, \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message); hideSpinner();} else {window.location.replace(window.location.pathname + window.location.search);}});";
 
         return $js;
     }
