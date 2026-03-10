@@ -120,20 +120,19 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
             // Views::getView('PrinterCountersV3')->refreshCachedData();
         }
 
-        $cartridges = PluginIserviceDB::getQueryResult(
-            "
+        $query = "
             SELECT cpc.*, ue.email as tech_email, pm.name as printer_model_name, p.serial as printer_serial_number
             FROM glpi_plugin_iservice_cachetable_printercounters cpc
             JOIN glpi_printers p ON p.id = cpc.printer_id
             JOIN glpi_printermodels pm ON pm.id = p.printermodels_id
             JOIN glpi_useremails ue ON ue.users_id = cpc.tech_id
             WHERE " . PluginIservicePrinter::getCMCondition('cpc.cm_field', 'cpc.printer_types_id', 'cpc.printer_states_id') . "
-              AND cpc.min_estimate_percentage <= 0
               AND cpc.consumable_type = 'cartridge'
               AND cpc.min_days_to_visit <= 20
              ORDER BY cpc.min_days_to_visit, cpc.usage_address_field ASC
-            "
-        );
+            ";
+
+        $cartridges = PluginIserviceDB::getQueryResult($query);
 
         if (empty($cartridges)) {
             $task->log("No cartridges returned\n");
