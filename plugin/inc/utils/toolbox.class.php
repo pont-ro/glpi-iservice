@@ -560,7 +560,7 @@ class ToolBox
         return trim($text);
     }
 
-    public static function sendMail(string|array $to, string $subject, string $body, string $from = null, string $fromName = null, bool $html = true): bool
+    public static function sendMail(string|array $to, string $subject, string $body, string|array $attachments = null, string $from = null, string $fromName = null, bool $html = true): bool|string
     {
         global $CFG_GLPI;
 
@@ -573,6 +573,12 @@ class ToolBox
         $toAddresses = is_array($to) ? $to : preg_split('/[,;]/', $to);
         foreach ($toAddresses as $toAddress) {
             $mailer->AddAddress(trim($toAddress));
+        }
+
+        if (!empty($attachments)) {
+            foreach (is_array($attachments) ? $attachments : [$attachments] as $attachmentName => $attachment) {
+                $mailer->AddAttachment($attachment, is_string($attachmentName) ? $attachmentName : '');
+            };
         }
 
         $mailer->Subject = str_contains($subject, '[iService]') ? $subject : "[iService] $subject";
