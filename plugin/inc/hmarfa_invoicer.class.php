@@ -840,7 +840,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         if ($buttons['update+import']) {
             if (true === ($emailSendResult = self::sendEmailAfterImport($invoiceData, $mailData, $exportFileData['pdf_attachments'][0] ?? null))) {
                 if ($originalFileName = $exportFileData['pdf_attachments'][0] ?? null) {
-                    $newFileName = preg_replace('/\.pdf$/', '', $originalFileName) . '_MFA.pdf';
+                    $newFileName = preg_replace('/\.pdf$/', '', $originalFileName) . '_MFA' . $_SESSION['glpifriendlyname'][0] . '.pdf';
                     if (!rename($originalFileName, $newFileName)) {
                         $result['errors']['csv'] = "Eroare la redenumirea facturii de la $originalFileName la $newFileName";
                     }
@@ -918,10 +918,19 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
     protected static function sendEmailAfterImport(array $invoiceData, array $mailData, string $attachment): bool|string
     {
-        if (IserviceToolBox::sendMail($invoiceData['email_for_invoices_field'], $mailData['subject'], $mailData['body'], $attachment, null, null, false) === true) {
+        if (true === ($mailSendResult = IserviceToolBox::sendMail(
+            $invoiceData['email_for_invoices_field'],
+            $mailData['subject'],
+            $mailData['body'],
+            $attachment,
+            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.from'),
+            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.name'),
+            false,
+            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.user'),
+            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.pass')))) {
             return true;
         } else {
-            return "Eroare la trimiterea emailului către {$invoiceData['email_for_invoices_field']}<br>Subiect: $mailData[subject]<br>Conținut: $mailData[body]";
+            return "Eroare la trimiterea emailului către {$invoiceData['email_for_invoices_field']}\nSubiect: $mailData[subject]\nConținut: $mailData[body]\n\n\nEroare:$mailSendResult";
         }
     }
 

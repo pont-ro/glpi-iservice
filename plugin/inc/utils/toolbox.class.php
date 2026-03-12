@@ -560,11 +560,17 @@ class ToolBox
         return trim($text);
     }
 
-    public static function sendMail(string|array $to, string $subject, string $body, string|array $attachments = null, string $from = null, string $fromName = null, bool $html = true): bool|string
+    public static function sendMail(string|array $to, string $subject, string $body, string|array $attachments = null, string $from = null, string $fromName = null, bool $html = true, string $userName = null, string $password = null): bool|string
     {
         global $CFG_GLPI;
 
         $mailer = new \GLPIMailer();
+        if ($userName) {
+            $mailer->Username = $userName;
+        }
+        if ($password) {
+            $mailer->Password = $password;
+        }
 
         $mailer->AddCustomHeader("Auto-Submitted: auto-generated");
         $mailer->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
