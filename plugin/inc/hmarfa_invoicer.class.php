@@ -593,10 +593,18 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
 
         $pdfAttachmentPath = substr($exportFileData['path'], 0, strrpos(str_replace('\\', '/', $exportFileData['path']), '/')) . '/' . date('Y') . '/02_Facturi_electronice';
-        $pdfAttachmentPattern = "$pdfAttachmentPath/*" . str_replace(' ', '_', $items['first']['supplier_hmarfa_name']) . '.pdf';
+        $pdfAttachmentPatternBase = str_replace(' ', '_', $items['first']['supplier_hmarfa_name']);
+        $pdfAttachmentPattern = "$pdfAttachmentPath/*$pdfAttachmentPatternBase*.pdf";
 
-        $exportFileData['pdf_attachment_pattern'] = $pdfAttachmentPattern;
-        $exportFileData['pdf_attachments'] = glob($pdfAttachmentPattern);
+        $exportFileData['pdf_attachment_pattern'] = "*$pdfAttachmentPatternBase*.pdf";
+        $exportFileData['pdf_attachments'] = array_filter(
+            glob($pdfAttachmentPattern),
+            function ($fileName) use ($pdfAttachmentPatternBase) {
+                $base = explode($pdfAttachmentPatternBase, $fileName)[1] ?? '';
+                $base2 = substr($base, strrpos($base, '_', -1) + 1);
+                return !preg_match('/^(wp|mf)/i', $base2);
+            }
+        );
 
         return $exportFileData;
     }
@@ -1002,19 +1010,12 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
 
         $frontendData['import_and_update_disabled_reason'] = $frontendData['import_disabled_reason'];
-        switch(count($exportFileData['pdf_attachments'])) {
-            case 0:
-                $frontendData['attachment_pdf'] = false;
-                $frontendData['import_and_update_disabled_reason'] .=
-                    (!empty($frontendData['import_and_update_disabled_reason']) ? "\n" : '')
-                    . "Generați factura întâi cu numele $exportFileData[pdf_attachment_pattern]!";
-                break;
-            case 1:
-                $frontendData['attachment_pdf'] = $exportFileData['pdf_attachments'][0];
-                break;
-            default:
-                $frontendData['attachment_pdf'] = true;
-                break;
+
+        $frontendData['attachment_pdf'] = $exportFileData['pdf_attachments'];
+        if (empty($exportFileData['pdf_attachments'])) {
+            $frontendData['import_and_update_disabled_reason'] .=
+                (!empty($frontendData['import_and_update_disabled_reason']) ? "\n" : '')
+                . "Generați factura întâi cu numele $exportFileData[pdf_attachment_pattern]!";
         }
 
         return $frontendData;
@@ -1731,14 +1732,25 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "                    <input class='submit" . (empty($frontendData['import_disabled_reason']) ? '' : ' disabled') . "' name='update' style='color:red;' title='" . ($frontendData['import_disabled_reason'] ?: '') . "' type='submit' value='Update facturare' onclick='if ($(this).hasClass(\"disabled\")) { return false; }'/>";
         echo "                    <a id='send_mail_2' class='vsubmit' href='mailto:{$frontendData['invoiceData']['email_for_invoices_field']}?subject={$frontendData['mailData']['subject']}&body={$frontendData['mailData']['url_encoded_body']}' title='Trimite email către: {$frontendData['invoiceData']['email_for_invoices_field']}'>Trimite email</a>";
 
-        if ($frontendData['attachment_pdf'] === true) {
-            $updateAndImportCommand =  "document.getElementById(\"send_mail_2\").click();";
-            $tooltipExtra = "";
-        } elseif ($frontendData['attachment_pdf']) {
-            $updateAndImportCommand =  "";
-            $tooltipExtra = "și trimiteți email la {$frontendData['invoiceData']['email_for_invoices_field']}";
+        $disabled = '';
+        $tooltip = '';
+        $onClick = 'if ($(this).hasClass("disabled")) { return false; }';
+        switch (count($frontendData['attachment_pdf'])) {
+            case 0:
+                break;
+            case 1:
+                $tooltip = "ATENȚIE! Apăsând butonul\n - ștergeți fișierele csv\n - actualizați datele de facturare ale firmei\n - trimiteți email la {$frontendData['invoiceData']['email_for_invoices_field']}";
+                break;
+            default:
+                $onClick .= "document.getElementById(\"send_mail_2\").click();";
+                $tooltip = "ATENȚIE!\nApăsând butonul ștergeți fișierele csv\nAveți mai multe facturi emise pentru această firmă:\n" . implode("\n- ", $frontendData['attachment_pdf']);
+                break;
         }
-        echo "                    <input class='submit" . (empty($frontendData['import_and_update_disabled_reason']) ? '' : ' disabled') . "' name='update+import' style='color:red;' title='" . ($frontendData['import_and_update_disabled_reason'] ?: "ATENȚIE! Apăsând butonul ștergeți fișierele csv$tooltipExtra!'") . "' type='submit' value='Update + hMarfa import + email' onclick='if ($(this).hasClass(\"disabled\")) { return false; } $updateAndImportCommand'/>";
+        if (!empty($frontendData['import_and_update_disabled_reason'])) {
+            $disabled =  'disabled';
+            $tooltip = $frontendData['import_and_update_disabled_reason'];
+        }
+        echo "                    <input class='submit $disabled' name='update+import' style='color:red;' title='$tooltip' type='submit' value='Update + hMarfa import + email' onclick='$onClick'/>";
         echo "                </td>\n";
         echo "            </tr>\n";
         echo "            <tr><td><br></td></tr>\n";
