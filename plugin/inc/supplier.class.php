@@ -296,7 +296,7 @@ Expert Line incarca in sistemul e-factura toate facturile, in conditiile legii.
  
 O zi buna!
 Carmen Ionita
-Tel:0722 250 977
+Tel:0722250977
 
 www.expertline.ro";
                 break;

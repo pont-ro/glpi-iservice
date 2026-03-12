@@ -577,13 +577,13 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $exportFileData = array_merge(
             $exportFileData, IserviceToolBox::getInputVariables(
-                [
-                    'backup_path' => "$exportFileData[path]/BAK",
-                    'backup_year' => null,
-                    'backup_month' => null,
-                    'backup_name' => null,
-                ]
-            )
+            [
+                'backup_path'  => "$exportFileData[path]/BAK",
+                'backup_year'  => null,
+                'backup_month' => null,
+                'backup_name'  => null,
+            ]
+        )
         );
 
         foreach (['backup_path', 'dat_path'] as $pathKey) {
@@ -592,18 +592,20 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             }
         }
 
-        $pdfAttachmentPath = substr($exportFileData['path'], 0, strrpos(str_replace('\\', '/', $exportFileData['path']), '/')) . '/' . date('Y') . '/02_Facturi_electronice';
+        $pdfAttachmentPath        = substr($exportFileData['path'], 0, strrpos(str_replace('\\', '/', $exportFileData['path']), '/')) . '/' . date('Y') . '/02_Facturi_electronice';
         $pdfAttachmentPatternBase = str_replace(' ', '_', $items['first']['supplier_hmarfa_name']);
-        $pdfAttachmentPattern = "$pdfAttachmentPath/*$pdfAttachmentPatternBase*.pdf";
+        $pdfAttachmentPattern     = "$pdfAttachmentPath/*$pdfAttachmentPatternBase*.pdf";
 
         $exportFileData['pdf_attachment_pattern'] = "*$pdfAttachmentPatternBase*.pdf";
-        $exportFileData['pdf_attachments'] = array_filter(
-            glob($pdfAttachmentPattern),
-            function ($fileName) use ($pdfAttachmentPatternBase) {
-                $base = explode($pdfAttachmentPatternBase, $fileName)[1] ?? '';
-                $base2 = substr($base, strrpos($base, '_', -1) + 1);
-                return !preg_match('/^(wp|mf)/i', $base2);
-            }
+        $exportFileData['pdf_attachments']        = array_values(
+            array_filter(
+                glob($pdfAttachmentPattern),
+                function ($fileName) use ($pdfAttachmentPatternBase) {
+                    $base  = explode($pdfAttachmentPatternBase, $fileName)[1] ?? '';
+                    $base2 = substr($base, strrpos($base, '_', -1) + 1);
+                    return !preg_match('/^(wp|mf)/i', $base2);
+                }
+            )
         );
 
         return $exportFileData;
@@ -850,9 +852,10 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 if ($originalFileName = $exportFileData['pdf_attachments'][0] ?? '') {
                     $newFileName = preg_replace('/\.pdf$/', '', $originalFileName) . '_MFA' . $_SESSION['glpifriendlyname'][0] . '.pdf';
                     if (!rename($originalFileName, $newFileName)) {
-                        $result['errors']['csv'] = "Eroare la redenumirea facturii de la $originalFileName la $newFileName";
+                        $result['errors']['csv'] = "!!! Eroare la redenumirea facturii de la $originalFileName la $newFileName !!!\n\n";
                     }
                 }
+                $result['errors']['csv'] .= "Email trimis cu succes la $invoiceData[email_for_invoices_field]\nSubiect: $mailData[subject]\nConținut:$mailData[body]";
             } else {
                 $result['errors']['csv'] = $emailSendResult;
             }
