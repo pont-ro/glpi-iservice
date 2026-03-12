@@ -122,7 +122,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 $firstItemInfoCom->getFromDBforDevice('Printer', $itemId);
                 $firstItemSupplier = new PluginIserviceSupplier();
                 $firstItemSupplier->getFromDB($firstItemInfoCom->fields['suppliers_id']);
-                $firstItemSupplierHMarfaName = PluginIserviceDB::getQueryResult("select denum from hmarfa_firme where cod = '{$firstItemSupplier->customfields->fields['hmarfa_code_field']}'")[0]['denum'] ?? '';
+                $firstItemSupplierHMarfaName = PluginIserviceDB::getQueryResult("select initiale from hmarfa_firme where cod = '{$firstItemSupplier->customfields->fields['hmarfa_code_field']}'")[0]['initiale'] ?? '';
 
                 $result['first'] = [
                     'item' => $firstItem,
@@ -846,8 +846,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
 
         if ($buttons['update+import']) {
-            if (true === ($emailSendResult = self::sendEmailAfterImport($invoiceData, $mailData, $exportFileData['pdf_attachments'][0] ?? null))) {
-                if ($originalFileName = $exportFileData['pdf_attachments'][0] ?? null) {
+            if (true === ($emailSendResult = self::sendEmailAfterImport($invoiceData, $mailData, $exportFileData['pdf_attachments'][0] ?? ''))) {
+                if ($originalFileName = $exportFileData['pdf_attachments'][0] ?? '') {
                     $newFileName = preg_replace('/\.pdf$/', '', $originalFileName) . '_MFA' . $_SESSION['glpifriendlyname'][0] . '.pdf';
                     if (!rename($originalFileName, $newFileName)) {
                         $result['errors']['csv'] = "Eroare la redenumirea facturii de la $originalFileName la $newFileName";
