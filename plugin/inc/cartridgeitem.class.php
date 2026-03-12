@@ -370,7 +370,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         return $table;
     }
 
-    public static function getChangeablesForTicket($ticket, array $options = []): array|bool
+    public static function getChangeablesForTicket($ticket, array $options = []): array
     {
         if (!$ticket instanceof PluginIserviceTicket) {
             $ticket_id = (($ticket instanceof Ticket) && $ticket->getID() > 0) ? $ticket->getID() : intval($ticket);
@@ -453,7 +453,9 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $query .= "ORDER BY $options[order_by]";
         }
 
-        return PluginIserviceDB::getQueryResult($query, '_');
+        // Uncomment the following for significant speedup, for normal functioning, leave it commented
+        // return [];
+        return PluginIserviceDB::getQueryResult($query, '_') ?: [];
     }
 
     public static function getCartridgesDropdownOptions($ticket, $options = []): array

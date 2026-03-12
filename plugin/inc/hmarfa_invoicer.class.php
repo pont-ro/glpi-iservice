@@ -930,7 +930,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             PluginIserviceConfig::getConfigValue('hmarfa.export.mail.pass')))) {
             return true;
         } else {
-            return "Eroare la trimiterea emailului către {$invoiceData['email_for_invoices_field']}\nSubiect: $mailData[subject]\nConținut: $mailData[body]\n\n\nEroare:$mailSendResult";
+            return "Eroare la trimiterea emailului către {$invoiceData['email_for_invoices_field']}:$mailSendResult\n\nSubiect: $mailData[subject]\n\n\nConținut: $mailData[body]";
         }
     }
 
