@@ -1724,7 +1724,16 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         echo "            <tr><td>$frontendData[other_csv_line_warning]</td></tr>\n";
         echo "            <tr>\n";
         echo "                <td colspan='2'>\n";
-        echo "                    <input type='submit' class='submit' name='refresh' value='Actualizare'/>&nbsp;&nbsp;&nbsp;\n";
+        echo "                    <input type='submit' class='submit' name='refresh' value='Actualizare' onclick='localStorage.setItem(\"scrollPosition\", window.pageYOffset);'/>&nbsp;&nbsp;&nbsp;\n";
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var scrollPosition = localStorage.getItem('scrollPosition');
+                    if (scrollPosition !== null) {
+                        window.scrollTo(0, scrollPosition);
+                        localStorage.removeItem('scrollPosition');
+                    }
+                });
+              </script>\n";
         echo "                    <select onchange='$(\"[name=export_file_name_suffix]\").val($(this).val());$(\"[name=refresh]\").click();' style='width:22em;'>\n";
         foreach ($exportFileData['name_suffixes'] as $suffix) {
             echo "                  <option name='$suffix' " . ($suffix === $exportFileData['name_suffix'] ? 'selected' : '') . ">$suffix</option>\n";

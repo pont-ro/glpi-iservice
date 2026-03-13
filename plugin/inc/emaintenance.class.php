@@ -131,8 +131,8 @@ class PluginIserviceEmaintenance extends MailCollector
 
         $data = [];
 
-        foreach (array_reverse($file_names) as $file_name) {
-            foreach (self::getDataFromCsv($file_name, 'EM', $limit_serials) as $spaceless_serial => $counter_data) {
+        foreach (array_reverse($file_names) ?? [] as $file_name) {
+            foreach (self::getDataFromCsv($file_name, 'EM', $limit_serials) ?? [] as $spaceless_serial => $counter_data) {
                 // If we have no data so far for this serial, we save the data.
                 if (empty($data[$spaceless_serial])) {
                     $data[$spaceless_serial] = $counter_data;
