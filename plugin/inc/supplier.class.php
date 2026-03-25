@@ -277,7 +277,7 @@ Serviciul Financiar";
             default:
                 $mail_body = "Buna ziua,
 
-Va atasam factura.
+Va atasam factura pt. luna curenta.
 Rog confirmare de primire.
 
 In evidentele noastre figureaza urmatoarele datorii anterioare
@@ -294,9 +294,11 @@ Va rog pastrati acest link deoarece datele de pe acest link vor fi in permananen
 
 Expert Line incarca in sistemul e-factura toate facturile, in conditiile legii.
  
-Cu multumiri,
-Expert Line srl
-";
+O zi buna!
+Carmen Ionita
+Tel:0722250977
+
+www.expertline.ro";
                 break;
             }
         } else {
