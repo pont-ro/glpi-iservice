@@ -61,6 +61,8 @@ class PluginIserviceTicket extends Ticket
 
     public $ticketNotCloseableReasons = '';
 
+    public $deletedPrinter = null;
+
     public function canViewItem(): bool
     {
         return parent::canViewItem() || $this->isUserTechPark();
@@ -150,9 +152,13 @@ class PluginIserviceTicket extends Ticket
         $item_ticket = new Item_Ticket();
         $data        = $item_ticket->find(["`tickets_id` = {$this->getID()} and `itemtype` = 'Printer'"]);
         $printer     = new PluginIservicePrinter();
+
         foreach ($data as $val) {
             if ($printer->getFromDB($val["items_id"]) && !$printer->isDeleted()) {
+                $this->deletedPrinter = null;
                 return $printer;
+            } elseif ($printer->getID() > 0 && $printer->isDeleted()) {
+                $this->deletedPrinter = $printer;
             }
         }
 
@@ -201,12 +207,16 @@ class PluginIserviceTicket extends Ticket
         if ($printer->getID() > 0) {
             $this->printer = $printer;
             return;
-        } elseif (!empty($printerId)
-            && $printer->getFromDB($printerId)
-            && !$printer->isDeleted()
-            && $printer->getID() > 0
-        ) {
-            $this->printer = $printer;
+        }
+
+        if (!empty($printerId) && $printer->getFromDB($printerId) && $printer->getID() > 0) {
+            if ($printer->isDeleted()) {
+                $this->printer        = null;
+                $this->deletedPrinter = $printer;
+            } else {
+                $this->printer = $printer;
+            }
+
             return;
         }
 
@@ -500,6 +510,10 @@ class PluginIserviceTicket extends Ticket
             'title' => !empty($this->fields['name']) ? $this->fields['name'] : $options['getParams']['title'] ?? '',
             'content' => !empty($this->fields['content']) ? $this->fields['content'] : $options['getParams']['content'] ?? '',
         ];
+
+        if (!empty($this->deletedPrinter)) {
+            $templateParams['deletedPrinterName'] = $this->deletedPrinter->fields['name'];
+        }
 
         $renderExtendedForm = $ID > 0 || $printerId > 0;
 
@@ -2627,7 +2641,7 @@ class PluginIserviceTicket extends Ticket
 
         $closeAttemptResults = [];
         foreach (array_keys($idsOrderedByEffectiveDate) as $ticketId) {
-            $ticket = new PluginIserviceTicket();
+            $ticket       = new PluginIserviceTicket();
             $ticketExists = $ticket->getFromDB($ticketId);
             $ticket->setTicketUsersFields($ticketId);
 

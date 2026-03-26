@@ -13,32 +13,43 @@
     })
 ) }}
 
-{{ fieldsIservice.dropdownFieldExtended(
-    'PluginIservicePrinter',
-    'printer_id',
-    printerId,
-    printerFieldLabel,
-    field_options|merge({
-        'condition': {
-            'LEFT JOIN': {
-                'glpi_infocoms as i': {
-                    'ON': {
-                        'i': 'items_id',
-                        'glpi_plugin_iservice_printers': 'id'
+{% if deletedPrinterName %}
+    {{ fields.textField(
+        '',
+        deletedPrinterName,
+        _t('Deleted printer'),
+        field_options|merge({
+            'disabled': true,
+        })
+    ) }}
+{% else %}
+    {{ fieldsIservice.dropdownFieldExtended(
+        'PluginIservicePrinter',
+        'printer_id',
+        printerId,
+        printerFieldLabel,
+        field_options|merge({
+            'condition': {
+                'LEFT JOIN': {
+                    'glpi_infocoms as i': {
+                        'ON': {
+                            'i': 'items_id',
+                            'glpi_plugin_iservice_printers': 'id'
+                        }
+                    }
+                },
+                'WHERE': {
+                    'i.suppliers_id': partnerId,
+                    'RAW': {
+                        'glpi_plugin_iservice_printers.users_id':  (filter_printers_by_users_id ? ['=', filter_printers_by_users_id] : ['>' , '-1'])
                     }
                 }
             },
-            'WHERE': {
-                'i.suppliers_id': partnerId,
-                'RAW': {
-                    'glpi_plugin_iservice_printers.users_id':  (filter_printers_by_users_id ? ['=', filter_printers_by_users_id] : ['>' , '-1'])
-                }
-            }
-        },
-        'on_change': "$(this).closest('form').submit();",
-        'readonly': printersFieldReadonly
-    })
-) }}
+            'on_change': "$(this).closest('form').submit();",
+            'readonly': printersFieldReadonly
+        })
+    ) }}
+{% endif %}
 
 {% if usageAddressField %}
     {{ fields.textField(

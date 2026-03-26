@@ -1684,6 +1684,9 @@ msgstr "Tichetul (%s) a fost redeschis!"
 msgid "Cannot reopen ticket (%s)!"
 msgstr "Nu se poate redeschide tichetul (%s)!"
 
+msgid "Deleted printer"
+msgstr "Aparat șters"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
