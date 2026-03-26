@@ -150,7 +150,7 @@ class Cartridges extends View
     public static function getPrinterNameDisplay($row_data): ?string
     {
         if ($row_data['printer_deleted']) {
-            return "<span style='color:red' title='Aparat șters'>$row_data[printer_name]</span>";
+            return "<span style='color:red' title='" . _t('Deleted printer') . "'>$row_data[printer_name]</span>";
         } else {
             global $CFG_PLUGIN_ISERVICE;
             return "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/printer.form.php?id=$row_data[printer_id]' target='_blank'>$row_data[printer_name]</a>";
