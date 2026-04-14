@@ -1,7 +1,7 @@
 <div class="container">
     <div class="center my-3">
         <a class="btn btn-primary me-2" href="#" id="import-button">
-            <span onclick="ajaxCall('{{ plugin_url_base }}/ajax/duplicateCartridgeItem.php?cartridgeItemId={{ cartridgeItem.id }}',
+            <span onclick="ajaxCall('{{ plugin_url_base }}/ajax/duplicateCartridgeItem.php?cartridgeItemId={{ cartridgeItem.getID() }}',
                     '{{ _t('Are you sure you want to duplicate this cartridge item?') }}',
                     function(message) {
                         message = JSON.parse(message);
@@ -47,7 +47,7 @@
             <div class="col-12 d-flex align-items-center justify-content-start gap-3">
                 {{ _t('Show models with tickets newer than') }}
                 {{ date_selector }}
-                <a class="vsubmit ti ti-refresh" id="refresh-all-printers" href="javascript:void();" onclick="ajaxCall('{{ plugin_url_base }}/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=getAllPrinterModels&id={{ cartridgeItem.id }}&ticket_newer_than=' + $('#effective-date').val(), '', function (message) {$('#all-printer-models').html(message);});"></a>
+                <a class="vsubmit ti ti-refresh" id="refresh-all-printers" href="javascript:void();" onclick="ajaxCall('{{ plugin_url_base }}/ajax/manageItem.php?itemtype=PluginIserviceCartridgeItem&operation=getAllPrinterModels&id={{ cartridgeItem.getID() }}&ticket_newer_than=' + $('#effective-date').val(), '', function (message) {$('#all-printer-models').html(message);});"></a>
             </div>
         </div>
 
@@ -57,7 +57,7 @@
 
         <div class="row center my-3">
             <div class="col-12">
-                <input type="hidden" name="cartridgeitems_id" value="{{ cartridgeItem.id }}" />
+                <input type="hidden" name="cartridgeitems_id" value="{{ cartridgeItem.getID() }}" />
                 <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="btn btn-primary">{{ _t('Save') }}</button>
             </div>

@@ -333,7 +333,7 @@ function recordPreImportIdsForJunkClean()
 
     foreach ($tables as $table) {
         $sql    = "SELECT MAX(id) as max_id FROM $table";
-        $result = $DB->query($sql);
+        $result = $DB->doQuery($sql);
         $row    = $result->fetch_assoc();
 
         $_SESSION['plugin']['iservice']['import']['tablesToClean'][$table] = $row['max_id'] ?? 0;
@@ -352,7 +352,7 @@ function deleteJunkRecordsCreatedDuringImport()
         }
 
         $sql = "DELETE FROM $table WHERE id > $maxId";
-        if ($DB->query($sql)) {
+        if ($DB->doQuery($sql)) {
             $_SESSION['plugin']['iservice']['import']['tablesToClean'][$table] = null;
         }
     }

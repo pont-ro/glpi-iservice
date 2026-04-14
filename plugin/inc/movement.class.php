@@ -51,7 +51,7 @@ class PluginIserviceMovement extends CommonDBTM
         }
 
         global $DB;
-        $moved_result = $DB->queryOrDie("SELECT * FROM glpi_plugin_iservice_movements WHERE itemtype='$itemtype' AND items_id = $item_id AND moved = 1", "Internal error #1");
+        $moved_result = PluginIserviceDB::iQueryOrDie("SELECT * FROM glpi_plugin_iservice_movements WHERE itemtype='$itemtype' AND items_id = $item_id AND moved = 1", "Internal error #1");
         while ($moved = $moved_result->fetch_array()) {
             if (self::getTypeFromSuppliers($moved['suppliers_id_old'], $moved['suppliers_id']) == self::TYPE_IN) {
                 continue;
@@ -139,13 +139,13 @@ class PluginIserviceMovement extends CommonDBTM
             }
         }
 
-        $table_rows[] = $form->generateFieldTableRow(__($itemtype, 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'items_id', $this->fields['items_id'], true, ['type' => "PluginIservice$itemtype"]));
-        $table_rows[] = $form->generateFieldTableRow(_t('Old partner'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id_old', $this->fields['suppliers_id_old'], true, ['type' => "Supplier"]));
+        $table_rows[] = $form->generateFieldTableRow(__($itemtype, 'iservice'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'items_id', $this->fields['items_id'] ?? null, true, ['type' => "PluginIservice$itemtype"]));
+        $table_rows[] = $form->generateFieldTableRow(_t('Old partner'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id_old', $this->fields['suppliers_id_old'] ?? null, true, ['type' => "Supplier"]));
         $table_rows[] = $form->generateFieldTableRow(_t('New partner'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'suppliers_id', empty($this->fields['suppliers_id']) ? '' : $this->fields['suppliers_id'], $id > 0, ['type' => "Supplier", 'class' => 'full']));
 
         $moved   = false;
         $printer = new PluginIservicePrinter();
-        $printer->getFromDB($this->fields['items_id']);
+        $printer->getFromDB($this->fields['items_id'] ?? 0);
 
         if ($id > 0) {
             $total2_black               = $this->fields['total2_black_field'] ?? $printer->lastTicket()->customfields->fields['total2_black_field'] ?? '';
@@ -356,7 +356,8 @@ class PluginIserviceMovement extends CommonDBTM
                 $table_rows[]     = $form->generateFieldTableRow(__('External user'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'users_id', $users_id, false, $users_id_options));
 
                 // Group.
-                $groups_id         = empty($this->fields['groups_id']) ? $item->fields['groups_id'] : $this->fields['groups_id'];
+                $raw_groups_id     = empty($this->fields['groups_id']) ? $item->fields['groups_id'] : $this->fields['groups_id'];
+                $groups_id         = is_array($raw_groups_id) ? ($raw_groups_id[0] ?? 0) : $raw_groups_id;
                 $groups_id_options = ['type' => 'Group', 'class' => 'full', 'options' => ['condition' => ['is_usergroup']]];
                 $table_rows[]      = $form->generateFieldTableRow(__('Supergroup'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'groups_id', $groups_id, false, $groups_id_options));
 

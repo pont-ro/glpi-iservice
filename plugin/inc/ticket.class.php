@@ -107,7 +107,7 @@ class PluginIserviceTicket extends Ticket
     {
         global $DB;
         self::$itilCategories   = [];
-        $itil_categories_result = $DB->query("SELECT id, name FROM glpi_itilcategories") or die($DB->error());
+        $itil_categories_result = $DB->doQuery("SELECT id, name FROM glpi_itilcategories") or die($DB->error());
         while (($itil_category_row = $DB->fetchAssoc($itil_categories_result)) !== null) {
             self::$itilCategories[strtolower($itil_category_row['name'])] = $itil_category_row['id'];
         }
@@ -246,7 +246,8 @@ class PluginIserviceTicket extends Ticket
         }
 
         $partner = new PluginIserviceSupplier();
-        foreach ($this->getSuppliers(CommonITILActor::ASSIGN) as $partner_data) {
+        $suppliers = $this->getSuppliers(CommonITILActor::ASSIGN);
+        foreach ($suppliers as $partner_data) {
             if ($partner->getFromDB($partner_data['suppliers_id']) && !$partner->isDeleted()) {
                 return $partner;
             }
@@ -279,7 +280,7 @@ class PluginIserviceTicket extends Ticket
             self::INCOMING => _x('status', 'New'),
             self::ASSIGNED => _x('status', 'Processing (assigned)'),
             self::PLANNED => _x('status', 'Processing (planned)'),
-            self::EVALUATION => _t('Order'),
+            Change::EVALUATION => _t('Order'),
             self::WAITING => __('Pending'),
             self::SOLVED => _x('status', 'Solved'),
             self::CLOSED => _x('status', 'Closed')
@@ -849,7 +850,7 @@ class PluginIserviceTicket extends Ticket
                                 ) rc ON rc.tickets_id = t.id
             WHERE t.id = {$this->getID()}
             ";
-        if (($result = $DB->query($query)) !== false) {
+        if (($result = $DB->doQuery($query)) !== false) {
             $query_result = $DB->fetchAssoc($result);
             return intval($query_result['ordered_consumables']) == intval($query_result['received_consumables']) ? intval($query_result['ordered_consumables']) : intval($query_result['received_consumables']) - intval($query_result['ordered_consumables']);
         }
@@ -1357,7 +1358,7 @@ class PluginIserviceTicket extends Ticket
             foreach (['glpi_tickets_users' => 'users_id', 'glpi_suppliers_tikcets' => 'suppliers_id'] as $table => $item_type) {
                 if ((($input['_' . $item_type . '_' . $user_type] ?? 0) ?: 0) != (($input['_' . $item_type . '_' . $user_type . '_original'] ?? 0) ?: 0)) {
                     global $DB;
-                    $DB->query("delete from $table where type = $user_type_key and tickets_id = $input[id]");
+                    $DB->doQuery("delete from $table where type = $user_type_key and tickets_id = $input[id]");
                 }
 
                 if (!is_array($input['_' . $item_type . '_' . $user_type] ?? [])) {
@@ -1894,8 +1895,8 @@ class PluginIserviceTicket extends Ticket
             if ($add_cartridges) {
                 $new_cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']) ?: [];
                 if (!empty($new_cartridge_ids)) {
-                    $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = null WHERE id IN ($new_cartridge_ids)", _t('Error restoring cartridges'));
-                    $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = null WHERE items_id IN ($new_cartridge_ids) AND itemtype='Cartridge'", _t('Error restoring cartridges custom fields'));
+                    PluginIserviceDB::iQueryOrDie("UPDATE glpi_cartridges SET date_out = null WHERE id IN ($new_cartridge_ids)", _t('Error restoring cartridges'));
+                    PluginIserviceDB::iQueryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = null WHERE items_id IN ($new_cartridge_ids) AND itemtype='Cartridge'", _t('Error restoring cartridges custom fields'));
                 } else {
                     for ($i = 0; $i < abs($consumable['amount']); $i++) {
                         $new_cartridge_ids[] = $cartridge->add(
@@ -1931,11 +1932,11 @@ class PluginIserviceTicket extends Ticket
                         Session::addMessageAfterRedirect("Cartușul $installer_ticket[cartridges_id] nu poate fi retras deoarece tichetul $installer_ticket[tickets_id] îl instalează.", false, ERROR);
                     }
 
-                    $DB->queryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['deliveredfield'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
+                    PluginIserviceDB::iQueryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['deliveredfield'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
                 } else {
                     if ($item->input['delivered_field']) {
-                        $DB->queryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
-                        $DB->queryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = {$ticket->fields['id']} WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
+                        PluginIserviceDB::iQueryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
+                        PluginIserviceDB::iQueryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = {$ticket->fields['id']} WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
                     } else {
                         $consumable_ticket->update(
                             [
@@ -1943,9 +1944,9 @@ class PluginIserviceTicket extends Ticket
                                 'new_cartridge_ids' => 'NULL',
                             ]
                         );
-                        $DB->queryOrDie("DELETE FROM glpi_cartridges WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
-                        $DB->queryOrDie("DELETE FROM glpi_plugin_fields_cartridgecartridgecustomfields WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
-                        $DB->queryOrDie("DELETE FROM glpi_infocoms WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges infocoms'));
+                        PluginIserviceDB::iQueryOrDie("DELETE FROM glpi_cartridges WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
+                        PluginIserviceDB::iQueryOrDie("DELETE FROM glpi_plugin_fields_cartridgecartridgecustomfields WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
+                        PluginIserviceDB::iQueryOrDie("DELETE FROM glpi_infocoms WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges infocoms'));
                     }
                 }
             }
@@ -2119,11 +2120,11 @@ class PluginIserviceTicket extends Ticket
                 }
 
                 $statusClassMap = [
-                    Ticket::SOLVED   => 'far fa-circle solved',
-                    Ticket::WAITING  => 'fas fa-circle waiting',
-                    Ticket::PLANNED  => 'far fa-calendar planned',
-                    Ticket::ASSIGNED => 'far fa-circle assigned',
-                    Ticket::INCOMING => 'fas fa-circle new',
+                    Ticket::SOLVED   => 'ti ti-circle solved',
+                    Ticket::WAITING  => 'ti ti-circle waiting',
+                    Ticket::PLANNED  => 'ti ti-calendar planned',
+                    Ticket::ASSIGNED => 'ti ti-circle assigned',
+                    Ticket::INCOMING => 'ti ti-circle new',
                 ];
 
                 foreach ($button_statuses as $status) {

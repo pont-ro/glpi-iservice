@@ -8,8 +8,8 @@
         {% if ticketDocuments %}
             <div class="bg-info p-3">
                 {% for document in ticketDocuments %}
-                    <input type="hidden" name="documents_id" value="{{ document.id }}">
-                    <a href="/front/document.send.php?docid={{ document.id }}"
+                    <input type="hidden" name="documents_id" value="{{ document.getID() }}">
+                    <a href="/front/document.send.php?docid={{ document.getID() }}"
                        alt="{{ document.filename }}"
                        title="{{ document.filename }}"
                        target='_blank'>

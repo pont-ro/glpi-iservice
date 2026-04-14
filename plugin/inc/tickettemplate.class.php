@@ -12,6 +12,12 @@ class PluginIserviceTicketTemplate extends ITILTemplate
         $this->hiddenInput = $this->getHiddenInputFieldsForCurrentProfile();
     }
 
+    #[\Override]
+    public static function getPredefinedFields(): ITILTemplatePredefinedField
+    {
+        return new TicketTemplatePredefinedField();
+    }
+
     public function isHiddenInput($field)
     {
 

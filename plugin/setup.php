@@ -7,7 +7,7 @@ use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
-define('ISERVICE_VERSION', '3.0.26');
+define('ISERVICE_VERSION', '3.0.27');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
@@ -66,9 +66,14 @@ function plugin_init_iservice(): void
     PluginIserviceQr::restrictQrUserToQrForm();
 
     PluginIserviceConfig::handleConfigValues();
-    TemplateRenderer::getInstance()->getEnvironment()->addExtension(new PluginIserviceTranslationExtension());
+    $twigEnv = TemplateRenderer::getInstance()->getEnvironment();
+    if (!$twigEnv->hasExtension(PluginIserviceTranslationExtension::class)) {
+        $twigEnv->addExtension(new PluginIserviceTranslationExtension());
+    }
 
-    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
+    if ($TIMER_DEBUG !== null) {
+        $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
+    }
 
     $CFG_PLUGIN_ISERVICE = [
         'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice",
@@ -90,12 +95,14 @@ function plugin_init_iservice(): void
         return;
     }
 
-    $PLUGIN_HOOKS[Hooks::DEBUG_TABS]['iservice'] = [
-        'iservice' => [
-            'title' => 'iService',
-            'display_callable' => 'plugin_iservice_debug_tab',
-        ]
-    ];
+    if (defined('Glpi\Plugin\Hooks::DEBUG_TABS')) {
+        $PLUGIN_HOOKS[Hooks::DEBUG_TABS]['iservice'] = [
+            'iservice' => [
+                'title' => 'iService',
+                'display_callable' => 'plugin_iservice_debug_tab',
+            ]
+        ];
+    }
 
     // Must override the formcreator hook, as it has bug.
     $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['formcreator'][Profile::class] = 'plugin_iservice_hook_formcreator_update_profile';
@@ -158,13 +165,60 @@ function plugin_init_iservice(): void
             'addtabon' => ['CartridgeItem', 'PrinterModel'],
         ]
     );
+
+    // Pre-register all PluginIservice* itemtype-to-table mappings in $CFG_GLPI cache.
+    // This is only needed in dev environments where the plugin directory is a symlink,
+    // which causes GLPI 11's realpath() validation in getItemTypeForTable() to fail.
+    $plugin_dir = GLPI_ROOT . '/plugins/iservice';
+    if (is_link($plugin_dir)) {
+        $dbu                = new DbUtils();
+        $iservice_itemtypes = [
+        // Views.
+            'PluginIserviceCartridge',
+            'PluginIserviceCartridgeItem',
+            'PluginIserviceConsumable',
+            'PluginIserviceContract',
+            'PluginIserviceIntorder_View',
+            'PluginIservicePrinter',
+            'PluginIserviceSupplier',
+            'PluginIserviceTicket',
+            'PluginIservicePrinterModel',
+
+        // Tables.
+            'PluginIserviceCartridge_Ticket',
+            'PluginIserviceConfig',
+            'PluginIserviceConsumableDescription',
+            'PluginIserviceConsumable_Model',
+            'PluginIserviceConsumable_Ticket',
+            'PluginIserviceDownload',
+            'PluginIserviceExtOrder',
+            'PluginIserviceImportMapping',
+            'PluginIserviceIntOrder',
+            'PluginIserviceIntOrder_ExtOrder',
+            'PluginIserviceMinimumStock',
+            'PluginIserviceMovement',
+            'PluginIserviceOrderStatus',
+            'PluginIserviceOrderStatusChange',
+            'PluginIservicePendingEmail',
+            'PluginIserviceQr',
+            'PluginIserviceVehicle',
+            'PluginIserviceVehicleExpirable',
+        ];
+        foreach ($iservice_itemtypes as $itemtype) {
+            if (class_exists($itemtype) && is_subclass_of($itemtype, CommonDBTM::class, true)) {
+                $dbu->getTableForItemType($itemtype);
+            }
+        }
+    }
 }
 
 function plugin_iservice_debug_tab($with_session, $ajax, $rand): void
 {
     global $DEBUG_SQL, $TIMER_DEBUG;
 
-    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Displaying iService debug tab';
+    if ($TIMER_DEBUG !== null) {
+        $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Displaying iService debug tab';
+    }
 
     echo "<pre>";
     print_r($DEBUG_SQL['debug_times']);
@@ -187,7 +241,7 @@ function plugin_version_iservice(): array
         'requirements' => [
             'glpi' => [
                 'min'     => '10.0',
-                'max'     => '10.1',
+                'max'     => '11.0.99',
                 'plugins' => ['fields', 'formcreator'],
             ],
         ],

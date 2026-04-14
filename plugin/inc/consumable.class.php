@@ -37,15 +37,15 @@ class PluginIserviceConsumable extends CommonDBTM
     public function getPrice(): bool
     {
         global $DB;
-        $this->fields['Pret'] = $DB->result($DB->query("SELECT ROUND(pcont,2) FROM hmarfa_lotm WHERE codmat = '{$this->getID()}' ORDER BY nrtran DESC LIMIT 1"), 0, 0);
+        $this->fields['Pret'] = $DB->result($DB->doQuery("SELECT ROUND(pcont,2) FROM hmarfa_lotm WHERE codmat = '{$this->getID()}' ORDER BY nrtran DESC LIMIT 1"), 0, 0);
         return true;
     }
 
     public function getMinimumStock(): bool|mysqli_result
     {
         global $DB;
-        if (null === $this->fields['minimum_stock'] = $DB->result($DB->query("SELECT minimum_stock FROM glpi_plugin_iservice_minimum_stocks WHERE plugin_iservice_consumables_id = '{$this->getID()}' LIMIT 1"), 0, 0)) {
-            return $DB->query("INSERT INTO glpi_plugin_iservice_minimum_stocks (plugin_iservice_consumables_id, minimum_stock) values ('{$this->getID()}', 0)");
+        if (null === $this->fields['minimum_stock'] = $DB->result($DB->doQuery("SELECT minimum_stock FROM glpi_plugin_iservice_minimum_stocks WHERE plugin_iservice_consumables_id = '{$this->getID()}' LIMIT 1"), 0, 0)) {
+            return $DB->doQuery("INSERT INTO glpi_plugin_iservice_minimum_stocks (plugin_iservice_consumables_id, minimum_stock) values ('{$this->getID()}', 0)");
         }
 
         return true;
@@ -54,7 +54,7 @@ class PluginIserviceConsumable extends CommonDBTM
     public function setMinimumStock($value): bool|mysqli_result
     {
         global $DB;
-        return $DB->query("UPDATE glpi_plugin_iservice_minimum_stocks SET minimum_stock = " . intval($value) . " WHERE plugin_iservice_consumables_id = '{$this->getID()}'");
+        return $DB->doQuery("UPDATE glpi_plugin_iservice_minimum_stocks SET minimum_stock = " . intval($value) . " WHERE plugin_iservice_consumables_id = '{$this->getID()}'");
     }
 
     public function getHistoryTable($partner_cod_hmarfa, &$html_table, &$gain, &$average_delivery_price): void
@@ -78,7 +78,8 @@ class PluginIserviceConsumable extends CommonDBTM
         $gain_total             = 0;
         $delivery_price_total   = 0;
         $history_header_columns = null;
-        foreach ($DB->request($history_query) as $history) {
+        $history_result = $DB->doQuery($history_query);
+        while ($history = $DB->fetchAssoc($history_result)) {
             $rows[]                = new PluginIserviceHtml_table_row('', $history);
             $gain_total           += ($history['Proc'] ?? 1) ?: 1;
             $delivery_price_total += $history['Pret_Liv'];

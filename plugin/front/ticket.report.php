@@ -31,8 +31,14 @@ if ($printer->isNewItem()) {
     return false;
 }
 
-$assigned_supplier = new Supplier();
-$assigned_supplier->getFromDB($ticket->getSuppliers(Supplier_Ticket::ASSIGN)[0]['suppliers_id']);
+$assigned_supplier  = new Supplier();
+$assigned_suppliers = $ticket->getSuppliers(Supplier_Ticket::ASSIGN);
+if (empty($assigned_suppliers)) {
+    echo "No supplier assigned to ticket";
+    return false;
+}
+
+$assigned_supplier->getFromDB($assigned_suppliers[0]['suppliers_id']);
 
 $assigned_suppliers_customfields = new PluginFieldsSuppliersuppliercustomfield();
 PluginIserviceDB::populateByItemsId($assigned_suppliers_customfields, $assigned_supplier->getID());
@@ -87,7 +93,7 @@ if (!PluginIserviceDB::populateByItemsId($contract_customfields, $contract->getI
 
 $curs_factura = ($contract_customfields->fields['currency_field'] > 0) ? "EUR" : "RON";
 
-$facturi_neachitate_result = $DB->query(
+$facturi_neachitate_result = $DB->doQuery(
     "select DATEDIFF(CURDATE(),dscad) AS zile from hmarfa_facturi where codbenef='$cod' AND tip LIKE 'TFA%' AND (valinc-valpla)>0 order by dscad ASC"
 );
 
@@ -100,7 +106,7 @@ $numberOfUnpaidInvoices = $facturi_neachitate_result->num_rows;
 $unpaidInvoicesArray    = $facturi_neachitate_result->fetch_assoc();
 $invoicesDelayDays      = $unpaidInvoicesArray['zile'] ?? '';
 
-$facturi_neachitate_result2 = $DB->query("select ROUND(SUM(valinc-valpla),2) AS suma from hmarfa_facturi where codbenef='$cod' AND tip LIKE 'TFA%' AND (valinc-valpla)>0;");
+$facturi_neachitate_result2 = $DB->doQuery("select ROUND(SUM(valinc-valpla),2) AS suma from hmarfa_facturi where codbenef='$cod' AND tip LIKE 'TFA%' AND (valinc-valpla)>0;");
 $suma_facturi_neachitate    = $facturi_neachitate_result2->fetch_assoc()['suma'];
 
 $query_tickets = sprintf(
@@ -125,7 +131,7 @@ $query_tickets = sprintf(
                     group by t.id, t.effective_date_field
                     order by t.effective_date_field desc, t.id desc limit 3", $printer->getID()
 );
-$ticket_result = $DB->query($query_tickets);
+$ticket_result = $DB->doQuery($query_tickets);
 $ticket_row    = $ticket_result->fetch_assoc();
 
 
