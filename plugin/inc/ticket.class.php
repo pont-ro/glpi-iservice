@@ -2554,6 +2554,10 @@ class PluginIserviceTicket extends Ticket
 
     private function getPrinterCartridgesConsumablesData(?int $printerId): ?array
     {
+        if (empty($printerId)) {
+            return null;
+        }
+
         global $CFG_PLUGIN_ISERVICE;
         $data = PluginIserviceDB::getQueryResult("SELECT * FROM glpi_plugin_iservice_cachetable_printercounters WHERE printer_id = $printerId");
 
