@@ -327,7 +327,6 @@ function recordPreImportIdsForJunkClean()
     $tables = [
         'glpi_events',
         'glpi_logs',
-        'glpi_plugin_formcreator_issues',
         'glpi_tickettemplatemandatoryfields',
     ];
 

@@ -15,7 +15,6 @@ return [
         'itilcategories_id' => ['force' => 0],
         'locations_id' => ['force' => 0],
     ],
-    'clearRelatedTable' => 'glpi_plugin_formcreator_issues',
     'forceValues'   => [
         '_disablenotif'   => 1,
     ],
