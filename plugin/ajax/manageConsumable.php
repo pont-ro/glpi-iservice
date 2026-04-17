@@ -53,7 +53,7 @@ case 'add_printer_model':
     break;
 case 'remove_printer_model':
     $consumable_model = new PluginIserviceConsumable_Model();
-    $models_to_delete = $consumable_model->find("plugin_iservice_consumables_id = '$id' and printermodels_id = $value");
+    $models_to_delete = $consumable_model->find(["plugin_iservice_consumables_id = '$id' and printermodels_id = $value"]);
     $success          = true;
     foreach (array_keys($models_to_delete) as $cm_id) {
         $success &= $consumable_model->delete([$consumable_model->getIndexName() => $cm_id]);

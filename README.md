@@ -18,10 +18,14 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
   - the contents of the `plugins` folder (be aware that the `iservice` folder is a symlink created with `mklink /D iservice "..\..\plugin"` or `ln -s ../../plugin glpi/plugins/iservice`).
 - Navigate to the root URL and perform the GLPI upgrade steps
 - Perform the following GLPI hacks
+- Update plugins if needed
+  - fields plugin: download and unzip the latest release from [GitHub](https://github.com/PluginsGLPI/fields/releases).
+  - see Fields plugin hacks in this file
+    - (at the last install I had to run `composer install --no-dev` in the plugin directory
 
 ## GLPI hacks
 
-- Update `handleUserMentions()` method in `glpi/src/RichText/UserMention.php` line 80
+- Update `handleUserMentions()` method in `glpi/src/Glpi/RichText/UserMention.php` line 88
   - from: `$previous_value = $item->fields[$content_field];` 
   - to: `$previous_value = $item->fields[$content_field] ?? null;`
 - Comment the whole `__isset()` magic method in `glpi/src/CommonITILObject.php` as it messes a lot of verifications in iService code
@@ -36,7 +40,7 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
         return;
 ```
 
-- removed custom select2 matcher from 'glpi/src/Html.php' line 4691, method: jsAdaptDropdown
+- OBSOLETE: removed custom select2 matcher from 'glpi/src/Html.php' line 4691, method: jsAdaptDropdown
   - Removed code:
 ```matcher: function(params, data) {
                // store last search in the global var
@@ -117,3 +121,39 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
                return null;
             },
 ```
+
+
+## Fields plugin hacks
+
+- we need to modify the following files, in order to avoid custom field renaming when fields plugin version is above 1.9.2:
+  - inc/field.class.php line 130 - 148, containing: ``$toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);``
+    Comment: 
+    ```
+      //        $toolbox = new PluginFieldsToolbox();
+      //        $toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);
+
+      //move old types to new format
+      //        $migration->addPostQuery(
+      //            $DB->buildUpdate(
+      //                PluginFieldsField::getTable(),
+      //                ['type' => 'dropdown-User'],
+      //                ['type' => 'dropdownuser'],
+      //            ),
+      //        );
+      //
+      //        $migration->addPostQuery(
+      //            $DB->buildUpdate(
+      //                PluginFieldsField::getTable(),
+      //                ['type' => 'dropdown-OperatingSystem'],
+      //                ['type' => 'dropdownoperatingsystems'],
+      //            ),
+      //        );```
+  
+  - inc/dropdown.c`lass.php line 72 - 76, containing: ``$toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);``
+    Comment: 
+    ```
+        //        $toolbox = new PluginFieldsToolbox();
+        //        $toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);
+        //
+        //        // Ensure data is update before regenerating files.
+        //        $migration->executeMigration();```

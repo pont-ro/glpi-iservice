@@ -215,7 +215,8 @@
 
 {% macro datetimeField(name, value, label = '', options = {}) %}
    {% import 'components/form/fields_macros.html.twig' as fieldsOriginal %}
-   {% set options = {'rand': random()}|merge(options) %}
+   {% import 'components/form/basic_inputs_macros.html.twig' as _inputs %}
+   {% set options = {'rand': random(), 'container_addclass': '', 'input_addclass': '', 'readonly': false, 'disabled': false}|merge(options) %}
    {% set options = {'id': name|slug ~ '_' ~ options.rand}|merge(options) %}
    {% set locale = get_current_locale() %}
 
@@ -227,9 +228,28 @@
    {% else %}
 
       {% set field %}
-         {{ fieldsOriginal.flatpickrHtmlInput(name, value, label, options) }}
+         <div
+            class="btn-group flex-grow-1 flatpickr d-flex {{ options.container_addclass }}"
+            id="{{ options.id }}"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="{{ not options.readonly and not options.disabled ? __('Enter or select a date') : _n('Date', 'Dates', 1) }}"
+         >
+            {{ _inputs.input(name, value, options|merge({
+               'type': 'text',
+               'id': options.id ~ '_input',
+               'additional_attributes': (options.additional_attributes ?? {})|merge({'data-input': ''}),
+               'input_addclass': options.input_addclass,
+               'clearable': false
+            })) }}
+            {% if not options.readonly and not options.disabled %}
+               <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle>
+                  <i class="ti ti-calendar-time"></i>
+                  <span class="sr-only">{{ __('Enter or select a date') }}</span>
+               </button>
+            {% endif %}
+         </div>
          <script>
-
             $(function() {
                $('#{{ options.id }}').flatpickr({
                   altInput: true,

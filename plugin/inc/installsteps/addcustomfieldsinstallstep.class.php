@@ -151,7 +151,10 @@ class AddCustomFieldsInstallStep
     private static function optimizeContainerTableFieldTypes($containerData)
     {
         $result    = true;
-        $container = PluginFieldsContainer::getById($containerData['id']);
+        $container = new PluginFieldsContainer();
+        if (!$container->getFromDB($containerData['id'])) {
+            return false;
+        }
 
         foreach (json_decode($container->fields['itemtypes']) as $itemtype) {
             $classname   = $container::getClassname($itemtype, $container->fields['name']);

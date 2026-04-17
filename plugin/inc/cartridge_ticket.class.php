@@ -77,7 +77,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         $cartridges = [];
         $used_ids   = [];
 
-        $c_result = $DB->query(
+        $c_result = $DB->doQuery(
             "SELECT ct.id IDD, ci.id cid, ct.locations_id, c.id, ci.name, ci.compatible_mercury_codes_field
                          FROM glpi_plugin_iservice_cartridges_tickets ct
                          LEFT JOIN glpi_cartridges c ON c.id = ct.cartridges_id
@@ -952,7 +952,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
     // INNER JOIN glpi_plugin_iservice_cartridge_items ci ON ci.id = c.cartridgeitems_id
     // WHERE ct.cartridges_id = $cartridgeId LIMIT 1";
     // global $DB;
-    // $result = $DB->query($query);
+    // $result = $DB->doQuery($query);
     //
     // return $DB->fetchAssoc($result);
     // }

@@ -160,17 +160,17 @@ class PluginIserviceReminder extends Reminder
         }
     }
 
-    public function haveVisibilityAccess()
+    public function haveVisibilityAccess(): bool
     {
         return parent::haveVisibilityAccess() || in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin']);
     }
 
-    public function canUpdateItem()
+    public function canUpdateItem(): bool
     {
         return ($this->fields['users_id'] == Session::getLoginUserID() || in_array($_SESSION["glpiactiveprofile"]["name"], ['super-admin'])) && parent::canUpdateItem();
     }
 
-    public static function canCreate()
+    public static function canCreate(): bool
     {
         return (Session::haveRightsOr(self::$rightname, [CREATE, self::PERSONAL]));
     }

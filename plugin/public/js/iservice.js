@@ -15,7 +15,7 @@ function changeLogoUrl()
 
 
 window.moveIconsToHeader = function () {
-    let dropDown       = $('li[title="Header Icons"]');
+    let dropDown       = $('li[aria-label="Header Icons"]');
     let searchFormDiv  = $('form[role="search"]').parent();
     let headerIconsDiv = $('<div class="header-icons my-2 my-lg-0 ms-0 ms-lg-3 flex-grow-1 flex-lg-grow-0"></div>').insertAfter(searchFormDiv);
     dropDown.find('div.dropdown-menu-columns a').each(
@@ -36,7 +36,7 @@ window.moveIconsToHeader = function () {
 }
 
 window.moveMenuContent = function (dropDownTitle, append = false) {
-    let dropDown      = $('li[title="' + dropDownTitle + '"]');
+    let dropDown      = $('li[aria-label="' + dropDownTitle + '"]');
     let menuList      = $('#navbar-menu .navbar-nav').last();
     jQuery.fn.reverse = [].reverse;
 
@@ -68,8 +68,8 @@ window.moveMenuContent = function (dropDownTitle, append = false) {
 window.removeMenuItems = function (dropDownTitles) {
     dropDownTitles.forEach(
         function (dropDownTitle) {
-            $('li.dropdown[title=' + dropDownTitle + ']').remove();
-            $('a.dropdown-item[title=' + dropDownTitle + ']').remove();
+            $('li.dropdown[aria-label=' + dropDownTitle + ']').remove();
+            $('a.dropdown-item[aria-label=' + dropDownTitle + ']').remove();
         }
     );
 }

@@ -54,7 +54,7 @@ trait PluginIserviceItem
         $tableName = $this->getTable();
         $query     = "select `$tableName`.* from `$tableName` $query" . ($limit ? " limit 1" : '');
 
-        if (false === ($result = $db->query($query)) || $result === true || $db->numrows($result) !== 1) {
+        if (false === ($result = $db->doQuery($query)) || $result === true || $db->numrows($result) !== 1) {
             if ($db->numrows($result) > 1) {
                 trigger_error(
                     sprintf(
@@ -111,7 +111,7 @@ trait PluginIserviceItem
 
         if (false === $model->update(array_merge([static::getIndexName() => $this->getID()], $input), $history, $options)) {
             // If custom fields was updated by hooks, plugin_fields_data is not empty, so an update was made.
-            if (empty($model->plugin_fields_data)) {
+            if (!$this->hasPluginFieldsData($model)) {
                 return false;
             }
         }
@@ -167,6 +167,7 @@ trait PluginIserviceItem
             if (in_array($fieldName, ['id', 'items_id', 'itemtype', 'operation'])) {
                 continue;
             }
+
             $fieldValue = IserviceToolBox::getInputVariable($fieldName, '#no#value#');
             if ($fieldValue !== '#no#value#') {
                 $input[$fieldName] = $fieldValue;
@@ -206,7 +207,7 @@ trait PluginIserviceItem
     public function updateCustomFields($model, $input, $history = 1, $options = []): bool
     {
         // If custom fields were updated by hooks, plugin_fields_data is not empty.
-        if (!empty($model->plugin_fields_data)) {
+        if ($this->hasPluginFieldsData($model)) {
             return true;
         }
 
@@ -225,6 +226,16 @@ trait PluginIserviceItem
         }
 
         return $result;
+    }
+
+    private function hasPluginFieldsData($model): bool
+    {
+        if (!is_object($model)) {
+            return false;
+        }
+
+        $vars = get_object_vars($model);
+        return !empty($vars['plugin_fields_data']);
     }
 
     public function getFromDB($ID): bool
