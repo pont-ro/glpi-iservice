@@ -21,6 +21,10 @@ return [
         ],
     ],
     'glpi_plugin_fields_cartridgecartridgecustomfields' => [
+        'columns' => [
+            'printed_pages_field'       => "DECIMAL(11,0) GENERATED ALWAYS AS (IF(`pages_out_field` > 0, `pages_out_field` - `pages_use_field`, NULL)) VIRTUAL",
+            'printed_pages_color_field' => "DECIMAL(11,0) GENERATED ALWAYS AS (IF(`pages_color_out_field` > 0, `pages_color_out_field` - `pages_color_use_field`, NULL)) VIRTUAL",
+        ],
         'indexes' => [
             [
                 'name' => 'tickets_id_use_field',
