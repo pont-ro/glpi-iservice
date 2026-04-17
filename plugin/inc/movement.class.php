@@ -51,7 +51,7 @@ class PluginIserviceMovement extends CommonDBTM
         }
 
         global $DB;
-        $moved_result = PluginIserviceDB::iQueryOrDie("SELECT * FROM glpi_plugin_iservice_movements WHERE itemtype='$itemtype' AND items_id = $item_id AND moved = 1", "Internal error #1");
+        $moved_result = PluginIserviceDB::iServiceQueryOrDie("SELECT * FROM glpi_plugin_iservice_movements WHERE itemtype='$itemtype' AND items_id = $item_id AND moved = 1", "Internal error #1");
         while ($moved = $moved_result->fetch_array()) {
             if (self::getTypeFromSuppliers($moved['suppliers_id_old'], $moved['suppliers_id']) == self::TYPE_IN) {
                 continue;

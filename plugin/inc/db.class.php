@@ -15,18 +15,31 @@ class PluginIserviceDB extends DB
         parent::__construct();
     }
 
-    public static function iQueryOrDie(string $query, string $message, ?\DBmysql $db = null)
+    // There is already a queryOrDie and a doQueryOrDie method in DB class, both deprecated.
+    public static function iServiceQueryOrDie(string $query, string $message, ?\DBmysql $db = null)
     {
         if ($db === null) {
             global $DB;
             $db = $DB;
         }
 
-        try {
-            return $db->doQuery($query);
-        } catch (\RuntimeException $e) {
-            die($message . ': ' . $e->getMessage());
+        $res = $db->doQuery($query);
+        if (!$res) {
+            $message = sprintf(
+                __('%1$s - Error during the database query: %2$s - Error is %3$s'),
+                $message,
+                $query,
+                $db->error()
+            );
+            if (isCommandLine()) {
+                throw new \RuntimeException($message);
+            } else {
+                echo $message . "\n";
+                die(1);
+            }
         }
+
+        return $res;
     }
 
     public static function escapeString(string $text, ?\DBmysql $db = null): string

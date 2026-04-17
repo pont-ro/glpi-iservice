@@ -1895,8 +1895,8 @@ class PluginIserviceTicket extends Ticket
             if ($add_cartridges) {
                 $new_cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']) ?: [];
                 if (!empty($new_cartridge_ids)) {
-                    PluginIserviceDB::iQueryOrDie("UPDATE glpi_cartridges SET date_out = null WHERE id IN ($new_cartridge_ids)", _t('Error restoring cartridges'));
-                    PluginIserviceDB::iQueryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = null WHERE items_id IN ($new_cartridge_ids) AND itemtype='Cartridge'", _t('Error restoring cartridges custom fields'));
+                    PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_cartridges SET date_out = null WHERE id IN ($new_cartridge_ids)", _t('Error restoring cartridges'));
+                    PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = null WHERE items_id IN ($new_cartridge_ids) AND itemtype='Cartridge'", _t('Error restoring cartridges custom fields'));
                 } else {
                     for ($i = 0; $i < abs($consumable['amount']); $i++) {
                         $new_cartridge_ids[] = $cartridge->add(
@@ -1932,11 +1932,11 @@ class PluginIserviceTicket extends Ticket
                         Session::addMessageAfterRedirect("Cartușul $installer_ticket[cartridges_id] nu poate fi retras deoarece tichetul $installer_ticket[tickets_id] îl instalează.", false, ERROR);
                     }
 
-                    PluginIserviceDB::iQueryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['deliveredfield'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
+                    PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['deliveredfield'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
                 } else {
                     if ($item->input['delivered_field']) {
-                        PluginIserviceDB::iQueryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
-                        PluginIserviceDB::iQueryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = {$ticket->fields['id']} WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
+                        PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
+                        PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_plugin_fields_cartridgecartridgecustomfields SET tickets_id_out_field = {$ticket->fields['id']} WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
                     } else {
                         $consumable_ticket->update(
                             [
@@ -1944,9 +1944,9 @@ class PluginIserviceTicket extends Ticket
                                 'new_cartridge_ids' => 'NULL',
                             ]
                         );
-                        PluginIserviceDB::iQueryOrDie("DELETE FROM glpi_cartridges WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
-                        PluginIserviceDB::iQueryOrDie("DELETE FROM glpi_plugin_fields_cartridgecartridgecustomfields WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
-                        PluginIserviceDB::iQueryOrDie("DELETE FROM glpi_infocoms WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges infocoms'));
+                        PluginIserviceDB::iServiceQueryOrDie("DELETE FROM glpi_cartridges WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));
+                        PluginIserviceDB::iServiceQueryOrDie("DELETE FROM glpi_plugin_fields_cartridgecartridgecustomfields WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges custom fields'));
+                        PluginIserviceDB::iServiceQueryOrDie("DELETE FROM glpi_infocoms WHERE items_id IN ($ids_to_revoke) AND itemtype = 'Cartridge'", _t('Error deleting cartridges infocoms'));
                     }
                 }
             }

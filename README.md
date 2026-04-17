@@ -20,9 +20,8 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
 - Perform the following GLPI hacks
 - Update plugins if needed
   - fields plugin: download and unzip the latest release from [GitHub](https://github.com/PluginsGLPI/fields/releases).
-  - see Fileds plugin hacks in this file
+  - see Fields plugin hacks in this file
     - (at the last install I had to run `composer install --no-dev` in the plugin directory
-  - formcreator plugin: download and unzip the latest release from [GitHub](https://github.com/pluginsGLPI/formcreator/releases)
 
 ## GLPI hacks
 
@@ -128,4 +127,33 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
 
 - we need to modify the following files, in order to avoid custom field renaming when fields plugin version is above 1.9.2:
   - inc/field.class.php line 130 - 148, containing: ``$toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);``
-  - inc/dropdown.class.php line 72 - 76, containing: ``$toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);``
+    Comment: 
+    ```
+      //        $toolbox = new PluginFieldsToolbox();
+      //        $toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);
+
+      //move old types to new format
+      //        $migration->addPostQuery(
+      //            $DB->buildUpdate(
+      //                PluginFieldsField::getTable(),
+      //                ['type' => 'dropdown-User'],
+      //                ['type' => 'dropdownuser'],
+      //            ),
+      //        );
+      //
+      //        $migration->addPostQuery(
+      //            $DB->buildUpdate(
+      //                PluginFieldsField::getTable(),
+      //                ['type' => 'dropdown-OperatingSystem'],
+      //                ['type' => 'dropdownoperatingsystems'],
+      //            ),
+      //        );```
+  
+  - inc/dropdown.c`lass.php line 72 - 76, containing: ``$toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);``
+    Comment: 
+    ```
+        //        $toolbox = new PluginFieldsToolbox();
+        //        $toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);
+        //
+        //        // Ensure data is update before regenerating files.
+        //        $migration->executeMigration();```

@@ -5,7 +5,7 @@ return [
         select t.id, count(ct.id) consumable_count
         from glpi_plugin_iservice_tickets t
         join glpi_plugin_iservice_consumables_tickets ct on ct.tickets_id = t.id
-        where t.is_deleted = 0 and (t.plugin_fields_ticketexporttypedropdowns_id is null or t.plugin_fields_ticketexporttypedropdowns_id = 0)
+        where t.is_deleted = 0 and (t.plugin_fields_ticketexporttypedropdowns_id is null or t.plugin_fields_ticketexporttypedropdowns_id = 0 or t.plugin_fields_ticketexporttypedropdowns_id = '')
         group by t.id
         ",
     'test' => [

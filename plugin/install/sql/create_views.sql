@@ -163,7 +163,7 @@ from (((`glpi_printers` `p`
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
     left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
     left join glpi_states pst on pst.id = p.states_id
-    left join glpi_groups_items gi ON gi.items_id = p.id and gi.itemtype = 'Printer';
+    left join (select items_id, min(groups_id) as groups_id from glpi_groups_items where itemtype = 'Printer' group by items_id) gi ON gi.items_id = p.id;
 
 create or replace view glpi_plugin_iservice_printers_with_last_closed_ticket_data as
 select

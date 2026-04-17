@@ -352,6 +352,8 @@ class View extends \CommonGLPI
 
         if (!empty($this->filters)) {
             $filter = "<div class='view-filter noprint" . ($this->detail_displaying ? " detail" : "") . "'>";
+            ob_flush();
+            ob_start();
             if (isset($this->filters['prefix'])) {
                 $filter .= $this->filters['prefix'];
             }
@@ -361,6 +363,7 @@ class View extends \CommonGLPI
 
             $filter .= isset($this->filters['postfix']) ? $this->filters['postfix'] : '';
             $filter .= "</div>"; // View-filter.
+            ob_end_clean();
         }
 
         if (!$this->exporting) {

@@ -38,7 +38,8 @@ class PluginIservicePrinter extends Printer
      */
 
     protected $last_closed_ticket = null;
-        public static function getTypeName($nb = 0): string
+
+    public static function getTypeName($nb = 0): string
     {
         return _t('Manage printer');
     }
