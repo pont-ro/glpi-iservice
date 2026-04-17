@@ -26,7 +26,7 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
 
 ## GLPI hacks
 
-- Update `handleUserMentions()` method in `glpi/src/Glip/RichText/UserMention.php` line 88
+- Update `handleUserMentions()` method in `glpi/src/Glpi/RichText/UserMention.php` line 88
   - from: `$previous_value = $item->fields[$content_field];` 
   - to: `$previous_value = $item->fields[$content_field] ?? null;`
 - Comment the whole `__isset()` magic method in `glpi/src/CommonITILObject.php` as it messes a lot of verifications in iService code
