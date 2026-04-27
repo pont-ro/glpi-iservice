@@ -51,7 +51,7 @@ class PluginIservicePrinterDailyAverageCalculator
             )";
 
         try {
-            $DB->query($sql);
+            $DB->doQuery($sql);
             $task->log("Printer Daily Averages calculation done successfully");
             return 1;
         } catch (\Exception $e) {

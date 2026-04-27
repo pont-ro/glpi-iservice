@@ -2,6 +2,19 @@ tr, td {
     vertical-align: middle;
 }
 
+/* Legacy GLPI 10 table row classes - fallback for non-view pages */
+.tab_bg_1 {
+    background-color: #f8f9fa;
+}
+
+.tab_bg_2 {
+    background-color: #ecedf0;
+}
+
+.tab_bg_3 {
+    background-color: #ffe0b2;
+}
+
 .printonly {
     display: none;
 }
@@ -130,6 +143,7 @@ table.no-border td {
 }
 
 div.actions {
+    z-index: 1;
     text-align: center;
     white-space: nowrap;
 }

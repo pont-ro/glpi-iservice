@@ -314,7 +314,7 @@ class View extends \CommonGLPI
     protected function getQueryCount(): ?int
     {
         global $DB;
-        if (($count_result = $DB->query("select found_rows() as count")) === false) {
+        if (($count_result = $DB->doQuery("select found_rows() as count")) === false) {
             echo $DB->error();
             return null;
         }
@@ -432,7 +432,6 @@ class View extends \CommonGLPI
         $filter_value = ($filter_reset && !$required) ? null : ($params[$filter_name] ?? $filter_data['default'] ?? null);
 
         if ($required && empty($filter_value)) {
-            ob_end_clean();
             echo "<div class='error'>";
             echo isset($filter_data['required_error']) ? $filter_data['required_error'] : (__('Empty') . ' view.class.php' . $filter_data['caption']);
             echo "</div>";
@@ -658,7 +657,7 @@ class View extends \CommonGLPI
 
     protected function displayTotalRow($top_row): void
     {
-        echo $top_row ? "<tr>" : "<tr class='tab_bg_1' style='font-weight:bold;'>";
+        echo $top_row ? "<tr>" : "<tr style='font-weight:bold;'>";
         $tag = $top_row ? "th" : "td";
         if ($this->mass_actions_column) {
             echo "<$tag></$tag>";
@@ -914,7 +913,8 @@ class View extends \CommonGLPI
             $row_class = $this->evalIfFunction($this->row_class ?? '', ['row_data' => $row]);
 
             if (!$this->exporting) {
-                echo "<tr class='tab_bg_" . ($row_num++ % 2 + 1) . " result-row $row_class'>";
+                echo "<tr class='result-row $row_class'>";
+                $row_num++;
             }
 
             $row['__row_id__'] = $row_num;
@@ -1141,7 +1141,9 @@ class View extends \CommonGLPI
 
         global $CFG_GLPI;
         $table_name                  = $this->getMachineName();
-        $this->class[]               = 'tab_cadrehov';
+        $this->class[]               = 'table';
+        $this->class[]               = 'table-hover';
+        $this->class[]               = 'table-striped';
         $this->class[]               = 'wide';
         $this->class[]               = 'view-table';
         $this->class[]               = "detail$this->detail_displaying";
@@ -1358,7 +1360,7 @@ class View extends \CommonGLPI
             $this->adjustQueryLimit();
 
             global $DB;
-            if (($result = $DB->query($this->query)) === false) {
+            if (($result = $DB->doQuery($this->query)) === false) {
                 echo $DB->error(), '<br>', $this->query;
                 $html->closeForm();
                 return;
@@ -1450,8 +1452,8 @@ class View extends \CommonGLPI
     {
         global $DB;
         $table_name = 'glpi_plugin_iservice_cachetable_' . strtolower($this->getMachineName());
-        $DB->query("DROP TABLE IF EXISTS $table_name");
-        if (!$DB->query("CREATE TABLE $table_name AS {$this->getFilterlessQuery()}")) {
+        $DB->doQuery("DROP TABLE IF EXISTS $table_name");
+        if (!$DB->doQuery("CREATE TABLE $table_name AS {$this->getFilterlessQuery()}")) {
             echo $DB->error(), "<br>CREATE TABLE $table_name AS {$this->getFilterlessQuery()}";
             return null;
         }

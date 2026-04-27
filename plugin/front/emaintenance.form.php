@@ -43,7 +43,7 @@ if (!empty($get_mails)) {
 
     global $DB;
 
-    if ($DB->query($query)) {
+    if ($DB->doQuery($query)) {
         Session::addMessageAfterRedirect($success_message);
     } else {
         Session::addMessageAfterRedirect($error_message, false, ERROR);

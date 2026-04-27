@@ -125,7 +125,7 @@ class PluginIserviceOrderStatus extends CommonDropdown
     {
         global $DB;
         self::$weights = $statuses = [];
-        if (($status_result = $DB->query("SELECT * FROM glpi_plugin_iservice_orderstatuses")) !== false) {
+        if (($status_result = $DB->doQuery("SELECT * FROM glpi_plugin_iservice_orderstatuses")) !== false) {
             while (($status_row = $DB->fetchAssoc($status_result)) != false) {
                 $statuses[$status_row['id']]      = $status_row['name'];
                 self::$weights[$status_row['id']] = $status_row['weight'];

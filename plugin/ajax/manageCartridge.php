@@ -90,7 +90,7 @@ case 'remove_from_printer':
 
     if ($cartridge->update(['id' => $id, 'printers_id' => '0', 'date_use' => 'NULL', 'date_out' => 'NULL', 'pages_use_field' => 0, 'pages_color_use_field' => 0])) {
         global $DB;
-        if (!$DB->query("delete from glpi_iservice_cartridges_tickets where cartridges_id = $id")) {
+        if (!$DB->doQuery("delete from glpi_iservice_cartridges_tickets where cartridges_id = $id")) {
             (__("Could not remove cartridge from the installer ticket."));
         }
 

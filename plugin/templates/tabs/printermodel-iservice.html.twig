@@ -15,7 +15,7 @@
             {% for cartidgeItem in assignedCartidgeItems %}
                 <tr class="">
                     <td>
-                        <input type="checkbox" name="cartridge_item_ids[]" value="{{ cartidgeItem.id }}" class="form-check-input">
+                        <input type="checkbox" name="cartridge_item_ids[]" value="{{ cartidgeItem.getID() }}" class="form-check-input">
                     </td>
                     <td>{{ cartidgeItem.name }}</td>
                     <td>{{ cartidgeItem.ref }}</td>

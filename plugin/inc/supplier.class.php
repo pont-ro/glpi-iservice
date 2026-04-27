@@ -112,7 +112,7 @@ class PluginIserviceSupplier extends Supplier
     public static function gethMarfaFields($cod_hmarfa): array
     {
         global $DB;
-        if (($query_result = $DB->query("select * from hmarfa_firme where cod = '$cod_hmarfa'")) !== false && $query_result->num_rows > 0) {
+        if (($query_result = $DB->doQuery("select * from hmarfa_firme where cod = '$cod_hmarfa'")) !== false && $query_result->num_rows > 0) {
             return $query_result->fetch_assoc();
         } else {
             return [];
@@ -211,11 +211,11 @@ class PluginIserviceSupplier extends Supplier
         $debt_query = "SELECT $select FROM hmarfa_facturi WHERE " . join(" AND ", $conditions);
 
         if ($invoice_info >= 0) {
-            return $DB->result($DB->query($debt_query), 0, 0);
+            return $DB->result($DB->doQuery($debt_query), 0, 0);
         }
 
         $result = [];
-        if (($query_result = $DB->query($debt_query)) !== false) {
+        if (($query_result = $DB->doQuery($debt_query)) !== false) {
             while (($row = $query_result->fetch_array()) !== null) {
                 $result[] = $row;
             }
