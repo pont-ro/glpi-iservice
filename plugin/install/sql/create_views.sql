@@ -1,3 +1,5 @@
+
+
 create or replace view hmarfa_total_facturi as
 select
     `f`.`codbenef` as `codbenef`,
@@ -49,7 +51,6 @@ select
     t.actiontime as actiontime,
     t.is_deleted as is_deleted,
     t.locations_id as locations_id,
-    t.minimal_required_validation_percent as validation_percent,
     t.date_creation as date_creation,
     cft.id as cfid,
     cft.plugin_fields_containers_id as plugin_fields_containers_id,
