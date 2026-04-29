@@ -68,7 +68,11 @@ function plugin_init_iservice(): void
     PluginIserviceConfig::handleConfigValues();
     $twigEnv = TemplateRenderer::getInstance()->getEnvironment();
     if (!$twigEnv->hasExtension(PluginIserviceTranslationExtension::class)) {
-        $twigEnv->addExtension(new PluginIserviceTranslationExtension());
+        try {
+            $twigEnv->addExtension(new PluginIserviceTranslationExtension());
+        } catch (\LogicException $e) {
+            // Plugin loaded lazily mid-request after Twig already initialized; extension already registered via earlier load
+        }
     }
 
     if ($TIMER_DEBUG !== null) {
