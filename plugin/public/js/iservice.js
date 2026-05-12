@@ -689,11 +689,12 @@ jQuery(document).ready(
                         value: JSON.stringify(formData)
                     }).appendTo($newForm);
 
-                    if (formData['_glpi_csrf_token']) {
+                    let csrfToken = formData['_glpi_csrf_token'] || $originalForm.find('input[name="_glpi_csrf_token"]').first().val();
+                    if (csrfToken) {
                         $('<input>').attr({
                             type: 'hidden',
                             name: '_glpi_csrf_token',
-                            value: formData['_glpi_csrf_token']
+                            value: csrfToken
                         }).appendTo($newForm);
                     }
 

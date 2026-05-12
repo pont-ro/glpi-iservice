@@ -16,11 +16,11 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 {
 
-    const bool GENERAL_INCLUDE_LOCATION = false;
-    const bool GENERAL_INCLUDE_COST_CENTER = true;
-    const bool GENERAL_INCLUDE_USAGEADDRESS = false;
-    const bool GENERAL_INCLUDE_PERIOD = true;
-    const bool GENERAL_INCLUDE_STATUS = false;
+    const GENERAL_INCLUDE_LOCATION = false;
+    const GENERAL_INCLUDE_COST_CENTER = true;
+    const GENERAL_INCLUDE_USAGEADDRESS = false;
+    const GENERAL_INCLUDE_PERIOD = true;
+    const GENERAL_INCLUDE_STATUS = false;
 
     public static function showInvoiceExportForm()
     {
@@ -1037,13 +1037,12 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 'method' => 'post',
             ]
         );
+        echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
 
         self::renderInvoiceHead($form, $items, $frontendData);
         self::renderPrinterSection($form, $items, $frontendData['invoiceData']);
         self::renderRouterSection($form, $items, $frontendData['invoiceData']);
         self::renderExportSection($form, $items, $frontendData);
-
-        $form->closeForm();
     }
 
     protected static function renderTitle(array $items)
