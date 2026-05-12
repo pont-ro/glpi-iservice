@@ -1343,7 +1343,7 @@ class View extends \CommonGLPI
             }
 
             echo "<input type='hidden' name='filtering' value='filtering' />";
-            echo "<input type='hidden' name='kcsrft' value='1' />";
+            echo "<input type='hidden' name='_glpi_csrf_token' value='" . Session::getNewCSRFToken(true) . "' />";
             echo "<input id='cache-refresh' type='hidden' name='cache_refresh' value='' />";
         }
 
