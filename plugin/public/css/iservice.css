@@ -106,6 +106,10 @@ table.no-border td {
     white-space: nowrap;
 }
 
+.view-table th.with-filter a {
+    font-weight: bold;
+}
+
 .view-table th.with-filter select,
 .view-table th.with-filter input[type='text'] {
     margin: 0;
@@ -205,13 +209,25 @@ div.actions-wrap {
     pointer-events: auto !important;
 }
 
+.floating-buttons {
+    position: fixed;
+    bottom: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 0.5rem;
+}
+
 .floating-buttons.right {
-    left: auto;
     right: 10px;
+    left: auto;
 }
 
 .floating-buttons.left {
-    left: auto;
+    left: 10px;
+}
+
+form:has(.floating-buttons) {
+    padding-bottom: 70px;
 }
 
 #change-cartridges-anchor {

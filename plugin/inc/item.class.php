@@ -217,7 +217,7 @@ trait PluginIserviceItem
 
         $result = false;
 
-        if ($this->loadOrCreateCustomFields($model->getID())) {
+        if ($this->loadOrCreateCustomFields($model->getID(), $input)) {
             $result = $this->customfields->update(array_merge($input, ['id' => $this->customfields->getID()]), $history, $options);
         }
 
@@ -255,7 +255,7 @@ trait PluginIserviceItem
         return false;
     }
 
-    public function loadOrCreateCustomFields($ID): bool
+    public function loadOrCreateCustomFields($ID, $input = []): bool
     {
         if (empty(self::$customFieldsModelName)) {
             return false;
@@ -265,12 +265,15 @@ trait PluginIserviceItem
 
         if (!PluginIserviceDB::populateByItemsId($this->customfields, $ID)
             && !$this->customfields->add(
-                [
-                    'add' => 'add',
-                    'items_id' => $ID,
-                    'itemtype' => (new parent())->getType(),
-                    '_no_message' => true
-                ]
+                array_merge(
+                    [
+                        'add' => 'add',
+                        'items_id' => $ID,
+                        'itemtype' => (new parent())->getType(),
+                        '_no_message' => true
+                    ],
+                    $input
+                )
             )
         ) {
             return false;

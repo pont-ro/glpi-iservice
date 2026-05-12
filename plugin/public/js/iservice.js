@@ -689,6 +689,14 @@ jQuery(document).ready(
                         value: JSON.stringify(formData)
                     }).appendTo($newForm);
 
+                    if (formData['_glpi_csrf_token']) {
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: '_glpi_csrf_token',
+                            value: formData['_glpi_csrf_token']
+                        }).appendTo($newForm);
+                    }
+
                     $originalForm.find('input[type="file"]').each(function() {
                         $newForm.append($(this).clone());
                     });

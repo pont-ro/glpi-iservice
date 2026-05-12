@@ -1913,6 +1913,8 @@ class PluginIserviceTicket extends Ticket
                                 'id'                                          => $new_cartridge_ids[count($new_cartridge_ids) - 1],
                                 'plugin_fields_cartridgeitemtypedropdowns_id' => $consumable['plugin_fields_cartridgeitemtypedropdowns_id'],
                                 'date_in'                                     => $ticket->customfields->fields['effective_date_field'],
+                                'suppliers_id_field'                          => $supplier->getID(),
+                                'locations_id_field'                          => empty($consumable['locations_id']) ? '0' : $consumable['locations_id'],
                             ]
                         );
                     }
