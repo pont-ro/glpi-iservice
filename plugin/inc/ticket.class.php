@@ -1015,6 +1015,7 @@ class PluginIserviceTicket extends Ticket
                     continue;
                 }
 
+                $success = $success && $cartridge->getFromDB($pluginIserviceCartridgesTickets->fields['cartridges_id']);
                 $success = $success && $cartridge->update(
                     [
                         'id' => $pluginIserviceCartridgesTickets->fields['cartridges_id'],
@@ -1027,6 +1028,8 @@ class PluginIserviceTicket extends Ticket
                         'pages_color_out_field' => 0,
                         'pages_use_field' => 0,
                         'pages_color_use_field' => 0,
+                        'suppliers_id_field' => $cartridge->customfields->fields['suppliers_id_field'],
+                        'locations_id_field' => $cartridge->customfields->fields['locations_id_field'],
                     ]
                 );
                 $success = $success && $pluginIserviceCartridgesTickets->delete(['id' => $idToDelete]);
@@ -1355,7 +1358,7 @@ class PluginIserviceTicket extends Ticket
         self::removeEmptyStringFromNumericFields($input);
 
         foreach ([CommonITILActor::ASSIGN => 'assign', CommonITILActor::REQUESTER => 'requester', CommonITILActor::OBSERVER => 'observer'] as $user_type_key => $user_type) {
-            foreach (['glpi_tickets_users' => 'users_id', 'glpi_suppliers_tikcets' => 'suppliers_id'] as $table => $item_type) {
+            foreach (['glpi_tickets_users' => 'users_id', 'glpi_suppliers_tickets' => 'suppliers_id'] as $table => $item_type) {
                 if ((($input['_' . $item_type . '_' . $user_type] ?? 0) ?: 0) != (($input['_' . $item_type . '_' . $user_type . '_original'] ?? 0) ?: 0)) {
                     global $DB;
                     $DB->doQuery("delete from $table where type = $user_type_key and tickets_id = $input[id]");
@@ -2278,7 +2281,7 @@ class PluginIserviceTicket extends Ticket
                 $cartridge_item['cartridges_id_emptied'],
                 $ticket->getPrinterId() ?? 0,
                 $ticket->getPartnerId() ?? 0,
-                $ticket->fields['locations_id'] ?? null,
+                $ticket->fields['locations_id'] ?? 0,
                 $ticket->customfields->fields['total2_black_field'] ?? null,
                 $ticket->customfields->fields['total2_color_field'] ?? null,
                 $ticket->customfields->fields['cartridge_install_date_field'] ?? $ticket->customfields->fields['effective_date_field']

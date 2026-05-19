@@ -648,7 +648,7 @@ class PluginIservicePrinter extends Printer
         $renewal_options['method']          = 'dropdownContractRenewal';
         $renewal_options['readonly_method'] = 'getContractRenewalName';
         $renewal_options['arguments']       = ['contract[renewal]', $contract->fields['renewal'], false];
-        $output                            .= $form->generateFieldTableRow(__('Renewal'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[renewal]', $contract->fields['renewal'], $readonly, $renewal_options));
+        $output                            .= $form->generateFieldTableRow(__('Renewal'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[renewal]', (int) $contract->fields['renewal'], $readonly, $renewal_options));
 
         // Contract type.
         $contracttype_options['type'] = 'ContractType';

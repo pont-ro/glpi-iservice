@@ -835,6 +835,8 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     '_no_message' => true,
                     $oldCartridge->getIndexName() => $emptiedCartridgeId,
                     'date_out' => $installTime,
+                    'suppliers_id_field' => $oldCartridge->customfields->fields['suppliers_id_field'],
+                    'locations_id_field' => $oldCartridge->customfields->fields['locations_id_field'],
                     'tickets_id_out_field' => $ticketId,
                     'pages_out_field' => $total2Black,
                     'pages_color_out_field' => $total2Color,
@@ -885,11 +887,11 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             return "Could not find cartridge with id $cartridge_id to uninstall it.";
         }
 
-        $old_cartridge          = new PluginIserviceCartridge();
+        $oldCartridge          = new PluginIserviceCartridge();
         $uninstalled_multiplier = 0;
         if (empty($emptied_cartridge_id)) {
             if (!PluginIserviceDB::populateByQuery(
-                $old_cartridge, "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `glpi_cartridges`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem' 
+                $oldCartridge, "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `glpi_cartridges`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem' 
             join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = id and cfc.itemtype = 'Cartridge'
             where cfc.tickets_id_out_field = $ticket_id and cfc.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `glpi_plugin_fields_cartridgecartridgecustomfields`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
             )
@@ -897,22 +899,24 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 $uninstalled_multiplier = -1;
             }
         } else {
-            if (!$old_cartridge->getFromDB($emptied_cartridge_id)) {
+            if (!$oldCartridge->getFromDB($emptied_cartridge_id)) {
                 return "Could not find cartridge with id $emptied_cartridge_id to reinstall it.";
             }
         }
 
         if ($uninstalled_multiplier === 0) {
-            $old_cartridge->update(
+            $oldCartridge->update(
                 [
                     '_no_message' => true,
-                    $old_cartridge->getIndexName() => $old_cartridge->getID(),
+                    $oldCartridge->getIndexName() => $oldCartridge->getID(),
                     'date_out' => 'NULL',
+                    'suppliers_id_field' => $oldCartridge->customfields->fields['suppliers_id_field'],
+                    'locations_id_field' => $oldCartridge->customfields->fields['locations_id_field'],
                     'tickets_id_out_field' => 'NULL',
                     'pages_out_field' => 0,
                     'pages_color_out_field' => 0,
-                // 'printed_pages_field' => $old_cartridge->fields['printed_pages_field'] + $old_cartridge->fields['pages_use_field'] - $cartridge->fields['pages_use_field'],
-                // 'printed_pages_color_field' => $old_cartridge->fields['printed_pages_color_field'] + $old_cartridge->fields['pages_color_use_field'] - $cartridge->fields['pages_color_use_field'],
+                // 'printed_pages_field' => $oldCartridge->fields['printed_pages_field'] + $oldCartridge->fields['pages_use_field'] - $cartridge->fields['pages_use_field'],
+                // 'printed_pages_color_field' => $oldCartridge->fields['printed_pages_color_field'] + $oldCartridge->fields['pages_color_use_field'] - $cartridge->fields['pages_color_use_field'],
                 ]
             );
             $installed_multiplier = 1;
@@ -923,6 +927,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 $cartridge->getIndexName() => $cartridge->getID(),
                 '_no_message' => true,
                 'suppliers_id_field' => $supplier_id,
+                'locations_id_field' => empty($location_id) ? '0' : $location_id,
                 'date_use' => 'NULL',
                 'tickets_id_use_field' => 'NULL',
                 'date_out' => 'NULL',

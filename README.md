@@ -125,6 +125,10 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
 
 ## Fields plugin hacks
 
+- Update `PluginFieldsContainer::validateValues()` method to accept 'NULL' values for number custom fields in `glpi/plugins/fields/inc/container.class.php` line 1727:
+  - from: `} elseif ($field['type'] == 'number' && !empty($value) && !is_numeric($value)) {`
+  - to: `} elseif ($field['type'] == 'number' && !empty($value) && strtoupper($value) !== 'NULL' && !is_numeric($value)) {`
+
 - we need to modify the following files, in order to avoid custom field renaming when fields plugin version is above 1.9.2:
   - inc/field.class.php line 130 - 148, containing: ``$toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);``
     Comment: 
