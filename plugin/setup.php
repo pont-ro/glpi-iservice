@@ -62,6 +62,19 @@ function plugin_init_iservice(): void
     global $CFG_PLUGIN_ISERVICE;
     global $DEBUG_SQL, $TIMER_DEBUG;
 
+    // GLPI 11 added a Symfony firewall that blocks unauthenticated access to all legacy plugin
+    // scripts by default (FALLBACK_STRATEGY_FOR_LEGACY_SCRIPTS = STRATEGY_AUTHENTICATED).
+    // The QR form must be accessible without a session — loginQrUser() inside qr.form.php
+    // handles authentication itself. Register it as NO_CHECK so the firewall lets it through.
+    // Guard with class_exists for compatibility with GLPI 10.x where Firewall does not exist.
+    if (class_exists(\Glpi\Http\Firewall::class)) {
+        \Glpi\Http\Firewall::addPluginStrategyForLegacyScripts(
+            'iservice',
+            '#^/front/qr\.form\.php$#',
+            \Glpi\Http\Firewall::STRATEGY_NO_CHECK
+        );
+    }
+
     // IMPORTANT! Without this restriction, user can navigate out from the QR form, and that is not allowed because user is automatically logged in on that page.
     PluginIserviceQr::restrictQrUserToQrForm();
 
