@@ -1062,11 +1062,22 @@ class View extends \CommonGLPI
             self::ensureArrayKey($mass_action, 'style');
             self::ensureArrayKey($mass_action, 'new_tab', true);
             if (empty($mass_action['massAjaxCall'])) {
-                $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
-                $mass_action_on_click   = $mass_action['onClick'] ?? '';
-                $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
-                $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
-                $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
+                $mass_action_on_click = $mass_action['onClick'] ?? '';
+                if ($mass_action['new_tab']) {
+                    // Open in a new tab by constructing a GET URL with the selected item
+                    // checkboxes appended as query parameters, then using window.open().
+                    // This avoids submitting the main filter form, which would consume the
+                    // form's CSRF token and break subsequent filter submissions on this page.
+                    // Note: attribute is onclick='...' so use only double quotes inside JS.
+                    $mass_action_on_click .= 'var queryParts=[];';
+                    $mass_action_on_click .= '$(this).closest("form").find(".massive_action_checkbox:checked").each(function(){queryParts.push(encodeURIComponent($(this).attr("name"))+"="+encodeURIComponent($(this).val()));});';
+                    $mass_action_on_click .= 'window.open("' . $mass_action['action'] . '&"+queryParts.join("&"),"_blank");';
+                    $mass_action_on_click .= 'return false;';
+                } else {
+                    // For same-page actions, submit the main form to the new action URL.
+                    $mass_action_on_click .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
+                    $mass_action_on_click .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
+                }
             } else {
                 $mass_action_on_click = $this->buildAjaxCallScript($mass_action['massAjaxCall']);
             }
