@@ -59,7 +59,7 @@ case 'remove_from_supplier':
     }
     break;
 case 'force_supplier':
-    $update_data = ['id' => $id, "suppliers_id_field" => $supplier_id, "locations_id_field" => '0'];
+    $update_data = ['id' => $id, "suppliers_id_field" => $supplier_id, "locations_id_field" => $location_id ?? '0'];
     if ($cartridge->update($update_data)) {
         die(IserviceToolBox::RESPONSE_OK);
     }
