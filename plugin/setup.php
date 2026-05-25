@@ -7,7 +7,7 @@ use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
-define('ISERVICE_VERSION', '3.0.27');
+define('ISERVICE_VERSION', '3.1.0');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
@@ -254,7 +254,7 @@ function plugin_version_iservice(): array
         'homepage'     => '',
         'requirements' => [
             'glpi' => [
-                'min'     => '10.0',
+                'min'     => '11.0',
                 'max'     => '11.0.99',
                 'plugins' => ['fields'],
             ],

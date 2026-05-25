@@ -1937,7 +1937,7 @@ class PluginIserviceTicket extends Ticket
                         Session::addMessageAfterRedirect("Cartușul $installer_ticket[cartridges_id] nu poate fi retras deoarece tichetul $installer_ticket[tickets_id] îl instalează.", false, ERROR);
                     }
 
-                    PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['deliveredfield'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
+                    PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_plugin_fields_ticketticketcustomfields SET delivered_field = " . ($item->input['delivered_field'] ? 0 : 1) . " WHERE itemtype = 'Ticket' and items_id = $ticket_id", "Error reverting delivered state");
                 } else {
                     if ($item->input['delivered_field']) {
                         PluginIserviceDB::iServiceQueryOrDie("UPDATE glpi_cartridges SET date_out = '{$ticket->customfields->fields['effective_date_field']}'WHERE id IN ($ids_to_revoke)", _t('Error deleting cartridges'));

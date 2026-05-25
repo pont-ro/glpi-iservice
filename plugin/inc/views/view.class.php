@@ -1070,8 +1070,32 @@ class View extends \CommonGLPI
                     // form's CSRF token and break subsequent filter submissions on this page.
                     // Note: attribute is onclick='...' so use only double quotes inside JS.
                     $mass_action_on_click .= 'var queryParts=[];';
+                    $mass_action_on_click .= 'queryParts.push($(this).attr("name")+"=1");';
+
+                    if (!empty($mass_action['params'])) {
+                        if (!is_array($mass_action['params'])) {
+                            $mass_action['params'] = explode(',', $mass_action['params']);
+                        }
+                        foreach ($mass_action['params'] as $param) {
+                            $mass_action_on_click .= '
+                                (function(param){
+                                    var fields = $(this).closest("form").find("[name]").filter(function(){
+                                        return this.name === param;
+                                    });
+                                
+                                    fields.each(function(){
+                                        var value = $(this).val();
+                                        if (value !== undefined) {
+                                            queryParts.push(encodeURIComponent(param) + "=" + encodeURIComponent(value));
+                                        }
+                                    });
+                                }).call(this, "' . $param . '");
+                            ';
+                        }
+                    }
+
                     $mass_action_on_click .= '$(this).closest("form").find(".massive_action_checkbox:checked").each(function(){queryParts.push(encodeURIComponent($(this).attr("name"))+"="+encodeURIComponent($(this).val()));});';
-                    $mass_action_on_click .= 'window.open("' . $mass_action['action'] . '&"+queryParts.join("&"),"_blank");';
+                    $mass_action_on_click .= 'window.open("' . $mass_action['action'] . (strpos($mass_action['action'], '?') > 0 ? '&' : '?') . '"+queryParts.join("&"),"_blank");';
                     $mass_action_on_click .= 'return false;';
                 } else {
                     // For same-page actions, submit the main form to the new action URL.

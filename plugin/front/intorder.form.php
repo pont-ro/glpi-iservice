@@ -22,12 +22,13 @@ global $CFG_PLUGIN_ISERVICE;
 
 if (!empty($mass_action_change_status)) {
     $items = IserviceToolBox::getArrayInputVariable('item', []);
+    $intOrderInput = IserviceToolBox::getArrayInputVariable('intorder', []);
     if (!isset($items['intorder']) || !is_array($items['intorder'])) {
         Session::addMessageAfterRedirect("Invalid massive action call", false, ERROR);
         Html::back();
     }
 
-    if (!isset($post['intorder']['new_status']) || $post['intorder']['new_status'] < 1) {
+    if (!isset($intOrderInput['new_status']) || $intOrderInput['new_status'] < 1) {
         Session::addMessageAfterRedirect("Invalid new status", false, ERROR);
         Html::back();
     }
@@ -37,7 +38,7 @@ if (!empty($mass_action_change_status)) {
     foreach (array_keys($items['intorder']) as $intorder_id) {
         $input = [
             'id' => $intorder_id,
-            'plugin_iservice_orderstatuses_id' => $post['intorder']['new_status'],
+            'plugin_iservice_orderstatuses_id' => $intOrderInput['new_status'],
         ];
         if ($intOrder->update($input)) {
             $success++;
