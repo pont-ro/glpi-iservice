@@ -106,6 +106,14 @@ table.no-border td {
     white-space: nowrap;
 }
 
+.view-header {
+    font-size: 0.80rem !important;
+}
+
+table.table thead th {
+    font-size: 0.80rem;
+}
+
 .view-table th.with-filter a {
     font-weight: bold;
 }
