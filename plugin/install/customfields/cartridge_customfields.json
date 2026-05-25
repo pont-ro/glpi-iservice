@@ -115,7 +115,7 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1",
+        "mandatory": "0",
         "decimalPrecision": "11,0"
     },
     {
@@ -128,7 +128,7 @@
         "default_value": "",
         "is_active": "1",
         "is_readonly": "0",
-        "mandatory": "1",
+        "mandatory": "0",
         "decimalPrecision": "11,0"
     },
     {

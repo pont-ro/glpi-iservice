@@ -90,6 +90,7 @@ class Extorders extends View
                     'caption' => 'Schimbă starea',
                     'action' => 'extorder.form.php',
                     'suffix' => $new_order_status_dropdown,
+                    'new_tab' => false,
                 ],
             ],
             'show_export' => true,
