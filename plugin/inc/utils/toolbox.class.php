@@ -52,9 +52,24 @@ class ToolBox
         return match ($input_type) {
             INPUT_GET => $get_result ?? $default_value,
             INPUT_POST => $post_result ?? $default_value,
-            INPUT_REQUEST => ($get_result === null && $post_result === null) ? $default_value : ((array) $get_result + (array) $post_result),
+            INPUT_REQUEST => ($get_result === null && $post_result === null) ? $default_value : self::arrayMergeUnion((array) $get_result, (array) $post_result),
             default => null,
         };
+    }
+
+    public static function arrayMergeUnion(array $left, array $right): array
+    {
+        foreach ($right as $key => $value) {
+            if (!array_key_exists($key, $left)) {
+                $left[$key] = $value;
+            } elseif (is_array($left[$key]) && is_array($value)) {
+                $left[$key] = self::arrayMergeUnion($left[$key], $value);
+            } elseif (!is_array($left[$key])) {
+                $left[$key] = $value;
+            }
+        }
+
+        return $left;
     }
 
     public static function getInputVariables(array $variables, $input_type = INPUT_REQUEST): array
@@ -568,9 +583,11 @@ class ToolBox
         if ($userName) {
             $mailer->Username = $userName;
         }
+
         if ($password) {
             $mailer->Password = $password;
         }
+
         try {
             $mailer->AddCustomHeader("Auto-Submitted: auto-generated");
             $mailer->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
@@ -602,4 +619,5 @@ class ToolBox
             return $e->getMessage();
         }
     }
+
 }
