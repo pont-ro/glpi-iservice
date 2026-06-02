@@ -101,7 +101,7 @@ class PluginIserviceHmarfa
                 . " WHERE glpi_contracts.id=glpi_contracts_items.contracts_id AND glpi_contracts_items.items_id = '$id' AND glpi_contracts_items.itemtype = 'Printer' "
                 . getEntitiesRestrictRequest(" AND", "glpi_contracts", '', '', true) . " ORDER BY glpi_contracts.name";
 
-        $result   = $DB->query($query);
+        $result   = $DB->doQuery($query);
         $number   = $DB->numrows($result);
         $contract = new PluginIserviceContract();
         if ($number > 0) {
@@ -1016,7 +1016,7 @@ class PluginIserviceHmarfa
         $total_gain                   = 0;
         $ticket_partner_sales_rows    = [];
         $ticket_partner_sales_columns = [];
-        if (($ticket_partner_sales_result = $DB->query($ticket_partner_sales_query)) !== false) {
+        if (($ticket_partner_sales_result = $DB->doQuery($ticket_partner_sales_query)) !== false) {
             while ($data = $DB->fetchAssoc($ticket_partner_sales_result)) {
                 if ($ticket_partner_sales_columns === []) {
                     $ticket_partner_sales_columns = array_keys($data);

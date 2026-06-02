@@ -7,7 +7,7 @@ use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 
-define('ISERVICE_VERSION', '3.0.26');
+define('ISERVICE_VERSION', '3.1.1');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");
@@ -62,13 +62,35 @@ function plugin_init_iservice(): void
     global $CFG_PLUGIN_ISERVICE;
     global $DEBUG_SQL, $TIMER_DEBUG;
 
+    // GLPI 11 added a Symfony firewall that blocks unauthenticated access to all legacy plugin
+    // scripts by default (FALLBACK_STRATEGY_FOR_LEGACY_SCRIPTS = STRATEGY_AUTHENTICATED).
+    // The QR form must be accessible without a session — loginQrUser() inside qr.form.php
+    // handles authentication itself. Register it as NO_CHECK so the firewall lets it through.
+    // Guard with class_exists for compatibility with GLPI 10.x where Firewall does not exist.
+    if (class_exists(\Glpi\Http\Firewall::class)) {
+        \Glpi\Http\Firewall::addPluginStrategyForLegacyScripts(
+            'iservice',
+            '#^/front/qr\.form\.php$#',
+            \Glpi\Http\Firewall::STRATEGY_NO_CHECK
+        );
+    }
+
     // IMPORTANT! Without this restriction, user can navigate out from the QR form, and that is not allowed because user is automatically logged in on that page.
     PluginIserviceQr::restrictQrUserToQrForm();
 
     PluginIserviceConfig::handleConfigValues();
-    TemplateRenderer::getInstance()->getEnvironment()->addExtension(new PluginIserviceTranslationExtension());
+    $twigEnv = TemplateRenderer::getInstance()->getEnvironment();
+    if (!$twigEnv->hasExtension(PluginIserviceTranslationExtension::class)) {
+        try {
+            $twigEnv->addExtension(new PluginIserviceTranslationExtension());
+        } catch (\LogicException $e) {
+            // Plugin loaded lazily mid-request after Twig already initialized; extension already registered via earlier load
+        }
+    }
 
-    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
+    if ($TIMER_DEBUG !== null) {
+        $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Init iService';
+    }
 
     $CFG_PLUGIN_ISERVICE = [
         'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice",
@@ -90,15 +112,14 @@ function plugin_init_iservice(): void
         return;
     }
 
-    $PLUGIN_HOOKS[Hooks::DEBUG_TABS]['iservice'] = [
-        'iservice' => [
-            'title' => 'iService',
-            'display_callable' => 'plugin_iservice_debug_tab',
-        ]
-    ];
-
-    // Must override the formcreator hook, as it has bug.
-    $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['formcreator'][Profile::class] = 'plugin_iservice_hook_formcreator_update_profile';
+    if (defined('Glpi\Plugin\Hooks::DEBUG_TABS')) {
+        $PLUGIN_HOOKS[Hooks::DEBUG_TABS]['iservice'] = [
+            'iservice' => [
+                'title' => 'iService',
+                'display_callable' => 'plugin_iservice_debug_tab',
+            ]
+        ];
+    }
 
     // Add link in plugin page.
     $PLUGIN_HOOKS['config_page']['iservice'] = 'front/config.form.php';
@@ -158,13 +179,60 @@ function plugin_init_iservice(): void
             'addtabon' => ['CartridgeItem', 'PrinterModel'],
         ]
     );
+
+    // Pre-register all PluginIservice* itemtype-to-table mappings in $CFG_GLPI cache.
+    // This is only needed in dev environments where the plugin directory is a symlink,
+    // which causes GLPI 11's realpath() validation in getItemTypeForTable() to fail.
+    $plugin_dir = GLPI_ROOT . '/plugins/iservice';
+    if (is_link($plugin_dir)) {
+        $dbu                = new DbUtils();
+        $iservice_itemtypes = [
+        // Views.
+            'PluginIserviceCartridge',
+            'PluginIserviceCartridgeItem',
+            'PluginIserviceConsumable',
+            'PluginIserviceContract',
+            'PluginIserviceIntorder_View',
+            'PluginIservicePrinter',
+            'PluginIserviceSupplier',
+            'PluginIserviceTicket',
+            'PluginIservicePrinterModel',
+
+        // Tables.
+            'PluginIserviceCartridge_Ticket',
+            'PluginIserviceConfig',
+            'PluginIserviceConsumableDescription',
+            'PluginIserviceConsumable_Model',
+            'PluginIserviceConsumable_Ticket',
+            'PluginIserviceDownload',
+            'PluginIserviceExtOrder',
+            'PluginIserviceImportMapping',
+            'PluginIserviceIntOrder',
+            'PluginIserviceIntOrder_ExtOrder',
+            'PluginIserviceMinimumStock',
+            'PluginIserviceMovement',
+            'PluginIserviceOrderStatus',
+            'PluginIserviceOrderStatusChange',
+            'PluginIservicePendingEmail',
+            'PluginIserviceQr',
+            'PluginIserviceVehicle',
+            'PluginIserviceVehicleExpirable',
+        ];
+        foreach ($iservice_itemtypes as $itemtype) {
+            if (class_exists($itemtype) && is_subclass_of($itemtype, CommonDBTM::class, true)) {
+                $dbu->getTableForItemType($itemtype);
+            }
+        }
+    }
 }
 
 function plugin_iservice_debug_tab($with_session, $ajax, $rand): void
 {
     global $DEBUG_SQL, $TIMER_DEBUG;
 
-    $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Displaying iService debug tab';
+    if ($TIMER_DEBUG !== null) {
+        $DEBUG_SQL['debug_times'][$TIMER_DEBUG->getTime()] = 'Displaying iService debug tab';
+    }
 
     echo "<pre>";
     print_r($DEBUG_SQL['debug_times']);
@@ -186,9 +254,9 @@ function plugin_version_iservice(): array
         'homepage'     => '',
         'requirements' => [
             'glpi' => [
-                'min'     => '10.0',
-                'max'     => '10.1',
-                'plugins' => ['fields', 'formcreator'],
+                'min'     => '11.0',
+                'max'     => '11.0.99',
+                'plugins' => ['fields'],
             ],
         ],
     ];

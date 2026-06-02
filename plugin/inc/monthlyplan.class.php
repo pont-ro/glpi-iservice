@@ -99,7 +99,7 @@ class PluginIserviceMonthlyPlan extends CommonGLPI
             ORDER BY e.name
             ";
 
-        $result = $DB->query($query);
+        $result = $DB->doQuery($query);
         if (!$result) {
             echo $DB->error();
             die();

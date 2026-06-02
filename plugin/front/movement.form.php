@@ -107,7 +107,7 @@ if (!empty($add)) {
 
         // Toroljuk azokat a szerzodeseket a jelenlegi partnerrol, amelyek az adott gepet tartalmazzak,
         // de csak akkor ha a szerzodes nem tartalmaz ugyanehez a partnerhez tartozo masik gepet.
-        $DB->query(
+        $DB->doQuery(
             "DELETE FROM glpi_contracts_suppliers
                                 WHERE contracts_id IN (
                                             SELECT ci.contracts_id
@@ -123,7 +123,7 @@ if (!empty($add)) {
                                 )"
         ) or die("Error deleting partner from old contract");
         // Leszedjuk a gepet a jelenlegi szerzodeserol. Ezen a ponton a szerzodes mar le van szedve a partnerrol ha szukseges.
-        $DB->query("DELETE FROM glpi_contracts_items WHERE itemtype = '$post[itemtype]' AND items_id = $post[items_id]") or die("Error deleting item from old contract");
+        $DB->doQuery("DELETE FROM glpi_contracts_items WHERE itemtype = '$post[itemtype]' AND items_id = $post[items_id]") or die("Error deleting item from old contract");
 
         if (!empty($post['contracts_id'])) {
             $contract_item = new Contract_Item();

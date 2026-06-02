@@ -179,15 +179,18 @@ class Intorders extends View
                 'order_again' => [
                     'caption' => 'Comandă din nou',
                     'action' => 'intorder.form.php',
+                    'new_tab' => false,
                 ],
                 'create_extorder' => [
                     'caption' => 'Creează comandă externă',
                     'action' => 'extorder.form.php',
+                    'new_tab' => false,
                 ],
                 'change_status' => [
                     'caption' => 'Schimbă starea',
                     'action' => 'intorder.form.php',
                     'suffix' => $new_order_status_dropdown,
+                    'new_tab' => false,
                 ],
             ],
             'show_export' => true,

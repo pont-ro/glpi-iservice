@@ -19,13 +19,22 @@ class OverwriteAssetsInstallStep
         'templates/layout/parts/user_header.html.twig',
     ];
 
+    private static function getGlpiPath(string $fileName): string
+    {
+        if (str_starts_with($fileName, 'pics/')) {
+            return GLPI_ROOT . "/public/$fileName";
+        }
+        return GLPI_ROOT . "/$fileName";
+    }
+
     public static function do(): bool
     {
         $result = true;
         foreach (self::ASSETS_TO_CHANGE as $fileName) {
-            if (!file_exists(GLPI_ROOT . "/$fileName.iSb")) {
-                $result &= rename(GLPI_ROOT . "/$fileName", GLPI_ROOT . "/$fileName.iSb");
-                $result &= copy(PLUGIN_ISERVICE_DIR . "/assets/$fileName", GLPI_ROOT . "/$fileName");
+            $glpiPath = self::getGlpiPath($fileName);
+            if (!file_exists("$glpiPath.iSb")) {
+                $result &= rename($glpiPath, "$glpiPath.iSb");
+                $result &= copy(PLUGIN_ISERVICE_DIR . "/assets/$fileName", $glpiPath);
             }
         }
 
@@ -35,9 +44,10 @@ class OverwriteAssetsInstallStep
     public static function undo(): void
     {
         foreach (self::ASSETS_TO_CHANGE as $fileName) {
-            if (file_exists(GLPI_ROOT . "/$fileName.iSb")) {
-                unlink(GLPI_ROOT . "/$fileName");
-                rename(GLPI_ROOT . "/$fileName.iSb", GLPI_ROOT . "/$fileName");
+            $glpiPath = self::getGlpiPath($fileName);
+            if (file_exists("$glpiPath.iSb")) {
+                unlink($glpiPath);
+                rename("$glpiPath.iSb", $glpiPath);
             }
         }
     }

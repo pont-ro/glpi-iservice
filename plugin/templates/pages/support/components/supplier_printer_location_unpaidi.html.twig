@@ -8,7 +8,7 @@
     partnerId,
     __('Partener'),
     field_options|merge({
-        'on_change': "$(this).closest('form').submit();",
+        'on_change': "const $form = $(this).closest('form'); $form.removeAttr('data-submit-once'); $form.submit();",
         'readonly': partnersFieldReadonly,
     })
 ) }}
@@ -39,13 +39,13 @@
                     }
                 },
                 'WHERE': {
-                    'i.suppliers_id': partnerId,
+                    'i.suppliers_id': (partnerId ? ['=', partnerId] : ['>' , '-1']),
                     'RAW': {
                         'glpi_plugin_iservice_printers.users_id':  (filter_printers_by_users_id ? ['=', filter_printers_by_users_id] : ['>' , '-1'])
                     }
                 }
             },
-            'on_change': "$(this).closest('form').submit();",
+            'on_change': "const $form = $(this).closest('form'); $form.removeAttr('data-submit-once'); $form.submit();",
             'readonly': printersFieldReadonly
         })
     ) }}

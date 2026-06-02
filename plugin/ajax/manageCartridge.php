@@ -59,7 +59,7 @@ case 'remove_from_supplier':
     }
     break;
 case 'force_supplier':
-    $update_data = ['id' => $id, "suppliers_id_field" => $supplier_id];
+    $update_data = ['id' => $id, "suppliers_id_field" => $supplier_id, "locations_id_field" => $location_id ?? '0'];
     if ($cartridge->update($update_data)) {
         die(IserviceToolBox::RESPONSE_OK);
     }
@@ -73,6 +73,8 @@ case 'force_location':
     $update_data = ['id' => $id, "locations_id_field" => empty($location_id) ? '0' : $location_id];
     if (!empty($supplier_id)) {
         $update_data["suppliers_id_field"] = $supplier_id;
+    } else {
+        $update_data["suppliers_id_field"] = $cartridge->customfields->fields['suppliers_id_field'];
     }
 
     if ($cartridge->update($update_data)) {
@@ -85,12 +87,21 @@ case 'remove_from_printer':
     }
 
     if (!empty($cartridge->fields['date_out'])) {
-        die(sprintf(_t('Cartridge %d is empty, it is not installed on a printer'), $id));
+        die(sprintf(_t('Cartridge %d has a date_out value, it was already changed by another cartridge'), $id));
     }
 
-    if ($cartridge->update(['id' => $id, 'printers_id' => '0', 'date_use' => 'NULL', 'date_out' => 'NULL', 'pages_use_field' => 0, 'pages_color_use_field' => 0])) {
+    if ($cartridge->update([
+        'id' => $id,
+        'printers_id' => '0',
+        'date_use' => 'NULL',
+        'date_out' => 'NULL',
+        'pages_use_field' => 0,
+        'pages_color_use_field' => 0,
+        'suppliers_id_field' => $cartridge->customfields->fields['suppliers_id_field'],
+        'locations_id_field' => $cartridge->customfields->fields['locations_id_field'],
+    ])) {
         global $DB;
-        if (!$DB->query("delete from glpi_iservice_cartridges_tickets where cartridges_id = $id")) {
+        if (!$DB->doQuery("delete from glpi_iservice_cartridges_tickets where cartridges_id = $id")) {
             (__("Could not remove cartridge from the installer ticket."));
         }
 
@@ -103,7 +114,7 @@ case 'use':
     }
 
     if (!empty($cartridge->fields['date_out'])) {
-        die(sprintf(_t('Cartridge %d is empty, it is not installed on a printer'), $id));
+        die(sprintf(_t('Cartridge %d is already used up'), $id));
     }
 
     $counter_black = IserviceToolBox::getInputVariable('counter_black');
@@ -117,6 +128,8 @@ case 'use':
             'pages_color_out_field' => $counter_color,
             'printed_pages_field' => $cartridge->fields['printed_pages_field'] + $counter_black - $cartridge->fields['pages_use_field'],
             'printed_pages_color_field' => $cartridge->fields['printed_pages_field'] + $counter_color - $cartridge->fields['pages_color_use_field'],
+            'suppliers_id_field' => $cartridge->customfields->fields['suppliers_id_field'],
+            'locations_id_field' => $cartridge->customfields->fields['locations_id_field'],
         ]
     )
     ) {

@@ -80,7 +80,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         $consumables = [];
         $used_ids    = [];
 
-        $c_result = $DB->query(
+        $c_result = $DB->doQuery(
             "SELECT 
                      ct.id IDD
                    , ct.plugin_fields_cartridgeitemtypedropdowns_id

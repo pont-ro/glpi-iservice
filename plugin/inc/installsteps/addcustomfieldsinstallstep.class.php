@@ -119,11 +119,13 @@ class AddCustomFieldsInstallStep
         $result                       = true;
         $containerData['_no_message'] = true;
 
-        $mapping    = new \PluginIserviceImportMapping();
-        $container  = new PluginFieldsContainer();
+        $mapping   = new \PluginIserviceImportMapping();
+        $container = new PluginFieldsContainer();
+        $encoded   = self::encodeItemTypes($containerData['itemtypes']);
+
         $containers = $container->find(
             [
-                'itemtypes' => self::encodeItemTypes($containerData['itemtypes']),
+                'itemtypes' => $encoded,
             ]
         );
 
@@ -140,18 +142,24 @@ class AddCustomFieldsInstallStep
             }
         } else {
             $containerData['id']        = array_shift($containers)['id'];
-            $containerData['itemtypes'] = self::encodeItemTypes($containerData['itemtypes']);
+            $containerData['itemtypes'] = $encoded;
             $result                     = $container->update($containerData);
         }
 
-        $result = $result && self::addOrUpdateContainerFields($containerData);
-        return $result && self::optimizeContainerTableFieldTypes($containerData);
+        $fieldsResult = self::addOrUpdateContainerFields($containerData);
+        $result       = $result && $fieldsResult;
+
+        $optimizeResult = self::optimizeContainerTableFieldTypes($containerData);
+        return $result && $optimizeResult;
     }
 
     private static function optimizeContainerTableFieldTypes($containerData)
     {
         $result    = true;
-        $container = PluginFieldsContainer::getById($containerData['id']);
+        $container = new PluginFieldsContainer();
+        if (!$container->getFromDB($containerData['id'])) {
+            return false;
+        }
 
         foreach (json_decode($container->fields['itemtypes']) as $itemtype) {
             $classname   = $container::getClassname($itemtype, $container->fields['name']);
@@ -230,7 +238,7 @@ class AddCustomFieldsInstallStep
             $itemTypes = [$itemTypes];
         }
 
-        return Sanitizer::dbEscape(json_encode($itemTypes));
+        return json_encode($itemTypes);
     }
 
     private static function updateFieldLabelTranslation(mixed $fieldData): bool

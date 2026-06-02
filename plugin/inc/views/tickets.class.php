@@ -62,7 +62,7 @@ class Tickets extends View
             $externally_ordered = intval($row_data['externally_ordered_consumables']);
             $ordered            = intval($row_data['ordered_consumables']);
             $received           = intval($row_data['received_consumables']);
-            if ($row_data['status'] == Ticket::EVALUATION) {
+            if ($row_data['status'] == Change::EVALUATION) {
                 if ($received === $ordered) {
                     $export_color   = '_yellow';
                     $export_comment = 'Piese recepționate';

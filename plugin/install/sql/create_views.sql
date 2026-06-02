@@ -1,3 +1,5 @@
+
+
 create or replace view hmarfa_total_facturi as
 select
     `f`.`codbenef` as `codbenef`,
@@ -49,7 +51,6 @@ select
     t.actiontime as actiontime,
     t.is_deleted as is_deleted,
     t.locations_id as locations_id,
-    t.validation_percent as validation_percent,
     t.date_creation as date_creation,
     cft.id as cfid,
     cft.plugin_fields_containers_id as plugin_fields_containers_id,
@@ -115,7 +116,6 @@ select
     `p`.`contact` as `contact`,
     `p`.`contact_num` as `contact_num`,
     `p`.`users_id_tech` as `users_id_tech`,
-    `p`.`groups_id_tech` as `groups_id_tech`,
     `p`.`serial` as `serial`,
     `p`.`otherserial` as `otherserial`,
     `p`.`comment` as `comment`,
@@ -128,7 +128,7 @@ select
     `p`.`init_pages_counter` as `init_pages_counter`,
     `p`.`last_pages_counter` as `last_pages_counter`,
     `p`.`users_id` as `users_id`,
-    `p`.`groups_id` as `groups_id`,
+    `gi`.`groups_id` as `groups_id`,
     `p`.`states_id` as `states_id`,
     `s`.`id` as `supplier_id`,
     `s`.`name` as `supplier_name`,
@@ -162,7 +162,8 @@ from (((`glpi_printers` `p`
     left join `glpi_suppliers` `s` on(`s`.`id` = `i`.`suppliers_id`))
     left join `glpi_locations` `l` on(`l`.`id` = `p`.`locations_id`))
     left join `glpi_plugin_fields_printerprintercustomfields` cfp on cfp.items_id = p.id and cfp.itemtype = 'Printer'
-    left join glpi_states pst on pst.id = p.states_id;
+    left join glpi_states pst on pst.id = p.states_id
+    left join (select items_id, min(groups_id) as groups_id from glpi_groups_items where itemtype = 'Printer' group by items_id) gi ON gi.items_id = p.id;
 
 create or replace view glpi_plugin_iservice_printers_with_last_closed_ticket_data as
 select
@@ -183,7 +184,6 @@ select
     `p`.`contact` as `contact`,
     `p`.`contact_num` as `contact_num`,
     `p`.`users_id_tech` as `users_id_tech`,
-    `p`.`groups_id_tech` as `groups_id_tech`,
     `p`.`serial` as `serial`,
     `p`.`otherserial` as `otherserial`,
     `p`.`comment` as `comment`,
@@ -196,7 +196,6 @@ select
     `p`.`init_pages_counter` as `init_pages_counter`,
     `p`.`last_pages_counter` as `last_pages_counter`,
     `p`.`users_id` as `users_id`,
-    `p`.`groups_id` as `groups_id`,
     `p`.`states_id` as `states_id`,
     `s`.`id` as `supplier_id`,
     `s`.`name` as `supplier_name`,
@@ -296,7 +295,6 @@ select
     ci.cartridgeitemtypes_id as cartridgeitemtypes_id,
     ci.manufacturers_id as manufacturers_id,
     ci.users_id_tech as users_id_tech,
-    ci.groups_id_tech as groups_id_tech,
     ci.is_deleted as is_deleted,
     ci.comment as comment,
     ci.alarm_threshold as alarm_threshold,

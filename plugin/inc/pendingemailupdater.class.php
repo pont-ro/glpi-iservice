@@ -70,7 +70,7 @@ class PluginIservicePendingEmailUpdater extends CommonDBTM
         foreach ($pending_emails as $pending_email_data) {
             foreach (glob($dbf_path_base . '/' . "I$pending_email_data[nrfac]*.*") as $invoice) {
                 $attachment = basename($invoice);
-                if ($DB->query("update glpi_plugin_iservice_pendingemails set invoice = '$pending_email_data[nrfac]', attachment='$attachment' where id = $pending_email_data[id]")) {
+                if ($DB->doQuery("update glpi_plugin_iservice_pendingemails set invoice = '$pending_email_data[nrfac]', attachment='$attachment' where id = $pending_email_data[id]")) {
                     $task->log("Last invoice for printer $pending_email_data[pid] is $attachment");
                 } else {
                     $task->log("Could not set last invoice ($attachment) for printer $pending_email_data[pid]");

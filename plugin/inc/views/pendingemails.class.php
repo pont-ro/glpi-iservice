@@ -98,7 +98,7 @@ class PendingEmails extends View
         } elseif (IserviceToolBox::getInputVariable('mass_action_delete')) {
             global $DB;
             $ids_to_delete = implode(',', array_keys(IserviceToolBox::getArrayInputVariable('item', [])['pending_emails'] ?? []));
-            $DB->query("delete from glpi_plugin_iservice_pendingemails where id in ({$ids_to_delete})");
+            $DB->doQuery("delete from glpi_plugin_iservice_pendingemails where id in ({$ids_to_delete})");
         }
 
         return [

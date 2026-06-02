@@ -60,7 +60,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
             $input['add']      = 'add';
             $input['items_id'] = $id;
             $printer_customfields->add($input);
-        } elseif (empty($printer->plugin_fields_data)) {
+        } elseif (empty(get_object_vars($printer)['plugin_fields_data'])) {
             $input[$printer_customfields->getIndexName()] = $printer_customfields->getID();
             $printer_customfields->update($input);
         }
@@ -194,7 +194,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
     $printer->check($id, UPDATE);
     // Toroljuk azokat a szerzodeseket a jelenlegi partnerrol, amelyek a jelenlegi gepet tartamazzak,
     // de csak akkor ha a szerzodes nem tartalmaz ugyanehez a partnerhez tartozo masik gepet.
-    $DB->query(
+    $DB->doQuery(
         "DELETE FROM glpi_contracts_suppliers
 							WHERE contracts_id IN (
 										SELECT ci.contracts_id
@@ -210,10 +210,10 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
 							)"
     );
     // Leszedjuk a gepet a jelenlegi szerzodeserol. Ezen a ponton a szerzodes mar le van szedve a partnerrol ha szukseges.
-    $DB->query("DELETE FROM glpi_contracts_items WHERE itemtype = 'Printer' AND items_id = $id");
+    $DB->doQuery("DELETE FROM glpi_contracts_items WHERE itemtype = 'Printer' AND items_id = $id");
     if ($post['contract']['id'] > 0) {
         $contract_item = new Contract_Item();
-        // $DB->query("DELETE FROM glpi_contracts_items where itemtype = 'Printer' AND contracts_id = " . $post['contract']['id']);
+        // $DB->doQuery("DELETE FROM glpi_contracts_items where itemtype = 'Printer' AND contracts_id = " . $post['contract']['id']);
         $contract_item->add(['add' => 'add','itemtype' => 'Printer','items_id' => $id,'contracts_id' => $post['contract']['id']]);
         $contract_supplier = new Contract_Supplier();
         $contract_supplier->add(['add' => 'add','contracts_id' => $post['contract']['id'],'suppliers_id' => $post['supplier']['id']]);

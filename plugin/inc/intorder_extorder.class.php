@@ -48,7 +48,7 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
         return $order_status->fields['weight'] < PluginIserviceOrderStatus::WEIGHT_ORDERED;
     }
 
-    function canCreateItem()
+    function canCreateItem(): bool
     {
         $intorder = new PluginIserviceIntOrder();
         if (!isset($this->fields['plugin_iservice_intorders_id']) || !$intorder->getFromDB($this->fields['plugin_iservice_intorders_id']) || !self::canHaveExtOrder($intorder)) {
@@ -80,7 +80,8 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
 
         $intorders = [];
 
-        foreach ($DB->request($sql) as $data) {
+        $result = $DB->doQuery($sql);
+        while ($data = $DB->fetchAssoc($result)) {
             $intorders[$data['idd']] = $data;
         }
 
@@ -106,7 +107,8 @@ class PluginIserviceIntOrder_ExtOrder extends CommonDBRelation
 
         $intorders = [];
 
-        foreach ($DB->request($sql) as $data) {
+        $result = $DB->doQuery($sql);
+        while ($data = $DB->fetchAssoc($result)) {
             $intorders[$data['idd']] = $data;
         }
 

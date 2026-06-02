@@ -18,6 +18,26 @@ class PluginIserviceCartridge extends Cartridge
 
     public static $customFieldsModelName = 'PluginFieldsCartridgecartridgecustomfield';
 
+    public function prepareInputForAdd($input)
+    {
+        $item = static::getItemFromArray(CartridgeItem::class, CartridgeItem::getForeignKeyField(), $input);
+        if ($item === false) {
+            return false;
+        }
+
+        $data = parent::prepareInputForAdd($input);
+
+        if (isset($input['suppliers_id_field'])) {
+            $data["suppliers_id_field"] = $input['suppliers_id_field'];
+        }
+
+        if (isset($input['locations_id_field'])) {
+            $data["locations_id_field"] = $input['locations_id_field'];
+        }
+
+        return $data;
+    }
+
     public static function getEmptyablesByCartridgeDropdownElementsArray($cartridgeData, array $dropdownOptions = [])
     {
         if (!empty($dropdownOptions['readonly'])) {

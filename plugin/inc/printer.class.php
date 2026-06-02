@@ -128,7 +128,7 @@ class PluginIservicePrinter extends Printer
                 $printer_conditions = ["1=2"];
             }
 
-            if (($result = $DB->query("SELECT id FROM glpi_plugin_iservice_printers	WHERE (" . join(' OR ', $printer_conditions) . ")")) === false) {
+            if (($result = $DB->doQuery("SELECT id FROM glpi_plugin_iservice_printers	WHERE (" . join(' OR ', $printer_conditions) . ")")) === false) {
                 echo $DB->error();
                 die();
             }
@@ -424,7 +424,8 @@ class PluginIservicePrinter extends Printer
         // Supergroup.
         if ($has_full_rights) {
             $groups_id_options = ['type' => 'Group', 'options' => ['condition' => ['is_usergroup']]];
-            $output           .= $form->generateFieldTableRow(__('Supergroup'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[groups_id]', $printer->fields['groups_id'], $readonly, $groups_id_options));
+            $groups_id_value   = is_array($printer->fields['groups_id']) ? ($printer->fields['groups_id'][0] ?? 0) : $printer->fields['groups_id'];
+            $output           .= $form->generateFieldTableRow(__('Supergroup'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'printer[groups_id]', $groups_id_value, $readonly, $groups_id_options));
         }
 
         // Comments.
@@ -647,7 +648,7 @@ class PluginIservicePrinter extends Printer
         $renewal_options['method']          = 'dropdownContractRenewal';
         $renewal_options['readonly_method'] = 'getContractRenewalName';
         $renewal_options['arguments']       = ['contract[renewal]', $contract->fields['renewal'], false];
-        $output                            .= $form->generateFieldTableRow(__('Renewal'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[renewal]', $contract->fields['renewal'], $readonly, $renewal_options));
+        $output                            .= $form->generateFieldTableRow(__('Renewal'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'contract[renewal]', (int) $contract->fields['renewal'], $readonly, $renewal_options));
 
         // Contract type.
         $contracttype_options['type'] = 'ContractType';

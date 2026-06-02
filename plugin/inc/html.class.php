@@ -871,12 +871,13 @@ class PluginIserviceHtml
 
         echo "<div id='footer' >";
         echo "<table width='100%'><tr><td class='left'><span class='copyright'>";
-        $timedebug = sprintf(_n('%s second', '%s seconds', $TIMER_DEBUG->getTime()), $TIMER_DEBUG->getTime());
-
-        if (function_exists("memory_get_usage")) {
-            $timedebug = sprintf(__('%1$s - %2$s'), $timedebug, Toolbox::getSize(memory_get_usage()));
+        if ($TIMER_DEBUG !== null) {
+            $timedebug = sprintf(_n('%s second', '%s seconds', $TIMER_DEBUG->getTime()), $TIMER_DEBUG->getTime());
+            if (function_exists("memory_get_usage")) {
+                $timedebug = sprintf(__('%1$s - %2$s'), $timedebug, Toolbox::getSize(memory_get_usage()));
+            }
+            echo $timedebug;
         }
-        echo $timedebug;
         if (Session::haveRight('plugin_iservice_admintask_DataIntegrityTest', READ)) {
             echo " - Selftest [", implode(', ', PluginIserviceTask_DataIntegrityTest::getLoadTimes()), "]";
         }

@@ -79,11 +79,11 @@ class PluginIserviceQr extends CommonDBTM
     public static function generateQrCodes($numberOfCodesToGenerate = 10): array
     {
         global $DB;
-        $qrs    = $DB->request("SELECT `auto_increment` FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '$DB->dbdefault' AND table_name = '" . self::getTable() . "'");
-        $nextId = $qrs->current()['auto_increment'];
+        $qrs    = $DB->doQuery("SELECT `auto_increment` FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '$DB->dbdefault' AND table_name = '" . self::getTable() . "'");
+        $nextId = $DB->fetchAssoc($qrs)['auto_increment'];
         if ($nextId < 500) {
             $nextId = 500;
-            $DB->request("ALTER TABLE $DB->dbdefault." . self::getTable() . " AUTO_INCREMENT = $nextId");
+            $DB->doQuery("ALTER TABLE $DB->dbdefault." . self::getTable() . " AUTO_INCREMENT = $nextId");
         }
 
         $ids = [];
@@ -95,7 +95,7 @@ class PluginIserviceQr extends CommonDBTM
         }
 
         $massInsertQuery = rtrim($massInsertQuery, ',');
-        if ($DB->request($massInsertQuery)) {
+        if ($DB->doQuery($massInsertQuery)) {
             return $ids;
         }
 
@@ -148,7 +148,7 @@ class PluginIserviceQr extends CommonDBTM
         $uniqueIdentificationCode = preg_replace('/\s+/', '', $uniqueIdentificationCode);
         $qr                       = new self();
 
-        $result = $DB->request(
+        $result = $DB->doQuery(
             "SELECT 
                 p.id as printer_id
                 , p.name
@@ -163,8 +163,8 @@ class PluginIserviceQr extends CommonDBTM
         );
 
         $printerSupplierData = [];
-        if (count($result) == 1) {
-            $printerSupplierData = $result->current();
+        if ($DB->numrows($result) == 1) {
+            $printerSupplierData = $DB->fetchAssoc($result);
         } else {
             self::renderMessageTemplate(sprintf(_t('We could not connect QR code to printer with serial %s'), $printerSerialNumber));
 
@@ -369,7 +369,7 @@ class PluginIserviceQr extends CommonDBTM
         $ids = array_keys(array_filter($ids));
 
         $formUrl = PluginIserviceConfig::getConfigValue('url_base') . $qr->getFormURL() . "?code=";
-        $qrs     = $DB->request(
+        $qrs     = $DB->doQuery(
             "
             SELECT id, code 
             FROM " . $qr::getTable() . " 
@@ -378,7 +378,7 @@ class PluginIserviceQr extends CommonDBTM
         );
 
         $codes = [];
-        foreach ($qrs as $qr) {
+        while ($qr = $DB->fetchAssoc($qrs)) {
             $codes[$qr['id']] = $formUrl . $qr['code'];
         }
 

@@ -16,7 +16,7 @@ $right_check_query = "
 		AND fa.nrfac = '$nrfac'
 	";
 
-if (!$DB->result($DB->query($right_check_query), 0, 0)) {
+if (!$DB->result($DB->doQuery($right_check_query), 0, 0)) {
     Html::displayNotFoundError();
 }
 

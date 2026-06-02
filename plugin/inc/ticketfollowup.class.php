@@ -86,7 +86,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
     {
         global $DB;
         $restrict = $showprivate ? '' : "AND `is_private` = '0'";
-        $result   = $DB->query("SELECT * FROM `glpi_itilfollowups` WHERE `items_id` = '$id' and `itemtype` = 'Ticket' $restrict ORDER BY `date` DESC");
+        $result   = $DB->doQuery("SELECT * FROM `glpi_itilfollowups` WHERE `items_id` = '$id' and `itemtype` = 'Ticket' $restrict ORDER BY `date` DESC");
         $out      = "";
         while ($data = $DB->fetchAssoc($result)) {
             $out .= date('[d.m.Y H:i:s] ', strtotime($data["date"])) . strip_tags(IserviceToolBox::br2nl($data["content"])) . "\n";

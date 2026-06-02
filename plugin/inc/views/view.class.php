@@ -314,7 +314,7 @@ class View extends \CommonGLPI
     protected function getQueryCount(): ?int
     {
         global $DB;
-        if (($count_result = $DB->query("select found_rows() as count")) === false) {
+        if (($count_result = $DB->doQuery("select found_rows() as count")) === false) {
             echo $DB->error();
             return null;
         }
@@ -432,7 +432,6 @@ class View extends \CommonGLPI
         $filter_value = ($filter_reset && !$required) ? null : ($params[$filter_name] ?? $filter_data['default'] ?? null);
 
         if ($required && empty($filter_value)) {
-            ob_end_clean();
             echo "<div class='error'>";
             echo isset($filter_data['required_error']) ? $filter_data['required_error'] : (__('Empty') . ' view.class.php' . $filter_data['caption']);
             echo "</div>";
@@ -658,7 +657,7 @@ class View extends \CommonGLPI
 
     protected function displayTotalRow($top_row): void
     {
-        echo $top_row ? "<tr>" : "<tr class='tab_bg_1' style='font-weight:bold;'>";
+        echo $top_row ? "<tr>" : "<tr style='font-weight:bold;'>";
         $tag = $top_row ? "th" : "td";
         if ($this->mass_actions_column) {
             echo "<$tag></$tag>";
@@ -914,7 +913,8 @@ class View extends \CommonGLPI
             $row_class = $this->evalIfFunction($this->row_class ?? '', ['row_data' => $row]);
 
             if (!$this->exporting) {
-                echo "<tr class='tab_bg_" . ($row_num++ % 2 + 1) . " result-row $row_class'>";
+                echo "<tr class='result-row $row_class'>";
+                $row_num++;
             }
 
             $row['__row_id__'] = $row_num;
@@ -1062,11 +1062,46 @@ class View extends \CommonGLPI
             self::ensureArrayKey($mass_action, 'style');
             self::ensureArrayKey($mass_action, 'new_tab', true);
             if (empty($mass_action['massAjaxCall'])) {
-                $mass_action['action'] .= $mass_action['new_tab'] ? (strpos($mass_action['action'], '?') ? '&kcsrft=1' : '?kcsrft=1') : '';
-                $mass_action_on_click   = $mass_action['onClick'] ?? '';
-                $mass_action_on_click  .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
-                $mass_action_on_click  .= $mass_action['new_tab'] ? '$(this).closest("form").attr("target","_blank");' : '';
-                $mass_action_on_click  .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
+                $mass_action_on_click = $mass_action['onClick'] ?? '';
+                if ($mass_action['new_tab']) {
+                    // Open in a new tab by constructing a GET URL with the selected item
+                    // checkboxes appended as query parameters, then using window.open().
+                    // This avoids submitting the main filter form, which would consume the
+                    // form's CSRF token and break subsequent filter submissions on this page.
+                    // Note: attribute is onclick='...' so use only double quotes inside JS.
+                    $mass_action_on_click .= 'var queryParts=[];';
+                    $mass_action_on_click .= 'queryParts.push($(this).attr("name")+"=1");';
+
+                    if (!empty($mass_action['params'])) {
+                        if (!is_array($mass_action['params'])) {
+                            $mass_action['params'] = explode(',', $mass_action['params']);
+                        }
+                        foreach ($mass_action['params'] as $param) {
+                            $mass_action_on_click .= '
+                                (function(param){
+                                    var fields = $(this).closest("form").find("[name]").filter(function(){
+                                        return this.name === param;
+                                    });
+                                
+                                    fields.each(function(){
+                                        var value = $(this).val();
+                                        if (value !== undefined) {
+                                            queryParts.push(encodeURIComponent(param) + "=" + encodeURIComponent(value));
+                                        }
+                                    });
+                                }).call(this, "' . $param . '");
+                            ';
+                        }
+                    }
+
+                    $mass_action_on_click .= '$(this).closest("form").find(".massive_action_checkbox:checked").each(function(){queryParts.push(encodeURIComponent($(this).attr("name"))+"="+encodeURIComponent($(this).val()));});';
+                    $mass_action_on_click .= 'window.open("' . $mass_action['action'] . (strpos($mass_action['action'], '?') > 0 ? '&' : '?') . '"+queryParts.join("&"),"_blank");';
+                    $mass_action_on_click .= 'return false;';
+                } else {
+                    // For same-page actions, submit the main form to the new action URL.
+                    $mass_action_on_click .= 'var old_action=$(this).closest("form").attr("action");$(this).closest("form").attr("action","' . $mass_action['action'] . '");';
+                    $mass_action_on_click .= 'var button=$(this);setTimeout(function(){if (old_action) {button.closest("form").attr("action",old_action);}else{button.closest("form").removeAttr("action");}button.closest("form").attr("target","");}, 1000);';
+                }
             } else {
                 $mass_action_on_click = $this->buildAjaxCallScript($mass_action['massAjaxCall']);
             }
@@ -1141,7 +1176,9 @@ class View extends \CommonGLPI
 
         global $CFG_GLPI;
         $table_name                  = $this->getMachineName();
-        $this->class[]               = 'tab_cadrehov';
+        $this->class[]               = 'table';
+        $this->class[]               = 'table-hover';
+        $this->class[]               = 'table-striped';
         $this->class[]               = 'wide';
         $this->class[]               = 'view-table';
         $this->class[]               = "detail$this->detail_displaying";
@@ -1341,7 +1378,7 @@ class View extends \CommonGLPI
             }
 
             echo "<input type='hidden' name='filtering' value='filtering' />";
-            echo "<input type='hidden' name='kcsrft' value='1' />";
+            echo "<input type='hidden' name='_glpi_csrf_token' value='" . Session::getNewCSRFToken(true) . "' />";
             echo "<input id='cache-refresh' type='hidden' name='cache_refresh' value='' />";
         }
 
@@ -1358,7 +1395,7 @@ class View extends \CommonGLPI
             $this->adjustQueryLimit();
 
             global $DB;
-            if (($result = $DB->query($this->query)) === false) {
+            if (($result = $DB->doQuery($this->query)) === false) {
                 echo $DB->error(), '<br>', $this->query;
                 $html->closeForm();
                 return;
@@ -1450,8 +1487,8 @@ class View extends \CommonGLPI
     {
         global $DB;
         $table_name = 'glpi_plugin_iservice_cachetable_' . strtolower($this->getMachineName());
-        $DB->query("DROP TABLE IF EXISTS $table_name");
-        if (!$DB->query("CREATE TABLE $table_name AS {$this->getFilterlessQuery()}")) {
+        $DB->doQuery("DROP TABLE IF EXISTS $table_name");
+        if (!$DB->doQuery("CREATE TABLE $table_name AS {$this->getFilterlessQuery()}")) {
             echo $DB->error(), "<br>CREATE TABLE $table_name AS {$this->getFilterlessQuery()}";
             return null;
         }

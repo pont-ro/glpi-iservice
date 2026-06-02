@@ -2,6 +2,19 @@ tr, td {
     vertical-align: middle;
 }
 
+/* Legacy GLPI 10 table row classes - fallback for non-view pages */
+.tab_bg_1 {
+    background-color: #f8f9fa;
+}
+
+.tab_bg_2 {
+    background-color: #ecedf0;
+}
+
+.tab_bg_3 {
+    background-color: #ffe0b2;
+}
+
 .printonly {
     display: none;
 }
@@ -93,6 +106,18 @@ table.no-border td {
     white-space: nowrap;
 }
 
+.view-header {
+    font-size: 0.80rem !important;
+}
+
+table.table thead th {
+    font-size: 0.80rem;
+}
+
+.view-table th.with-filter a {
+    font-weight: bold;
+}
+
 .view-table th.with-filter select,
 .view-table th.with-filter input[type='text'] {
     margin: 0;
@@ -130,6 +155,7 @@ table.no-border td {
 }
 
 div.actions {
+    z-index: 1;
     text-align: center;
     white-space: nowrap;
 }
@@ -191,13 +217,25 @@ div.actions-wrap {
     pointer-events: auto !important;
 }
 
+.floating-buttons {
+    position: fixed;
+    bottom: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 0.5rem;
+}
+
 .floating-buttons.right {
-    left: auto;
     right: 10px;
+    left: auto;
 }
 
 .floating-buttons.left {
-    left: auto;
+    left: 10px;
+}
+
+form:has(.floating-buttons) {
+    padding-bottom: 70px;
 }
 
 #change-cartridges-anchor {

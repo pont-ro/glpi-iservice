@@ -15,6 +15,33 @@ class PluginIserviceDB extends DB
         parent::__construct();
     }
 
+    // There is already a queryOrDie and a doQueryOrDie method in DB class, both deprecated.
+    public static function iServiceQueryOrDie(string $query, string $message, ?\DBmysql $db = null)
+    {
+        if ($db === null) {
+            global $DB;
+            $db = $DB;
+        }
+
+        $res = $db->doQuery($query);
+        if (!$res) {
+            $message = sprintf(
+                __('%1$s - Error during the database query: %2$s - Error is %3$s'),
+                $message,
+                $query,
+                $db->error()
+            );
+            if (isCommandLine()) {
+                throw new \RuntimeException($message);
+            } else {
+                echo $message . "\n";
+                die(1);
+            }
+        }
+
+        return $res;
+    }
+
     public static function escapeString(string $text, ?\DBmysql $db = null): string
     {
         if ($db === null) {
@@ -99,7 +126,7 @@ class PluginIserviceDB extends DB
         $tableName = $object->getTable();
         $query     = "select `$tableName`.* from `$tableName` $query" . ($limit ? " limit 1" : '');
 
-        if (false === ($result = $db->query($query)) || $result === true || $db->numrows($result) !== 1) {
+        if (false === ($result = $db->doQuery($query)) || $result === true || $db->numrows($result) !== 1) {
             if ($db->numrows($result) > 1) {
                 trigger_error(
                     sprintf(
@@ -153,7 +180,7 @@ class PluginIserviceDB extends DB
         $query  = rtrim($query, ', ');
         $query .= ')';
 
-        return $db->query($query) === true;
+        return $db->doQuery($query) === true;
     }
 
     public static function deleteTable(string $tableName, ?\DBmysql $db = null): bool
@@ -163,7 +190,7 @@ class PluginIserviceDB extends DB
             $db = $DB;
         }
 
-        return $db->query("drop table if exists $tableName") === true;
+        return $db->doQuery("drop table if exists $tableName") === true;
     }
 
     public static function alterTable(string $tableName, array $tableConfig, $createTableIfNotExists = false, ?\DBmysql $db = null): bool
@@ -190,7 +217,7 @@ class PluginIserviceDB extends DB
         );
         $query  = rtrim($query, ', ');
 
-        return $db->query($query) === true;
+        return $db->doQuery($query) === true;
     }
 
     public static function getColumnsCreateModifySql(string $tableName, array $tableConfig, ?\DBmysql $db = null): string
@@ -286,7 +313,7 @@ class PluginIserviceDB extends DB
             return self::$tableIndexes[$tableName];
         }
 
-        $result = $db->query("show index from `$tableName`");
+        $result = $db->doQuery("show index from `$tableName`");
         if ($result) {
             if ($db->numrows($result) > 0) {
                 self::$tableIndexes[$tableName] = [];
