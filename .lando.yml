@@ -1,0 +1,35 @@
+name: iservice
+
+recipe: lamp
+
+config:
+  webroot: ./glpi/public
+  php: "8.3"
+  database: mariadb:11.8
+  xdebug: true
+
+services:
+  database:
+    type: mariadb:11.8
+    portforward: 3306
+    creds:
+      user: c1iservice
+      password: iservice
+      database: iservice
+
+  appserver:
+    ssl: true
+    overrides:
+      environment:
+        DB_HOST: database
+        DB_PORT: 3306
+        DB_NAME: iservice
+        DB_USER: c1iservice
+        DB_PASS: iservice
+    config:
+      php: lando_config/iservice_php.ini
+
+proxy:
+  appserver:
+    - dev.iservice:80
+    - https://dev.iservice:443
