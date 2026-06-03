@@ -10,7 +10,7 @@ return [
         'columns' => [
             'movement_id_field'  => $numberFieldType, // number
             'movement2_id_field' => $numberFieldType, // number
-            'em_mail_id_field'   => $numberFieldType, // number
+            'em_mail_id_field'   => 'INT DEFAULT NULL', // integer FK — INT for JOIN index compatibility with glpi_plugin_iservice_ememails.id
             'total2_black_field' => $numberFieldType, // number
             'total2_color_field' => $numberFieldType, // number
         ],
@@ -34,19 +34,20 @@ return [
     ],
     'glpi_plugin_fields_cartridgecartridgecustomfields' => [
         'columns' => [
-            // Virtual generated columns — must stay DECIMAL, not touched by $numberFieldType
+            // Virtual generated columns — must stay DECIMAL, not touched by $numberFieldType.
             'printed_pages_field'       => "DECIMAL(11,0) GENERATED ALWAYS AS (IF(`pages_out_field` > 0, `pages_out_field` - `pages_use_field`, NULL)) VIRTUAL",
             'printed_pages_color_field' => "DECIMAL(11,0) GENERATED ALWAYS AS (IF(`pages_color_out_field` > 0, `pages_color_out_field` - `pages_color_use_field`, NULL)) VIRTUAL",
-            // number fields
-            'tickets_id_use_field'                     => $numberFieldType,
-            'tickets_id_out_field'                     => $numberFieldType,
-            'pages_out_field'                          => $numberFieldType,
-            'pages_color_out_field'                    => $numberFieldType,
-            'pages_use_field'                          => $numberFieldType,
-            'pages_color_use_field'                    => $numberFieldType,
-            'suppliers_id_field'                       => $numberFieldType,
-            'locations_id_field'                       => $numberFieldType,
-            'plugin_fields_cartridgeitemtypedropdowns_id' => $numberFieldType,
+            // Integer FK fields — set programmatically, safe as INT.
+            'tickets_id_use_field'                        => 'INT DEFAULT NULL', // FK glpi_tickets.id.
+            'tickets_id_out_field'                        => 'INT DEFAULT NULL', // FK glpi_tickets.id.
+            'suppliers_id_field'                          => 'INT DEFAULT NULL', // FK glpi_suppliers.id.
+            'locations_id_field'                          => 'INT DEFAULT NULL', // FK glpi_locations.id.
+            'plugin_fields_cartridgeitemtypedropdowns_id' => 'INT DEFAULT NULL', // FK dropdown table
+            // Number fields — user-editable, may arrive as '' from form.
+            'pages_out_field'       => $numberFieldType,
+            'pages_color_out_field' => $numberFieldType,
+            'pages_use_field'       => $numberFieldType,
+            'pages_color_use_field' => $numberFieldType,
         ],
         'indexes' => [
             [
