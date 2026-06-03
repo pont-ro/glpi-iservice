@@ -1,18 +1,16 @@
 # Setup DEV
 
-1. Unpack `setup/glpi.tgz` to the root folder (the package already contains the `glpi` folder)
+1. Unpack `setup/glpi.tgz` into the `glpi` folder in the **root** folder (the package already contains the needed Glpi plugins)
 2. Set your webroot to `./glpi/public`
 3. Install **Glpi** (make sure you access Glpi via https)
-4. Unpack the plugins you need (probably all of them) from `setup/plugins` to `glpi/plugins`
 5. Run `./setup/setup-dev`
 6. Install and enable the plugins you need from Setup->Plugins menu ([iService.domain]/front/plugin.php)
 7. Choose "No" to close the "Switch to marketplace" block
 
 # Setup PROD and TEST
 
-1. Copy and unpack `setup/glpi.tgz` to the root folder of your webserver (beware that the package contains a `glpi` folder).
+1. Copy and unpack `setup/glpi.tgz` to the root folder of your webserver (the package already contains the needed Glpi plugins).
 2. Install **Glpi** (make sure you access Glpi via https)
-3. Unpack the plugins you need (probably all of them) from `setup/plugins` to the `plugins` folder of your Glpi installation
 4. Run the deployment to PROD or TEST (see [below](#deployment-to-prod-or-test-with-deploybot))
 5. Install and enable the plugins you need from Setup->Plugins menu ([iService.domain]/front/plugin.php)
 6. Choose "No" to close the "Switch to marketplace" block
