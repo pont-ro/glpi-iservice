@@ -111,7 +111,8 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0",
-        "decimalPrecision": "15,2"
+        "decimalPrecision": "15,2",
+        "int": true
     },
     {
         "name": "delivered_field",
