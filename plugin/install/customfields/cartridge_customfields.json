@@ -10,7 +10,8 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0",
-        "decimalPrecision": "11,0"
+        "decimalPrecision": "11,0",
+        "int": true
     },
     {
         "name": "tickets_id_out_field",
@@ -23,7 +24,8 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0",
-        "decimalPrecision": "11,0"
+        "decimalPrecision": "11,0",
+        "int": true
     },
     {
         "name": "pages_out_field",
@@ -116,7 +118,8 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0",
-        "decimalPrecision": "11,0"
+        "decimalPrecision": "11,0",
+        "int": true
     },
     {
         "name": "locations_id_field",
@@ -129,7 +132,8 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0",
-        "decimalPrecision": "11,0"
+        "decimalPrecision": "11,0",
+        "int": true
     },
     {
         "name": "plugin_fields_cartridgeitemtypedropdowns_id",
@@ -142,6 +146,7 @@
         "is_active": "1",
         "is_readonly": "0",
         "mandatory": "0",
-        "decimalPrecision": "11,0"
+        "decimalPrecision": "11,0",
+        "int": true
     }
 ]

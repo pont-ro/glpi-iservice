@@ -195,7 +195,17 @@ class AddCustomFieldsInstallStep
                 $fields[$field_name] = $drop . "timestamp" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default ? "'$default'" : null));
                 break;
             case 'number':
-                $fields[$field_name] = $drop . "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . ($as ?? self::attachMandatoryAndDefaultSettings($mandatory, $default));
+                if (!empty($as)) {
+                    // GENERATED computed columns must stay DECIMAL (e.g. printed_pages_field).
+                    $fields[$field_name] = $drop . "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . $as;
+                } elseif (!empty($fieldData['int'])) {
+                    // Integer FK fields — set programmatically, safe as INT.
+                    $fields[$field_name] = "INT" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                } else {
+                    // Non-GENERATED number fields use VARCHAR so that empty string saves
+                    // (from the fields plugin form) are accepted by MySQL strict mode.
+                    $fields[$field_name] = "VARCHAR(255)" . self::attachMandatoryAndDefaultSettings($mandatory, $default !== null ? "'$default'" : null);
+                }
                 break;
             default:
                 break;
