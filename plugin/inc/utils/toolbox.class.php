@@ -296,7 +296,9 @@ class ToolBox
 
     public static function clearNotAllowedTags(string $string, array $allowedTags = null): string
     {
-        return PluginIserviceDB::escapeString(strip_tags($string, $allowedTags ?? ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>']));
+        // Do NOT call escapeString here — GLPI 11's DB layer (quoteValue) handles escaping on save.
+        // Calling escape here AND letting quoteValue escape again doubles backslashes on every save.
+        return strip_tags($string, $allowedTags ?? ['<strong>', '<b>', '<i>', '<em>', '<u>', '<br>', '<p>', '<ul>', '<li>', '<ol>', '<a>']);
     }
 
     public static function unlinkRecursively($filePath): void
