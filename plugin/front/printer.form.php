@@ -110,6 +110,7 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
                     if (!PluginIserviceDB::populateByItemsId($supplier_customfields, $partner_id)) {
                         $post['_customfields']['supplier']['add']      = 'add';
                         $post['_customfields']['supplier']['items_id'] = $partner_id;
+                        $post['_customfields']['supplier']['itemtype'] = 'Supplier';
                         if ($supplier_customfields->add($post['_customfields']['supplier'])) {
                             Session::addMessageAfterRedirect('Partener adăugat cu succes');
                             Html::redirect($iservice_printer->getFormURL() . "?supplier_id=$partner_id");
