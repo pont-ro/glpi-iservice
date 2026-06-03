@@ -267,7 +267,7 @@ class PluginIserviceMovement extends CommonDBTM
 
                 // Status.
                 $states_id         = empty($this->fields['states_id']) ? $item->fields['states_id'] : $this->fields['states_id'];
-                $states_id_options = ['type' => 'State', 'class' => 'full', 'options' => ['condition' => ['`is_visible_printer`']]];
+                $states_id_options = ['type' => 'State', 'class' => 'full', 'options' => ['condition' => ['LEFT JOIN' => ['glpi_dropdownvisibilities' => ['FKEY' => ['glpi_states' => 'id', 'glpi_dropdownvisibilities' => 'items_id', ['AND' => ['glpi_dropdownvisibilities.itemtype' => 'State']]]]], 'WHERE' => ['glpi_dropdownvisibilities.is_visible' => 1]]]];
                 $table_rows[]      = $form->generateFieldTableRow(__('Status'), $form->generateField(PluginIserviceHtml::FIELDTYPE_DROPDOWN, 'states_id', $states_id, false, $states_id_options));
 
                 // Location.
