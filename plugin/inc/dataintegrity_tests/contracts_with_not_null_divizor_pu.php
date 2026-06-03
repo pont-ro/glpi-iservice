@@ -6,9 +6,9 @@ return [
         FROM glpi_plugin_iservice_contracts c
         WHERE
               (
-                  FLOOR(c.copy_price_bk_field * 100) != c.copy_price_bk_field * 100
+                  FLOOR(CAST(c.copy_price_bk_field AS DECIMAL(15,4)) * 100) != CAST(c.copy_price_bk_field AS DECIMAL(15,4)) * 100
                       OR
-                  FLOOR(c.copy_price_col_field * 100) != c.copy_price_col_field * 100
+                  FLOOR(CAST(c.copy_price_col_field AS DECIMAL(15,4)) * 100) != CAST(c.copy_price_col_field AS DECIMAL(15,4)) * 100
               )
           AND COALESCE(c.copy_price_divider_field, 0) = 0
           AND c.is_deleted = 0
