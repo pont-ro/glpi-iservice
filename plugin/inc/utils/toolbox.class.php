@@ -595,12 +595,12 @@ class ToolBox
 
             $toAddresses = is_array($to) ? $to : preg_split('/[,;]/', $to);
             foreach ($toAddresses as $toAddress) {
-                $mailer->AddAddress(trim($toAddress));
+                $mailer->AddAddress(trim($toAddress), '');
             }
 
             $bccAddresses = is_array($bcc) ? $bcc : preg_split('/[,;]/', $bcc);
             foreach ($bccAddresses as $bccAddress) {
-                $mailer->AddBCC(trim($bccAddress));
+                $mailer->AddBCC(trim($bccAddress), '');
             }
 
             if (!empty($attachments)) {
