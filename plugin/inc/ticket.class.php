@@ -2125,11 +2125,11 @@ class PluginIserviceTicket extends Ticket
                 }
 
                 $statusClassMap = [
-                    Ticket::SOLVED   => 'ti ti-circle solved',
-                    Ticket::WAITING  => 'ti ti-circle waiting',
+                    Ticket::SOLVED   => 'ti ti-circle-filled solved',
+                    Ticket::WAITING  => 'ti ti-circle-filled waiting',
                     Ticket::PLANNED  => 'ti ti-calendar planned',
                     Ticket::ASSIGNED => 'ti ti-circle assigned',
-                    Ticket::INCOMING => 'ti ti-circle new',
+                    Ticket::INCOMING => 'ti ti-circle-filled new',
                 ];
 
                 foreach ($button_statuses as $status) {
