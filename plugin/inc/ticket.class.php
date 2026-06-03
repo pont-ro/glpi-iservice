@@ -2125,7 +2125,7 @@ class PluginIserviceTicket extends Ticket
                 }
 
                 $statusClassMap = [
-                    Ticket::SOLVED   => 'ti ti-circle-filled solved',
+                    Ticket::SOLVED   => 'ti ti-circle solved',
                     Ticket::WAITING  => 'ti ti-circle-filled waiting',
                     Ticket::PLANNED  => 'ti ti-calendar planned',
                     Ticket::ASSIGNED => 'ti ti-circle assigned',
