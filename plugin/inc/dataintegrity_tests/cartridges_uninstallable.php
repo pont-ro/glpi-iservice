@@ -33,9 +33,21 @@ return [
                 left join glpi_locations cl on cl.id = c.locations_id_field
                 join glpi_cartridgeitems_printermodels cp on cp.cartridgeitems_id = c.cartridgeitems_id
                 join glpi_printers p on p.printermodels_id = cp.printermodels_id and p.is_deleted = 0
-                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id = c.suppliers_id_field
+                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer'
+                    and (
+                        ic.suppliers_id = c.suppliers_id_field
+                        or ic.suppliers_id in (
+                            select sgp.items_id
+                            from glpi_plugin_fields_suppliersuppliercustomfields sgp
+                            join glpi_plugin_fields_suppliersuppliercustomfields sgc
+                                on sgc.group_field = sgp.group_field
+                                and sgp.group_field is not null and sgp.group_field != '' and sgp.group_field != 'NULL'
+                            where sgc.items_id = c.suppliers_id_field
+                        )
+                    )
                 left join glpi_locations pl on pl.id = p.locations_id
-                where coalesce(pl.locations_id, 0) = coalesce(cl.locations_id, 0)
+                where coalesce(pl.locations_id, 0) = coalesce(cl.locations_id, 0)  -- same parent location
+                   or coalesce(pl.locations_id, 0) = coalesce(c.locations_id_field, 0)  -- printer is inside cartridge's location
               ) sl on sl.cid = c.id
               left join (
                 select c.id cid, p.id pid, cl.id cartridge_location, cl.locations_id cartridge_location_parent, p.locations_id printer_location, pl.locations_id printer_location_parent
@@ -43,9 +55,21 @@ return [
                 left join glpi_locations cl on cl.id = c.locations_id_field
                 join glpi_cartridgeitems_printermodels cp on cp.cartridgeitems_id = c.cartridgeitems_id
                 join glpi_printers p on p.printermodels_id = cp.printermodels_id and p.is_deleted = 0
-                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer' and ic.suppliers_id = c.suppliers_id_field
+                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer'
+                    and (
+                        ic.suppliers_id = c.suppliers_id_field
+                        or ic.suppliers_id in (
+                            select sgp.items_id
+                            from glpi_plugin_fields_suppliersuppliercustomfields sgp
+                            join glpi_plugin_fields_suppliersuppliercustomfields sgc
+                                on sgc.group_field = sgp.group_field
+                                and sgp.group_field is not null and sgp.group_field != '' and sgp.group_field != 'NULL'
+                            where sgc.items_id = c.suppliers_id_field
+                        )
+                    )
                 left join glpi_locations pl on pl.id = p.locations_id
-                where coalesce(pl.locations_id, 0) != coalesce(cl.locations_id, 0)
+                where coalesce(pl.locations_id, 0) != coalesce(cl.locations_id, 0)   -- different parent location
+                  and coalesce(pl.locations_id, 0) != coalesce(c.locations_id_field, 0)  -- printer not inside cartridge's location
               ) ol on ol.cid = c.id
               where c.date_use is null and c.date_out is null
               group by c.id
