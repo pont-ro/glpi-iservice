@@ -166,7 +166,21 @@ class AddCustomFieldsInstallStep
             $table       = getTableForItemType($classname);
             $tableConfig = self::getColumnsSql(self::getFieldsData($containerData['fields']));
 
-            $result = $result && \PluginIserviceDB::alterTable($table, $tableConfig);
+            // Apply each column change in its own ALTER statement. alterTable() would otherwise
+            // batch every column into a single atomic ALTER, so one column that fails to convert
+            // (e.g. dirty legacy data in a sibling date column) would roll back the whole table and
+            // leave every column - including valid number fields - as VARCHAR. Per-column keeps the
+            // failure isolated: the bad column is reported and skipped, the rest still convert.
+            foreach ($tableConfig['columns'] as $columnName => $columnConfig) {
+                try {
+                    \PluginIserviceDB::alterTable($table, ['columns' => [$columnName => $columnConfig]]);
+                } catch (\Throwable $e) {
+                    \Toolbox::logInFile(
+                        'iservice',
+                        sprintf("Could not convert column %s.%s (%s): %s\n", $table, $columnName, $columnConfig, $e->getMessage())
+                    );
+                }
+            }
         }
 
         return $result;
