@@ -126,9 +126,7 @@ class PluginIserviceStockVerifier extends CommonDBTM
         }
 
         $mmail->Subject = "Consumabile sub sau cu limita setată";
-        $mmail->msgHTML($email_message);
-        // $mmail->Body = $email_message;
-        // $mmail->WordWrap = 100;
+        $mmail->Body = $email_message;
         if ($mmail->send()) {
             $task->log("Email sent to $target_email.\n");
         } else {

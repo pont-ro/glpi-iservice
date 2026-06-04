@@ -235,7 +235,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         $mmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
         $mmail->AddAddress($target_email, '');
         $mmail->Subject = $subject;
-        $mmail->msgHTML($email_message);
+        $mmail->Body = $email_message;
         if ($mmail->send()) {
             $task->log("Email sent to $target_email.\n");
         } else {

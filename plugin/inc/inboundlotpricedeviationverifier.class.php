@@ -175,7 +175,7 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
         }
 
         $mmail->Subject = _t('Inbound lot price deviations detected');
-        $mmail->msgHTML($email_message);
+        $mmail->Body = $email_message;
         if ($mmail->send()) {
             $task->log("Email sent to $target_email.\n");
         } else {

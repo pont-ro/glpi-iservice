@@ -176,7 +176,7 @@ class PluginIserviceVehiclesVerifier extends CommonDBTM
         }
 
         $mmail->Subject = _t('Vehicle documents expiration notification');
-        $mmail->msgHTML($emailMessage);
+        $mmail->Body = $emailMessage;
         if ($mmail->send()) {
             $task->log("Email sent to $targetEmail.\n");
         } else {
