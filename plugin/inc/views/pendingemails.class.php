@@ -72,10 +72,10 @@ class PendingEmails extends View
                 $mmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
 
                 foreach (preg_split("/(,|;)/", $pending_email->fields['mail_to']) as $to_address) {
-                    $mmail->AddAddress(trim($to_address));
+                    $mmail->AddAddress(trim($to_address), '');
                 }
 
-                $mmail->addBCC('financiar@expertline.ro');
+                $mmail->addBCC('financiar@expertline.ro', '');
 
                 $mmail->Subject = "[iService] " . $pending_email->fields['subject'];
 

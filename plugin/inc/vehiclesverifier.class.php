@@ -172,7 +172,7 @@ class PluginIserviceVehiclesVerifier extends CommonDBTM
         $mmail->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
         $mmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
         foreach (preg_split("/(,|;)/", $targetEmail) as $toAddress) {
-            $mmail->AddAddress($toAddress);
+            $mmail->AddAddress($toAddress, '');
         }
 
         $mmail->Subject = _t('Vehicle documents expiration notification');

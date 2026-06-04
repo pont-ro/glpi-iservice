@@ -171,7 +171,7 @@ class PluginIserviceInboundLotPriceDeviationVerifier extends CommonDBTM
         $mmail->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
         $mmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
         foreach (preg_split("/(,|;)/", $target_email) as $to_address) {
-            $mmail->AddAddress($to_address);
+            $mmail->AddAddress($to_address, '');
         }
 
         $mmail->Subject = _t('Inbound lot price deviations detected');

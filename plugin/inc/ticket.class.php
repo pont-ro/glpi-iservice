@@ -1513,7 +1513,7 @@ class PluginIserviceTicket extends Ticket
         $mmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
 
         foreach (preg_split("/(,|;)/", $config['to_addresses']) as $to_address) {
-            $mmail->AddAddress(trim($to_address));
+            $mmail->AddAddress(trim($to_address), '');
         }
 
         $mmail->Subject = "[iService] " . $config['subject'];

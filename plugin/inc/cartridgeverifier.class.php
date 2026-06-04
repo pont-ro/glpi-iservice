@@ -233,7 +233,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         $mmail->AddCustomHeader("Auto-Submitted: auto-generated");
         $mmail->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
         $mmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
-        $mmail->AddAddress($target_email);
+        $mmail->AddAddress($target_email, '');
         $mmail->Subject = $subject;
         $mmail->msgHTML($email_message);
         if ($mmail->send()) {

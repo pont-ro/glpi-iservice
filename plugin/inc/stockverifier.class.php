@@ -122,7 +122,7 @@ class PluginIserviceStockVerifier extends CommonDBTM
         $mmail->AddCustomHeader("X-Auto-Response-Suppress: OOF, DR, NDR, RN, NRN");
         $mmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
         foreach (preg_split("/(,|;)/", $target_email) as $to_address) {
-            $mmail->AddAddress($to_address);
+            $mmail->AddAddress($to_address, '');
         }
 
         $mmail->Subject = "Consumabile sub sau cu limita setată";
