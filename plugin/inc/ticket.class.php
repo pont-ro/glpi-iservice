@@ -2711,4 +2711,39 @@ class PluginIserviceTicket extends Ticket
         die(IserviceToolBox::RESPONSE_OK);
     }
 
+    public static function ajaxAssignSupplier(): string
+    {
+        $ticket_id   = IserviceToolBox::getInputVariable('id');
+        $supplier_id = IserviceToolBox::getInputVariable('supplier_id');
+
+        if (empty($ticket_id)) {
+            return _t('No ticket ID provided.');
+        }
+
+        if (empty($supplier_id)) {
+            return _t('No supplier ID provided.');
+        }
+
+        $supplier_ticket = new Supplier_Ticket();
+        $supplier_ticket->add([
+            'tickets_id'       => $ticket_id,
+            'suppliers_id'     => $supplier_id,
+            'type'             => CommonITILActor::ASSIGN,
+            'use_notification' => 0,
+            '_from_object'     => true,
+        ]);
+
+        // Verify by checking the record exists — add() may return falsy due to
+        // GLPI 11 post-processing hooks even when the DB insert succeeded.
+        if ($supplier_ticket->getFromDBByCrit([
+            'tickets_id'   => $ticket_id,
+            'suppliers_id' => $supplier_id,
+            'type'         => CommonITILActor::ASSIGN,
+        ])) {
+            return IserviceToolBox::RESPONSE_OK;
+        }
+
+        return sprintf(_t('Could not assign supplier %s to ticket %s.'), $supplier_id, $ticket_id);
+    }
+
 }
