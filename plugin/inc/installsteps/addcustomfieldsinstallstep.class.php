@@ -166,7 +166,21 @@ class AddCustomFieldsInstallStep
             $table       = getTableForItemType($classname);
             $tableConfig = self::getColumnsSql(self::getFieldsData($containerData['fields']));
 
-            $result = $result && \PluginIserviceDB::alterTable($table, $tableConfig);
+            // Apply each column change in its own ALTER statement. alterTable() would otherwise
+            // batch every column into a single atomic ALTER, so one column that fails to convert
+            // (e.g. dirty legacy data in a sibling date column) would roll back the whole table and
+            // leave every column - including valid number fields - as VARCHAR. Per-column keeps the
+            // failure isolated: the bad column is reported and skipped, the rest still convert.
+            foreach ($tableConfig['columns'] as $columnName => $columnConfig) {
+                try {
+                    \PluginIserviceDB::alterTable($table, ['columns' => [$columnName => $columnConfig]]);
+                } catch (\Throwable $e) {
+                    \Toolbox::logInFile(
+                        'iservice',
+                        sprintf("Could not convert column %s.%s (%s): %s\n", $table, $columnName, $columnConfig, $e->getMessage())
+                    );
+                }
+            }
         }
 
         return $result;
@@ -198,13 +212,18 @@ class AddCustomFieldsInstallStep
                 if (!empty($as)) {
                     // GENERATED computed columns must stay DECIMAL (e.g. printed_pages_field).
                     $fields[$field_name] = $drop . "decimal(" . ($fieldData['decimalPrecision'] ?? '15,2') . ")" . $as;
-                } elseif (!empty($fieldData['int'])) {
-                    // Integer FK fields — set programmatically, safe as INT.
-                    $fields[$field_name] = "INT" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
                 } else {
-                    // Non-GENERATED number fields use VARCHAR so that empty string saves
-                    // (from the fields plugin form) are accepted by MySQL strict mode.
-                    $fields[$field_name] = "VARCHAR(255)" . self::attachMandatoryAndDefaultSettings($mandatory, $default !== null ? "'$default'" : null);
+                    $precision = $fieldData['decimalPrecision'] ?? '15,2';
+                    $decimals  = (int) (explode(',', $precision)[1] ?? 0);
+                    if (!empty($fieldData['int']) || $decimals === 0) {
+                        // Whole-number fields (foreign keys, counters, quantities) -> INT for proper indexing and sorting.
+                        // Empty-string saves are converted to NULL by the fields-plugin populateData() patch
+                        // (see ApplyPatchesInstallStep), so numeric columns no longer choke on '' submitted from forms.
+                        $fields[$field_name] = "INT" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                    } else {
+                        // Fields with decimal places (prices, coefficients, exchange rates).
+                        $fields[$field_name] = "decimal($precision)" . self::attachMandatoryAndDefaultSettings($mandatory, $default);
+                    }
                 }
                 break;
             default:

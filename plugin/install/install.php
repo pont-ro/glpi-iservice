@@ -3,6 +3,7 @@
 namespace GlpiPlugin\iService;
 
 use GlpiPlugin\iService\InstallSteps\AddCustomFieldsInstallStep;
+use GlpiPlugin\iService\InstallSteps\ApplyPatchesInstallStep;
 use GlpiPlugin\iService\InstallSteps\CreateTablesInstallStep;
 use GlpiPlugin\iService\InstallSteps\CreateViewsInstallStep;
 use GlpiPlugin\iService\InstallSteps\CreateStoredProceduresInstallStep;
@@ -22,6 +23,7 @@ class PluginIserviceInstall
     public function install(): bool
     {
         $result = OverwriteAssetsInstallStep::do();
+        $result = $result && ApplyPatchesInstallStep::do();
         $result = $result && CreateTablesInstallStep::do();
         $result = $result && SeedDatabaseInstallStep::do();
         $result = $result && AddCustomFieldsInstallStep::do();
@@ -34,6 +36,7 @@ class PluginIserviceInstall
 
     public function uninstall(): void
     {
+        ApplyPatchesInstallStep::undo();
         AddCustomFieldsInstallStep::undo();
         CreateTablesInstallStep::undo();
         CreateStoredProceduresInstallStep::undo();
