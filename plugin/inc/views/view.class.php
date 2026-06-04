@@ -352,7 +352,6 @@ class View extends \CommonGLPI
 
         if (!empty($this->filters)) {
             $filter = "<div class='view-filter noprint" . ($this->detail_displaying ? " detail" : "") . "'>";
-            ob_flush();
             ob_start();
             if (isset($this->filters['prefix'])) {
                 $filter .= $this->filters['prefix'];
