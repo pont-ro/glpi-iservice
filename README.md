@@ -130,7 +130,7 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
   - to: `} elseif ($field['type'] == 'number' && !empty($value) && strtoupper($value) !== 'NULL' && !is_numeric($value)) {`
 
 - we need to modify the following files, in order to avoid custom field renaming when fields plugin version is above 1.9.2:
-  - inc/field.class.php line 130 - 148, containing: ``$toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);``
+  - `glpi/plugins/fieldsinc/field.class.php` line 130 - 148, containing: ``$toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);``
     Comment: 
     ```
       //        $toolbox = new PluginFieldsToolbox();
@@ -153,7 +153,7 @@ See the setup instructions for the DEV, TEST and PROD environments [here](setup/
       //            ),
       //        );```
   
-  - inc/dropdown.c`lass.php line 72 - 76, containing: ``$toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);``
+  - `glpi/plugins/fields/inc/dropdown.class.php` line 72 - 76, containing: ``$toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);``
     Comment: 
     ```
         //        $toolbox = new PluginFieldsToolbox();

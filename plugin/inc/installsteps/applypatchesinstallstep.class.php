@@ -79,6 +79,85 @@ SEARCH,
         $dbu = new DbUtils();
 REPLACE,
         ],
+        [
+            // Accept the string 'NULL' as a valid value for number custom fields, so number columns
+            // can be left "empty" (stored as NULL) without the fields plugin's own validation rejecting it.
+            // README > Fields plugin hacks: PluginFieldsContainer::validateValues().
+            'name'    => 'fields-number-accept-null-value',
+            'marker'  => "strtoupper(\$value) !== 'NULL'",
+            'file'    => GLPI_ROOT . '/plugins/fields/inc/container.class.php',
+            'search'  => "} elseif (\$field['type'] == 'number' && !empty(\$value) && !is_numeric(\$value)) {",
+            'replace' => "} elseif (\$field['type'] == 'number' && !empty(\$value) && strtoupper(\$value) !== 'NULL' && !is_numeric(\$value)) {",
+        ],
+        [
+            // Prevent the fields plugin from renaming our custom fields on every migration (>= 1.9.2),
+            // which breaks iService column references. README > Fields plugin hacks: field.class.php.
+            'name'   => 'fields-disable-fixfieldsnames-field',
+            'marker' => "//        \$toolbox->fixFieldsNames(\$migration, ['NOT' => ['type' => 'dropdown']]);",
+            'file'   => GLPI_ROOT . '/plugins/fields/inc/field.class.php',
+            'search' => <<<'SEARCH'
+        $toolbox = new PluginFieldsToolbox();
+        $toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);
+
+        //move old types to new format
+        $migration->addPostQuery(
+            $DB->buildUpdate(
+                PluginFieldsField::getTable(),
+                ['type' => 'dropdown-User'],
+                ['type' => 'dropdownuser'],
+            ),
+        );
+
+        $migration->addPostQuery(
+            $DB->buildUpdate(
+                PluginFieldsField::getTable(),
+                ['type' => 'dropdown-OperatingSystem'],
+                ['type' => 'dropdownoperatingsystems'],
+            ),
+        );
+SEARCH,
+            'replace' => <<<'REPLACE'
+//        $toolbox = new PluginFieldsToolbox();
+//        $toolbox->fixFieldsNames($migration, ['NOT' => ['type' => 'dropdown']]);
+
+        //move old types to new format
+//        $migration->addPostQuery(
+//            $DB->buildUpdate(
+//                PluginFieldsField::getTable(),
+//                ['type' => 'dropdown-User'],
+//                ['type' => 'dropdownuser'],
+//            ),
+//        );
+//
+//        $migration->addPostQuery(
+//            $DB->buildUpdate(
+//                PluginFieldsField::getTable(),
+//                ['type' => 'dropdown-OperatingSystem'],
+//                ['type' => 'dropdownoperatingsystems'],
+//            ),
+//        );
+REPLACE,
+        ],
+        [
+            // Same renaming guard for dropdown custom fields. README > Fields plugin hacks: dropdown.class.php.
+            'name'   => 'fields-disable-fixfieldsnames-dropdown',
+            'marker' => "//        \$toolbox->fixFieldsNames(\$migration, ['type' => 'dropdown']);",
+            'file'   => GLPI_ROOT . '/plugins/fields/inc/dropdown.class.php',
+            'search' => <<<'SEARCH'
+        $toolbox = new PluginFieldsToolbox();
+        $toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);
+
+        // Ensure data is update before regenerating files.
+        $migration->executeMigration();
+SEARCH,
+            'replace' => <<<'REPLACE'
+//        $toolbox = new PluginFieldsToolbox();
+//        $toolbox->fixFieldsNames($migration, ['type' => 'dropdown']);
+//
+//        // Ensure data is update before regenerating files.
+//        $migration->executeMigration();
+REPLACE,
+        ],
     ];
 
     public static function do(): bool
