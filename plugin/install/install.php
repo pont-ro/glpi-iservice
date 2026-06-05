@@ -24,13 +24,13 @@ class PluginIserviceInstall
     {
         $result = OverwriteAssetsInstallStep::do();
         $result = $result && ApplyPatchesInstallStep::do();
-        $result = $result && CreateTablesInstallStep::do();
-        $result = $result && SeedDatabaseInstallStep::do();
-        $result = $result && AddCustomFieldsInstallStep::do();
-        $result = $result && CreateViewsInstallStep::do();
-        $result = $result && CreateStoredProceduresInstallStep::do();
-        $result = $result && OptimizeTablesInstallStep::do();
-        $result = $result && HandleProfileRightsInstallStep::do();
+//        $result = $result && CreateTablesInstallStep::do();
+//        $result = $result && SeedDatabaseInstallStep::do();
+//        $result = $result && AddCustomFieldsInstallStep::do();
+//        $result = $result && CreateViewsInstallStep::do();
+//        $result = $result && CreateStoredProceduresInstallStep::do();
+//        $result = $result && OptimizeTablesInstallStep::do();
+//        $result = $result && HandleProfileRightsInstallStep::do();
         return $result && CronTasksInstallStep::do();
     }
 
