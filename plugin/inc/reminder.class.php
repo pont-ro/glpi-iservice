@@ -115,7 +115,7 @@ class PluginIserviceReminder extends Reminder
         $form_rows[] = $html->generateFieldTableRow(
             __('Description'), Html::textarea(
                 ['name'              => 'text',
-                    'value'             => RichText::getSafeHtml($this->fields["text"], true),
+                    'value'             => RichText::getSafeHtml($this->fields["text"], false),
                     'enable_richtext'   => true,
                     'display'           => false,
                 ]
