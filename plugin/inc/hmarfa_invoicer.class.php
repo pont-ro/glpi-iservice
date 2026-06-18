@@ -934,7 +934,6 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $mailData['subject'],
             $mailData['body'],
             $attachment,
-                false,
             PluginIserviceConfig::getConfigValue('hmarfa.export.mail.from'), // from
             PluginIserviceConfig::getConfigValue('hmarfa.export.mail.name'), // from name
             PluginIserviceConfig::getConfigValue('hmarfa.export.mail.from'), // bcc

@@ -577,7 +577,7 @@ class ToolBox
         return trim($text);
     }
 
-    public static function sendMail(string|array $to, string $subject, string $body, string|array $attachments = null, bool $html = true, string $from = null, string $fromName = null, string|array $bcc = null, string $userName = null, string $password = null): bool|string
+    public static function sendMail(string|array $to, string $subject, string $body, string|array $attachments = null, string $from = null, string $fromName = null, string|array $bcc = null, string $userName = null, string $password = null): bool|string
     {
         global $CFG_GLPI;
 
@@ -613,8 +613,7 @@ class ToolBox
 
             $mailer->Subject = str_contains($subject, '[iService]') ? $subject : "[iService] $subject";
 
-            $mailer->isHTML($html);
-            $mailer->Body = $body . ($html ? '<br><br><hr>' : "\n\n--\n") . $CFG_GLPI['mailing_signature'];
+            $mailer->Body = nl2br(htmlspecialchars($body, ENT_QUOTES, 'UTF-8')) . '<br><br><hr>' . $CFG_GLPI['mailing_signature'];
 
             return $mailer->Send() ? true : $mailer->ErrorInfo;
         } catch (\Exception $e) {
