@@ -59,7 +59,8 @@ class ClientInvoices extends View
 
     private static function getCopyMagicLinkButton($magic_link)
     {
-        $downloadLink = $_SERVER['HTTP_HOST'] . $magic_link;
+        $downloadLink = str_starts_with($magic_link, 'http') ? '' : 'https://';
+        $downloadLink .= "$_SERVER[HTTP_HOST]$magic_link";
 
         $js = "navigator.clipboard.writeText('$downloadLink').then(function() {
                             alert('" . _t('Magic link copied to clipboard.') . "');
