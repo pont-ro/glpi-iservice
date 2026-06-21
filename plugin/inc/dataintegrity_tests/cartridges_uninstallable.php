@@ -23,54 +23,29 @@ return [
             from (
               select 
                   c.id cid
-                , c.suppliers_id_field sid
-                , count(sl.pid) same_location_printer_count
-                , count(ol.pid) > 0 other_location_printer_count
-              from glpi_plugin_iservice_cartridges c
+                , cfc.suppliers_id_field sid
+                , sum(case when coalesce(pl.locations_id, 0) = coalesce(cl.locations_id, 0) or coalesce(pl.locations_id, 0) = coalesce(cfc.locations_id_field, 0) then 1 else 0 end) same_location_printer_count
+                , sum(case when coalesce(pl.locations_id, 0) != coalesce(cl.locations_id, 0) and coalesce(pl.locations_id, 0) != coalesce(cfc.locations_id_field, 0) then 1 else 0 end) > 0 other_location_printer_count
+              from glpi_cartridges c
+              left join glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
+              left join glpi_locations cl on cl.id = cfc.locations_id_field
               left join (
-                select c.id cid, p.id pid, cl.id cartridge_location, cl.locations_id cartridge_location_parent, p.locations_id printer_location, pl.locations_id printer_location_parent
-                from glpi_plugin_iservice_cartridges c
-                left join glpi_locations cl on cl.id = c.locations_id_field
-                join glpi_cartridgeitems_printermodels cp on cp.cartridgeitems_id = c.cartridgeitems_id
-                join glpi_printers p on p.printermodels_id = cp.printermodels_id and p.is_deleted = 0
-                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer'
-                    and (
-                        ic.suppliers_id = c.suppliers_id_field
-                        or ic.suppliers_id in (
-                            select sgp.items_id
-                            from glpi_plugin_fields_suppliersuppliercustomfields sgp
-                            join glpi_plugin_fields_suppliersuppliercustomfields sgc
-                                on sgc.group_field = sgp.group_field
-                                and sgp.group_field is not null and sgp.group_field != '' and sgp.group_field != 'NULL'
-                            where sgc.items_id = c.suppliers_id_field
-                        )
+                  glpi_cartridgeitems_printermodels cp 
+                  join glpi_printers p on p.printermodels_id = cp.printermodels_id and p.is_deleted = 0
+                  join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer'
+                  left join glpi_locations pl on pl.id = p.locations_id
+              ) on cp.cartridgeitems_id = c.cartridgeitems_id
+                and (
+                    ic.suppliers_id = cfc.suppliers_id_field
+                    or ic.suppliers_id in (
+                        select sgp.items_id
+                        from glpi_plugin_fields_suppliersuppliercustomfields sgp
+                        join glpi_plugin_fields_suppliersuppliercustomfields sgc
+                            on sgc.group_field = sgp.group_field
+                            and sgc.items_id = cfc.suppliers_id_field
+                        where sgp.group_field is not null and sgp.group_field != '' and sgp.group_field != 'NULL'
                     )
-                left join glpi_locations pl on pl.id = p.locations_id
-                where coalesce(pl.locations_id, 0) = coalesce(cl.locations_id, 0)  -- same parent location
-                   or coalesce(pl.locations_id, 0) = coalesce(c.locations_id_field, 0)  -- printer is inside cartridge's location
-              ) sl on sl.cid = c.id
-              left join (
-                select c.id cid, p.id pid, cl.id cartridge_location, cl.locations_id cartridge_location_parent, p.locations_id printer_location, pl.locations_id printer_location_parent
-                from glpi_plugin_iservice_cartridges c
-                left join glpi_locations cl on cl.id = c.locations_id_field
-                join glpi_cartridgeitems_printermodels cp on cp.cartridgeitems_id = c.cartridgeitems_id
-                join glpi_printers p on p.printermodels_id = cp.printermodels_id and p.is_deleted = 0
-                join glpi_infocoms ic on ic.items_id = p.id and ic.itemtype = 'Printer'
-                    and (
-                        ic.suppliers_id = c.suppliers_id_field
-                        or ic.suppliers_id in (
-                            select sgp.items_id
-                            from glpi_plugin_fields_suppliersuppliercustomfields sgp
-                            join glpi_plugin_fields_suppliersuppliercustomfields sgc
-                                on sgc.group_field = sgp.group_field
-                                and sgp.group_field is not null and sgp.group_field != '' and sgp.group_field != 'NULL'
-                            where sgc.items_id = c.suppliers_id_field
-                        )
-                    )
-                left join glpi_locations pl on pl.id = p.locations_id
-                where coalesce(pl.locations_id, 0) != coalesce(cl.locations_id, 0)   -- different parent location
-                  and coalesce(pl.locations_id, 0) != coalesce(c.locations_id_field, 0)  -- printer not inside cartridge's location
-              ) ol on ol.cid = c.id
+                )
               where c.date_use is null and c.date_out is null
               group by c.id
             ) t1
@@ -90,4 +65,11 @@ return [
             'iteration_text' => "<a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Printers&printers0[supplier_name]=[name]' target='_blank' title=\"click to see partner's printers\">[name]</a> has <a href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Cartridges&cartridges0[date_use_null]=1&cartridges0[date_out_null]=1&filtering=1&cartridges0[partner_name]=[name]' target='_blank' title=\"click to see partner's cartridges\">[cartridge_count]</a> cartridges that can not be installed: [cartridge_ids] [fix]",
         ],
     ],
+    'schedule' => [
+        'display_last_result' => true,
+        'h:m'                 => ['6:01'],
+        'ignore_text'         => [
+            'hours' => "Checked only at 06:01.",
+        ]
+    ]
 ];
