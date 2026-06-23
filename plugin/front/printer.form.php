@@ -217,7 +217,15 @@ if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer
         // $DB->doQuery("DELETE FROM glpi_contracts_items where itemtype = 'Printer' AND contracts_id = " . $post['contract']['id']);
         $contract_item->add(['add' => 'add','itemtype' => 'Printer','items_id' => $id,'contracts_id' => $post['contract']['id']]);
         $contract_supplier = new Contract_Supplier();
-        $contract_supplier->add(['add' => 'add','contracts_id' => $post['contract']['id'],'suppliers_id' => $post['supplier']['id']]);
+        if (false === $contract_supplier->getFromDBByCrit([
+                'contracts_id' => $post['contract']['id'],
+                'suppliers_id' => $post['supplier']['id']
+            ])) {
+            $contract_supplier->add([
+                'add' => 'add',
+                'contracts_id' => $post['contract']['id'],
+                'suppliers_id' => $post['supplier']['id']]);
+        }
     }
 } elseif (!empty($update_contract) && $post_data['contract'] !== null) {
     $contract->check($post_data['contract']['id'], UPDATE);

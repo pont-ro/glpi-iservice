@@ -78,14 +78,34 @@ function registerHMarfaImportClick()
 {
     $('i.hMarfaImport').parent().click(
         function () {
+            let item = $(this).find('i.hMarfaImport');
+            item.removeClass('fa-upload text-warning');
+            item.addClass('fa-spinner fa-spin text-danger');
+
             let regex  = /{([^}]+)}/g;
             let params = JSON.parse(regex.exec($(this).attr('data-params'))[0]);
             try {
-                submitGetLink('/front/crontask.form.php', params);
-                $(this).removeClass('text-danger text-warning');
+                $.ajax({
+                    url: '/front/crontask.form.php',
+                    type: 'POST',
+                    data: params,
+                    success: function (response) {
+                        $(this).attr('title', 'hMarfa importat cu succes');
+                        let item = $(this).find('i.hMarfaImport');
+                        item.removeClass('fa-spinner fa-spin text-danger');
+                        item.addClass('fa-upload text-success');
+                    }.bind(this),
+                    error: function (xhr, status, error) {
+                        $(this).attr('title', 'Error: ' + error);
+                        let item = $(this).find('i.hMarfaImport');
+                        item.removeClass('fa-spinner fa-spin');
+                        item.addClass('fa-triangle-exclamation');
+                    }.bind(this)
+                });
             } catch (e) {
                 $(this).attr('title', 'Error: ' + e.message);
-                $(this).addClass('text-danger');
+                item.removeClass('fa-spinner fa-spin');
+                item.addClass('fa-triangle-exclamation');
             }
         }
     );

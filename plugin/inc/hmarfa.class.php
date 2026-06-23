@@ -1204,7 +1204,7 @@ class PluginIserviceHmarfa
             $cartridge_ids = str_replace('|', '', $ticket_consumable['new_cartridge_ids']);
             foreach ($cartridge->find(
                 [
-                    "id" => $cartridge_ids,
+                    "id" => explode(',', $cartridge_ids),
                     'NOT' => ['date_use' => 'null'],
                 ]
             ) as $cartr) {
