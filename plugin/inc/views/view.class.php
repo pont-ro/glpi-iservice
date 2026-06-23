@@ -1487,8 +1487,10 @@ class View extends \CommonGLPI
         global $DB;
         $table_name = 'glpi_plugin_iservice_cachetable_' . strtolower($this->getMachineName());
         $DB->doQuery("DROP TABLE IF EXISTS $table_name");
-        if (!$DB->doQuery("CREATE TABLE $table_name DEFAULT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' AS {$this->getFilterlessQuery()}")) {
-            echo $DB->error(), "<br>CREATE TABLE $table_name AS {$this->getFilterlessQuery()}";
+        $filterlessQuery = $this->getFilterlessQuery();
+//        file_put_contents('cachetable_query.sql', $filterlessQuery);
+        if (!$DB->doQuery("CREATE TABLE $table_name DEFAULT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' AS $filterlessQuery")) {
+            echo $DB->error(), "<br>CREATE TABLE $table_name AS $filterlessQuery";
             return null;
         }
 
