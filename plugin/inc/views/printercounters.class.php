@@ -214,7 +214,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                       '\\nMediu zilnic: ', t.daily_average_counter,
                       '\\n\\nCalculatie: 1 - (', t.estimate_counter, ' - ', t.installed_counter, ')/', round(t.average_total_counter * t.life_coefficient * t.usage_coefficient),
                       '\">', t.available_percentage_estimate * 100, '%</span>') separator '<br>')
-                  ) USING utf8mb4_unicode_ci) estimate_percentages
+                  ) USING utf8mb4) estimate_percentages
               , 'lastClosedCounter + daysSinceLastClose * da' estimated_counter_formula
               , '1 - (estimateCounter - installedCounter) / (atc * lc * uc)' estimate_percentage_formula
               , CONVERT(concat( 
@@ -233,7 +233,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                       '\\nAparate compatibile: ', t.compatible_printer_count,
                       '\\n\\nCalculatie: (', round(t.average_total_counter * t.life_coefficient * t.usage_coefficient), ' - ', t.last_closed_counter - t.installed_counter , ') / ' , t.daily_average_counter, ' - ', datediff(NOW(), t.last_closed_date), ' + ' , round(t.average_total_counter * t.life_coefficient * t.usage_coefficient / t.daily_average_counter), ' * ', t.changeable_count ,' / ', t.compatible_printer_count, 
                       '\">', t.days_to_visit, ' zile</span>') separator '<br>') 
-                  ) USING utf8mb4_unicode_ci) days_to_visits
+                  ) USING utf8mb4) days_to_visits
               , '(atc * lc * uc - (lastClosedCounter - installedCounter)) / da - daysSinceLastClose + (atc * lc * uc / da) * (changeableCartridges / compatiblePrinterCount)' days_to_visit_formula
               , min(t.available_percentage_estimate) min_estimate_percentage
               , min(t.below_limit) below_limit_exists
@@ -264,13 +264,13 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , cfp.no_invoice_field
                   , cfp.cost_center_field costcenter
                   , pbuc.uc calc_ucbk
-                  , CONVERT(pbuc.explanation USING utf8mb4_unicode_ci) calc_ucbk_explanation
+                  , CONVERT(pbuc.explanation USING utf8mb4) calc_ucbk_explanation
                   , pcuc.uc calc_ucc
-                  , CONVERT(pcuc.explanation USING utf8mb4_unicode_ci) calc_ucc_explanation
+                  , CONVERT(pcuc.explanation USING utf8mb4) calc_ucc_explanation
                   , pmuc.uc calc_ucm
-                  , CONVERT(pmuc.explanation USING utf8mb4_unicode_ci) calc_ucm_explanation
+                  , CONVERT(pmuc.explanation USING utf8mb4) calc_ucm_explanation
                   , pyuc.uc calc_ucy
-                  , CONVERT(pyuc.explanation USING utf8mb4_unicode_ci) calc_ucy_explanation
+                  , CONVERT(pyuc.explanation USING utf8mb4) calc_ucy_explanation
                   , l.completename location_complete_name
                   , s.id supplier_id
                   , s.name supplier_name
@@ -302,10 +302,10 @@ class PrinterCounters extends PluginIserviceViewPrinter
                                                                     when 3 then @ucm
                                                                     when 4 then @ucy
                                                                     else @ucbk 
-                                                                 end) USING utf8mb4_unicode_ci) usage_coefficient
+                                                                 end) USING utf8mb4) usage_coefficient
                   , @dba := coalesce(cfp.daily_bk_average_field, 0) dba
                   , @dca := coalesce(cfp.daily_color_average_field, 0) dca
-                  , CONVERT(@da := if(cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), if(@dca = 0, 100, @dca), if(@dba + @dca = 0, 100, @dba + @dca)) USING utf8mb4_unicode_ci) daily_average_counter
+                  , CONVERT(@da := if(cfci.plugin_fields_cartridgeitemtypedropdowns_id in (2, 3, 4), if(@dca = 0, 100, @dca), if(@dba + @dca = 0, 100, @dba + @dca)) USING utf8mb4) daily_average_counter
                   , @atl := " . self::AVALIABLE_LIMIT . " avaliable_limit
                   , @changeable_count := coalesce(ccc.count, 0) changeable_count
                   , @compatible_printer_count := coalesce(ccpc.count, 0) compatible_printer_count
@@ -316,7 +316,7 @@ class PrinterCounters extends PluginIserviceViewPrinter
                   , @estimateCounter := @lastClosedCounter + datediff(NOW(), @lastClosedDate) * @da estimate_counter
                   , @availableEstimate := 1 - round((@estimateCounter - @installedCounter) / (@atc * @lc * @uc), 2) available_percentage_estimate
                   , if (@availableEstimate < @atl, 'da', 'nu') below_limit
-                  , CONVERT(if (@compatible_printer_count > 0, round(coalesce((@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, 180) - datediff(NOW(), @lastClosedDate) + (@atc * @lc * @uc / @da) * (@changeable_count / @compatible_printer_count)), 0) USING utf8mb4_unicode_ci) days_to_visit
+                  , CONVERT(if (@compatible_printer_count > 0, round(coalesce((@atc * @lc * @uc - (@lastClosedCounter - @installedCounter)) / @da, 180) - datediff(NOW(), @lastClosedDate) + (@atc * @lc * @uc / @da) * (@changeable_count / @compatible_printer_count)), 0) USING utf8mb4) days_to_visit
                   /*, CONCAT_WS(' | ', '@act:', @atc, '@lc:', @lc, '@uc:', @uc, '@lastClosecCounter', @lastClosedCounter, '@installedCounter', @installedCounter, '@da', @da, '@lastClosedDate', @lastClosedDate, '@changeable_count', @changeable_count, '@compatible_printer_count', @compatible_printer_count) days_to_visit_debug*/
                   , concat('<span title=\"', coalesce(ccc.cids, 'nu există cartușe compatibile'), '\">', @changeable_count, '</span> / <span title=\"', coalesce(ccpc.pids, 'nu există aparate compatibile'), '\">', @compatible_printer_count, '</span>') in_stock
                   , getPrinterDailyAverage(p.id, 0) cdba
