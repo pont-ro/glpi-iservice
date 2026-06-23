@@ -27,6 +27,10 @@ window.moveIconsToHeader = function () {
                 $(this).attr('href', 'javascript:void(0);');
             }
 
+            if ($(this).attr('aria-label') && !$(this).attr('title')) {
+                $(this).attr('title', $(this).attr('aria-label'));
+            }
+
             $(this).find('span').remove();
             $(this).appendTo(headerIconsDiv);
         }
