@@ -254,9 +254,7 @@ function plugin_iservice_ticket_reopen_newer_tickets(Ticket $parentItem)
     $reopened_tickets = [];
     foreach (array_keys($newer_closed_ticket_ids) as $closed_ticket_id) {
         $ticket->getFromDB($closed_ticket_id);
-        $ticket->processFieldsByInput();
-        $ticket->fields['status'] = Ticket::SOLVED;
-        if ($ticket->update($ticket->fields)) {
+        if ($ticket->update(['status' => Ticket::SOLVED])) {
             $reopened_tickets[] = $closed_ticket_id;
         }
     }

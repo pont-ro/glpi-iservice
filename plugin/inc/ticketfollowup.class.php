@@ -5,6 +5,7 @@ if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\RichText\RichText;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 class PluginIserviceTicketFollowup extends ITILFollowup
@@ -60,7 +61,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
 
             foreach ($result as $data) {
                 $followupsData['rows'][] = [
-                    'class' => '',
+                    'class' => 'glpi-full-width',
                     'cols' => [
                         'date' => [
                             'value' => Html::convDateTime($data["date"]),
@@ -71,7 +72,7 @@ class PluginIserviceTicketFollowup extends ITILFollowup
                             'class' => 'center',
                         ],
                         'description' => [
-                            'value' => Html::resume_text($data["content"], $CFG_GLPI["cut"]),
+                            'value' => RichText::getSafeHtml($data["content"], false), // cut to $CFG_GLPI["cut"] if needed
                             'class' => 'center' . ($data['is_private'] ? ' text-danger' : ''),
                         ],
                     ],
