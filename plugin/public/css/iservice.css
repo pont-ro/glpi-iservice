@@ -395,3 +395,7 @@ form .form-control {
     table-layout: fixed;
     width: 100%;
 }
+
+.table > :not(caption) > * > * {
+    padding: 0.1rem !important;
+}
