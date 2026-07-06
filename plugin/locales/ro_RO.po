@@ -1687,6 +1687,12 @@ msgstr "Nu se poate redeschide tichetul (%s)!"
 msgid "Deleted printer"
 msgstr "Aparat șters"
 
+msgig "Client stock"
+msgstr "Stoc client"
+
+msgid "Total with compatible"
+msgstr "Total cu compatibile"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"

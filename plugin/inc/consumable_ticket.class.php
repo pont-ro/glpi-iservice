@@ -120,6 +120,24 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                          AND $stock_location_condition
                          AND FIND_IN_SET(cs.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $partner_id))
                      ) client_stock
+                   , (SELECT COUNT(*)
+                        FROM glpi_plugin_iservice_cartridges cs
+                        JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci_stock
+                          ON cfci_stock.items_id = cs.cartridgeitems_id AND cfci_stock.itemtype = 'CartridgeItem'
+                       WHERE cfci_stock.mercury_code_field IN (
+                                 SELECT cfci_comp.mercury_code_field
+                                   FROM glpi_cartridgeitems ci_self
+                                   JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci_self
+                                     ON cfci_self.items_id = ci_self.id AND cfci_self.itemtype = 'CartridgeItem'
+                                   JOIN glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci_comp
+                                     ON FIND_IN_SET(cfci_comp.mercury_code_field, REPLACE(cfci_self.compatible_mercury_codes_field, \"'\", '')) AND cfci_comp.itemtype = 'CartridgeItem'
+                                  WHERE ci_self.ref = c.id
+                             )
+                         AND COALESCE(cs.printers_id, 0) < 1
+                         AND cs.date_out IS NULL
+                         AND $stock_location_condition
+                         AND FIND_IN_SET(cs.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $partner_id))
+                     ) total_compatible_stock
                  FROM glpi_plugin_iservice_consumables_tickets ct
                  JOIN glpi_plugin_iservice_consumables c ON c.id = ct.plugin_iservice_consumables_id
                  LEFT JOIN glpi_plugin_iservice_consumabledescriptions cd ON cd.plugin_iservice_consumables_id = ct.plugin_iservice_consumables_id
@@ -247,6 +265,9 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 ],
                 'clientStock' => [
                     'value' => _t('Client stock'),
+                ],
+                'totalCompatibleStock' => [
+                    'value' => _t('Total with compatible'),
                 ],
             ],
         ];
@@ -419,6 +440,10 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     'clientStock' => [
                         // Wrapped in a span so a count of 0 is not treated as falsy (and hidden) by Twig.
                         'value' => "<span class=\"client-stock\">" . (int) ($consumable['client_stock'] ?? 0) . "</span>",
+                    ],
+                    'totalCompatibleStock' => [
+                        // Wrapped in a span so a count of 0 is not treated as falsy (and hidden) by Twig.
+                        'value' => "<span class=\"compatible-stock\">" . (int) ($consumable['total_compatible_stock'] ?? 0) . "</span>",
                     ],
                 ],
             ];
