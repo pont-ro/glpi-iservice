@@ -115,7 +115,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                         FROM glpi_plugin_iservice_cartridges cs
                         JOIN glpi_cartridgeitems ci ON ci.id = cs.cartridgeitems_id
                        WHERE ci.ref = c.id
-                         AND (COALESCE(cs.printers_id, 0) = 0 OR cs.printers_id = -1)
+                         AND COALESCE(cs.printers_id, 0) < 1
                          AND cs.date_out IS NULL
                          AND $stock_location_condition
                          AND FIND_IN_SET(cs.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $partner_id))
