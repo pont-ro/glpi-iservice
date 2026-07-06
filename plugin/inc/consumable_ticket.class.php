@@ -80,8 +80,23 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
         $consumables = [];
         $used_ids    = [];
 
+        // Client stock: number of uninstalled cartridges of the same type held by the assigned
+        // partner at the ticket printer's location (same logic as self::add()/self::update()).
+        $partner_id          = $ticket->getFirstAssignedPartner()->getID();
+        $printer_location_id = 0;
+        if ($items_id) {
+            $printer = new PluginIservicePrinter();
+            if ($printer->getFromDB($items_id)) {
+                $printer_location_id = (int) ($printer->fields['locations_id'] ?? 0);
+            }
+        }
+
+        $stock_location_condition = $printer_location_id > 0
+            ? "cs.locations_id_field = $printer_location_id"
+            : "(cs.locations_id_field < 1 OR cs.locations_id_field IS NULL)";
+
         $c_result = $DB->doQuery(
-            "SELECT 
+            "SELECT
                      ct.id IDD
                    , ct.plugin_fields_cartridgeitemtypedropdowns_id
                    , ct.locations_id
@@ -95,6 +110,15 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                    , cd.description
                    , io.plugin_iservice_orderstatuses_id
                    , ieo.plugin_iservice_extorders_id
+                   , (SELECT COUNT(*)
+                        FROM glpi_plugin_iservice_cartridges cs
+                        JOIN glpi_cartridgeitems ci ON ci.id = cs.cartridgeitems_id
+                       WHERE ci.ref = c.id
+                         AND (COALESCE(cs.printers_id, 0) = 0 OR cs.printers_id = -1)
+                         AND cs.date_out IS NULL
+                         AND $stock_location_condition
+                         AND FIND_IN_SET(cs.suppliers_id_field, (SELECT group_field FROM glpi_plugin_fields_suppliersuppliercustomfields WHERE items_id = $partner_id))
+                     ) client_stock
                  FROM glpi_plugin_iservice_consumables_tickets ct
                  JOIN glpi_plugin_iservice_consumables c ON c.id = ct.plugin_iservice_consumables_id
                  LEFT JOIN glpi_plugin_iservice_consumabledescriptions cd ON cd.plugin_iservice_consumables_id = ct.plugin_iservice_consumables_id
@@ -220,6 +244,9 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 'amount' => [
                     'value' => _t('Amount'),
                 ],
+                'clientStock' => [
+                    'value' => _t('Client stock'),
+                ],
             ],
         ];
 
@@ -268,7 +295,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 LEFT JOIN glpi_printers p ON p.id = ic.items_id AND itemtype = 'Printer'
                 WHERE ic.suppliers_id = " . $ticket->getFirstAssignedPartner()->getID();
 
-            $title = $consumable['description'];
+            $title                                           = $consumable['description'];
             $ticket->consumable_data['installed_cartridges'] = [];
             if (!empty($consumable['new_cartridge_ids'])) {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
@@ -388,6 +415,10 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                             ],
                         ],
                     ],
+                    'clientStock' => [
+                        // Wrapped in a span so a count of 0 is not treated as falsy (and hidden) by Twig.
+                        'value' => "<span class=\"client-stock\">" . (int) ($consumable['client_stock'] ?? 0) . "</span>",
+                    ],
                 ],
             ];
 
@@ -469,12 +500,30 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
         switch ($ma->getAction()) {
         case 'add_item' :
-            Dropdown::showAllItems("items_id", 0, 0, $_SESSION['glpiactive_entity'], $CFG_GLPI["ticket_types"], false, true, 'item_itemtype');
+            Dropdown::showSelectItemFromItemtypes(
+                [
+                    'items_id_name'   => 'items_id',
+                    'itemtypes'       => $CFG_GLPI["ticket_types"],
+                    'entity_restrict' => $_SESSION['glpiactive_entity'],
+                    'onlyglobal'      => false,
+                    'checkright'      => true,
+                    'itemtype_name'   => 'item_itemtype',
+                ]
+            );
             echo "<br><input type='submit' name='add' value=\"" . _sx('button', 'Add') . "\" class='submit'>";
             break;
 
         case 'delete_item' :
-            Dropdown::showAllItems("items_id", 0, 0, $_SESSION['glpiactive_entity'], $CFG_GLPI["ticket_types"], false, true, 'item_itemtype');
+            Dropdown::showSelectItemFromItemtypes(
+                [
+                    'items_id_name'   => 'items_id',
+                    'itemtypes'       => $CFG_GLPI["ticket_types"],
+                    'entity_restrict' => $_SESSION['glpiactive_entity'],
+                    'onlyglobal'      => false,
+                    'checkright'      => true,
+                    'itemtype_name'   => 'item_itemtype',
+                ]
+            );
             echo "<br><input type='submit' name='delete' value=\"" . __('Delete permanently') . "\" class='submit'>";
             break;
         }
