@@ -82,7 +82,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
         // Client stock: number of uninstalled cartridges of the same type held by the assigned
         // partner at the ticket printer's location (same logic as self::add()/self::update()).
-        $partner_id          = $ticket->getFirstAssignedPartner()->getID();
+        $partner             = $ticket->getFirstAssignedPartner();
+        $partner_id          = (int) ($partner->getID() ?: 0);
         $printer_location_id = 0;
         if ($items_id) {
             $printer = new PluginIservicePrinter();
