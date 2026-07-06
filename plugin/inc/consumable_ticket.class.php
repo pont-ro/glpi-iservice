@@ -94,7 +94,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
         $stock_location_condition = $printer_location_id > 0
             ? "cs.locations_id_field = $printer_location_id"
-            : "(cs.locations_id_field < 1 OR cs.locations_id_field IS NULL)";
+            : "coalesce(cs.locations_id_field, 0) < 1";
 
         $c_result = $DB->doQuery(
             "SELECT
