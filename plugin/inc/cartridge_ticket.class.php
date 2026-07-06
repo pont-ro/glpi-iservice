@@ -570,12 +570,30 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
 
         switch ($ma->getAction()) {
         case 'add_item' :
-            Dropdown::showAllItems("items_id", 0, 0, $_SESSION['glpiactive_entity'], $CFG_GLPI["ticket_types"], false, true, 'item_itemtype');
+            Dropdown::showSelectItemFromItemtypes(
+                [
+                    'items_id_name'   => 'items_id',
+                    'itemtypes'       => $CFG_GLPI["ticket_types"],
+                    'entity_restrict' => $_SESSION['glpiactive_entity'],
+                    'onlyglobal'      => false,
+                    'checkright'      => true,
+                    'itemtype_name'   => 'item_itemtype',
+                ]
+            );
             echo "<br><input type='submit' name='add' value=\"" . _sx('button', 'Add') . "\" class='submit'>";
             break;
 
         case 'delete_item' :
-            Dropdown::showAllItems("items_id", 0, 0, $_SESSION['glpiactive_entity'], $CFG_GLPI["ticket_types"], false, true, 'item_itemtype');
+            Dropdown::showSelectItemFromItemtypes(
+                [
+                    'items_id_name'   => 'items_id',
+                    'itemtypes'       => $CFG_GLPI["ticket_types"],
+                    'entity_restrict' => $_SESSION['glpiactive_entity'],
+                    'onlyglobal'      => false,
+                    'checkright'      => true,
+                    'itemtype_name'   => 'item_itemtype',
+                ]
+            );
             echo "<br><input type='submit' name='delete' value=\"" . __('Delete permanently') . "\" class='submit'>";
             break;
         }
@@ -887,7 +905,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             return "Could not find cartridge with id $cartridge_id to uninstall it.";
         }
 
-        $oldCartridge          = new PluginIserviceCartridge();
+        $oldCartridge           = new PluginIserviceCartridge();
         $uninstalled_multiplier = 0;
         if (empty($emptied_cartridge_id)) {
             if (!PluginIserviceDB::populateByQuery(
