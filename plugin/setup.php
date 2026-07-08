@@ -66,11 +66,18 @@ function plugin_init_iservice(): void
     // scripts by default (FALLBACK_STRATEGY_FOR_LEGACY_SCRIPTS = STRATEGY_AUTHENTICATED).
     // The QR form must be accessible without a session — loginQrUser() inside qr.form.php
     // handles authentication itself. Register it as NO_CHECK so the firewall lets it through.
+    // The invoice download page (download.php) is likewise public: clients reach it via a magic
+    // link and download.php validates that magic link itself, so it must not require a session.
     // Guard with class_exists for compatibility with GLPI 10.x where Firewall does not exist.
     if (class_exists(\Glpi\Http\Firewall::class)) {
         \Glpi\Http\Firewall::addPluginStrategyForLegacyScripts(
             'iservice',
             '#^/front/qr\.form\.php$#',
+            \Glpi\Http\Firewall::STRATEGY_NO_CHECK
+        );
+        \Glpi\Http\Firewall::addPluginStrategyForLegacyScripts(
+            'iservice',
+            '#^/front/download\.php$#',
             \Glpi\Http\Firewall::STRATEGY_NO_CHECK
         );
     }
