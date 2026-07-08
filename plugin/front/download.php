@@ -12,8 +12,8 @@ $right_check_query = "
 	SELECT count(*)
 	FROM glpi_plugin_fields_suppliersuppliercustomfields pc
 	LEFT JOIN hmarfa_facturi fa ON fa.codbenef = pc.hmarfa_code_field
-	WHERE pc.magic_link_field = '$magic_link'
-		AND fa.nrfac = '$nrfac'
+	WHERE pc.magic_link_field = " . $DB->quote($magic_link) . "
+		AND fa.nrfac = " . $DB->quote($nrfac) . "
 	";
 
 if (!$DB->result($DB->doQuery($right_check_query), 0, 0)) {

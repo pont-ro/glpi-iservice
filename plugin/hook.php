@@ -283,6 +283,9 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
     $current_ticket_id        = $item->getID();
     $is_current_ticket_loaded = $current_ticket->getFromDB($current_ticket_id);
     $effectiveDate            = $item->input['effective_date_field'] ?? ($is_current_ticket_loaded ? $current_ticket->customfields->fields['effective_date_field'] : null);
+    // Determine printer from the ticket itself (DB) first; request params may be unrelated (filters / navigation).
+    $printer_id               = ($is_current_ticket_loaded ? (int) ($current_ticket->getPrinterId() ?? 0) : 0)
+        ?: (int) IserviceToolBox::getItemsIdFromInput($item->input ?? [], 'Printer', 0);
 
     if (empty($effectiveDate)) {
         Session::addMessageAfterRedirect("Tichetul " . $item->getID() . " nu poate fi închis deoarece nu are data efectivă setată!", true, WARNING);
@@ -326,8 +329,10 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
 
             $total2_black_field = $item->input['total2_black_field'] ?? ($is_current_ticket_loaded ? $current_ticket->customfields->fields['total2_black_field'] : 0) ?? 0;
             $total2_color_field = $item->input['total2_color_field'] ?? ($is_current_ticket_loaded ? $current_ticket->customfields->fields['total2_color_field'] : 0) ?? 0;
-            if (($last_closed_ticket->customfields->fields['total2_black_field'] ?? 0) > $total2_black_field
-                || ($last_closed_ticket->customfields->fields['total2_color_field'] ?? 0) > $total2_color_field
+            // Skip the counter check when the ticket has no printer, as there are no page counters to compare.
+            if (!empty($printer_id)
+                && (($last_closed_ticket->customfields->fields['total2_black_field'] ?? 0) > $total2_black_field
+                || ($last_closed_ticket->customfields->fields['total2_color_field'] ?? 0) > $total2_color_field)
             ) {
                 $can_close = false;
                 Session::addMessageAfterRedirect(

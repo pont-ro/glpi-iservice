@@ -381,12 +381,17 @@ class Printers extends View
             "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . _t('Printer counters') . " v2</a>" ;
             // . "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCountersV3' target='_blank'>" . _t('Printer counters') . " v3</a>";
 
+        $import        = IserviceToolBox::getInputVariable('import');
         $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
         if ($this->enable_emaintenance_data_import) {
-            $this->import_data = PluginIserviceEmaintenance::getDataFromCsvs(PluginIserviceEmaintenance::getImportFilePaths(IserviceToolBox::getInputVariable('import_file', '')));
+            $import_file_paths = PluginIserviceEmaintenance::getImportFilePaths(IserviceToolBox::getInputVariable('import_file', ''));
+            // Displaying the list only needs to know which serials appear in the CSV (for the [EM] marker).
+            // getDataFromCsvs() enriches every CSV row with a DB lookup (~5 queries per row = thousands per
+            // page load); only pay that cost when the user is actually running an import.
+            $this->import_data = empty($import)
+                ? PluginIserviceEmaintenance::getSerialsFromCsvs($import_file_paths)
+                : PluginIserviceEmaintenance::getDataFromCsvs($import_file_paths);
         }
-
-        $import = IserviceToolBox::getArrayInputVariable('import');
         if (!empty($import)) {
             $printer_customfields = new PluginFieldsPrinterprintercustomfield();
             $emaintenance_query   = "select " . PluginIservicePrinter::getSerialFieldForEM() . " id, p.cfid customfield_id from glpi_plugin_iservice_printers p where p.em_field = 1";
