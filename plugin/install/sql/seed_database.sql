@@ -12,5 +12,5 @@ UPDATE glpi_contracts c
 SET c.contracttypes_id = (select ct.id from glpi_contracttypes ct where ct.name = 'Gsm')
 WHERE c.is_deleted = 0 and c.name like '%vdf%' and coalesce(c.contracttypes_id, 0) = 0;
 
--- Disable ajax notifications for the plugin
+-- Disable ajax notifications globally (GLPI core setting)
 UPDATE glpi_configs SET value = '0' WHERE name = 'notifications_ajax';
