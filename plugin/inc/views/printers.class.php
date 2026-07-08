@@ -381,7 +381,7 @@ class Printers extends View
             "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCounters' target='_blank'>" . _t('Printer counters') . " v2</a>" ;
             // . "<a class='vsubmit' href='$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=PrinterCountersV3' target='_blank'>" . _t('Printer counters') . " v3</a>";
 
-        $import        = IserviceToolBox::getArrayInputVariable('import');
+        $import        = IserviceToolBox::getInputVariable('import');
         $import_button = self::inProfileArray('tehnician', 'admin', 'super-admin') ? PluginIserviceEmaintenance::getImportControl('Setează [EM] din CSV', IserviceToolBox::getInputVariable('import_file', '')) : '';
         if ($this->enable_emaintenance_data_import) {
             $import_file_paths = PluginIserviceEmaintenance::getImportFilePaths(IserviceToolBox::getInputVariable('import_file', ''));
