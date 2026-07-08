@@ -284,9 +284,8 @@ function plugin_iservice_ticket_check_if_can_close(Ticket $item)
     $is_current_ticket_loaded = $current_ticket->getFromDB($current_ticket_id);
     $effectiveDate            = $item->input['effective_date_field'] ?? ($is_current_ticket_loaded ? $current_ticket->customfields->fields['effective_date_field'] : null);
     // Determine printer from the ticket itself (DB) first; request params may be unrelated (filters / navigation).
-    $printer_id               = ($is_current_ticket_loaded ? ($current_ticket->getPrinterId() ?? 0) : 0)
-        ?: IserviceToolBox::getItemsIdFromInput($item->input ?? [], 'Printer')
-        ?: IserviceToolBox::getInputVariable('printer_id', 0);
+    $printer_id               = ($is_current_ticket_loaded ? (int) ($current_ticket->getPrinterId() ?? 0) : 0)
+        ?: (int) IserviceToolBox::getItemsIdFromInput($item->input ?? [], 'Printer', 0);
 
     if (empty($effectiveDate)) {
         Session::addMessageAfterRedirect("Tichetul " . $item->getID() . " nu poate fi închis deoarece nu are data efectivă setată!", true, WARNING);
