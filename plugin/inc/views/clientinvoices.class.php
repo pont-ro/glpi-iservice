@@ -43,6 +43,8 @@ class ClientInvoices extends View
 
     public static function getDownloadDisplay($row_data, $magic_link)
     {
+        global $CFG_PLUGIN_ISERVICE;
+
         $download = new PluginIserviceDownload();
         $download->setDownloadType(PluginIserviceDownload::DOWNLOAD_TYPE_INVOICE);
         if ($download->exists($row_data['nrfac'])) {
@@ -50,7 +52,8 @@ class ClientInvoices extends View
                 return "Nu exista linkul magic!";
             } else {
                 $copyDownloadLinkButton = self::getCopyDownloadLinkButton($magic_link, $row_data);
-                return "$copyDownloadLinkButton <a href='download.php?id=$magic_link&nrfac=$row_data[nrfac]'>Descarcă factura</a>";
+                $downloadUrl            = $CFG_PLUGIN_ISERVICE['root_doc'] . "/front/download.php?id=$magic_link&nrfac=$row_data[nrfac]";
+                return "$copyDownloadLinkButton <a href='$downloadUrl'>Descarcă factura</a>";
             }
         } else {
             return "Factură indisponibilă";
