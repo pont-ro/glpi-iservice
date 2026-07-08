@@ -158,6 +158,49 @@ class PluginIserviceEmaintenance extends MailCollector
         return $data;
     }
 
+    /**
+     * Lightweight companion to getDataFromCsvs(): returns only the set of spaceless serials present in the
+     * EM CSV(s), keyed by serial ([spaceless_serial => true, ...]), doing no DB work at all.
+     *
+     * getDataFromCsvs() loads the matching printer for every CSV row to enrich it (~5 queries per row),
+     * which is far too expensive for callers that only need to know whether a serial appears in the file
+     * (e.g. the Printers list view's [EM] marker). Use this for those presence-only checks.
+     *
+     * @param string|array $file_names
+     *
+     * @return array<string, true>
+     */
+    public static function getSerialsFromCsvs($file_names = []): array
+    {
+        if (empty($file_names)) {
+            $file_names = self::getImportFilePaths();
+        }
+
+        $csv_config = self::getCsvConfig('EM');
+        $serials    = [];
+
+        foreach (array_reverse((array) ($file_names ?? [])) as $file_name) {
+            if (!is_file($file_name) || false === ($handle = fopen($file_name, "r"))) {
+                continue;
+            }
+
+            while (false !== ($data = fgetcsv($handle, 0, ","))) {
+                if (count($data) < $csv_config['min_columns']) {
+                    continue;
+                }
+
+                $id = str_replace(" ", "", $data[$csv_config['columns']['id']]);
+                if ($id !== '') {
+                    $serials[$id] = true;
+                }
+            }
+
+            fclose($handle);
+        }
+
+        return $serials;
+    }
+
     public static function getDataFromCsv($file_name, $type = 'EM', $limit_serials = []): ?array
     {
         $csv_config = self::getCsvConfig($type);
