@@ -104,10 +104,11 @@ return [
     ],
     'schedule'       => [
         'display_last_result' => true,
-        'h:m'               => ['7:46', '14:01', '17:31'],
+        'frequency_hours'     => 6,
+        'h:m'               => ['7:30-50', '13:30-50', '17:30-50'],
         'weekdays'            => [1, 2, 3, 4, 5],
         'ignore_text'         => [
-            'hours'    => "Checked only on workdays at 7:46, 14:01 and 17:31",
+            'hours'    => "Checked only on workdays at 7:30, 13:30 and 17:30",
             'weekdays' => "Checked only on workdays"
         ]
     ]

@@ -101,7 +101,7 @@ function plugin_init_iservice(): void
 
     $CFG_PLUGIN_ISERVICE = [
         'root_doc' => "$CFG_GLPI[root_doc]/plugins/iservice",
-        'data_integrity_tests_date_from' => PluginIserviceConfig::getConfigValue('data_integrity_tests_date_from'),
+        'data_integrity_tests_date_from' => PluginIserviceConfig::getConfigValue('data_integrity_tests.date_from'),
     ];
 
     // Required!

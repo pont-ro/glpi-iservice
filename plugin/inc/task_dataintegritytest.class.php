@@ -62,7 +62,7 @@ class PluginIserviceTask_DataIntegrityTest
     public function getResultsForHeaderIcons(): array
     {
         $result         = [];
-        $test_results   = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
+        $test_results   = PluginIserviceConfig::getConfigValue('data_integrity_tests.enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'em_error' => []];
         $warning_count  = count($test_results['warning']);
         $error_count    = count($test_results['error']);
         $em_error_count = count($test_results['em_error']);
@@ -108,7 +108,7 @@ class PluginIserviceTask_DataIntegrityTest
         $cache_time_ago         = 'acum ' . (($cache_time_minutes_ago < 90) ? "$cache_time_minutes_ago secunde" : (round($cache_time_minutes_ago / 60) . ' minute'));
         switch ($mode) {
         case 'alert':
-            $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
+            $test_results = PluginIserviceConfig::getConfigValue('data_integrity_tests.enable_header_tests') ? $this->getTestResults() : ['warning' => [], 'error' => [], 'alert' => []];
             if (count($test_results['alert']) < 1) {
                 break;
             }
@@ -135,7 +135,7 @@ class PluginIserviceTask_DataIntegrityTest
             echo "</table>";
             break;
         case 'em_alert':
-            $test_results = PluginIserviceConfig::getConfigValue('enable_header_tests') ? $this->getTestResults() : ['em_alert' => []];
+            $test_results = PluginIserviceConfig::getConfigValue('data_integrity_tests.enable_header_tests') ? $this->getTestResults() : ['em_alert' => []];
             if (count($test_results['em_alert']) < 1) {
                 break;
             }
@@ -305,7 +305,7 @@ class PluginIserviceTask_DataIntegrityTest
                 $specifiedScheduleTypes = array_intersect(array_keys($case_params['schedule']), array_keys($formats));
                 foreach ($specifiedScheduleTypes as $scheduleType) {
                     $scheduledDateValues = $case_params['schedule'][$scheduleType];
-                    if (!$this->isInSchedule($scheduledDateValues, $scheduleType)) {
+                    if (!$this->isInSchedule($scheduledDateValues, $scheduleType, $case_params['schedule']['frequency_hours'] ?? null, self::$lastTestResults[$case_name]['last_checked'] ?? null)) {
                         $should_ignore = true;
                         if (!empty($case_params['schedule']['display_last_result'])) {
                             $should_ignore = !empty(self::$lastTestResults[$case_name]);
@@ -438,8 +438,14 @@ class PluginIserviceTask_DataIntegrityTest
         return self::$testResults;
     }
 
-    public function isInSchedule($scheduledDateValues, $scheduleType): bool
+    public function isInSchedule($scheduledDateValues, $scheduleType, $frequencyHours, $lastChecked): bool
     {
+        if (PluginIserviceConfig::getConfigValue('data_integrity_tests.force_if_overdue')
+            && !empty($frequencyHours)
+            && (empty($lastChecked) || strtotime($lastChecked) < strtotime("-$frequencyHours hours"))) {
+            return true;
+    }
+
         switch ($scheduleType) {
         case 'h:m':
             foreach ($scheduledDateValues as $scheduledDateValue) {
@@ -459,7 +465,9 @@ class PluginIserviceTask_DataIntegrityTest
                     $minuteMatch = $minute == date('i') || $minute == '*';
                 }
 
-                return $hourMatch && $minuteMatch;
+                return $hourMatch
+                    && $minuteMatch
+                    && (empty($frequencyHours) || empty($lastChecked) || (strtotime($lastChecked) < strtotime("-$frequencyHours hours")));
             }
 
         case 'weekdays':

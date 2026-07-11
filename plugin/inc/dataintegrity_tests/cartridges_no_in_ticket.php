@@ -20,9 +20,10 @@ return [
     ],
     'schedule' => [
         'display_last_result' => true,
-        'h:m'                 => ['3:01'],
+        'frequency_hours'     => 24,
+        'h:m'                 => ['3:*'],
         'ignore_text'         => [
-            'hours' => "Checked only at 3",
+            'hours' => "Checked only at 3:00",
         ]
     ]
 ];
