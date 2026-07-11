@@ -76,25 +76,29 @@ from glpi_tickets t
      left join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket';
 
 create or replace view glpi_plugin_iservice_printers_last_closed_tickets as
-select
-    lt.printers_id
-     , lt.tickets_id
-     , lt.status
-     , cft.effective_date_field
-     , cft.total2_black_field
-     , cft.total2_color_field
-from (
-         select
-             distinct it.items_id printers_id
-                    , first_value(t.id) over w tickets_id
-                    , first_value(t.status) over w status
-         from glpi_items_tickets it
-                  join glpi_tickets t on t.id = it.tickets_id and t.is_deleted = 0 and t.`status` = 6
-                  join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
-         where it.itemtype = 'Printer'
-         window w as (partition by it.items_id order by cft.effective_date_field desc, t.id desc)
-     ) lt
-         join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = lt.tickets_id and cft.itemtype = 'Ticket';
+WITH RankedTickets AS
+(
+    SELECT `it`.`items_id` AS `printers_id`,
+           `t`.`id` AS `tickets_id`,
+           `t`.`status` AS `status`,
+           `cft`.`effective_date_field` AS `effective_date_field`,
+           `cft`.`total2_black_field` AS `total2_black_field`,
+           `cft`.`total2_color_field` AS `total2_color_field`,
+           row_number() OVER (PARTITION BY `it`.`items_id`
+                              ORDER BY `cft`.`effective_date_field` DESC, `t`.`id` DESC) AS `rn`
+    FROM `glpi_items_tickets` `it`
+    JOIN `glpi_tickets` `t` on `t`.`id` = `it`.`tickets_id` AND `t`.`is_deleted` = 0 AND `t`.`status` = 6
+    JOIN `glpi_plugin_fields_ticketticketcustomfields` `cft` on `cft`.`items_id` = `t`.`id` AND `cft`.`itemtype` = 'Ticket'
+    WHERE `it`.`itemtype` = 'Printer'
+)
+SELECT `RankedTickets`.`printers_id` AS `printers_id`,
+       `RankedTickets`.`tickets_id` AS `tickets_id`,
+       `RankedTickets`.`status` AS `status`,
+       `RankedTickets`.`effective_date_field` AS `effective_date_field`,
+       `RankedTickets`.`total2_black_field` AS `total2_black_field`,
+       `RankedTickets`.`total2_color_field` AS `total2_color_field`
+FROM `RankedTickets`
+WHERE `RankedTickets`.`rn` = 1;
 
 create or replace view glpi_plugin_iservice_printers as
 select
@@ -236,25 +240,29 @@ from (((`glpi_printers` `p`
 
 
 create or replace view glpi_plugin_iservice_printers_last_tickets as
-select
-    lt.printers_id
-     , lt.tickets_id
-     , lt.status
-     , cft.effective_date_field
-     , cft.total2_black_field
-     , cft.total2_color_field
-from (
-         select
-             distinct it.items_id printers_id
-                    , first_value(t.id) over w tickets_id
-                    , first_value(t.status) over w status
-         from glpi_items_tickets it
-                  join glpi_tickets t on t.id = it.tickets_id and t.is_deleted = 0
-                  join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = t.id and cft.itemtype = 'Ticket'
-         where it.itemtype = 'Printer'
-         window w as (partition by it.items_id order by cft.effective_date_field desc, t.id desc)
-     ) lt
-join glpi_plugin_fields_ticketticketcustomfields cft on cft.items_id = lt.tickets_id and cft.itemtype = 'Ticket';
+WITH RankedTickets AS
+(
+    SELECT `it`.`items_id` AS `printers_id`,
+           `t`.`id` AS `tickets_id`,
+           `t`.`status` AS `status`,
+           `cft`.`effective_date_field` AS `effective_date_field`,
+           `cft`.`total2_black_field` AS `total2_black_field`,
+           `cft`.`total2_color_field` AS `total2_color_field`,
+           row_number() OVER (PARTITION BY `it`.`items_id`
+                              ORDER BY `cft`.`effective_date_field` DESC, `t`.`id` DESC) AS `rn`
+    FROM `glpi_items_tickets` `it`
+    JOIN `glpi_tickets` `t` on `t`.`id` = `it`.`tickets_id` AND `t`.`is_deleted` = 0
+    JOIN `glpi_plugin_fields_ticketticketcustomfields` `cft` on `cft`.`items_id` = `t`.`id` AND `cft`.`itemtype` = 'Ticket'
+    WHERE `it`.`itemtype` = 'Printer'
+)
+SELECT `RankedTickets`.`printers_id` AS `printers_id`,
+       `RankedTickets`.`tickets_id` AS `tickets_id`,
+       `RankedTickets`.`status` AS `status`,
+       `RankedTickets`.`effective_date_field` AS `effective_date_field`,
+       `RankedTickets`.`total2_black_field` AS `total2_black_field`,
+       `RankedTickets`.`total2_color_field` AS `total2_color_field`
+FROM `RankedTickets`
+WHERE `RankedTickets`.`rn` = 1;
 
 create or replace view glpi_plugin_iservice_cartridges as
 select
