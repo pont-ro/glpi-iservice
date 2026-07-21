@@ -25,7 +25,9 @@ class GlobalReadCounter extends View
 
     public static function getPrinterDisplay($row_data, $import_data): string
     {
-        $hidden_data = "<input type='hidden' name='globalreadcounter0[printer][$row_data[id]][items_id][Printer][0]' value='$row_data[id]' /><input type='hidden' name='globalreadcounter0[printer][$row_data[id]][_suppliers_id_assign]' value='$row_data[supplier_id]' />";
+        $hidden_data = "<input type='hidden' name='globalreadcounter0[printer][$row_data[id]][items_id][Printer][0]' value='$row_data[id]' />"
+            . "<input type='hidden' name='globalreadcounter0[printer][$row_data[id]][_suppliers_id_assign]' value='$row_data[supplier_id]' />"
+            . "<input type='hidden' name='globalreadcounter0[printer][$row_data[id]][spaceless_serial]' value='$row_data[spaceless_serial]' />";
         if ($import_data === null || isset($import_data[$row_data['spaceless_serial']])) {
             return $hidden_data . $row_data['printer_name'];
         }
@@ -157,15 +159,25 @@ class GlobalReadCounter extends View
         $avitum_import                   = IserviceToolBox::getInputVariable('avitum_import');
         $mass_action_group_read          = IserviceToolBox::getInputVariable('mass_action_group_read');
         $mass_action_group_read_extended = IserviceToolBox::getInputVariable('mass_action_group_read_extended');
+
+        if ($import || $iwm_import || $avitum_import) {
+            $limit_serials = [];
+            foreach ($items['printer'] as $printer) {
+                $limit_serials[] = $printer['spaceless_serial'];
+            }
+        } else {
+            $limit_serials = [];
+        }
+
         if (!empty($import)) {
             $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
-            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv(IserviceToolBox::getInputVariable('import_file'));
+            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv(IserviceToolBox::getInputVariable('import_file'), 'EM', $limit_serials);
         } elseif (!empty($iwm_import)) {
             $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
-            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'IW');
+            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'IW', $limit_serials);
         } elseif (!empty($avitum_import)) {
             $default_itil_category = PluginIserviceTicket::getItilCategoryId('Citire emaintenance');
-            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'AVITUM');
+            $this->import_data     = PluginIserviceEmaintenance::getDataFromCsv($_FILES['iwm_import_file']['tmp_name'], 'AVITUM', $limit_serials);
         } elseif (!empty($mass_action_group_read) || !empty($mass_action_group_read_extended)) {
             $items = IserviceToolBox::getArrayInputVariable('item', []);
         }
