@@ -2140,7 +2140,7 @@ class PluginIserviceTicket extends Ticket
                         'label'   => '',
                         'value'   => 1,
                         'options' => [
-                            'buttonClass' => "itilstatus  $statusClassMap[$status]",
+                            'buttonClass' => "m-1 itilstatus $statusClassMap[$status]",
                             'title'       => Ticket::getStatus($status),
                             'on_click'    => "$confirm_alert$(\"[name=status]\").val($status);"
                         ],

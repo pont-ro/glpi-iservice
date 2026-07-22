@@ -40,7 +40,7 @@
                      {{ fields.textField(
                         'contract[name]',
                         item.fields['name'],
-                        __('Name'),
+                        _t('Name'),
                      field_options
                      ) }}
 
@@ -54,11 +54,11 @@
                      {{ fields.dateField(
                         'contract[begin_date]',
                         item.fields['begin_date'],
-                        __('Start date'),
+                        _t('Start date'),
                         field_options
                      ) }}
 
-                     {{ fields.dropdownNumberField('contract[duration]', item.fields['duration'], __('Initial contract period'), field_options|merge({
+                     {{ fields.dropdownNumberField('contract[duration]', item.fields['duration'], _t('Initial contract period'), field_options|merge({
                         'rand': rand,
                         'min': 1,
                         'max': 120,
@@ -68,7 +68,7 @@
                         'add_field_html': warranty_expiration|default('')
                      })) }}
 
-                     {{ fields.dropdownNumberField('contract[periodicity]', item.fields['periodicity'], __('Contract renewal period'), field_options|merge({
+                     {{ fields.dropdownNumberField('contract[periodicity]', item.fields['periodicity'], _t('Contract renewal period'), field_options|merge({
                         'rand': rand,
                         'min': 12,
                         'max': 60,

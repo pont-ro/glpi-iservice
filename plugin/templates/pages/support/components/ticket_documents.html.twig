@@ -2,7 +2,7 @@
 
 <div class="form-field row col-12 glpi-full-width mb-2">
     <label class="col-form-label col-xxl-4 text-xxl-end">
-        {{ customLabel ?? __('Documents') }}
+        {{ customLabel ?? _t('Documents') }}
     </label>
     <div class="col-xxl-8 field-container mt-2">
         {% if ticketDocuments %}
@@ -15,7 +15,7 @@
                        target='_blank'>
                         <span class='b'>{{ document.filename }}</span>
                     </a>
-                    <button type="submit" class="btn btn-sm btn-ghost-secondary" name="delete_document" value="1" title="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ __('Delete permanently') }}">
+                    <button type="submit" class="btn btn-sm btn-ghost-secondary" name="delete_document" value="1" title="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="{{ _t('Delete permanently') }}">
                         <i class="ti ti-trash"></i>
                     </button>
                     <br>
@@ -26,7 +26,7 @@
         {{ fields.fileField(
             'filename',
             '',
-            __('File'),
+            _t('File'),
             {
                 'multiple': true,
                 'accept': 'image/*, application/pdf',

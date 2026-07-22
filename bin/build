@@ -1,0 +1,4 @@
+rm plugin/locales/ro_RO.mo
+msgfmt -o plugin/locales/ro_RO.mo plugin/locales/ro_RO.po
+rm -rf glpi/files/_cache/*/templates
+rm -rf glpi/files/_cache/*/translations

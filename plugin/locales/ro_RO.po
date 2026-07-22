@@ -1984,6 +1984,9 @@ msgstr "Citire de la distanță"
 msgid "Without papers"
 msgstr "Fără hârtii"
 
+msgid "Without travel"
+msgstr "Fără deplasare"
+
 msgid "Exported in csv and imported in hMarfa"
 msgstr "Exportat in csv și importat in hMarfa"
 

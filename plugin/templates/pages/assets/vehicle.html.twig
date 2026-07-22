@@ -31,7 +31,7 @@
                      {{ fields.textField(
                         'name',
                         item.fields['name'],
-                        __('Name'),
+                        _t('Name'),
                         field_options|merge({'required': true})
                      ) }}
 
@@ -39,7 +39,7 @@
                         'User',
                         'users_id',
                         item.fields['users_id'],
-                        __('User'),
+                        _t('User'),
                         field_options|merge({
                            'entity': item.fields['entities_id'] ?? -1,
                            'right': 'all'
@@ -63,7 +63,7 @@
                      {{ fields.textareaField(
                         'description',
                         item.fields['description'],
-                        __('Description'),
+                        _t('Description'),
                         field_options|merge({'rows': 3})
                      ) }}
                   {% endblock %}

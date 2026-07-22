@@ -2,13 +2,13 @@
     <div class="center my-3">
         <a class="btn btn-primary me-2" href="#" id="import-button">
             <span onclick="ajaxCall('{{ url_base }}/ajax/setDefaulProfileRights.php',
-                    '{{ __('Are you sure you want to reset profile rights to default settings?') }}',
+                    '{{ _t('Are you sure you want to reset profile rights to default settings?') }}',
                     function(message) { alert(message);})
                     ">{{ _t('(Re)Set default profile rights') }}</span>
         </a>
         <a class="btn btn-primary me-2" href="#" id="import-button">
             <span onclick="ajaxCall('{{ url_base }}/ajax/manageCustomFields.php',
-                    '{{ __('Are you sure you want to reset custom fields to default settings?') }}',
+                    '{{ _t('Are you sure you want to reset custom fields to default settings?') }}',
                     function(message) { alert(message);})
                     ">{{ _t('(Re)Set default custom fields') }}</span>
         </a>

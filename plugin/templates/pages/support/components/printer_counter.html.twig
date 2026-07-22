@@ -11,7 +11,7 @@
             'disabled': total2BlackDisabled or isClosed,
             'add_field_attribs': {
                 'data-toggle': 'tooltip',
-                'title': __('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
+                'title': _t('Counter') ~ ((printer.isColor() or printer.isPlotter()) ? ' 109' : ' 102'),
             },
             'buttons': [
                 csvCounterButtonConfig,
@@ -34,7 +34,7 @@
             'disabled': total2ColorDisabled or isClosed,
             'add_field_attribs': {
                 'data-toggle': 'tooltip',
-                'title': __('Counter') ~ ' 106',
+                'title': _t('Counter') ~ ' 106',
             },
         })
     ) }}

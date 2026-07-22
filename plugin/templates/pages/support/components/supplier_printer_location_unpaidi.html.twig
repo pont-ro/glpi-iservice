@@ -6,7 +6,7 @@
     'Supplier',
     'suppliers_id',
     partnerId,
-    __('Partener'),
+    _t('Partner'),
     field_options|merge({
         'on_change': "const $form = $(this).closest('form'); $form.removeAttr('data-submit-once'); $form.submit();",
         'readonly': partnersFieldReadonly,
@@ -66,7 +66,7 @@
     {{ fields.textField(
         'printer[locationName]',
         locationName,
-        __('Location'),
+        _t('Location'),
         field_options|merge({
             'disabled': true,
         })
@@ -89,7 +89,7 @@
         '_users_id_observer',
         item.fields['_users_id_observer'],
         technicians,
-        __('Watcher'),
+        _t('Watcher'),
         field_options
     ) }}
 {% endif %}
@@ -99,7 +99,7 @@
         'users_id_tech',
         item.printer.fields['users_id_tech'],
         technicians,
-        __('Technician in charge of the hardware'),
+        _t('Technician in charge of the hardware'),
         field_options|merge({
             'readonly': true,
         })
@@ -111,7 +111,7 @@
         '_users_id_assign',
         item.fields['_users_id_assign'],
         technicians,
-        __('Assigned to'),
+        _t('Assigned to'),
         field_options
     ) }}
 {% endif %}

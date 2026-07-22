@@ -30,7 +30,7 @@
                                 {{ fields.readOnlyField(
                                     'id',
                                     item.fields['id'] ?? '',
-                                    __('ID'),
+                                    _t('ID'),
                                     field_options
                                 ) }}
                             </div>
@@ -50,7 +50,7 @@
                                     'ITILCategory',
                                     'itilcategories_id',
                                     item.fields['itilcategories_id'],
-                                    __('Category'),
+                                    _t('Category'),
                                     field_options|merge({
                                         'required': true
                                     })
@@ -90,7 +90,7 @@
                                     {{ fields.readOnlyField(
                                         'printer_status',
                                         printerStatus,
-                                        __('Printer status'),
+                                        _t('Printer status'),
                                         field_options
                                     ) }}
                                 </div>
