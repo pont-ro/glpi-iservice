@@ -27,7 +27,7 @@
 
 {% macro customFormRow(name, label, value, options = {}) %}
    {% if options.fields_template is not defined or not options.fields_template.isHiddenField(name) %}
-      <div class="form-field row col-12 mb-2">
+      <div class="form-field row col-12 mb-2 {{ options.rowClass }}">
          <label class="col-form-label col-xxl-4 text-xxl-end {{ options.labelClass }}">
             {{ label }}
          </label>
