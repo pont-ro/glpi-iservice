@@ -263,7 +263,7 @@ CREATE PROCEDURE `getPrinterDailyAverageCalculation`(
     DETERMINISTIC
     SQL SECURITY INVOKER
 this_proc: BEGIN
-  DECLARE minDayCount INT DEFAULT 60;
+  DECLARE minDayCount INT DEFAULT 40;
   DECLARE minTicketCount INT DEFAULT 3;
   
   DECLARE countFirstDays INT DEFAULT 0;
