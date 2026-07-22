@@ -132,6 +132,9 @@
     {{ fieldsIservice.customFormRow(
         'lastInvoiceAndCountersTable',
         _t('Last invoice and counter information'),
-        lastInvoiceAndCountersTable
+        lastInvoiceAndCountersTable,
+        field_options|merge({
+            'rowClass': 'glpi-full-width'
+        })
     ) }}
 {% endif %}

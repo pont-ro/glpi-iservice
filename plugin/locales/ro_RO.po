@@ -1693,6 +1693,15 @@ msgstr "Stoc client"
 msgid "Total with compatible"
 msgstr "Total cu compatibile"
 
+msgid "Last invoice and counter information"
+msgstr "Informații ultima factură și contoare"
+
+msgid "Change cartridge"
+msgstr "Instalat cartuș"
+
+msgid "Change date"
+msgstr "Data instalării"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"
@@ -1778,11 +1787,6 @@ msgstr "Total cu compatibile"
 #~| msgid "Ticket list"
 #~ msgid "Ticket Custom Field"
 #~ msgstr "Lista tichete"
-
-#, fuzzy
-#~| msgid "Change cartridge"
-#~ msgid "Cartridge"
-#~ msgstr "Instalat cartuș"
 
 #, fuzzy
 #~| msgid "Cartridge deleted from database"
@@ -1889,11 +1893,6 @@ msgstr "Total cu compatibile"
 #~ msgstr " avertismente"
 
 #, fuzzy
-#~| msgid "Change date"
-#~ msgid "Change mode"
-#~ msgstr "Data instalării"
-
-#, fuzzy
 #~| msgid "Close ticket"
 #~ msgid "Create ticket"
 #~ msgstr "Închidere tichet"
@@ -1913,50 +1912,38 @@ msgstr "Total cu compatibile"
 #~ msgid "New item"
 #~ msgstr "Partener nou"
 
-#, fuzzy
-#~| msgid "Ticket description"
-#~ msgid "Description"
-#~ msgstr "Descriere tichet"
+msgid "Ticket description"
+msgstr "Descriere tichet"
 
-#, fuzzy
-#~| msgid "Invoice information"
-#~ msgid "Information"
-#~ msgstr "Informații document"
+msgid "Invoice information"
+msgstr "Informații document"
 
-#~ msgid "Error"
-#~ msgstr "Eroare"
+msgid "Error"
+msgstr "Eroare"
 
-#, fuzzy
-#~| msgid "Export type"
-#~ msgid "Export"
-#~ msgstr "Tip export"
+msgid "Export type"
+msgstr "Tip export"
 
-#~ msgid "Reset filters"
-#~ msgstr "Șterge filtrele"
+msgid "Reset filters"
+msgstr "Șterge filtrele"
 
-#~ msgid "Could not complete operation %s for %s"
-#~ msgstr "Operația %s nu poate fi efectuată pentru elementul %s"
+msgid "Could not complete operation %s for %s"
+msgstr "Operația %s nu poate fi efectuată pentru elementul %s"
 
-#~ msgid "Could not complete operation %s for pending email %d"
-#~ msgstr "Operația %s nu poate fi efectuată pentru emailul %d"
+msgid "Could not complete operation %s for pending email %d"
+msgstr "Operația %s nu poate fi efectuată pentru emailul %d"
 
-#~ msgid "Could not complete operation %s for ticket %d"
-#~ msgstr "Operația %s nu poate fi efectuată pentru tichetul %d"
+msgid "Could not complete operation %s for ticket %d"
+msgstr "Operația %s nu poate fi efectuată pentru tichetul %d"
 
-#~ msgid "Invalid new profile"
-#~ msgstr "Profil nou invalid"
+msgid "Invalid new profile"
+msgstr "Profil nou invalid"
 
-#~ msgid "Error saving ticket"
-#~ msgstr "Eroare la salvarea tichetului"
+msgid "Error saving ticket"
+msgstr "Eroare la salvarea tichetului"
 
-#~ msgid "Select"
-#~ msgstr "Selectează"
-
-#~ msgid "There are no compatible cartridges on stock!"
-#~ msgstr "Nu sunt cartușe compatibile în stoc!"
-
-#~ msgid "Optimized front"
-#~ msgstr "Front optim"
+msgid "Select"
+msgstr "Selectează"
 
 #~ msgid "Read counter / replace cartridge"
 #~ msgstr "Citire contor / înlocuire toner"
@@ -1973,23 +1960,11 @@ msgstr "Total cu compatibile"
 #~ msgid "Display iService debug informations"
 #~ msgstr "Afișează informați de depanare"
 
-#~ msgid "Generate new magic link"
-#~ msgstr "Generează link magic nou"
-
-#~ msgid "Please associate a printer with the ticket to be able to generate a ticket report."
-#~ msgstr "Adăugați o imprimantă la tichet pentru a genera raportul de intervenție."
-
-#~ msgid "Close tickets"
-#~ msgstr "Închide tichete"
-
 #~ msgid "Ticket already exists for [EM] email %d"
 #~ msgstr "Există deja tichet pentru emailul [EM] %d"
 
 #~ msgid "Send confirmation email"
 #~ msgstr "Trimite e-mail de confirmare"
-
-#~ msgid "Last invoice and counter information"
-#~ msgstr "Informații ultima factură și contoare"
 
 #~ msgid "Black counter reading"
 #~ msgstr "Citire contor black"
@@ -2000,38 +1975,26 @@ msgstr "Total cu compatibile"
 #~ msgid "optional"
 #~ msgstr "opțional"
 
-#~ msgid "Followup description"
-#~ msgstr "Descriere followup"
+msgid "Followup description"
+msgstr "Descriere followup"
 
-#~ msgid "Operator reading"
-#~ msgstr "Citire de la distanță"
+msgid "Operator reading"
+msgstr "Citire de la distanță"
 
-#~ msgid "Without papers"
-#~ msgstr "Fără hârtii"
+msgid "Without papers"
+msgstr "Fără hârtii"
 
-#~ msgid "Working"
-#~ msgstr "În lucrare"
+msgid "Exported in csv and imported in hMarfa"
+msgstr "Exportat in csv și importat in hMarfa"
 
-#~ msgid "Exported in csv and imported in hMarfa"
-#~ msgstr "Exportat in csv și importat in hMarfa"
-
-#~ msgid "Effective date"
-#~ msgstr "Data efectivă"
-
-#~ msgid "Notification e-mail"
-#~ msgstr "E-mail notificare"
+msgid "Effective date"
+msgstr "Data efectivă"
 
 #~ msgid "Solve"
 #~ msgstr "Soluționează"
 
-#~ msgid "Generate services invoice"
-#~ msgstr "Generează factură servicii"
-
 #~ msgid "Send notification"
 #~ msgstr "Trimite notificare prin e-mail"
-
-#~ msgid "Last %d tickets with \"%s\" category"
-#~ msgstr "Ultimele %d tichete cu categoria \"%s\""
 
 #~ msgid "see"
 #~ msgstr "vezi"
@@ -2039,11 +2002,8 @@ msgstr "Total cu compatibile"
 #~ msgid "Archive"
 #~ msgstr "Arhivă"
 
-#~ msgid "Please select an export type"
-#~ msgstr "Selectați tip export"
-
-#~ msgid "Don't forget to press 'Update' button to save your changes"
-#~ msgstr "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificările"
+msgid "Don't forget to press 'Update' button to save your changes"
+msgstr "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificările"
 
 #~ msgid "Are you sure you want to reset profile rights to default settings?"
 #~ msgstr "Sigur vreți să resetați drepturile la setările implicite?"
