@@ -42,8 +42,8 @@ if (!empty($input)) {
 
     if ($input === false) {
         // Input was rejected, stay on the edited ticket instead of opening a blank ticket form.
-        if ($id > 0) {
-            Html::redirect($ticket->getFormURL() . '?id=' . $id);
+        if ((int) $id > 0) {
+            Html::redirect($ticket->getFormURL() . '?id=' . (int) $id);
         }
 
         Html::back();
