@@ -317,7 +317,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
             $title                                           = '';
             $ticket->consumable_data['installed_cartridges'] = [];
-            if (!empty($consumable['new_cartridge_ids'])) {
+            if (!empty($consumable['new_cartridge_ids']) && strtoupper(trim($consumable['new_cartridge_ids'])) !== 'NULL') {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
 
                 $cartridge           = new Cartridge();
