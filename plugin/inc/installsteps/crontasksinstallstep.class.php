@@ -63,6 +63,16 @@ class CronTasksInstallStep
                 'hourmax'   => 7,
                 'comment'   => 'emaintenance@expertline.ro',
             ], [
+                'itemtype'  => 'PluginIservicePrinterAutoReadCounter',
+                'name'      => 'printerAutoReadCounter',
+                'mode'      => CronTask::MODE_EXTERNAL,
+                'frequency' => 86400,
+                'param'     => 0,
+                'state'     => 1,
+                'hourmin'   => 3,
+                'hourmax'   => 5,
+                'comment'   => '',
+            ], [
                 'itemtype'  => 'PluginIserviceStockVerifier',
                 'name'      => 'mailStockVerify',
                 'mode'      => CronTask::MODE_EXTERNAL,

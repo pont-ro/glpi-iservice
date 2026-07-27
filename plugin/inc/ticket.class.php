@@ -42,6 +42,12 @@ class PluginIserviceTicket extends Ticket
 
     const USER_ID_READER = 27;
 
+    /**
+     * Minimum number of copies between the previous and the new reading, below it a global read counter
+     * ticket is not created, because such a small difference is not a reliable reading.
+     */
+    const GLOBAL_READ_COUNTER_MIN_COPIES = 10;
+
     public static $field_settings          = null;
     public static $field_settings_id       = 0;
     protected static $itilCategories       = null;
@@ -2330,7 +2336,17 @@ class PluginIserviceTicket extends Ticket
         return $result;
     }
 
-    public static function createGlobalReadCounterTickets(array $data): ?int
+    /**
+     * Creates the read counter tickets of the global read counter view.
+     *
+     * @param array $data    Ticket data by printer id, as posted by the global read counter view.
+     * @param array $context Overrides for callers running outside of a user session (cron), with the keys
+     *                       'users_id_assign', 'status', 'name' and 'content'. Without it the ticket is
+     *                       assigned to the logged in user and its status depends on the current profile.
+     *
+     * @return int|null Number of created tickets, negative if not all of them could be created.
+     */
+    public static function createGlobalReadCounterTickets(array $data, array $context = []): ?int
     {
         if (false === ($success = isset($data['printer']) && is_array($data['printer']))) {
             return 0;
@@ -2338,16 +2354,12 @@ class PluginIserviceTicket extends Ticket
 
         $ticket_count = 0;
         foreach ($data['printer'] as $printerId => $ticketData) {
-            if ($ticketData['effective_date_field'] < $ticketData['effective_date_old']
-                || (intval($ticketData['total2_black_field']) < intval($ticketData['total2_black_old']))
-                || (intval($ticketData['total2_color_field']) < intval($ticketData['total2_color_old']))
-                || (intval($ticketData['total2_black_field']) + intval($ticketData['total2_color_field']) < intval($ticketData['total2_black_old']) + intval($ticketData['total2_color_old']) + 10)
-            ) {
+            if (self::getGlobalReadCounterRefusalReason($ticketData) !== null) {
                 continue;
             }
 
             $track = new PluginIserviceTicket();
-            PluginIserviceTicket::prepareDataForGlobalReadCounter($ticketData);
+            PluginIserviceTicket::prepareDataForGlobalReadCounter($ticketData, $context);
             $track->explodeArrayFields();
             $last_opened_ticket = PluginIserviceTicket::getLastForPrinterOrSupplier(0, $printerId, true);
             if (($last_opened_ticket->getID() > 0 && $last_opened_ticket->customfields->fields['effective_date_field'] < $ticketData['effective_date_field'])
@@ -2365,7 +2377,7 @@ class PluginIserviceTicket extends Ticket
                 $ticketData['_users_id_assign'] = IserviceToolBox::getUserIdByName('Cititor');
                 $ticketData['name']             = _t('Global read counter client');
             } else {
-                $ticketData['_users_id_assign'] = $_SESSION['glpiID'];
+                $ticketData['_users_id_assign'] = $context['users_id_assign'] ?? $_SESSION['glpiID'];
             }
 
             if ($track->add(array_merge($ticketData, $track->fields, ['add' => 'add', '_no_message' => 1]))) {
@@ -2378,15 +2390,49 @@ class PluginIserviceTicket extends Ticket
         return $success ? $ticket_count : -$ticket_count;
     }
 
-    private static function prepareDataForGlobalReadCounter(&$ticketData): void
+    /**
+     * Tells whether a reading of the global read counter can be saved: it must not be older than the
+     * previous one, its counters must not be smaller than the previous ones, and at least
+     * GLOBAL_READ_COUNTER_MIN_COPIES copies must have been printed since the previous reading.
+     *
+     * @param array $ticketData Ticket data of a single printer, with the previous values in the
+     *                          'effective_date_old', 'total2_black_old' and 'total2_color_old' keys.
+     *
+     * @return string|null The reason why the reading must not be saved, null if it can be saved.
+     */
+    public static function getGlobalReadCounterRefusalReason(array $ticketData): ?string
+    {
+        $black     = intval($ticketData['total2_black_field'] ?? 0);
+        $color     = intval($ticketData['total2_color_field'] ?? 0);
+        $black_old = intval($ticketData['total2_black_old'] ?? 0);
+        $color_old = intval($ticketData['total2_color_old'] ?? 0);
+
+        if (($ticketData['effective_date_field'] ?? '') < ($ticketData['effective_date_old'] ?? '')) {
+            return "the reading date ({$ticketData['effective_date_field']}) is older than the date of the previous reading ({$ticketData['effective_date_old']})";
+        }
+
+        if ($black < $black_old || $color < $color_old) {
+            return "the counters ($black/$color) are smaller than the counters of the previous reading ($black_old/$color_old)";
+        }
+
+        if ($black + $color < $black_old + $color_old + self::GLOBAL_READ_COUNTER_MIN_COPIES) {
+            return "less than " . self::GLOBAL_READ_COUNTER_MIN_COPIES . " copies were printed since the previous reading (" . ($black_old + $color_old) . " -> " . ($black + $color) . ")";
+        }
+
+        return null;
+    }
+
+    private static function prepareDataForGlobalReadCounter(&$ticketData, array $context = []): void
     {
         self::removeEmptyStringFromNumericFields($ticketData);
         $ticketData = array_merge(
             $ticketData,
             [
-                'name'                => 'Citire contor eMaintenance',
-                'content'             => 'Periodic',
-                'status'              => IserviceToolBox::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::CLOSED : parent::SOLVED,
+                'name'                => $context['name'] ?? 'Citire contor eMaintenance',
+                'content'             => $context['content'] ?? 'Periodic',
+                // Without a session (cron) no profile matches, so the status must be imposed by the caller,
+                // otherwise the ticket would stay SOLVED and would not count in the daily average calculation.
+                'status'              => $context['status'] ?? (IserviceToolBox::inProfileArray(['tehnician', 'admin', 'super-admin']) ? parent::CLOSED : parent::SOLVED),
                 'without_paper_field' => 1,
                 'no_travel_field'     => 1,
             ]
