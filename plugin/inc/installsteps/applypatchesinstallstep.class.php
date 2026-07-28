@@ -6,7 +6,7 @@ use PluginIserviceConfig;
 use Session;
 
 /**
- * Applies source-code patches to third-party files (currently the GLPI "fields" plugin).
+ * Applies source-code patches to third-party files (the GLPI core and the GLPI "fields" plugin).
  *
  * Each patch is idempotent and self-healing: the replacement text embeds a unique marker.
  * On every iService install/update this step re-applies any patch whose marker is missing
@@ -156,6 +156,30 @@ SEARCH,
 //
 //        // Ensure data is update before regenerating files.
 //        $migration->executeMigration();
+REPLACE,
+        ],
+        [
+            // The Logs tab of a cron task lists one row per run (the end row) and links it with the id
+            // of that row, but the rows of a run are grouped by the id of its start row, which is what
+            // showHistoryDetail() matches on. So the link opened a detail containing only the end row
+            // itself, and the lines logged by the task were unreachable from the interface.
+            'name'   => 'glpi-crontask-log-detail-link',
+            'marker' => 'ISERVICE-PATCH:glpi-crontask-log-detail-link',
+            'file'   => GLPI_ROOT . '/src/CronTask.php',
+            'search' => <<<'SEARCH'
+                'date'     => sprintf(
+                    '<a href="javascript:reloadTab(\'crontasklogs_id=%s\');">%s</a>',
+                    (int) $data['id'],
+                    htmlescape(Html::convDateTime($data['date']))
+                ),
+SEARCH,
+            'replace' => <<<'REPLACE'
+                // ISERVICE-PATCH:glpi-crontask-log-detail-link - link with the start row of the run, so its logged lines are shown.
+                'date'     => sprintf(
+                    '<a href="javascript:reloadTab(\'crontasklogs_id=%s\');">%s</a>',
+                    (int) $data['crontasklogs_id'],
+                    htmlescape(Html::convDateTime($data['date']))
+                ),
 REPLACE,
         ],
     ];
