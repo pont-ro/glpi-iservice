@@ -389,6 +389,7 @@ form .form-control {
 
 .aa-forms td {
     max-width: 25vw !important;
+    vertical-align: top;
 }
 
 .aa-forms > td > table.two-column {
