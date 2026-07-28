@@ -108,6 +108,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                    , ct.new_cartridge_ids
                    , c.id
                    , c.name
+                   , cd.description
                    , io.plugin_iservice_orderstatuses_id
                    , ieo.plugin_iservice_extorders_id
                    , (SELECT COUNT(*)
@@ -139,6 +140,7 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                      ) total_compatible_stock
                  FROM glpi_plugin_iservice_consumables_tickets ct
                  JOIN glpi_plugin_iservice_consumables c ON c.id = ct.plugin_iservice_consumables_id
+                 LEFT JOIN glpi_plugin_iservice_consumabledescriptions cd ON cd.plugin_iservice_consumables_id = ct.plugin_iservice_consumables_id
                  LEFT JOIN glpi_plugin_iservice_intorders io ON io.plugin_iservice_consumables_id = c.id AND io.tickets_id = $instID
                  LEFT JOIN glpi_plugin_iservice_intorders_extorders ieo ON ieo.plugin_iservice_intorders_id = io.id
                  WHERE ct.tickets_id = $instID ORDER BY ct.id"
@@ -315,19 +317,22 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 LEFT JOIN glpi_printers p ON p.id = ic.items_id AND itemtype = 'Printer'
                 WHERE ic.suppliers_id = " . $ticket->getFirstAssignedPartner()->getID();
 
-            $title                                           = '';
+            $title                                           = $consumable['description'];
             $ticket->consumable_data['installed_cartridges'] = [];
             if (!empty($consumable['new_cartridge_ids']) && strtoupper(trim($consumable['new_cartridge_ids'])) !== 'NULL') {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
 
                 $cartridge           = new Cartridge();
                 $delivery_date_empty = empty($ticket->consumable_data['delivery_date']);
-                $creation_dates      = [];
+                $creation_date       = '';
                 foreach ($cartridge->find(["id in ($cartridge_ids)"]) as $cartr) {
-                    $creation_dates[$cartr['id']] = $cartr['date_creation'];
+                    // All cartridges created with a ticket share the same dates, so the first row is enough.
+                    $creation_date = $cartr['date_creation'];
                     if ($delivery_date_empty) {
                         $ticket->consumable_data['delivery_date'] = $cartr['date_in'];
                     }
+
+                    break;
                 }
 
                 $cartridge_ticket = new PluginIserviceCartridge_Ticket();
@@ -335,14 +340,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     $ticket->consumable_data['installed_cartridges'][$cartr['cartridges_id']] = ['id' => $cartr['cartridges_id'], 'ticket_use' => $cartr['tickets_id']];
                 }
 
-                // Tooltip of the consumable name: the created cartridge ids with their creation dates.
-                $title_parts = [];
-                foreach (explode(',', $cartridge_ids) as $cartridge_id) {
-                    $creation_date = $creation_dates[$cartridge_id] ?? null;
-                    $title_parts[] = $cartridge_id . (empty($creation_date) ? '' : ' (' . Html::convDateTime($creation_date) . ')');
-                }
-
-                $title = implode(', ', $title_parts);
+                // Tooltip of the consumable name: the shared creation date and the created cartridge ids.
+                $title = (empty($creation_date) ? '' : Html::convDateTime($creation_date) . ': ') . str_replace(',', ', ', $cartridge_ids);
             }
 
             $data['consumablesTableSection']['rows'][$key] = [
