@@ -341,7 +341,8 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                 }
 
                 // Tooltip of the consumable name: the shared creation date and the created cartridge ids.
-                $title = (empty($creation_date) ? '' : Html::convDateTime($creation_date) . ': ') . str_replace(',', ', ', $cartridge_ids);
+                $title .= (empty($title) ? '' : ' | ');
+                $title .= (empty($creation_date) ? '' : Html::convDateTime($creation_date) . ': ') . str_replace(',', ', ', $cartridge_ids);
             }
 
             $data['consumablesTableSection']['rows'][$key] = [
