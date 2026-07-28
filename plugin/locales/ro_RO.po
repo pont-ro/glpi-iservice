@@ -1702,6 +1702,9 @@ msgstr "Instalat cartuș"
 msgid "Change date"
 msgstr "Data instalării"
 
+msgid "Cartridge management"
+msgstr "Management cartușe"
+
 #, fuzzy
 #~| msgid "Pending emails"
 #~ msgid "PendingEmails"

@@ -567,6 +567,12 @@ class PluginIservicePrinter extends Printer
             $output .= $form->generateFieldTableRow('Email pentru trimis facturi', $form->generateField(PluginIserviceHtml::FIELDTYPE_MEMO, '_customfields[supplier][email_for_invoices_field]', $supplier_customfields->fields['email_for_invoices_field'], $readonly));
         }
 
+        $output .= $form->generateFieldTableRow(
+            _t('Management cartușe'), $form->generateField(
+                PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_customfields[supplier][cm_field]', $supplier_customfields->fields['cm_field']
+            )
+        );
+
         $output .= "</table>";
 
         return $output;
