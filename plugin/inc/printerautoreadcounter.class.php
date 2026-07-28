@@ -29,12 +29,21 @@ class PluginIservicePrinterAutoReadCounter
     /**
      * Number of days a printer is watched after a movement.
      */
-    const WATCH_DAYS = self::READ_COUNT * self::READ_INTERVAL_DAYS;
+    const WATCH_DAYS = self::READ_COUNT * self::READ_INTERVAL_DAYS + 1;
 
     /**
      * Readings from the E-maintenance CSV older than this many days are considered stale and are not used.
      */
     const MAX_CSV_AGE_DAYS = 7;
+
+    /**
+     * The ITIL category of the automatic readings. The tickets are created with it, and only the tickets of
+     * this category count as automatic readings, so the task keeps track of its own work and the manual
+     * readings do not interfere with it.
+     *
+     * The plugin does not create ITIL categories, so this one must exist in glpi_itilcategories.
+     */
+    const ITIL_CATEGORY_NAME = 'Citire contor - automat';
 
     public static function cronInfo($name): ?array
     {
@@ -62,7 +71,13 @@ class PluginIservicePrinterAutoReadCounter
             return -2;
         }
 
-        $printers = self::getWatchedPrinters();
+        $itil_category_id = PluginIserviceTicket::getItilCategoryId(self::ITIL_CATEGORY_NAME);
+        if (empty($itil_category_id)) {
+            $task->log("The ITIL category '" . self::ITIL_CATEGORY_NAME . "' does not exist, it has to be created first.\n");
+            return -1;
+        }
+
+        $printers = self::getWatchedPrinters($itil_category_id);
         if ($printers === null) {
             $task->log("Could not query the printers moved in the last " . self::WATCH_DAYS . " days.\n");
             return -1;
@@ -96,7 +111,7 @@ class PluginIservicePrinterAutoReadCounter
 
             // createGlobalReadCounterTickets skips the printers refused by these checks silently, so they
             // are done here also, to be able to log the reason.
-            $ticket_data = self::getReadCounterTicketData($printer_data, $counters);
+            $ticket_data = self::getReadCounterTicketData($printer_data, $counters, $itil_category_id);
             if (($reason = PluginIserviceTicket::getGlobalReadCounterRefusalReason($ticket_data)) !== null) {
                 $skipped_count++;
                 $task->log(self::getPrinterLogPrefix($printer_data) . ": $reason.\n");
@@ -131,9 +146,11 @@ class PluginIservicePrinterAutoReadCounter
      * The day 0 of the watch period is the work date of the delivery ticket ('livrare echipament') of the
      * movement, which is the date when the printer arrived to the partner.
      *
+     * @param int $itil_category_id Id of the ITIL_CATEGORY_NAME category, the readings of this task.
+     *
      * @return array|null Printer data by printer id, null on error.
      */
-    protected static function getWatchedPrinters(): ?array
+    protected static function getWatchedPrinters(int $itil_category_id): ?array
     {
         $expert_line_id           = IserviceToolBox::getExpertLineId();
         $black_white_printer_type = IserviceToolBox::getIdentifierByAttribute('PrinterType', 'alb-negru');
@@ -163,6 +180,7 @@ class PluginIservicePrinterAutoReadCounter
                      JOIN glpi_items_tickets rit ON rit.tickets_id = rt.id AND rit.itemtype = 'Printer' AND rit.items_id = p.id
                      WHERE rt.is_deleted = 0
                        AND rt.status = " . Ticket::CLOSED . "
+                       AND rt.itilcategories_id = $itil_category_id
                        AND rt.effective_date_field > dt.effective_date_field
                        AND (rt.total2_black_field IS NOT NULL OR rt.total2_color_field IS NOT NULL)
                    ) reads_done
@@ -187,8 +205,10 @@ class PluginIservicePrinterAutoReadCounter
     }
 
     /**
-     * Decides whether a new reading is due for the printer: the readings already made since the movement are
-     * not enough, and the last one of them (or the movement itself) is at least READ_INTERVAL_DAYS days old.
+     * Decides whether a new reading is due for the printer: the automatic readings already made since the
+     * movement are not enough, and the last reading of the printer (a manual one also counts here, to avoid
+     * creating a reading right after one which was just made) or the movement itself is at least
+     * READ_INTERVAL_DAYS days old.
      */
     protected static function isReadingDue(array $printer_data): bool
     {
@@ -266,7 +286,7 @@ class PluginIservicePrinterAutoReadCounter
     /**
      * Returns the ticket data of a reading, the same way the global read counter view posts it.
      */
-    protected static function getReadCounterTicketData(array $printer_data, array $counters): array
+    protected static function getReadCounterTicketData(array $printer_data, array $counters, int $itil_category_id): array
     {
         return array_merge(
             $counters,
@@ -277,7 +297,7 @@ class PluginIservicePrinterAutoReadCounter
                 'effective_date_old'   => $printer_data['last_effective_date'],
                 'total2_black_old'     => $printer_data['last_total2_black'],
                 'total2_color_old'     => $printer_data['last_total2_color'],
-                'itilcategories_id'    => PluginIserviceTicket::getItilCategoryId('Citire emaintenance'),
+                'itilcategories_id'    => $itil_category_id,
                 '_without_papers'      => 1,
                 '_without_moving'      => 1,
             ]
