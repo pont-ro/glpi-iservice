@@ -7,6 +7,7 @@ if (!defined('GLPI_ROOT')) {
 
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
+use GlpiPlugin\Iservice\Views\Cartridges as CartridgesView;
 
 class PluginIservicePrinter extends Printer
 {
@@ -277,7 +278,7 @@ class PluginIservicePrinter extends Printer
 
     private function showButtons($printer_id, $printer, $printer_customfields, $supplier)
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $CFG_PLUGIN_ISERVICE;
 
         echo "<div style='text-align: left;'>";
         $buttons = [];
@@ -306,6 +307,37 @@ class PluginIservicePrinter extends Printer
 
         if (Session::haveRight('plugin_iservice_view_printers', READ) && !empty($supplierName)) {
             $buttons[] = "<a class='vsubmit' href='views.php?view=Printers&printers0[supplier_name]=$supplierName' target='_blank' title=\"" . _t('Printers of the client') . "\">" . _t('Client printers') . "</a>";
+        }
+
+        if (Session::haveRight(CartridgesView::$rightname, READ) && !empty($supplierName)) {
+            // Same filtering as the "Neinstalate" button of the Cartridges view: delivered, but neither installed nor emptied.
+            // Posted instead of passed in the URL, because the view locks every filter it receives as a GET parameter.
+            $cartridges_post_data = [
+                'filtering' => 1,
+                'cartridges0[partner_name]' => $supplierName,
+                'cartridges0[filter_description]' => $supplierName,
+                'cartridges0[date_use]' => CartridgesView::NO_DATE,
+                'cartridges0[date_out]' => CartridgesView::NO_DATE,
+                'cartridges0[date_use_null]' => 1,
+                'cartridges0[date_out_null]' => 1,
+                // Standalone token, so that submitting this form does not consume the token of the printer form.
+                '_glpi_csrf_token' => Session::getNewCSRFToken(true),
+            ];
+
+            // The submit consumes the token and the view opens in a new tab, so this page is not reloaded:
+            // fetch a new token right away, otherwise the second press of the button would be rejected.
+            // Note: attribute is onsubmit='...' so use only double quotes inside JS.
+            $rearm_token = "var token_field = $(this).find(\"[name=_glpi_csrf_token]\");"
+                . " $.get(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getCsrfToken.php\", function(token) { token_field.val(token); });";
+
+            $cartridges_button = "<form class='d-inline-block' method='post' action='views.php?view=Cartridges' target='_blank' onsubmit='$rearm_token'>";
+            foreach ($cartridges_post_data as $field_name => $field_value) {
+                $cartridges_button .= "<input type='hidden' name='$field_name' value=\"" . htmlspecialchars($field_value, ENT_QUOTES) . "\"/>";
+            }
+
+            $cartridges_button .= "<input type='submit' class='vsubmit' title=\"" . _t('Uninstalled cartridges of the client') . "\" value=\"" . _t('Cartridges available') . "\"/>";
+            $cartridges_button .= "</form>";
+            $buttons[]          = $cartridges_button;
         }
 
         echo implode('&nbsp;&nbsp;', $buttons);

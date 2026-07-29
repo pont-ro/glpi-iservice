@@ -543,6 +543,10 @@ msgstr "Aparatele acestui client"
 msgid "Client printers"
 msgstr "Aparate client"
 
+#: inc/printer.class.php:332
+msgid "Uninstalled cartridges of the client"
+msgstr "Cartușele neinstalate ale acestui client"
+
 #: inc/printer.class.php:396
 msgid "Global contract"
 msgstr "Contract global"
