@@ -328,7 +328,7 @@ class PluginIservicePrinter extends Printer
             // fetch a new token right away, otherwise the second press of the button would be rejected.
             // Note: attribute is onsubmit='...' so use only double quotes inside JS.
             $rearm_token = "var token_field = $(this).find(\"[name=_glpi_csrf_token]\");"
-                . " $.get(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getCsrfToken.php\", function(token) { token_field.val(token); });";
+                . " setTimeout(function() { $.get(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/getCsrfToken.php\", function(token) { token_field.val(token); }); }, 0);";
 
             $cartridges_button = "<form class='d-inline-block' method='post' action='views.php?view=Cartridges' target='_blank' onsubmit='$rearm_token'>";
             foreach ($cartridges_post_data as $field_name => $field_value) {
