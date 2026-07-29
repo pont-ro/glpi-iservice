@@ -9,6 +9,7 @@ return [
     'enabled_crons.em_mailgate' => true,
     'enabled_crons.data_integrity_test' => true,
     'enabled_crons.printerDailyAverageCalculator' => true,
+    'enabled_crons.printerAutoReadCounter' => true,
     'enabled_crons.mailStockVerify' => true,
     'enabled_crons.mailCartridgeVerify' => true,
     'data_integrity_tests.enable_header_tests' => true,

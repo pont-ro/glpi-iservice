@@ -551,6 +551,19 @@ msgstr "Contract global"
 msgid "Select if the printer is not billed individually, but together with other printers"
 msgstr "Bifați aici în cazul în care aparatul NU se factureaza individual, ci este facturat împreună cu mai multe aparate"
 
+#: inc/printerautoreadcounter.class.php:44
+msgid "Creates read counters automatically for the printers moved to a partner"
+msgstr "Creează automat citiri de contor pentru aparatele mutate la partener"
+
+#: inc/printerautoreadcounter.class.php:297
+msgid "Automatic read counter after movement"
+msgstr "Citire contor automată după mutare"
+
+#: inc/printerautoreadcounter.class.php:299
+#, php-format
+msgid "Automatic read counter %1$d of %2$d, %3$d day(s) after the movement to the partner."
+msgstr "Citire contor automată %1$d din %2$d, la %3$d zile după mutarea la partener."
+
 #: inc/stockverifier.class.php:22
 msgid "Stock verifier"
 msgid_plural "Stock verifiers"
