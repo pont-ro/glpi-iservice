@@ -319,13 +319,20 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
 
             $title                                           = $consumable['description'];
             $ticket->consumable_data['installed_cartridges'] = [];
-            if (!empty($consumable['new_cartridge_ids'])) {
+            if (!empty($consumable['new_cartridge_ids']) && strtoupper(trim($consumable['new_cartridge_ids'])) !== 'NULL') {
                 $cartridge_ids = str_replace('|', '', $consumable['new_cartridge_ids']);
-                if (empty($ticket->consumable_data['delivery_date'])) {
-                    $cartridge = new Cartridge();
-                    foreach ($cartridge->find(["id in ($cartridge_ids)"]) as $cartr) {
+
+                $cartridge           = new Cartridge();
+                $delivery_date_empty = empty($ticket->consumable_data['delivery_date']);
+                $creation_date       = '';
+                foreach ($cartridge->find(["id in ($cartridge_ids)"]) as $cartr) {
+                    // All cartridges created with a ticket share the same dates, so the first row is enough.
+                    $creation_date = $cartr['date_creation'];
+                    if ($delivery_date_empty) {
                         $ticket->consumable_data['delivery_date'] = $cartr['date_in'];
                     }
+
+                    break;
                 }
 
                 $cartridge_ticket = new PluginIserviceCartridge_Ticket();
@@ -333,7 +340,9 @@ class PluginIserviceConsumable_Ticket extends CommonDBRelation
                     $ticket->consumable_data['installed_cartridges'][$cartr['cartridges_id']] = ['id' => $cartr['cartridges_id'], 'ticket_use' => $cartr['tickets_id']];
                 }
 
-                $title .= (empty($title) ? '' : ': ') . str_replace(',', ', ', $cartridge_ids);
+                // Tooltip of the consumable name: the shared creation date and the created cartridge ids.
+                $title .= (empty($title) ? '' : ' | ');
+                $title .= (empty($creation_date) ? '' : Html::convDateTime($creation_date) . ': ') . str_replace(',', ', ', $cartridge_ids);
             }
 
             $data['consumablesTableSection']['rows'][$key] = [

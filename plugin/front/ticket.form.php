@@ -41,7 +41,12 @@ if (!empty($input)) {
     $input = PluginIserviceTicket::preProcessPostData($input);
 
     if ($input === false) {
-        Html::redirect($ticket->getFormURL());
+        // Input was rejected, stay on the edited ticket instead of opening a blank ticket form.
+        if ((int) $id > 0) {
+            Html::redirect($ticket->getFormURL() . '?id=' . (int) $id);
+        }
+
+        Html::back();
     }
 }
 
