@@ -1,7 +1,7 @@
 <?php
 
 // Direct access to file
-if (strpos($_SERVER['PHP_SELF'], "getCsrfToken.php")) {
+if (strpos($_SERVER['PHP_SELF'], "getCsrfToken.php") !== false) {
     include '../inc/includes.php';
     header("Content-Type: text/plain; charset=UTF-8");
     Html::header_nocache();
