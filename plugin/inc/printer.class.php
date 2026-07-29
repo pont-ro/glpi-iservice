@@ -456,6 +456,10 @@ class PluginIservicePrinter extends Printer
 
     public function generateSupplierData($printer, $supplier, $supplier_customfields, $readonly): string
     {
+        // Computed before the null substitution below, which would otherwise make the read-only
+        // placeholder shown in contract mode look like a new client too.
+        $is_new_client = $supplier !== null && $supplier->isNewItem();
+
         if ($supplier === null) {
             $readonly = true;
             $supplier = new Supplier();
@@ -469,6 +473,11 @@ class PluginIservicePrinter extends Printer
         $output          = "<table class='two-column' style='width:100%;'>";
         $form            = new PluginIserviceHtml();
         $no_wrap_options = ['field_class' => 'nowrap'];
+
+        // Cartridge management is enabled by default for new clients. Posted values override it below.
+        if ($is_new_client) {
+            $supplier_customfields->fields['cm_field'] = 1;
+        }
 
         $post_data = IserviceToolBox::filterVarArray(INPUT_POST);
         if (!IserviceToolBox::getInputVariable('modify_supplier')) {
@@ -569,7 +578,7 @@ class PluginIservicePrinter extends Printer
 
         $output .= $form->generateFieldTableRow(
             _t('Management cartușe'), $form->generateField(
-                PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_customfields[supplier][cm_field]', $supplier_customfields->fields['cm_field']
+                PluginIserviceHtml::FIELDTYPE_CHECKBOX, '_customfields[supplier][cm_field]', $supplier_customfields->fields['cm_field'], $readonly
             )
         );
 
