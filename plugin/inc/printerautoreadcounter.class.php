@@ -41,7 +41,7 @@ class PluginIservicePrinterAutoReadCounter
      * this category count as automatic readings, so the task keeps track of its own work and the manual
      * readings do not interfere with it.
      *
-     * The plugin does not create ITIL categories, so this one must exist in glpi_itilcategories.
+     * The ITIL category will be created with seed_database.sql.
      */
     const ITIL_CATEGORY_NAME = 'Citire contor - automat';
 
