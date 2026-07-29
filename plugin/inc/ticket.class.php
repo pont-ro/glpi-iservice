@@ -656,7 +656,7 @@ class PluginIserviceTicket extends Ticket
                 ]
             );
             foreach ($found_document_items as $item) {
-                $documentItem->delete(Toolbox::addslashes_deep($item), true);
+                $documentItem->delete($item, true);
             }
         }
     }
@@ -1647,14 +1647,21 @@ class PluginIserviceTicket extends Ticket
         if (isset($post['_cartridge_installation_date'])
             && !empty($post['cartridge_install_date_manually_changed'])
         ) {
-            if ($post['_cartridge_installation_date'] > $post['effective_date_field']) {
-                Session::addMessageAfterRedirect(_t('The date of the cartridge installation can not be later than the effective date!'), false, ERROR);
-                return false;
-            }
-
             $post['cartridge_install_date_field'] = $post['_cartridge_installation_date'];
         } elseif (!empty($post['add_cartridge'])) {
             $post['cartridge_install_date_field'] = $post['effective_date_field'] ?? '';
+        }
+
+        // The installation date this submit would store, either the one set above or the unchanged one coming from
+        // the form. It has to be checked in both cases, as the pair also becomes invalid by moving the effective
+        // date earlier, without touching the installation date at all.
+        $cartridge_install_date = $post['cartridge_install_date_field'] ?? $post['_cartridge_installation_date'] ?? '';
+        if (!empty($cartridge_install_date)
+            && !empty($post['effective_date_field'])
+            && $cartridge_install_date > $post['effective_date_field']
+        ) {
+            Session::addMessageAfterRedirect(_t('The date of the cartridge installation can not be later than the effective date!'), false, ERROR);
+            return false;
         }
 
         if (isset($post['_export_type'])) {

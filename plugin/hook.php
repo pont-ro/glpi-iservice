@@ -136,7 +136,9 @@ function plugin_iservice_pre_PluginFieldsCartridgeitemcustomfield_update(PluginF
     $mercuryCodes = array_unique(array_filter($mercuryCodes));
     array_walk(
         $mercuryCodes, function (&$value) {
-            $value = addslashes("'" . trim($value, "' \t\n\r\0\x0B") . "'");
+            // No addslashes here: since GLPI 11 the input is no longer unescaped before being stored, so escaping
+            // the quotes would persist the backslashes into the field and break FIND_IN_SET lookups on it.
+            $value = "'" . trim($value, "' \t\n\r\0\x0B") . "'";
         }
     );
 
