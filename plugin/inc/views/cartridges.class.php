@@ -15,6 +15,11 @@ class Cartridges extends View
 
     public static $icon = 'ti-droplet-half-2-filled';
 
+    /**
+     * Sentinel value of the date filters meaning "the date is not set yet".
+     */
+    const NO_DATE = '1980-01-01';
+
     public static function getName(): string
     {
         return _n('Cartridge', 'Cartridges', Session::getPluralNumber());
@@ -390,8 +395,8 @@ class Cartridges extends View
             'filters' => [
                 'filter_buttons_prefix' => // self::isRestrictedMode() ? '' :
                         " <input type='submit' class='submit noprint' name='filter' value='Toate' onclick='changeValByName(\"cartridges0[date_in]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_out]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use_null]\", 1);changeValByName(\"cartridges0[date_out_null]\", 1);'/>"
-                        . " <input type='submit' class='submit noprint' name='filter' value='Neinstalate' onclick='changeValByName(\"cartridges0[date_in]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use]\", \"1980-01-01\");changeValByName(\"cartridges0[date_out]\", \"1980-01-01\");changeValByName(\"cartridges0[date_use_null]\", 1);changeValByName(\"cartridges0[date_out_null]\", 1);'/>"
-                        . " <input type='submit' class='submit noprint' name='filter' value='Instalate' onclick='changeValByName(\"cartridges0[date_in]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_out]\", \"1980-01-01\");changeValByName(\"cartridges0[date_use_null]\", 0);changeValByName(\"cartridges0[date_out_null]\", 1);'/>"
+                        . " <input type='submit' class='submit noprint' name='filter' value='Neinstalate' onclick='changeValByName(\"cartridges0[date_in]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use]\", \"" . self::NO_DATE . "\");changeValByName(\"cartridges0[date_out]\", \"" . self::NO_DATE . "\");changeValByName(\"cartridges0[date_use_null]\", 1);changeValByName(\"cartridges0[date_out_null]\", 1);'/>"
+                        . " <input type='submit' class='submit noprint' name='filter' value='Instalate' onclick='changeValByName(\"cartridges0[date_in]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_out]\", \"" . self::NO_DATE . "\");changeValByName(\"cartridges0[date_use_null]\", 0);changeValByName(\"cartridges0[date_out_null]\", 1);'/>"
                         . " <input type='submit' class='submit noprint' name='filter' value='Golite' onclick='changeValByName(\"cartridges0[date_in]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_out]\", \"" . date('Y-m-d') . "\");changeValByName(\"cartridges0[date_use_null]\", 0);changeValByName(\"cartridges0[date_out_null]\", 0);'/>"
                         . " <a class='vsubmit' onclick='$(\"#cartridges tr.result-row\").each(function() {if ($(this).find(\".error\").length === 0) {\$(this).hide();}});'>Cartușe neinstalabile</a>",
                 'id' => [
@@ -468,7 +473,7 @@ class Cartridges extends View
                 'date_use' => [
                     'type' => self::FILTERTYPE_DATE,
                     'format' => 'Y-m-d 23:59:59',
-                    'empty_value' => '1980-01-01',
+                    'empty_value' => self::NO_DATE,
                     'header' => 'date_use',
                     'header_caption' => '<= ',
                         // 'visible' => !self::isRestrictedMode(),
@@ -493,7 +498,7 @@ class Cartridges extends View
                 'date_out' => [
                     'type' => self::FILTERTYPE_DATE,
                     'format' => 'Y-m-d 23:59:59',
-                    'empty_value' => '1980-01-01',
+                    'empty_value' => self::NO_DATE,
                     'header' => 'date_out',
                     'header_caption' => '<= ',
                         // 'visible' => !self::isRestrictedMode(),
