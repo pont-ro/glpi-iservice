@@ -310,12 +310,17 @@ class PluginIservicePrinter extends Printer
         }
 
         if (Session::haveRight(CartridgesView::$rightname, READ) && !empty($supplierName)) {
+            // Cartridges are stored at the parent of the location of the printer, so that is the location the view is filtered on.
+            // Stays empty when the printer has no location or its location has no parent: in that case every location is listed.
+            $location_parent_name = self::getLocationParentName($printer->fields['locations_id'] ?? 0);
+
             // Same filtering as the "Neinstalate" button of the Cartridges view: delivered, but neither installed nor emptied.
             // Posted instead of passed in the URL, because the view locks every filter it receives as a GET parameter.
             $cartridges_post_data = [
                 'filtering' => 1,
                 'cartridges0[partner_name]' => $supplierName,
-                'cartridges0[filter_description]' => $supplierName,
+                'cartridges0[location_parent_name]' => $location_parent_name,
+                'cartridges0[filter_description]' => $supplierName . (empty($location_parent_name) ? '' : " - $location_parent_name"),
                 'cartridges0[date_use]' => CartridgesView::NO_DATE,
                 'cartridges0[date_out]' => CartridgesView::NO_DATE,
                 'cartridges0[date_use_null]' => 1,
@@ -343,6 +348,28 @@ class PluginIservicePrinter extends Printer
         echo implode('&nbsp;&nbsp;', $buttons);
         echo "</div>";
         echo "<br>";
+    }
+
+    /**
+     * Returns the name of the parent of the given location, or an empty string if there is no such location or it has no parent.
+     */
+    public static function getLocationParentName($location_id): string
+    {
+        if (empty($location_id)) {
+            return '';
+        }
+
+        $location = new Location();
+        if (!$location->getFromDB($location_id) || empty($location->fields['locations_id'])) {
+            return '';
+        }
+
+        $parent_location = new Location();
+        if (!$parent_location->getFromDB($location->fields['locations_id'])) {
+            return '';
+        }
+
+        return $parent_location->fields['name'] ?? '';
     }
 
     public function generatePrinterData($printer, $accessible_printer_ids, $readonly)
