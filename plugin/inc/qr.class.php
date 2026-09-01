@@ -330,14 +330,14 @@ class PluginIserviceQr extends CommonDBTM
         return null;
     }
 
-    public static function addCartridgeBasedOnColorId(string $colorId, self $qr, PluginIserviceTicket $ticket, PluginIservicePrinter $printer, array $availableCartridges): bool|string
+    public static function addCartridgeBasedOnColorId(int $colorId, self $qr, PluginIserviceTicket $ticket, PluginIservicePrinter $printer, array $availableCartridges): bool|string
     {
         if (empty($availableCartridges)) {
             return _t('No cartridges to add.');
         }
 
         foreach ($availableCartridges as $availableCartridgeItem) {
-            if ($availableCartridgeItem['consumable_type'] !== 'cartridge' || $availableCartridgeItem['plugin_fields_cartridgeitemtypedropdowns_id'] !== $colorId) {
+            if ($availableCartridgeItem['consumable_type'] !== 'cartridge' || (int) $availableCartridgeItem['plugin_fields_cartridgeitemtypedropdowns_id'] !== $colorId) {
                 continue;
             }
 
