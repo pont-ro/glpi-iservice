@@ -2361,8 +2361,22 @@ class PluginIserviceTicket extends Ticket
 
         $ticket_count = 0;
         foreach ($data['printer'] as $printerId => $ticketData) {
-            if (self::getGlobalReadCounterRefusalReason($ticketData) !== null) {
+            $smallCounterDifferenceStatus = $context['ignore_counter_difference_with_status'] ?? null;
+            $ignoreCounterDifference = !empty($smallCounterDifferenceStatus);
+
+            if (self::getGlobalReadCounterRefusalReason($ticketData, $ignoreCounterDifference) !== null) {
                 continue;
+            }
+
+            if (self::isSmallCounterDifferenceFor($ticketData, $ignoreCounterDifference)) {
+                $context['name'] = _t('The counter did not advance');
+                $context['content'] = sprintf(
+                    _t("The printer was moved on %s, but it's counter did not advance enough from %s, now it is %s"),
+                    $ticketData['days_since_move'],
+                    "$ticketData[total2_black_field]/$ticketData[total2_color_field]",
+                    "$ticketData[total2_black_old]/$ticketData[total2_color_old]",
+                );
+                $context['status'] = $smallCounterDifferenceStatus;
             }
 
             $track = new PluginIserviceTicket();
@@ -2397,6 +2411,20 @@ class PluginIserviceTicket extends Ticket
         return $success ? $ticket_count : -$ticket_count;
     }
 
+    public static function isSmallCounterDifferenceFor(array $ticketData, bool $ignoreCounterDifference = false): bool
+    {
+        if ($ignoreCounterDifference) {
+            return false;
+        }
+
+        $black     = intval($ticketData['total2_black_field'] ?? 0);
+        $color     = intval($ticketData['total2_color_field'] ?? 0);
+        $black_old = intval($ticketData['total2_black_old'] ?? 0);
+        $color_old = intval($ticketData['total2_color_old'] ?? 0);
+
+        return $black + $color < $black_old + $color_old + self::GLOBAL_READ_COUNTER_MIN_COPIES;
+    }
+
     /**
      * Tells whether a reading of the global read counter can be saved: it must not be older than the
      * previous one, its counters must not be smaller than the previous ones, and at least
@@ -2407,7 +2435,7 @@ class PluginIserviceTicket extends Ticket
      *
      * @return string|null The reason why the reading must not be saved, null if it can be saved.
      */
-    public static function getGlobalReadCounterRefusalReason(array $ticketData): ?string
+    public static function getGlobalReadCounterRefusalReason(array $ticketData, bool $ignoreCounterDifference = false): ?string
     {
         $black     = intval($ticketData['total2_black_field'] ?? 0);
         $color     = intval($ticketData['total2_color_field'] ?? 0);
@@ -2422,7 +2450,7 @@ class PluginIserviceTicket extends Ticket
             return "the counters ($black/$color) are smaller than the counters of the previous reading ($black_old/$color_old)";
         }
 
-        if ($black + $color < $black_old + $color_old + self::GLOBAL_READ_COUNTER_MIN_COPIES) {
+        if (self::isSmallCounterDifferenceFor($ticketData, $ignoreCounterDifference)) {
             return "less than " . self::GLOBAL_READ_COUNTER_MIN_COPIES . " copies were printed since the previous reading (" . ($black_old + $color_old) . " -> " . ($black + $color) . ")";
         }
 

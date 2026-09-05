@@ -112,7 +112,7 @@ class PluginIservicePrinterAutoReadCounter
             // createGlobalReadCounterTickets skips the printers refused by these checks silently, so they
             // are done here also, to be able to log the reason.
             $ticket_data = self::getReadCounterTicketData($printer_data, $counters, $itil_category_id);
-            if (($reason = PluginIserviceTicket::getGlobalReadCounterRefusalReason($ticket_data)) !== null) {
+            if (($reason = PluginIserviceTicket::getGlobalReadCounterRefusalReason($ticket_data, true)) !== null) {
                 $skipped_count++;
                 $task->log(self::getPrinterLogPrefix($printer_data) . ": $reason.\n");
                 continue;
@@ -312,6 +312,7 @@ class PluginIservicePrinterAutoReadCounter
         return PluginIserviceTicket::createGlobalReadCounterTickets(
             ['printer' => [$printer_data['id'] => $ticket_data]],
             [
+                'ignore_counter_difference_with_status' => Ticket::INCOMING,
                 'users_id_assign' => IserviceToolBox::getUserIdByName('Cititor'),
                 // The reading counts in the daily average calculation only if it is closed.
                 'status'          => Ticket::CLOSED,

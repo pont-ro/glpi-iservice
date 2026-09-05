@@ -2013,6 +2013,12 @@ msgstr "Exportat in csv și importat in hMarfa"
 msgid "Effective date"
 msgstr "Data efectivă"
 
+msgid "The counter did not advance"
+msgstr "Contorul nu a avansat"
+
+msgid "The printer was moved on %s, but it's counter did not advance enough from %d, now it is %d"
+msgstr "Aparatul a fost mutat in data de %s, dar contorul lui nu a avansat destul de la %d, momentan este %d"
+
 #~ msgid "Solve"
 #~ msgstr "Soluționează"
 
