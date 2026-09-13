@@ -2019,6 +2019,9 @@ msgstr "Contorul nu a avansat"
 msgid "The printer was moved on %s, but it's counter did not advance enough from %d, now it is %d"
 msgstr "Aparatul a fost mutat in data de %s, dar contorul lui nu a avansat destul de la %d, momentan este %d"
 
+msgid "Error in the CSV file"
+msgid "Eroare in fișierul CSV"
+
 #~ msgid "Solve"
 #~ msgstr "Soluționează"
 

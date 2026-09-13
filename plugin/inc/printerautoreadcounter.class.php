@@ -24,7 +24,7 @@ class PluginIservicePrinterAutoReadCounter
     /**
      * Number of days between two automatic readings.
      */
-    const READ_INTERVAL_DAYS = 3;
+    const READ_INTERVAL_DAYS = 4;
 
     /**
      * Number of days a printer is watched after a movement.
@@ -96,31 +96,46 @@ class PluginIservicePrinterAutoReadCounter
         }
 
         // The CSV data is read once for all the printers, the same way the global read counter view imports it.
+        $csv_error        = null;
         $csv_data      = PluginIserviceEmaintenance::getDataFromCsvs([], array_column($due_printers, 'spaceless_serial'));
         $ticket_count  = 0;
         $error_count   = 0;
         $skipped_count = 0;
 
         foreach ($due_printers as $printer_data) {
-            $counters = self::getCountersFromCsvData($csv_data[$printer_data['spaceless_serial']] ?? null, $printer_data, $reason);
-            if ($counters === null) {
+            $counters = self::getCountersFromCsvData($csv_data[$printer_data['spaceless_serial']] ?? null, $printer_data, $csv_error);
+            if ($counters === null && in_array($csv_error,
+                    // for other reasons we allow the ticket to be created
+                    [
+                        'the printer is excluded from E-maintenance, no automatic reading is possible',
+                        'the printer has no serial number to be identified in the E-maintenance CSV',
+                    ])) {
                 $skipped_count++;
-                $task->log(self::getPrinterLogPrefix($printer_data) . ": $reason.\n");
+                $task->log(self::getPrinterLogPrefix($printer_data) . ": $csv_error.\n");
                 continue;
+            } else {
+                $counters = [
+                    'effective_date_field' => date('Y-m-d H:i:s'),
+                    'total2_black_field'   => $printer_data['last_total2_black'],
+                    'total2_color_field'   => $printer_data['last_total2_color'],
+                ];
             }
 
-            // createGlobalReadCounterTickets skips the printers refused by these checks silently, so they
-            // are done here also, to be able to log the reason.
             $ticket_data = self::getReadCounterTicketData($printer_data, $counters, $itil_category_id);
-            if (($reason = PluginIserviceTicket::getGlobalReadCounterRefusalReason($ticket_data, true)) !== null) {
-                $skipped_count++;
-                $task->log(self::getPrinterLogPrefix($printer_data) . ": $reason.\n");
-                continue;
+
+            if ($csv_error === null) {
+                // createGlobalReadCounterTickets skips the printers refused by these checks silently, so they
+                // are done here also, to be able to log the reason.
+                if (($reasonn = PluginIserviceTicket::getGlobalReadCounterRefusalReason($ticket_data, true)) !== null) {
+                    $skipped_count++;
+                    $task->log(self::getPrinterLogPrefix($printer_data) . ": $reasonn.\n");
+                    continue;
+                }
             }
 
             $has_open_ticket = PluginIserviceTicket::getLastIdForPrinterOrSupplier(0, $printer_data['id'], true) > 0;
 
-            if (self::createReadCounterTicket($printer_data, $ticket_data)) {
+            if (self::createReadCounterTicket($printer_data, $ticket_data, $csv_error)) {
                 $ticket_count++;
                 $task->log(self::getPrinterLogPrefix($printer_data) . ": reading " . ($printer_data['reads_done'] + 1) . "/" . self::READ_COUNT . " created ($counters[total2_black_field]/$counters[total2_color_field] at $counters[effective_date_field]).\n");
                 if ($has_open_ticket) {
@@ -307,12 +322,14 @@ class PluginIservicePrinterAutoReadCounter
     /**
      * Creates the read counter ticket of a printer.
      */
-    protected static function createReadCounterTicket(array $printer_data, array $ticket_data): bool
+    protected static function createReadCounterTicket(array $printer_data, array $ticket_data, string $csv_error = null): bool
     {
         return PluginIserviceTicket::createGlobalReadCounterTickets(
             ['printer' => [$printer_data['id'] => $ticket_data]],
             [
                 'ignore_counter_difference_with_status' => Ticket::INCOMING,
+                // csv error data will be processed by createGlobalReadCounterTickets
+                'csv_error'       => $csv_error,
                 'users_id_assign' => IserviceToolBox::getUserIdByName('Cititor'),
                 // The reading counts in the daily average calculation only if it is closed.
                 'status'          => Ticket::CLOSED,

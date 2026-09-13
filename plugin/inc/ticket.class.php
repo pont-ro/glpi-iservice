@@ -2364,19 +2364,25 @@ class PluginIserviceTicket extends Ticket
             $smallCounterDifferenceStatus = $context['ignore_counter_difference_with_status'] ?? null;
             $ignoreCounterDifference = !empty($smallCounterDifferenceStatus);
 
-            if (self::getGlobalReadCounterRefusalReason($ticketData, $ignoreCounterDifference) !== null) {
-                continue;
-            }
+            if (!empty($context['csv_error'])) {
+                $context['name'] = _t('Error in the CSV file');
+                $context['status'] = Ticket::INCOMING;
+                $context['content'] = $context['csv_error'];
+            } else{
+                if (self::getGlobalReadCounterRefusalReason($ticketData, $ignoreCounterDifference) !== null) {
+                    continue;
+                }
 
-            if (self::isSmallCounterDifferenceFor($ticketData, $ignoreCounterDifference)) {
-                $context['name'] = _t('The counter did not advance');
-                $context['content'] = sprintf(
-                    _t("The printer was moved on %s, but it's counter did not advance enough from %s, now it is %s"),
-                    $ticketData['days_since_move'],
-                    "$ticketData[total2_black_field]/$ticketData[total2_color_field]",
-                    "$ticketData[total2_black_old]/$ticketData[total2_color_old]",
-                );
-                $context['status'] = $smallCounterDifferenceStatus;
+                if (self::isSmallCounterDifferenceFor($ticketData, $ignoreCounterDifference)) {
+                    $context['name'] = _t('The counter did not advance');
+                    $context['status'] = $smallCounterDifferenceStatus;
+                    $context['content'] = sprintf(
+                        _t("The printer was moved on %s, but it's counter did not advance enough from %s, now it is %s"),
+                        $ticketData['days_since_move'],
+                        "$ticketData[total2_black_field]/$ticketData[total2_color_field]",
+                        "$ticketData[total2_black_old]/$ticketData[total2_color_old]",
+                    );
+                }
             }
 
             $track = new PluginIserviceTicket();
