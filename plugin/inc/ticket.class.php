@@ -2365,7 +2365,8 @@ class PluginIserviceTicket extends Ticket
             $ignoreCounterDifference = !empty($smallCounterDifferenceStatus);
 
             if (!empty($context['csv_error'])) {
-                $context['name'] = _t('Error in the CSV file');
+                $csvFile = $context['csv_file'] ?? 'unknown';
+                $context['name'] = _t("Error in the $csvFile file(s)");
                 $context['status'] = Ticket::INCOMING;
                 $context['content'] = $context['csv_error'];
             } else{

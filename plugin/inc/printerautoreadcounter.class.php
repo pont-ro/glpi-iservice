@@ -24,7 +24,7 @@ class PluginIservicePrinterAutoReadCounter
     /**
      * Number of days between two automatic readings.
      */
-    const READ_INTERVAL_DAYS = 4;
+    const READ_INTERVAL_DAYS = 3;
 
     /**
      * Number of days a printer is watched after a movement.
@@ -97,7 +97,8 @@ class PluginIservicePrinterAutoReadCounter
 
         // The CSV data is read once for all the printers, the same way the global read counter view imports it.
         $csv_error        = null;
-        $csv_data      = PluginIserviceEmaintenance::getDataFromCsvs([], array_column($due_printers, 'spaceless_serial'));
+        $csv_files     = PluginIserviceEmaintenance::getImportFilePaths();
+        $csv_data      = PluginIserviceEmaintenance::getDataFromCsvs($csv_files, array_column($due_printers, 'spaceless_serial'));
         $ticket_count  = 0;
         $error_count   = 0;
         $skipped_count = 0;
@@ -135,7 +136,7 @@ class PluginIservicePrinterAutoReadCounter
 
             $has_open_ticket = PluginIserviceTicket::getLastIdForPrinterOrSupplier(0, $printer_data['id'], true) > 0;
 
-            if (self::createReadCounterTicket($printer_data, $ticket_data, $csv_error)) {
+            if (self::createReadCounterTicket($printer_data, $ticket_data, implode(', ', $csv_files), $csv_error)) {
                 $ticket_count++;
                 $task->log(self::getPrinterLogPrefix($printer_data) . ": reading " . ($printer_data['reads_done'] + 1) . "/" . self::READ_COUNT . " created ($counters[total2_black_field]/$counters[total2_color_field] at $counters[effective_date_field]).\n");
                 if ($has_open_ticket) {
@@ -232,8 +233,9 @@ class PluginIservicePrinterAutoReadCounter
         }
 
         $last_reading_date = max(strtotime($printer_data['last_effective_date']), strtotime($printer_data['move_date']));
+        $last_reading_age  = floor((time() - $last_reading_date) / DAY_TIMESTAMP);
 
-        return floor((time() - $last_reading_date) / DAY_TIMESTAMP) >= self::READ_INTERVAL_DAYS;
+        return $last_reading_age > 0 && ($last_reading_age % self::READ_INTERVAL_DAYS === 0);
     }
 
     /**
@@ -322,7 +324,7 @@ class PluginIservicePrinterAutoReadCounter
     /**
      * Creates the read counter ticket of a printer.
      */
-    protected static function createReadCounterTicket(array $printer_data, array $ticket_data, string $csv_error = null): bool
+    protected static function createReadCounterTicket(array $printer_data, array $ticket_data, string $csv_file, string $csv_error = null): bool
     {
         return PluginIserviceTicket::createGlobalReadCounterTickets(
             ['printer' => [$printer_data['id'] => $ticket_data]],
@@ -330,6 +332,7 @@ class PluginIservicePrinterAutoReadCounter
                 'ignore_counter_difference_with_status' => Ticket::INCOMING,
                 // csv error data will be processed by createGlobalReadCounterTickets
                 'csv_error'       => $csv_error,
+                'csv_file'        => $csv_file,
                 'users_id_assign' => IserviceToolBox::getUserIdByName('Cititor'),
                 // The reading counts in the daily average calculation only if it is closed.
                 'status'          => Ticket::CLOSED,
