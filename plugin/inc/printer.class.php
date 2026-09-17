@@ -228,48 +228,47 @@ class PluginIservicePrinter extends Printer
 			}
 		}
 		function redirect_to(redirect_type) {
-			$input = $("input[name=\'" + redirect_type + "[id]\']");
+			var $input = $("input[name=\'" + redirect_type + "[id]\']");
 			if ($input.val() !== undefined) {
 				document.location="?" + redirect_type + "_id=" + $input.val();
 				return;
 			}
-			$select = $("select[name=\'" + redirect_type + "[id]\']");
+			var $select = $("select[name=\'" + redirect_type + "[id]\']");
 			document.location="?" + redirect_type + "_id=" + $select.val();
 		}
 		</script>';
 
         echo "<form class='iservice-form printer' method='post' name='form_printer' enctype='multipart/form-data'>";
 
-        echo "<table class='tab_cadre_fixe wide iservice_printer_table' id='mainformtable'>";
+        echo "<div class='d-flex flex-wrap iservice_printer_container mx-n2' id='mainformcontainer'>";
 
-        echo "<tr class='headerRow'>";
-        echo "<th class=text-center '>" . _t('Printer') . "</th>";
-        echo "<th class='bg-white text-center'>" . _tn('Supplier', 'Suppliers', 1) . "</th>";
+        echo "<div class='col-12 col-xl-4 bg-white px-2 mb-3'>";
+        echo "<div class='card'>";
+        echo "<div class='headerRow card-header mx-0'><h3>" . _t('Printer') . "</h3></div>";
+        echo "<div class='aa-forms card-body p-2'>" . $this->generatePrinterData($printer, $accessible_printer_ids, !Session::haveRight('plugin_iservice_printer', UPDATE)) . "</div>";
+        echo "<div class='buttons card-footer text-center' style='border: 0;'>" . $this->generatePrinterButtons($printer, !Session::haveRight('plugin_iservice_printer', UPDATE)) . "</div>";
+        echo "</div>";
+        echo "</div>";
+
+        echo "<div class='col-12 col-xl-4 px-2 mb-3'>";
+        echo "<div class='card'>";
+        echo "<div class='headerRow card-header mx-0 bg-white'><h3>" . _tn('Supplier', 'Suppliers', 1) . "</h3></div>";
+        echo "<div class='aa-forms card-body p-2 bg-white'>" . $this->generateSupplierData($printer, $supplier, $supplier_customfields, !Session::haveRight('plugin_iservice_printer_full', UPDATE)) . "</div>";
+        echo "<div class='buttons card-footer text-center bg-white' style='border: 0;'>" . $this->generateSupplierButtons($printer, $supplier, $supplier_customfields, !Session::haveRight('plugin_iservice_printer_full', UPDATE)) . "</div>";
+        echo "</div>";
+        echo "</div>";
+
         if (Session::haveRight('plugin_iservice_printer_full', UPDATE)) {
-            echo "<th  class='text-center'>" . __('Contract') . "</th>";
+            echo "<div class='col-12 col-xl-4 bg-white px-2 mb-3'>";
+            echo "<div class='card'>";
+            echo "<div class='headerRow card-header mx-0'><h3>" . __('Contract') . "</h3></div>";
+            echo "<div class='aa-forms card-body p-2'>" . $this->generateContractData($printer, $contract, $contract_customfields, false) . "</div>";
+            echo "<div class='buttons card-footer text-center' style='border: 0;'>" . $this->generateContractButtons($printer, $contract, $contract_customfields, !Session::haveRight('plugin_iservice_contract', UPDATE)) . "</div>";
+            echo "</div>";
+            echo "</div>";
         }
 
-        echo "</tr>";
-
-        echo "<tr class='aa-forms'>";
-        echo "<td>" . $this->generatePrinterData($printer, $accessible_printer_ids, !Session::haveRight('plugin_iservice_printer', UPDATE)) . "</td>";
-        echo "<td class='bg-white'>" . $this->generateSupplierData($printer, $supplier, $supplier_customfields, !Session::haveRight('plugin_iservice_printer_full', UPDATE)) . "</td>";
-        if (Session::haveRight('plugin_iservice_printer_full', UPDATE)) {
-            echo "<td>" . $this->generateContractData($printer, $contract, $contract_customfields, false) . "</td>";
-        }
-
-        echo "</tr>";
-
-        echo "<tr class='buttons'>";
-        echo "<td class='text-center'>" . $this->generatePrinterButtons($printer, !Session::haveRight('plugin_iservice_printer', UPDATE)) . "</td>";
-        echo "<td class='bg-white text-center'>" . $this->generateSupplierButtons($printer, $supplier, $supplier_customfields, !Session::haveRight('plugin_iservice_printer_full', UPDATE)) . "</td>";
-        if (Session::haveRight('plugin_iservice_printer_full', UPDATE)) {
-            echo "<td class='text-center'>" . $this->generateContractButtons($printer, $contract, $contract_customfields, !Session::haveRight('plugin_iservice_contract', UPDATE)) . "</td>";
-        }
-
-        echo "</tr>";
-
-        echo "</table>";
+        echo "</div>";
 
         Html::closeForm();
 
@@ -382,7 +381,7 @@ class PluginIservicePrinter extends Printer
 
         $has_full_rights = Session::haveRight('plugin_iservice_printer_full', UPDATE);
 
-        $output = "<table class='two-column' style='width:100%;'>";
+        $output = "<table class='two-column full-width'>";
 
         $printer_customfields = new PluginFieldsPrinterprintercustomfield();
         if (PluginIserviceDB::populateByItemsId($printer_customfields, $printer->getID()) === false) {
@@ -529,7 +528,7 @@ class PluginIservicePrinter extends Printer
 
         $has_full_rights = Session::haveRight('plugin_iservice_printer_full', UPDATE);
 
-        $output          = "<table class='two-column' style='width:100%;'>";
+        $output          = "<table class='two-column full-width'>";
         $form            = new PluginIserviceHtml();
         $no_wrap_options = ['field_class' => 'nowrap'];
 
@@ -656,7 +655,7 @@ class PluginIservicePrinter extends Printer
             $contract_customfields->getEmpty();
         }
 
-        $output          = "<table class='two-column' style='width:100%;'>";
+        $output          = "<table class='two-column full-width'>";
         $form            = new PluginIserviceHtml();
         $no_wrap_options = ['field_class' => 'nowrap'];
 
