@@ -31,5 +31,4 @@ services:
 
 proxy:
   appserver:
-    - dev.iservice:80
-    - https://dev.iservice:443
+    - dev.iservice

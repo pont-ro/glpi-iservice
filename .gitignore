@@ -1,8 +1,8 @@
 .idea
+*.mo
 /glpi
 /glpi-old
 /temp
 /plugin/config/local.php
 /plugin/front/cursv.txt
 /plugin/install/sql/glpi_profilerights_original.sql
-/plugin/locales/ro_RO.mo
