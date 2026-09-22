@@ -2366,9 +2366,9 @@ class PluginIserviceTicket extends Ticket
 
             if (!empty($context['csv_error'])) {
                 $csvFile = $context['csv_file'] ?? 'unknown';
-                $context['name'] = _t("Error in the $csvFile file(s)");
+                $context['name'] = _t("Error in the CSV file");
                 $context['status'] = Ticket::INCOMING;
-                $context['content'] = $context['csv_error'];
+                $context['content'] = "Error in the $csvFile file(s):<br>$context[csv_error]";
             } else{
                 if (self::getGlobalReadCounterRefusalReason($ticketData, $ignoreCounterDifference) !== null) {
                     continue;

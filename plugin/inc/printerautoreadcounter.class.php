@@ -96,7 +96,7 @@ class PluginIservicePrinterAutoReadCounter
         }
 
         // The CSV data is read once for all the printers, the same way the global read counter view imports it.
-        $csv_error        = null;
+        $csv_error     = null;
         $csv_files     = PluginIserviceEmaintenance::getImportFilePaths();
         $csv_data      = PluginIserviceEmaintenance::getDataFromCsvs($csv_files, array_column($due_printers, 'spaceless_serial'));
         $ticket_count  = 0;
@@ -105,21 +105,23 @@ class PluginIservicePrinterAutoReadCounter
 
         foreach ($due_printers as $printer_data) {
             $counters = self::getCountersFromCsvData($csv_data[$printer_data['spaceless_serial']] ?? null, $printer_data, $csv_error);
-            if ($counters === null && in_array($csv_error,
+            if ($counters === null) {
+                if (in_array($csv_error,
                     // for other reasons we allow the ticket to be created
                     [
                         'the printer is excluded from E-maintenance, no automatic reading is possible',
                         'the printer has no serial number to be identified in the E-maintenance CSV',
                     ])) {
-                $skipped_count++;
-                $task->log(self::getPrinterLogPrefix($printer_data) . ": $csv_error.\n");
-                continue;
-            } else {
-                $counters = [
-                    'effective_date_field' => date('Y-m-d H:i:s'),
-                    'total2_black_field'   => $printer_data['last_total2_black'],
-                    'total2_color_field'   => $printer_data['last_total2_color'],
-                ];
+                    $skipped_count++;
+                    $task->log(self::getPrinterLogPrefix($printer_data) . ": $csv_error.\n");
+                    continue;
+                } else {
+                    $counters = [
+                        'effective_date_field' => date('Y-m-d H:i:s'),
+                        'total2_black_field'   => $printer_data['last_total2_black'],
+                        'total2_color_field'   => $printer_data['last_total2_color'],
+                    ];
+                }
             }
 
             $ticket_data = self::getReadCounterTicketData($printer_data, $counters, $itil_category_id);
