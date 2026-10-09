@@ -2298,7 +2298,7 @@ class PluginIserviceTicket extends Ticket
                 $cartridge_item['cartridges_id_emptied'],
                 $ticket->getPrinterId() ?? 0,
                 $ticket->getPartnerId() ?? 0,
-                $ticket->fields['locations_id'] ?? 0,
+                $ticket->getLocation()->getID() ?? 0,
                 $ticket->customfields->fields['total2_black_field'] ?? null,
                 $ticket->customfields->fields['total2_color_field'] ?? null,
                 $ticket->customfields->fields['cartridge_install_date_field'] ?? $ticket->customfields->fields['effective_date_field']
