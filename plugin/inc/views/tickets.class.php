@@ -235,7 +235,7 @@ class Tickets extends View
         $tooltip  = !empty($rowData['ticket_content']) ? IserviceToolBox::cleanHtml($rowData['ticket_content']) : '';
         $tooltip .= !empty($rowData['ticket_content']) && !empty($rowData['ticket_followups']) ? "\n\n" : '';
         $tooltip .= !empty($rowData['ticket_followups']) ? "Descriere followup-uri:\n" . IserviceToolBox::cleanHtml($rowData['ticket_followups']) : '';
-        $href     = $CFG_GLPI['root_doc'] . '/front/ticket.form.php?id=[ticket_id]';
+        $href     = $CFG_GLPI['root_doc'] . "/front/ticket.form.php?id={$rowData['ticket_id']}";
 
         $extraClass = '';
         if (!empty($rowData['ticket_content']) || !empty($rowData['ticket_followups'])) {
