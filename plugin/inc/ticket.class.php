@@ -876,10 +876,14 @@ class PluginIserviceTicket extends Ticket
 
     public function addCartridge($ticketId, $input, &$errorMessage = ''): bool
     {
+        if ($this->getID() !== $ticketId && !$this->getFromDB($ticketId)) {
+            return false;
+        }
+
         $supplierId = $input['suppliers_id'] ?? $this->getFirstAssignedPartner()->getID();
         $printerId  = $input['printer_id'] ?? null;
 
-        if (!$this->preCartridgeAddChecks($input, $supplierId, $printerId) || !$this->getFromDB($ticketId)) {
+        if (!$this->preCartridgeAddChecks($input, $supplierId, $printerId)) {
             return false;
         }
 

@@ -567,6 +567,15 @@ class PluginIserviceEmaintenance extends MailCollector
             ];
         }
 
+        $effective_date = self::getDateTimeFromString($mail_data['body_lines']['occurred']['ending']) ?? self::getDateTimeFromString($mail_data['date']);
+        if ($effective_date !== false && $effective_date > new DateTime()) {
+            $mail_data['effective_date'] = (new DateTime())->format('Y-m-d H:i:s');
+            $mail_data['occurred_date_in_future'] = true;
+        } else {
+            $mail_data['effective_date'] = $effective_date->format('Y-m-d H:i:s');
+            $mail_data['occurred_date_in_future'] = false;
+        }
+
         return $mail_data;
     }
 
@@ -810,7 +819,7 @@ class PluginIserviceEmaintenance extends MailCollector
         return $this->autoAddCatridgeToTonerBottleReplacementTicket($ticket, $ememail_id, $extended_data);
     }
 
-    protected function autoAddCatridgeToTonerBottleReplacementTicket($ticket, $ememail_id, $extended_data)
+    protected function autoAddCatridgeToTonerBottleReplacementTicket(PluginIserviceTicket $ticket, $ememail_id, $extended_data)
     {
         $ememail = new PluginIserviceEMEmail();
         if (empty($extended_data['body_lines']['toner mercury code'])) {
@@ -831,7 +840,18 @@ class PluginIserviceEmaintenance extends MailCollector
             $error_message .= "###Changeable cartridges:<pre>" . print_r($changeable_cartridges, true) . "</pre>";
             $ememail->update(['id' => $ememail_id, 'read' => 1, 'process_result' => $error_message]);
             return false;
-        } elseif (!$ticket->addCartridge($error_message, $cartridge_item_index, $extended_data['suppliers_id'], $extended_data['printers_id'])) {
+        } elseif (!$ticket->addCartridge(
+            $ticket->getID(),
+            [
+                'suppliers_id'                 => $extended_data['suppliers_id'],
+                'printer_id'                   => $extended_data['printers_id'],
+                '_plugin_iservice_cartridge'   => [
+                    'cartridgeitems_id' => $cartridge_item_index,
+                ],
+                'cartridge_install_date_field' => $extended_data['effective_date'],
+            ],
+            $error_message
+        )) {
             $ememail->update(['id' => $ememail_id, 'read' => 1, 'process_result' => $error_message]);
             return false;
         }
@@ -924,8 +944,7 @@ class PluginIserviceEmaintenance extends MailCollector
 
         // Prepare ticket data.
         $ticket->explodeArrayFields();
-        $effective_date_field = self::getDateTimeFromString($extended_data['body_lines']['occurred']['ending'] ?? '') ?: self::getDateTimeFromString($extended_data['date']);
-        $ticket_data          = [
+        $ticket_data = [
             // This field value will be needed to get the changeable cartridges.
             'items_id' => ['Printer' => [$extended_data['printers_id']]],
             'locations_id' => $extended_data['printer']->fields['locations_id'],
@@ -935,9 +954,14 @@ class PluginIserviceEmaintenance extends MailCollector
             'em_mail_id_field' => $ememail_id,
             '_without_moving' => 1,
             '_without_papers' => 1,
-            'effective_date_field' => $effective_date_field->format('Y-m-d H:i:s'),
+            'effective_date_field' => $extended_data['effective_date'],
             'itilcategories_id' => $override_data['itilcategories_id'] ?? PluginIserviceTicket::getItilCategoryId('Defect'),
         ];
+
+        if ($extended_data['occurred_date_in_future']) {
+            $ticket_data['_followup_content'] = "ATENȚIE! Verificați setarea datei pe aparat!";
+        }
+
         if (!empty($extended_data['suppliers_id'])) {
             // This field value will be needed to get the changeable cartridges.
             $ticket_data['_suppliers_id_assign'] = $extended_data['suppliers_id'];
