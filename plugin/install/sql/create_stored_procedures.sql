@@ -267,7 +267,16 @@ this_proc: BEGIN
   DECLARE minTicketCount INT DEFAULT 3;
   
   DECLARE countFirstDays INT DEFAULT 0;
-  
+
+  DECLARE lastMovementDate DATETIME DEFAULT '2020-01-01 00:00:00';
+
+  SELECT COALESCE(MAX(mt.effective_date_field), '2020-01-01 00:00:00')
+  INTO lastMovementDate
+  FROM glpi_items_tickets it
+  JOIN glpi_plugin_iservice_tickets mt ON mt.id = it.tickets_id AND (mt.movement_id_field IS NOT NULL OR mt.movement2_id_field IS NOT NULL)
+  WHERE it.itemtype = 'Printer' AND it.items_id = printerId;
+
+
   SELECT
       COUNT(t.id)
     , MIN(CASE color WHEN 1 THEN t.total2_color_field ELSE COALESCE(t.total2_black_field, 0) + COALESCE(t.total2_color_field, 0) END)
@@ -282,7 +291,7 @@ this_proc: BEGIN
     , maxDataLuc
   FROM glpi_plugin_iservice_tickets t
   JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
-  WHERE t.is_deleted = 0 AND t.`status` = 6;
+  WHERE t.is_deleted = 0 AND t.`status` = 6 AND t.effective_date_field >= lastMovementDate;
   
   -- If there are less then 2 tickets or there is no counter difference
   IF ticketCount < 2 OR minCounter = maxCounter THEN
@@ -307,7 +316,7 @@ this_proc: BEGIN
         SELECT COALESCE(t.total2_black_field, 0) + COALESCE(t.total2_color_field, 0) total2, t.total2_color_field, t.effective_date_field
         FROM glpi_plugin_iservice_tickets t
         JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
-        WHERE t.is_deleted = 0 AND t.`status` = 6
+        WHERE t.is_deleted = 0 AND t.`status` = 6 AND t.effective_date_field >= lastMovementDate
         ORDER BY t.effective_date_field DESC
         LIMIT ticketCount
       ) t;
@@ -322,7 +331,7 @@ this_proc: BEGIN
   INTO countFirstDays
   FROM glpi_plugin_iservice_tickets t
   JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
-  WHERE t.is_deleted = 0 AND t.`status` = 6
+  WHERE t.is_deleted = 0 AND t.`status` = 6 AND t.effective_date_field >= lastMovementDate
     AND DATEDIFF(maxDataLuc, t.effective_date_field) < minDayCount;
 
   REPEAT
@@ -333,7 +342,7 @@ this_proc: BEGIN
       SELECT COALESCE(t.total2_black_field, 0) + COALESCE(t.total2_color_field, 0) total2, t.total2_color_field, t.effective_date_field
       FROM glpi_plugin_iservice_tickets t
       JOIN glpi_items_tickets it ON it.tickets_id = t.id AND it.itemtype = 'Printer' AND it.items_id = printerId
-      WHERE t.is_deleted = 0 AND t.`status` = 6
+      WHERE t.is_deleted = 0 AND t.`status` = 6 AND t.effective_date_field >= lastMovementDate
       ORDER BY t.effective_date_field DESC
       LIMIT countFirstDays
     ) t;
