@@ -354,7 +354,7 @@ class ToolBox
 
     public static function getIdentifierByAttribute(string $modelName, string $attributeValue, string $attributeToSearchFor = null, string $attributeToReturn = 'id'): mixed
     {
-        if (!($table = getTableForItemType($modelName))) {
+        if (!getTableForItemType($modelName)) {
             return null;
         }
 

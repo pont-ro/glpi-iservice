@@ -66,6 +66,11 @@ class PluginIservicePrinterAutoReadCounter
      * */
     public static function cronPrinterAutoReadCounter($task): int
     {
+        if (date('N') > 5) {
+            $task->log("printerAutoReadCounter is disabled on Saturday and Sunday.\n");
+            return -3;
+        }
+
         if (empty(PluginIserviceConfig::getConfigValue('enabled_crons.printerAutoReadCounter'))) {
             $task->log("printerAutoReadCounter is disabled by configuration.\n");
             return -2;
@@ -209,6 +214,7 @@ class PluginIservicePrinterAutoReadCounter
             WHERE m.itemtype = 'Printer'
               AND m.moved = 1
               AND m.suppliers_id <> $expert_line_id
+              AND p.supplier_id <> $expert_line_id
               AND p.is_deleted = 0
               AND p.printertypes_id IN ($black_white_printer_type, $color_printer_type)
               AND dt.effective_date_field > NOW() - INTERVAL " . self::WATCH_DAYS . " DAY
