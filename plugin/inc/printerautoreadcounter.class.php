@@ -258,6 +258,8 @@ class PluginIservicePrinterAutoReadCounter
      */
     protected static function getCountersFromCsvData(?array $csv_row, array $printer_data, &$reason = ''): ?array
     {
+        $reason = '';
+
         if (!empty($printer_data['disable_em_field'])) {
             $reason = 'the printer is excluded from E-maintenance, no automatic reading is possible';
             return null;
