@@ -69,8 +69,8 @@ class CronTasksInstallStep
                 'frequency' => 86400,
                 'param'     => 0,
                 'state'     => 1,
-                'hourmin'   => 3,
-                'hourmax'   => 5,
+                'hourmin'   => 10,
+                'hourmax'   => 12,
                 'comment'   => '',
             ], [
                 'itemtype'  => 'PluginIserviceStockVerifier',
