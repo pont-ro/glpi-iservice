@@ -1745,11 +1745,13 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         $disabled = '';
         $tooltip = '';
         $onClick = 'if ($(this).hasClass("disabled")) { return false; }';
+        $attachmentFilename = '';
         switch (count($frontendData['attachment_pdf'])) {
             case 0:
                 break;
             case 1:
-                $tooltip = "ATENȚIE! Apăsând butonul\n - ștergeți fișierele csv\n - actualizați datele de facturare ale firmei\n - trimiteți email la {$frontendData['invoiceData']['email_for_invoices_field']} cu atașamentul {$frontendData['attachment_pdf'][0]}";
+                $attachmentFilename = basename($frontendData['attachment_pdf'][0]);
+                $tooltip = "ATENȚIE! Apăsând butonul\n - ștergeți fișierele csv\n - actualizați datele de facturare ale firmei\n - trimiteți email la {$frontendData['invoiceData']['email_for_invoices_field']} cu atașamentul $attachmentFilename";
                 break;
             default:
                 $onClick .= "document.getElementById(\"send_mail_2\").click();";
@@ -1762,7 +1764,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
         }
         echo "                    <input class='submit $disabled' name='update+import' style='color:red;' title='$tooltip' type='submit' value='Update + hMarfa import + email' onclick='$onClick'/>";
         if (count($frontendData['attachment_pdf']) === 1) {
-            echo " atașament: " . $frontendData['attachment_pdf'][0];
+            echo " $attachmentFilename";
         }
         echo "                </td>\n";
         echo "            </tr>\n";
