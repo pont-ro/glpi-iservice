@@ -346,7 +346,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                 $printer->tableData['cop_col_echiv']         = 0;
                 $allowedCounterBlack                        += $printer->tableData['cop_bk_echiv'];
             } elseif ($printer->tableData['cop_bk_inclus'] && $printer->tableData['contor_bk_ui'] < $allowedCounterBlack) {
-                $printer->tableData['equalizer_coefficient'] = round($printer->tableData['copy_price_bk_field'] / $printer->tableData['tarif_cop_col'], 2);
+                $printer->tableData['equalizer_coefficient'] = round($printer->tableData['copy_price_bk_field'] / $printer->tableData['tarif_cop_col'], 4);
                 $printer->tableData['cop_bk_echiv']          = 0;
                 $printer->tableData['cop_col_echiv']         = floor(($allowedCounterBlack - $printer->tableData['contor_bk_ui']) * $printer->tableData['equalizer_coefficient']);
                 $allowedCounterColor                        += $printer->tableData['cop_col_echiv'];
