@@ -594,9 +594,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
         $pdfAttachmentPath        = substr($exportFileData['path'], 0, strrpos(str_replace('\\', '/', $exportFileData['path']), '/')) . '/' . date('Y') . '/02_Facturi_electronice';
         $pdfAttachmentPatternBase = str_replace(' ', '_', $items['first']['supplier_hmarfa_name']);
-        $pdfAttachmentPattern     = "$pdfAttachmentPath/*$pdfAttachmentPatternBase*.pdf";
+        $pdfAttachmentPattern     = "$pdfAttachmentPath/*_{$pdfAttachmentPatternBase}_*.pdf";
 
-        $exportFileData['pdf_attachment_pattern'] = "*$pdfAttachmentPatternBase*.pdf";
+        $exportFileData['pdf_attachment_pattern'] = "*_{$pdfAttachmentPatternBase}_*.pdf";
         $exportFileData['pdf_attachments']        = array_values(
             array_filter(
                 glob($pdfAttachmentPattern),
@@ -1749,7 +1749,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             case 0:
                 break;
             case 1:
-                $tooltip = "ATENȚIE! Apăsând butonul\n - ștergeți fișierele csv\n - actualizați datele de facturare ale firmei\n - trimiteți email la {$frontendData['invoiceData']['email_for_invoices_field']}";
+                $tooltip = "ATENȚIE! Apăsând butonul\n - ștergeți fișierele csv\n - actualizați datele de facturare ale firmei\n - trimiteți email la {$frontendData['invoiceData']['email_for_invoices_field']} cu atașamentul {$frontendData['attachment_pdf'][0]}";
                 break;
             default:
                 $onClick .= "document.getElementById(\"send_mail_2\").click();";
@@ -1761,6 +1761,9 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $tooltip = $frontendData['import_and_update_disabled_reason'];
         }
         echo "                    <input class='submit $disabled' name='update+import' style='color:red;' title='$tooltip' type='submit' value='Update + hMarfa import + email' onclick='$onClick'/>";
+        if (count($frontendData['attachment_pdf']) === 1) {
+            echo " atașament: " . $frontendData['attachment_pdf'][0];
+        }
         echo "                </td>\n";
         echo "            </tr>\n";
         echo "            <tr><td><br></td></tr>\n";
