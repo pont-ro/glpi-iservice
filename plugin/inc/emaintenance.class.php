@@ -567,10 +567,10 @@ class PluginIserviceEmaintenance extends MailCollector
             ];
         }
 
-        $effective_date = self::getDateTimeFromString($mail_data['body_lines']['occurred']['ending']) ?? self::getDateTimeFromString($mail_data['date']);
-        if ($effective_date !== false && $effective_date > new DateTime()) {
+        $effective_date = self::getDateTimeFromString($mail_data['body_lines']['occurred']['ending'] ?? '') ?: self::getDateTimeFromString($mail_data['date']);
+        if ($effective_date === false || $effective_date > new DateTime()) {
             $mail_data['effective_date'] = (new DateTime())->format('Y-m-d H:i:s');
-            $mail_data['occurred_date_in_future'] = true;
+            $mail_data['occurred_date_in_future'] = (bool) $effective_date;
         } else {
             $mail_data['effective_date'] = $effective_date->format('Y-m-d H:i:s');
             $mail_data['occurred_date_in_future'] = false;
