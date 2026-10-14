@@ -307,7 +307,8 @@ class PluginIserviceQr extends CommonDBTM
             return IserviceToolBox::sendMail(
                 $qrTicketData['send_email'],
                 sprintf(_t('Data saved for %s (%s)'), $printer->fields['original_name'], $printer->fields['serial']),
-                $ticketCreatedMessage);
+                $ticketCreatedMessage
+            );
         }
 
         return true;

@@ -606,7 +606,7 @@ class ToolBox
             }
 
             if (!empty($attachments)) {
-                foreach (is_array($attachments) ? $attachments : preg_split('/[,;]/', $attachments) as $attachmentName => $attachment) {
+                foreach (is_array($attachments) ? $attachments : [$attachments] as $attachmentName => $attachment) {
                     $mailer->AddAttachment($attachment, is_string($attachmentName) ? $attachmentName : '');
                 };
             }
