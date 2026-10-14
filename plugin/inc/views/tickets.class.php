@@ -374,7 +374,7 @@ class Tickets extends View
         if (Session::haveRight('plugin_iservice_view_emaintenance', READ)) {
             $em_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_ememails where `read` = 0');
             $em_latest_date = PluginIserviceDB::getQueryResult('SELECT MAX(date) date FROM glpi_plugin_iservice_ememails');
-            if ($em_latest_date[0]['date'] ?? '' < date('Y-m-d H:i:s', strtotime('-6 hours'))) {
+            if (($em_latest_date[0]['date'] ?? '') < date('Y-m-d H:i:s', strtotime('-6 hours'))) {
                 $style = " style='animation: blink 1s infinite;'";
             } else {
                 $style = "";

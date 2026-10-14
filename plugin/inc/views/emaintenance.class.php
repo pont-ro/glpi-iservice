@@ -230,7 +230,7 @@ class Emaintenance extends View
         $prefix = ob_get_clean();
 
         $emLatestDate = \PluginIserviceDB::getQueryResult('SELECT MAX(date) date FROM glpi_plugin_iservice_ememails');
-        if ($emLatestDate[0]['date'] ?? '' < date('Y-m-d H:i:s', strtotime('-6 hours'))) {
+        if (($emLatestDate[0]['date'] ?? '') < date('Y-m-d H:i:s', strtotime('-6 hours'))) {
             $warning = " - " . _t("last mail date") . ": <span class='error'>{$emLatestDate[0]['date']}</span>";
         } else {
             $warning = "";
