@@ -18,11 +18,12 @@ return [
     ],
     'enable_snooze' => '2 hours',
     'schedule'      => [
+        'display_last_result' => true,
         'h:m'         => ['10-19:01'],
         'weekdays'    => [1, 2, 3, 4, 5],
         'ignore_text' => [
-            'hours' => "E-maintenance mail existence checked only from 10 to 19",
+            'h:m' => "E-maintenance mail existence checked only from 10 to 19",
             'weekdays' => "E-maintenance mail existence checked only on workdays",
-        ]
+        ],
     ]
 ];

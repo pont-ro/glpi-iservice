@@ -444,7 +444,7 @@ class PluginIserviceTask_DataIntegrityTest
             && !empty($frequencyHours)
             && (empty($lastChecked) || strtotime($lastChecked) < strtotime("-$frequencyHours hours"))) {
             return true;
-    }
+        }
 
         switch ($scheduleType) {
         case 'h:m':

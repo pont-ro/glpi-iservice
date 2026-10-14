@@ -23,7 +23,7 @@ return [
         'frequency_hours'     => 24,
         'h:m'                 => ['3:*'],
         'ignore_text'         => [
-            'hours' => "Checked only at 3:00",
+            'h:m' => "Checked only at 3:00",
         ]
     ]
 ];

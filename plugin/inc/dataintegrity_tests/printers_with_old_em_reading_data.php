@@ -108,7 +108,7 @@ return [
         'h:m'               => ['7:30-50', '13:30-50', '17:30-50'],
         'weekdays'            => [1, 2, 3, 4, 5],
         'ignore_text'         => [
-            'hours'    => "Checked only on workdays at 7:30, 13:30 and 17:30",
+            'h:m'    => "Checked only on workdays at 7:30, 13:30 and 17:30",
             'weekdays' => "Checked only on workdays"
         ]
     ]

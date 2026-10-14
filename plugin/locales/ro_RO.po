@@ -2020,7 +2020,7 @@ msgid "The printer was moved on %s, but it's counter did not advance enough from
 msgstr "Aparatul a fost mutat in data de %s, dar contorul lui nu a avansat destul de la %d, momentan este %d"
 
 msgid "Error in the CSV file"
-msgid "Eroare in fișierul CSV"
+msgstr "Eroare in fișierul CSV"
 
 #~ msgid "Solve"
 #~ msgstr "Soluționează"
@@ -2145,3 +2145,9 @@ msgstr "Nu uitați să apăsați butonul 'Actualizare' pentru a salva modificăr
 
 #~ msgid "Read counter / replace toner"
 #~ msgstr "Citire contor / înlocuire toner"
+
+msgid "Number of emails to retrieve"
+msgstr "Număr emailuri de obținut"
+
+msgid "last mail date"
+msgstr "data ultimului mail"

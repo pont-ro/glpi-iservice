@@ -29,7 +29,7 @@ class PluginIserviceStockVerifier extends CommonDBTM
         case 'mailStockVerify' :
             return [
                 'description' => 'Verifica stoc si trimite email',
-                'parameter'   => __('Number of emails to retrieve')
+                'parameter'   => _t('Number of emails to retrieve')
             ];
         }
 

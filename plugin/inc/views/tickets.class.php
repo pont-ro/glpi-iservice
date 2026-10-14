@@ -373,8 +373,15 @@ class Tickets extends View
         $prefix = '';
         if (Session::haveRight('plugin_iservice_view_emaintenance', READ)) {
             $em_count_data = PluginIserviceDB::getQueryResult('SELECT count(1) count FROM glpi_plugin_iservice_ememails where `read` = 0');
-            $em_count      = empty($em_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$em_count_data[0]['count']}</span>";
-            $prefix       .= "<a href='views.php?view=Emaintenance' target='_blank'>Număr emailuri E-maintenance necitite: $em_count</a>";
+            $em_latest_date = PluginIserviceDB::getQueryResult('SELECT MAX(date) date FROM glpi_plugin_iservice_ememails');
+            if ($em_latest_date[0]['date'] ?? '' < date('Y-m-d H:i:s', strtotime('-6 hours'))) {
+                $style = " style='animation: blink 1s infinite;'";
+            } else {
+                $style = "";
+            }
+            $tooltip = _t("last mail date") . ": " . $em_latest_date[0]['date'];
+            $em_count = empty($em_count_data[0]['count']) ? '0' : "<span style='color:red;'>{$em_count_data[0]['count']}</span>";
+            $prefix .= "<a href='views.php?view=Emaintenance' title='$tooltip' target='_blank'$style>Număr emailuri E-maintenance necitite: $em_count</a>";
         }
 
         if (Session::haveRight('plugin_iservice_interface_original', READ)) {

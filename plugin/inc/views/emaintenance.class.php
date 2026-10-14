@@ -219,7 +219,7 @@ class Emaintenance extends View
             ]
         );
         $html->displayField(PluginIserviceHtml::FIELDTYPE_HIDDEN, 'id', $mailcollector_id);
-        echo __('Number of emails to retrieve'), " ";
+        echo _t('Number of emails to retrieve'), " ";
         $html->displayField(PluginIserviceHtml::FIELDTYPE_TEXT, 'max_emails', $max_emails, false, ['style' => 'width:40px;']);
         echo ' ';
         $html->displaySubmit('get_mails', _t('Get E-maintenance emails'));
@@ -229,8 +229,15 @@ class Emaintenance extends View
         $html->closeForm();
         $prefix = ob_get_clean();
 
+        $emLatestDate = \PluginIserviceDB::getQueryResult('SELECT MAX(date) date FROM glpi_plugin_iservice_ememails');
+        if ($emLatestDate[0]['date'] ?? '' < date('Y-m-d H:i:s', strtotime('-6 hours'))) {
+            $warning = " - " . _t("last mail date") . ": <span class='error'>{$emLatestDate[0]['date']}</span>";
+        } else {
+            $warning = "";
+        }
+
         return [
-            'name' => _t('Processed mail list'),
+            'name' => _t('Processed mail list') . $warning,
             'prefix' => $prefix,
             'query' => "
                         SELECT 

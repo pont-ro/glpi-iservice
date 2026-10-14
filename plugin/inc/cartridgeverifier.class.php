@@ -31,7 +31,7 @@ class PluginIserviceCartridgeVerifier extends CommonDBTM
         case 'mailCartridgeVerify' :
             return [
                 'description' => 'Verifica starea cartuselor si trimite email',
-                'parameter'   => __('Number of emails to retrieve')
+                'parameter'   => _t('Number of emails to retrieve')
             ];
         }
 
