@@ -6,6 +6,7 @@ use GlpiPlugin\Iservice\Utils\HtaccessChecker;
 use GlpiPlugin\Iservice\Utils\ViewsMenu;
 use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
+use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
 define('ISERVICE_VERSION', '3.1.10');
 
@@ -104,6 +105,18 @@ function plugin_init_iservice(): void
         'data_integrity_tests_date_from' => PluginIserviceConfig::getConfigValue('data_integrity_tests.date_from'),
     ];
 
+    // Non-admin users are redirected from the central page to the tickets view.
+    // Html::redirect() cannot be used here: it throws a RedirectException, which is not handled during plugin init (kernel boot) and results in an error page.
+    // Requests with the "redirect" parameter (after login) are not redirected, they are handled by GLPI's CentralController.
+    if (parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) === "$CFG_GLPI[root_doc]/front/central.php"
+        && !isset($_GET['redirect'])
+        && Session::getLoginUserID() !== false
+        && !IserviceToolBox::inProfileArray(['admin', 'super-admin'])
+    ) {
+        header("Location: $CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets", true, 302);
+        exit();
+    }
+
     // Required!
     $PLUGIN_HOOKS['csrf_compliant']['iservice'] = true;
 
@@ -177,8 +190,6 @@ function plugin_init_iservice(): void
 
     $PLUGIN_HOOKS['pre_item_delete']['iservice']['Ticket'] = 'plugin_iservice_pre_Ticket_delete';
     $PLUGIN_HOOKS['pre_item_purge']['iservice']['Ticket']  = 'plugin_iservice_pre_Ticket_delete';
-
-    $PLUGIN_HOOKS['display_central']['iservice'] = 'redirect_from_central';
 
     Plugin::registerClass(
         'PluginIserviceExtraTabs',

@@ -221,14 +221,6 @@ function plugin_iservice_remove_new_lines_from_content(array &$input): void
     }
 }
 
-function redirect_from_central()
-{
-    if (!IserviceToolBox::inProfileArray(['admin', 'super-admin'])) {
-        global $CFG_PLUGIN_ISERVICE;
-        Html::redirect("$CFG_PLUGIN_ISERVICE[root_doc]/front/views.php?view=Tickets");
-    }
-}
-
 /**
  * Reopen all newer tickets.
  *
