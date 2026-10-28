@@ -767,7 +767,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             foreach ($items['routers'] ?? [] as $router) {
                 $usage_address_field = $invoiceData['general_include_usageaddress'] ? "{$router->tableData['usage_address_field']} - " : "";
-                $cost_center         = $invoiceData['general_include_cost_center'] ? "{$router->tableData['costcenterfield']} - " : "";
+                $cost_center         = $invoiceData['general_include_cost_center'] ? "{$router->tableData['cost_center_field']} -" : "";
 
                 $csvExportData[] = [
                     'DOC_TIP' => 'TFAC',
@@ -855,7 +855,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
                         $result['errors']['csv'] = "!!! Eroare la redenumirea facturii de la $originalFileName la $newFileName !!!\n\n";
                     }
                 }
-                $result['errors']['csv'] .= "Email trimis cu succes la $invoiceData[email_for_invoices_field]\nSubiect: $mailData[subject]\nConținut:$mailData[body]";
+                $result['errors']['csv'] = ($result['errors']['csv'] ?? '') . "Email trimis cu succes la $invoiceData[email_for_invoices_field]\nSubiect: $mailData[subject]\nConținut:$mailData[body]";
             } else {
                 $result['errors']['csv'] = $emailSendResult;
             }

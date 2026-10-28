@@ -53,6 +53,7 @@ $contract_customfields = new PluginFieldsContractcontractcustomfield();
 if (!empty($add) && $post_data['printer'] !== null && !empty($post_data['printer']['name'])) {
     $printer->check(-1, CREATE, $post_data['printer']);
     $input = array_merge($post_data['printer'] ?? [], $post['_customfields']['printer'] ?? []);
+    $input['entities_id'] ??= $_SESSION['glpiactive_entity'];
     IserviceToolBox::preprocessInputValuesForCustomFields(get_Class($printer), $input);
 
     if (($id = $printer->add($input)) !== false) {
