@@ -43,7 +43,10 @@ class PluginIserviceQr extends CommonDBTM
             $currentPage = $_SERVER['REQUEST_URI'];
             if (!self::isUrlAllowed($currentPage)) {
                 Session::cleanOnLogout(); // Log out the user!
-                Html::redirect('/index.php'); // Redirect to index page, this will display login form!
+                // Redirect to index page, this will display login form!
+                // Html::redirect() cannot be used here: it throws a RedirectException, which is not handled during plugin init (kernel boot) and results in an error page.
+                header('Location: /index.php', true, 302);
+                exit();
             }
         }
     }
@@ -55,6 +58,9 @@ class PluginIserviceQr extends CommonDBTM
             '/ajax/fileupload.php',
             '/ajax/getFileTag.php',
             '/front/locale.php',
+            // Requested automatically by browsers, these must not log out the QR user.
+            '/apple-touch-icon',
+            '/favicon.ico',
         ];
 
         foreach ($allowedPages as $allowedPage) {
