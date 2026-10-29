@@ -767,6 +767,10 @@ msgstr " tichete închise mai noi vor fi redeschise. Sigur vreți să continuaț
 msgid "Are you sure you want to reopen the ticket?"
 msgstr "Sigur vreți să redeschideți tichetul?"
 
+#: inc/ticket.class.php:2125
+msgid "Tickets of deleted printers cannot be reopened"
+msgstr "Tichetele aparatelor șterse nu pot fi redeschise"
+
 #: inc/ticket.class.php:2047
 msgid "Delivery/change"
 msgstr "Livrare/înlocuire"

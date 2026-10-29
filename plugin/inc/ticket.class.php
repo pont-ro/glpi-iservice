@@ -2113,10 +2113,17 @@ class PluginIserviceTicket extends Ticket
                     'value'   => 1,
                     'options' => [
                         'on_click' => 'if (confirm("' . $confirm . '")) {
-                            $("[name=status]").val(' . Ticket::SOLVED . '); 
+                            $("[name=status]").val(' . Ticket::SOLVED . ');
                             } else {this.stopPropagation()}'
                     ],
                 ];
+
+                // The printer of the ticket is not sent with the form if it is deleted, so the newer tickets to reopen cannot be determined.
+                if (!empty($this->deletedPrinter)) {
+                    $buttons['reopen']['options']['disabled']    = true;
+                    $buttons['reopen']['options']['buttonClass'] = 'submit disabled';
+                    $buttons['reopen']['options']['title']       = _t('Tickets of deleted printers cannot be reopened');
+                }
             } elseif (!$closed) {
                 $buttons['close'] = [
                     'type'    => 'submit',
@@ -2289,6 +2296,7 @@ class PluginIserviceTicket extends Ticket
             $ticket->fields = !empty($_POST) ? PluginIserviceTicket::preProcessPostData($_POST) : $ticket->fields;
         }
 
+        $location         = $ticket->getLocation();
         $cartridge_ticket = new PluginIserviceCartridge_Ticket();
         foreach ($cartridge_ticket->find(["tickets_id" => $item->getID()]) as $cartridge_item) {
             $install_result = PluginIserviceCartridge_Ticket::$operation(
@@ -2298,7 +2306,7 @@ class PluginIserviceTicket extends Ticket
                 $cartridge_item['cartridges_id_emptied'],
                 $ticket->getPrinterId() ?? 0,
                 $ticket->getPartnerId() ?? 0,
-                $ticket->getLocation()->getID() ?? 0,
+                $location ? $location->getID() : 0,
                 $ticket->customfields->fields['total2_black_field'] ?? null,
                 $ticket->customfields->fields['total2_color_field'] ?? null,
                 $ticket->customfields->fields['cartridge_install_date_field'] ?? $ticket->customfields->fields['effective_date_field']
