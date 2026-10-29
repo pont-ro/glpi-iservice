@@ -211,6 +211,19 @@
 {% endif %}
 
 <script>
+    // GLPI silently blocks the submit of an invalid form, so show the reason and reset the dropdown.
+    function reportInvalidFormAndResetDropdown($dropdown)
+    {
+        let form = $dropdown.closest('form')[0];
+        if (form.checkValidity()) {
+            return false;
+        }
+
+        $dropdown.val(0).trigger('change');
+        form.reportValidity();
+        return true;
+    }
+
     $(document).ready(function () {
         $('.changeables-update-section input').change(function () {
             $('.changeables-update-section').addClass('border border-warning');
