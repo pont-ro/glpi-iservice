@@ -8,7 +8,7 @@ $ticket = new PluginIserviceTicket();
 
 global $CFG_PLUGIN_ISERVICE;
 
-$id     = IserviceToolBox::getInputVariable('id', 0);
+$id     = (int) IserviceToolBox::getInputVariable('id', 0); // The id may come from the url with trailing characters (e.g. "123abc").
 $add    = IserviceToolBox::getInputVariable('add');
 $update = IserviceToolBox::getInputVariable('update');
 
