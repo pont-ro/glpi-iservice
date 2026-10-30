@@ -593,9 +593,12 @@ class ToolBox
                 $mailer->AddAddress(trim($toAddress), '');
             }
 
-            $bccAddresses = is_array($bcc) ? $bcc : preg_split('/[,;]/', $bcc);
+            $bccAddresses = is_array($bcc) ? $bcc : preg_split('/[,;]/', $bcc ?? '');
             foreach ($bccAddresses as $bccAddress) {
-                $mailer->AddBCC(trim($bccAddress), '');
+                // Empty addresses (no BCC, or a trailing separator) would throw an RfcComplianceException.
+                if (trim($bccAddress) !== '') {
+                    $mailer->AddBCC(trim($bccAddress), '');
+                }
             }
 
             if (!empty($attachments)) {
