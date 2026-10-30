@@ -936,9 +936,8 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
             $attachment,
             PluginIserviceConfig::getConfigValue('hmarfa.export.mail.from'), // from
             PluginIserviceConfig::getConfigValue('hmarfa.export.mail.name'), // from name
-            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.from'), // bcc
-            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.user'),
-            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.pass')))) {
+            PluginIserviceConfig::getConfigValue('hmarfa.export.mail.from') // bcc
+        ))) {
             return true;
         } else {
             return "Eroare la trimiterea emailului către {$invoiceData['email_for_invoices_field']}:$mailSendResult\n\nSubiect: $mailData[subject]\n\n\nConținut: $mailData[body]";

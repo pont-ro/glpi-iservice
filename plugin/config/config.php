@@ -20,8 +20,6 @@ return [
     'hmarfa.export.default_path' => '/var/sambadir/2x/CSV_HAMOR', // Without trailing slash!
     'hmarfa.export.mail.from' => 'financiar@expertline.ro',
     'hmarfa.export.mail.name' => 'Expert Line',
-    'hmarfa.export.mail.user' => 'financiar@expertline.ro',
-    'hmarfa.export.mail.pass' => 'Financiar.Password',
     'emaintenance.import_default_path' => '/var/sambadir/2x/CSV_EM', // Without trailing slash!
     'emaintenance.csv_last_check_date_file' => PLUGIN_ISERVICE_CACHE_DIR . "/csvLastCheckDate",
     'emaintenance.default_email' => "emaintenance@expertline.ro",
