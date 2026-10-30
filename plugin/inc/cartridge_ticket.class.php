@@ -321,8 +321,12 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                     'script' => '<script>
                             setTimeout(function() {                    
                                 addRecurrentCheck(function() {
-                                    if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
-                                        $("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]")
+                                    let $cartridgeDropdown = $("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]");
+                                    if ($cartridgeDropdown.val() != 0) {
+                                        if (reportInvalidFormAndResetDropdown($cartridgeDropdown)) {
+                                            return false;
+                                        }
+                                        $cartridgeDropdown
                                             .append(\'<input type=\"hidden\" name=\"add_cartridge\" value=\"1\">\')
                                             .closest("form").submit();
                                         return true;
