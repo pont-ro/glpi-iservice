@@ -8,7 +8,7 @@ use GlpiPlugin\Iservice\Utils\SpecialViewsMenu;
 use GlpiPlugin\Iservice\Utils\IserviceMenu;
 use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 
-define('ISERVICE_VERSION', '3.1.10');
+define('ISERVICE_VERSION', '3.1.11');
 
 if (!defined("PLUGIN_ISERVICE_DIR")) {
     define("PLUGIN_ISERVICE_DIR", GLPI_ROOT . "/plugins/iservice");

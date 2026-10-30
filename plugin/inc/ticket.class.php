@@ -1740,6 +1740,12 @@ class PluginIserviceTicket extends Ticket
 
             unset($post['_plugin_iservice_consumable']['plugin_iservice_used_consumables_id']);
 
+            // A consumable can be added only once to a ticket (unique_ticket_consumables index).
+            if ((new PluginIserviceConsumable_Ticket())->getFromDBByCrit(['tickets_id' => $ticketId, 'plugin_iservice_consumables_id' => $post['_plugin_iservice_consumable']['plugin_iservice_consumables_id']])) {
+                Session::addMessageAfterRedirect(sprintf(_t('Consumable %s is already on the ticket, change its amount instead'), $post['_plugin_iservice_consumable']['plugin_iservice_consumables_id']), false, ERROR);
+                return;
+            }
+
             $plugin_iservice_consumable_ticket_data                     = $post['_plugin_iservice_consumable'];
             $plugin_iservice_consumable_ticket_data['tickets_id']       = $ticketId;
             $create_cartridge                                           = in_array($plugin_iservice_consumable_ticket_data['plugin_iservice_consumables_id'], PluginIserviceConsumable_Ticket::getCompatibleCartridges(IserviceToolBox::getValueFromInput('suppliers_id', $post), IserviceToolBox::getValueFromInput('printer_id', $post)));
