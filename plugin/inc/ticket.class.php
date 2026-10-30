@@ -2298,8 +2298,11 @@ class PluginIserviceTicket extends Ticket
             $operation      = 'installWithType';
             $ticket->fields = $item->input;
         } else {
-            $operation      = 'uninstallWithType';
-            $ticket->fields = !empty($_POST) ? PluginIserviceTicket::preProcessPostData($_POST) : $ticket->fields;
+            $operation = 'uninstallWithType';
+            // The posted data belongs only to the submitted ticket, not to the newer tickets reopened in the same request.
+            if (!empty($_POST) && (int) ($_POST['id'] ?? 0) === $item->getID()) {
+                $ticket->fields = PluginIserviceTicket::preProcessPostData($_POST);
+            }
         }
 
         $location         = $ticket->getLocation();
