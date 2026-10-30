@@ -768,6 +768,8 @@ msgid "Are you sure you want to reopen the ticket?"
 msgstr "Sigur vreți să redeschideți tichetul?"
 
 #: inc/ticket.class.php:2131
+#: hook.php:238
+#: inc/views/operations.class.php:64
 msgid "Tickets of deleted printers cannot be reopened"
 msgstr "Tichetele aparatelor șterse nu pot fi redeschise"
 

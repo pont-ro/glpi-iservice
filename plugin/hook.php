@@ -231,6 +231,15 @@ function plugin_iservice_ticket_reopen_newer_tickets(Ticket $parentItem)
     $item = new PluginIserviceTicket();
     $item->getFromDB($parentItem->getID());
 
+    // The id of a deleted (or no longer existing) printer is not sent by the ticket form, so the newer tickets would be searched by partner,
+    // reopening all of its tickets without a printer. Tickets of such printers cannot be reopened, from the operations view either.
+    $printerLinks = (new Item_Ticket())->find(['tickets_id' => $item->getID(), 'itemtype' => 'Printer']);
+    if (!empty($printerLinks) && $item->getFirstPrinter()->isNewItem()) {
+        Session::addMessageAfterRedirect(_t('Tickets of deleted printers cannot be reopened'), false, ERROR);
+        $parentItem->input['status'] = $parentItem->fields['status'];
+        return;
+    }
+
     if (empty($item->customfields->fields['effective_date_field'])) {
         return;
     }
