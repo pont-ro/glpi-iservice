@@ -65,7 +65,6 @@ class Operations extends View
             $actions['quickCloseReOpen']['disabled'] = true;
         } elseif ($ticketInClosedStatus) {
             $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
-            $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
             if (count($newer_closed_ticket_ids)) {
                 $confirm = count($newer_closed_ticket_ids) . _t(' closed tickets will be reopened. Are you sure you want to continue?');
             } else {

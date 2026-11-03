@@ -11,7 +11,7 @@ global $CFG_PLUGIN_ISERVICE;
 
 $id = IserviceToolBox::getInputVariable('id', 0);
 // An id with other characters (e.g. "123abc") is rejected: MySQL would find the ticket by its leading digits, or a blank ticket form would open.
-if (!preg_match('/^-?\d*$/', trim((string) $id))) {
+if (!preg_match('/^(-?\d+)?$/', trim((string) $id))) {
     $exception = new BadRequestHttpException();
     $exception->setMessageToDisplay(sprintf(_t('Invalid ticket id: %s'), $id));
     throw $exception;
