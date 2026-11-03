@@ -767,7 +767,7 @@ class PluginIserviceHmarfa_Invoicer // extends PluginIserviceHmarfa
 
             foreach ($items['routers'] ?? [] as $router) {
                 $usage_address_field = $invoiceData['general_include_usageaddress'] ? "{$router->tableData['usage_address_field']} - " : "";
-                $cost_center         = $invoiceData['general_include_cost_center'] ? "{$router->tableData['cost_center_field']} -" : "";
+                $cost_center         = ($invoiceData['general_include_cost_center'] && !empty($router->tableData['cost_center_field'])) ? "{$router->tableData['cost_center_field']} - " : "";
 
                 $csvExportData[] = [
                     'DOC_TIP' => 'TFAC',

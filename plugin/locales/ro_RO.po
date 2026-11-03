@@ -2162,3 +2162,17 @@ msgstr "Număr emailuri de obținut"
 
 msgid "last mail date"
 msgstr "data ultimului mail"
+#: inc/ticket.class.php:2316
+#, php-format
+msgid "Neither ticket %d nor its printer has a location, so its cartridges were moved without a location"
+msgstr "Nici tichetul %d, nici aparatul acestuia nu are locație, așa că cartușele lui au fost mutate fără locație"
+
+#: inc/cartridge_ticket.class.php:919
+#, php-format
+msgid "Cartridge item %1$s has no compatible mercury codes, so the cartridge emptied by ticket %2$d could not be determined and was not reinstalled. Check it manually."
+msgstr "Tipul de cartuș %1$s nu are coduri mercury compatibile, așa că cartușul golit de tichetul %2$d nu a putut fi determinat și nu a fost reinstalat. Verificați-l manual."
+
+#: front/ticket.form.php:16
+#, php-format
+msgid "Invalid ticket id: %s"
+msgstr "Număr de tichet invalid: %s"

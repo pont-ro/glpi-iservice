@@ -196,14 +196,15 @@ class PluginIserviceTicket extends Ticket
         $location = new Location();
 
         if (!empty($this->fields['locations_id'])) {
-            $location->getFromDB($this->fields['locations_id']);
-        } else if (empty($id) && !empty($this->printer) && $this->printer->getID() > 0) {
-            $location->getFromDB($this->printer->fields['locations_id']);
+            $locationId = $this->fields['locations_id'];
+        } else if (!empty($this->printer) && $this->printer->getID() > 0) {
+            $locationId = $this->printer->fields['locations_id'];
         } else {
             return false;
         }
 
-        return $location;
+        // A missing location (e.g. printer without location) would return an empty Location, whose getID() is -1.
+        return $location->getFromDB($locationId) ? $location : false;
     }
 
     public function setPrinter($printerId = null): void
@@ -2305,15 +2306,23 @@ class PluginIserviceTicket extends Ticket
             }
         }
 
-        $location         = $ticket->getLocation();
-        $cartridge_ticket = new PluginIserviceCartridge_Ticket();
-        foreach ($cartridge_ticket->find(["tickets_id" => $item->getID()]) as $cartridge_item) {
+        $cartridge_ticket   = new PluginIserviceCartridge_Ticket();
+        $cartridges_tickets = $cartridge_ticket->find(["tickets_id" => $item->getID()]);
+
+        // getPrinterId() sets the printer of the ticket, so it has to be called first: getLocation() falls back to the printer's location.
+        $printer_id = $ticket->getPrinterId() ?? 0;
+        $location   = $ticket->getLocation();
+        if (!$location && !empty($cartridges_tickets)) {
+            Session::addMessageAfterRedirect(sprintf(_t('Neither ticket %d nor its printer has a location, so its cartridges were moved without a location'), $item->getID()), false, WARNING);
+        }
+
+        foreach ($cartridges_tickets as $cartridge_item) {
             $install_result = PluginIserviceCartridge_Ticket::$operation(
                 $item->getID(),
                 $cartridge_item['cartridges_id'],
                 $cartridge_item['plugin_fields_cartridgeitemtypedropdowns_id'],
                 $cartridge_item['cartridges_id_emptied'],
-                $ticket->getPrinterId() ?? 0,
+                $printer_id,
                 $ticket->getPartnerId() ?? 0,
                 $location ? $location->getID() : 0,
                 $ticket->customfields->fields['total2_black_field'] ?? null,

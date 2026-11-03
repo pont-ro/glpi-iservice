@@ -914,12 +914,17 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         if (empty($emptied_cartridge_id)) {
             $cartridgesTable = $oldCartridge->getTable();
             // Without compatible mercury codes the query would be invalid ("in ()"), so no old cartridge can be found.
-            if (empty($cartridgeitem_custom_field->fields['compatible_mercury_codes_field'])
-                || !PluginIserviceDB::populateByQuery(
-                    $oldCartridge, "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `$cartridgesTable`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
+            if (empty($cartridgeitem_custom_field->fields['compatible_mercury_codes_field'])) {
+                Session::addMessageAfterRedirect(
+                    sprintf(_t('Cartridge item %1$s has no compatible mercury codes, so the cartridge emptied by ticket %2$d could not be determined and was not reinstalled. Check it manually.'), $cartridge->fields['cartridgeitems_id'], $ticket_id),
+                    false,
+                    ERROR
+                );
+                $uninstalled_multiplier = -1;
+            } elseif (!PluginIserviceDB::populateByQuery(
+                $oldCartridge, "join glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields cfci on cfci.items_id = `$cartridgesTable`.cartridgeitems_id and cfci.itemtype = 'CartridgeItem'
                 where `$cartridgesTable`.tickets_id_out_field = $ticket_id and cfci.mercury_code_field in ({$cartridgeitem_custom_field->fields['compatible_mercury_codes_field']}) and `$cartridgesTable`.plugin_fields_cartridgeitemtypedropdowns_id = {$cartridge->fields['plugin_fields_cartridgeitemtypedropdowns_id']} limit 1"
-                )
-            ) {
+            )) {
                 $uninstalled_multiplier = -1;
             }
         } else {
