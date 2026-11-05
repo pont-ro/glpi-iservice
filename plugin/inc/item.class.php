@@ -240,6 +240,9 @@ trait PluginIserviceItem
 
     public function getFromDB($ID): bool
     {
+        // The id may come from the url with trailing characters (e.g. "123abc"), MySQL would still find item 123, but populateByItemsId() requires an int.
+        $ID = (int) $ID;
+
         if (parent::getFromDB($ID)) {
             if (!$this->loadOrCreateCustomFields($ID) && !empty(self::$customFieldsModelName)) {
                 return false;

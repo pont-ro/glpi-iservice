@@ -59,8 +59,11 @@ class Operations extends View
 
         if ($ticketInSolvedStatus) {
             $actions['quickCloseReOpen']['onclick'] = "ajaxCall(\"$CFG_PLUGIN_ISERVICE[root_doc]/ajax/manageItem.php?ids=$row_data[ticket_id]&itemtype=PluginIserviceTicket&operation=CloseTickets&suppliers_id=$row_data[supplier_id]&printer_id=$row_data[printer_id]\", \"\", function(message) {if (message !== \"" . IserviceToolBox::RESPONSE_OK . "\") {alert(message);} else {window.location.replace(window.location.pathname + window.location.search);}});";
+        } elseif ($ticketInClosedStatus && (empty($row_data['printer_id']) || !empty($row_data['printer_deleted']))) {
+            // Same rule as the reopen button of the ticket form, enforced server side by plugin_iservice_ticket_reopen_newer_tickets().
+            $actions['quickCloseReOpen']['title']    = _t('Tickets of deleted printers cannot be reopened');
+            $actions['quickCloseReOpen']['disabled'] = true;
         } elseif ($ticketInClosedStatus) {
-            $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
             $newer_closed_ticket_ids = PluginIserviceTicket::getNewerClosedTicketIds($row_data['ticket_id'], $row_data['effective_date_field'], $row_data['supplier_id'], $row_data['printer_id']);
             if (count($newer_closed_ticket_ids)) {
                 $confirm = count($newer_closed_ticket_ids) . _t(' closed tickets will be reopened. Are you sure you want to continue?');
@@ -77,8 +80,12 @@ class Operations extends View
         $actionIconsCount = 0;
         foreach ($actions as $action) {
             if (!isset($action['visible']) || $action['visible']) {
-                $actionIcons .= isset($action['onclick']) ? "<a href='javascript:void(0);' onclick='$action[onclick]'>" : "<a href='$action[link]' target='_blank'>";
-                $actionIcons .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                if (!empty($action['disabled'])) {
+                    $actionIcons .= "<img class='noprint view_action_button' style='opacity: 0.4; cursor: not-allowed;' src='$action[icon]' alt='$action[title]' title='$action[title]'>";
+                } else {
+                    $actionIcons .= isset($action['onclick']) ? "<a href='javascript:void(0);' onclick='$action[onclick]'>" : "<a href='$action[link]' target='_blank'>";
+                    $actionIcons .= "<img class='noprint view_action_button' src='$action[icon]' alt='$action[title]' title='$action[title]'></a>";
+                }
 
                 $actionIconsCount++;
             }
@@ -148,6 +155,7 @@ class Operations extends View
                         , t.plugin_fields_ticketexporttypedropdowns_id
                         , l.completename ticket_location
                         , p.id printer_id
+                        , p.is_deleted printer_deleted
                         , s.id supplier_id
                         , s.name supplier_name
                         , GROUP_CONCAT(CONCAT('<span class=\"followup', CASE tf.is_private WHEN 1 THEN ' text-danger' ELSE '' END, '\">', DATE_FORMAT(tf.date, '%Y-%m-%d %T'), ' - ', tf.content, '</span>') SEPARATOR '<br>') ticket_followups

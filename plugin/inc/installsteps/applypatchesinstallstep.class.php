@@ -182,6 +182,43 @@ SEARCH,
                 ),
 REPLACE,
         ],
+        [
+            // State::isUnique() did not detect duplicate names when adding a state from the dropdown form,
+            // so the insert failed on the unicity index with an error page instead of the "must be unique" message:
+            // - On add, CommonDBTM::can() copies the input into $this->fields, so isUnique() found that
+            //   nothing "has changed" and returned true without checking the database.
+            // - The name was compared with a binary collation, but the unicity index of glpi_states uses the
+            //   column collation (utf8mb4_unicode_ci), so names differing only in case or accents
+            //   (e.g. 'Proiect "Ela"' vs 'Proiect "ELA"') were not detected either.
+            // The current item is excluded, so the case of an existing state's name can still be changed.
+            'name'   => 'glpi-state-unique-check',
+            'marker' => 'ISERVICE-PATCH:glpi-state-unique-check',
+            'file'   => GLPI_ROOT . '/src/State.php',
+            'search' => <<<'SEARCH'
+        if (!$has_changed) {
+            // state has not changed; this is OK.
+            return true;
+        }
+
+        // Apply collate
+        if (isset($where['name'])) {
+            $collate = $DB->use_utf8mb4 ? "utf8mb4_bin" : "utf8_bin";
+            $where['name'] = new QueryExpression($DB->quote($where['name']) . " COLLATE $collate");
+        }
+SEARCH,
+            'replace' => <<<'REPLACE'
+        // ISERVICE-PATCH:glpi-state-unique-check - on add, can() copies the input into $this->fields, so "not changed" is only valid for existing items.
+        if (!$has_changed && !empty($this->fields['id'])) {
+            // state has not changed; this is OK.
+            return true;
+        }
+
+        // Compare with the column collation, as the unicity index does, and exclude the current item.
+        if (!empty($this->fields['id'])) {
+            $where['NOT'] = ['id' => $this->fields['id']];
+        }
+REPLACE,
+        ],
     ];
 
     public static function do(): bool

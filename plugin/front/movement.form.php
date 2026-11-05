@@ -129,8 +129,10 @@ if (!empty($add)) {
             $contract_item = new Contract_Item();
             $contract_item->add(['add' => 'add','itemtype' => $post['itemtype'],'items_id' => $post['items_id'],'contracts_id' => $post['contracts_id']]) or die("Error adding item to new contract");
             $contract_supplier = new Contract_Supplier();
-            // If supplier is already on contract, this will throw an error, so don't check for errors.
-            $contract_supplier->add(['add' => 'add','contracts_id' => $post['contracts_id'],'suppliers_id' => $post['suppliers_id']]);
+            // Add supplier to the contract only if it is not already on it.
+            if (!$contract_supplier->getFromDBByCrit(['contracts_id' => $post['contracts_id'], 'suppliers_id' => $post['suppliers_id']])) {
+                $contract_supplier->add(['add' => 'add','contracts_id' => $post['contracts_id'],'suppliers_id' => $post['suppliers_id']]);
+            }
         }
 
         Session::addMessageAfterRedirect(_t('Movement completed successfully'), true, INFO, true);

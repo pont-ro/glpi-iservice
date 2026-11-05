@@ -62,7 +62,7 @@ return [
             , s.name supplier_name
             , p.last_read_field 
             , if(
-				    p.last_read_field = '',
+				    p.last_read_field is null,
 				    'empty',
 				    if(
 				        datediff(curdate(), p.last_read_field) > 15000,

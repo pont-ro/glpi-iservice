@@ -577,18 +577,11 @@ class ToolBox
         return trim($text);
     }
 
-    public static function sendMail(string|array $to, string $subject, string $body, string|array $attachments = null, string $from = null, string $fromName = null, string|array $bcc = null, string $userName = null, string $password = null): bool|string
+    public static function sendMail(string|array $to, string $subject, string $body, string|array $attachments = null, string $from = null, string $fromName = null, string|array $bcc = null): bool|string
     {
         global $CFG_GLPI;
 
         $mailer = new \GLPIMailer();
-        if ($userName) {
-            $mailer->Username = $userName;
-        }
-
-        if ($password) {
-            $mailer->Password = $password;
-        }
 
         try {
             $mailer->AddCustomHeader("Auto-Submitted: auto-generated");
@@ -600,9 +593,12 @@ class ToolBox
                 $mailer->AddAddress(trim($toAddress), '');
             }
 
-            $bccAddresses = is_array($bcc) ? $bcc : preg_split('/[,;]/', $bcc);
+            $bccAddresses = is_array($bcc) ? $bcc : preg_split('/[,;]/', $bcc ?? '');
             foreach ($bccAddresses as $bccAddress) {
-                $mailer->AddBCC(trim($bccAddress), '');
+                // Empty addresses (no BCC, or a trailing separator) would throw an RfcComplianceException.
+                if (trim($bccAddress) !== '') {
+                    $mailer->AddBCC(trim($bccAddress), '');
+                }
             }
 
             if (!empty($attachments)) {
