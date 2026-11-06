@@ -6,6 +6,16 @@ use GlpiPlugin\Iservice\Utils\ToolBox as IserviceToolBox;
 // Imported from iService2, needs refactoring.
 class PluginIserviceTask_Backup
 {
+    // Number of leading version parts that must match (2 = major.minor).
+    protected const GLPI_VERSION_COMPARED_PARTS = 2;
+    protected const GLPI_CONFIGS_INSERT_MARKER  = 'INSERT INTO `glpi_configs`';
+    protected const GLPI_VERSION_PATTERN        = "/'core','version','([^']+)'/";
+    protected const READ_STREAM_WRAPPERS        = [
+        'sql' => '',
+        'gz' => 'compress.zlib://',
+        'bz2' => 'compress.bzip2://',
+    ];
+
     protected $database           = null;
     protected $backup_key         = null;
     protected $backup_dir         = null;
@@ -37,7 +47,7 @@ class PluginIserviceTask_Backup
             echo $this->createBackup(), "<br><br>";
         } elseif ($restore) {
             set_time_limit(0);
-            echo $this->restoreDB($restore), "<br><br>";
+            echo $this->restoreDB($restore, (bool) IserviceToolBox::getInputVariable('force_restore', false)), "<br><br>";
             if ($paletteOverride = PluginIserviceConfig::getValueFromArray('config_override.core.palette', PluginIserviceConfig::getLocalConfig())) {
                 PluginIserviceConfig::overrideConfig(PluginIserviceConfig::getLocalConfig());
                 $_SESSION['glpipalette'] = $paletteOverride;
@@ -77,10 +87,14 @@ class PluginIserviceTask_Backup
         return $this->getResponseDiv("Backup sucessfull.");
     }
 
-    protected function restoreDB($backup_file_path)
+    protected function restoreDB($backup_file_path, bool $force = false)
     {
         if (false === ($import_command = $this->getImportCommandForFilePath($backup_file_path))) {
             return $this->getResponseDiv("The given file was not a valid backup");
+        }
+
+        if (!$force && true !== ($result = $this->checkBackupGlpiVersion($backup_file_path))) {
+            return $result;
         }
 
         if (true !== ($result = $this->shellExecute("$this->mysql_command_base -e \"drop database if exists $this->database\"", "Could not drop <b>$this->database</b> database."))) {
@@ -100,6 +114,72 @@ class PluginIserviceTask_Backup
         }
 
         return $this->getResponseDiv("Restore sucessfull" . ($import_failed ?? '') . ".");
+    }
+
+    protected function checkBackupGlpiVersion(string $backup_file_path): bool|string
+    {
+        $backupVersion = $this->getBackupGlpiVersion($backup_file_path);
+        $forceHint     = sprintf(
+            _t('If you still want to restore it, check the "%s" checkbox above the backup list.'),
+            _t('Force restore (skip GLPI version check)')
+        );
+
+        if ($backupVersion === null) {
+            return $this->getResponseDiv(
+                _t('Could not determine the GLPI version of the backup. Restore refused.') . ' ' . $forceHint,
+                ERROR
+            );
+        }
+
+        if ($this->getComparableGlpiVersion($backupVersion) !== $this->getComparableGlpiVersion(GLPI_VERSION)) {
+            return $this->getResponseDiv(
+                sprintf(
+                    _t('Backup is from GLPI %1$s, current GLPI is %2$s. Restore refused.'),
+                    htmlspecialchars($backupVersion),
+                    GLPI_VERSION
+                ) . ' ' . $forceHint,
+                ERROR
+            );
+        }
+
+        return true;
+    }
+
+    protected function getBackupGlpiVersion(string $backup_file_path): ?string
+    {
+        $wrapper = self::READ_STREAM_WRAPPERS[pathinfo($backup_file_path, PATHINFO_EXTENSION)] ?? null;
+        if ($wrapper === null || false === ($handle = @fopen($wrapper . $backup_file_path, 'r'))) {
+            return null;
+        }
+
+        $version            = null;
+        $configsInsertsSeen = false;
+
+        while (false !== ($line = fgets($handle))) {
+            if (!str_starts_with($line, self::GLPI_CONFIGS_INSERT_MARKER)) {
+                // The glpi_configs inserts are consecutive; stop once we passed them.
+                if ($configsInsertsSeen) {
+                    break;
+                }
+
+                continue;
+            }
+
+            $configsInsertsSeen = true;
+            if (preg_match(self::GLPI_VERSION_PATTERN, $line, $matches)) {
+                $version = $matches[1];
+                break;
+            }
+        }
+
+        fclose($handle);
+
+        return $version;
+    }
+
+    protected function getComparableGlpiVersion(string $version): string
+    {
+        return implode('.', array_slice(explode('.', $version), 0, self::GLPI_VERSION_COMPARED_PARTS));
     }
 
     protected function getBackupsListHtml($backups = [])

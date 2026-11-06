@@ -1,5 +1,26 @@
 <form id="backup-task" method="post">
     <input id="restore" name="restore" type="hidden" value="">
+    <label>
+        <input id="force_restore" name="force_restore" type="checkbox" value="1">
+        {{ _t('Force restore (skip GLPI version check)') }}
+    </label>
     {{ backupList|raw }}
     <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}" />
 </form>
+<script>
+    const forceRestoreWarning = '{{ _t('The GLPI version check will be skipped. Restoring a backup from a different GLPI version can break the database. Continue?')|e('js') }}';
+
+    $('#force_restore').on('change', function () {
+        if (this.checked && !confirm(forceRestoreWarning)) {
+            this.checked = false;
+        }
+    });
+
+    $('#backup-task').on('submit', function () {
+        if ($('#restore').val() !== '' && $('#force_restore').is(':checked')) {
+            return confirm(forceRestoreWarning);
+        }
+
+        return true;
+    });
+</script>
