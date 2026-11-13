@@ -135,7 +135,7 @@ class PluginIserviceTask_Backup
             return $this->getResponseDiv(
                 sprintf(
                     _t('Backup is from GLPI %1$s, current GLPI is %2$s. Restore refused.'),
-                    htmlspecialchars($backupVersion),
+                    htmlspecialchars($backupVersion, ENT_QUOTES, 'UTF-8'),
                     GLPI_VERSION
                 ) . ' ' . $forceHint,
                 ERROR
