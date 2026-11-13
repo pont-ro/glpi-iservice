@@ -2176,3 +2176,25 @@ msgstr "Tipul de cartuș %1$s nu are coduri mercury compatibile, așa că cartu�
 #, php-format
 msgid "Invalid ticket id: %s"
 msgstr "Număr de tichet invalid: %s"
+
+#: inc/task_backup.class.php:129
+msgid "Could not determine the GLPI version of the backup. Restore refused."
+msgstr "Versiunea GLPI a backup-ului nu a putut fi determinată. Restaurarea a fost refuzată."
+
+#: inc/task_backup.class.php:137
+#, php-format
+msgid "Backup is from GLPI %1$s, current GLPI is %2$s. Restore refused."
+msgstr "Backup-ul este din GLPI %1$s, versiunea GLPI curentă este %2$s. Restaurarea a fost refuzată."
+
+#: inc/task_backup.class.php:124 templates/pages/admin/backup-restore.html.twig:5
+msgid "Force restore (skip GLPI version check)"
+msgstr "Forțează restaurarea (fără verificarea versiunii GLPI)"
+
+#: templates/pages/admin/backup-restore.html.twig:11
+msgid "The GLPI version check will be skipped. Restoring a backup from a different GLPI version can break the database. Continue?"
+msgstr "Verificarea versiunii GLPI va fi omisă. Restaurarea unui backup dintr-o altă versiune GLPI poate strica baza de date. Continuați?"
+
+#: inc/task_backup.class.php:123
+#, php-format
+msgid "If you still want to restore it, check the \"%s\" checkbox above the backup list."
+msgstr "Dacă totuși doriți să îl restaurați, bifați căsuța „%s” de deasupra listei de backup-uri."
