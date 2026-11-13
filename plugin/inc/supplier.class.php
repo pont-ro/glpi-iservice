@@ -211,7 +211,7 @@ class PluginIserviceSupplier extends Supplier
         $debt_query = "SELECT $select FROM hmarfa_facturi WHERE " . join(" AND ", $conditions);
 
         if ($invoice_info >= 0) {
-            return $DB->result($DB->doQuery($debt_query), 0, 0);
+            return $DB->result($DB->doQuery($debt_query), 0, 0) ?? 0;
         }
 
         $result = [];

@@ -933,6 +933,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
             }
         }
 
+        $installed_multiplier = -1;
         if ($uninstalled_multiplier === 0) {
             $oldCartridge->update(
                 [
