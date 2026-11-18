@@ -62,7 +62,9 @@ class PluginIserviceDB extends DB
         $output      = [];
         $returnValue = null;
 
-        exec("mysql -h $db->dbhost -u $db->dbuser -p$db->dbpassword $db->dbdefault < $scriptPath", $output, $returnValue);
+        // The client writes its errors to stderr, which would otherwise not be captured in $output.
+        // The character set is the one GLPI connects with: the client's default may be utf8mb3 (e.g. on production), where the utf8mb4 collations of the scripts are invalid.
+        exec("mysql --default-character-set=utf8mb4 -h $db->dbhost -u $db->dbuser -p$db->dbpassword $db->dbdefault < $scriptPath 2>&1", $output, $returnValue);
 
         if ($returnValue !== 0) {
             echo "An error occurred: " . implode("\n", $output);
