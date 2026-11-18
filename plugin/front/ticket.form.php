@@ -174,25 +174,33 @@ function add_cartridges_as_negative_consumables(): void
             foreach ($location_data ?? [] as $cartridge_item_ref => $amount) {
                 if (array_key_exists($cartridge_item_ref, $added_cartridges)) {
                     global $DB;
+                    // Only the unused cartridges of this ref are moved to the location of the consumable row already added for it.
                     $DB->update(
                         'glpi_plugin_fields_cartridgecartridgecustomfields',
                         ['locations_id_field' => empty($added_cartridges[$cartridge_item_ref]['location']) ? '0' : $added_cartridges[$cartridge_item_ref]['location']],
-                        ['locations_id_field ' => $location_id, 'printers_id' => 0,  'c.date_use' => null, 'c.date_out' => null, 'suppliers_id_field' => IserviceToolBox::getInputVariable('suppliers_id_old')],
                         [
-                            'JOIN' => [
-                                'glpi_cartridges as c' => [
-                                    'ON' => [
-                                        'glpi_plugin_fields_cartridgecartridgecustomfields.items_id' => 'glpi_cartridges.id',
-                                    ]
-                                ],
-                            ]
+                            'glpi_plugin_fields_cartridgecartridgecustomfields.itemtype'           => 'Cartridge',
+                            'glpi_plugin_fields_cartridgecartridgecustomfields.locations_id_field' => $location_id,
+                            'glpi_plugin_fields_cartridgecartridgecustomfields.suppliers_id_field' => IserviceToolBox::getInputVariable('suppliers_id_old'),
+                            'c.printers_id' => 0,
+                            'c.date_use'    => null,
+                            'c.date_out'    => null,
+                            'ci.ref'        => $cartridge_item_ref,
+                        ],
+                        [
+                            'INNER JOIN' => [
+                                'glpi_cartridges AS c'      => ['ON' => ['glpi_plugin_fields_cartridgecartridgecustomfields' => 'items_id', 'c' => 'id']],
+                                'glpi_cartridgeitems AS ci' => ['ON' => ['c' => 'cartridgeitems_id', 'ci' => 'id']],
+                            ],
                         ],
                     );
                     $added_cartridges[$cartridge_item_ref]['amount'] -= $amount;
                     $plugin_iservice_consumable_ticket->update(
                         [
-                            'id' => $added_cartridges[$cartridge_item_ref]['ct_id'],
-                            'amount' => $added_cartridges[$cartridge_item_ref]['amount'],
+                            'id'           => $added_cartridges[$cartridge_item_ref]['ct_id'],
+                            'amount'       => $added_cartridges[$cartridge_item_ref]['amount'],
+                            // Without it, update() would look for the cartridges among those without a location.
+                            'locations_id' => $added_cartridges[$cartridge_item_ref]['location'],
                         ]
                     );
                 } else {
