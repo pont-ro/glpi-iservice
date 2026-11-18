@@ -158,9 +158,9 @@ class PluginIserviceErrorLogVerifier extends CommonDBTM
     }
 
     /**
-     * Reads the entries between $offset and $fileSize. A last line without a line break may still be written, so it is left for the next run.
+     * Reads the entries between $offset and $fileSize. An entry whose last line has no line break yet is still being written, so it is left for the next run.
      *
-     * @return array [entries, offset after the last complete line]
+     * @return array [entries, offset after the last entry read]
      */
     private static function readEntries(string $logFile, int $offset, int $fileSize, ?string $since): array
     {
@@ -172,22 +172,31 @@ class PluginIserviceErrorLogVerifier extends CommonDBTM
         }
 
         fseek($handle, $offset);
-        $current = null;
+        $current      = null;
+        $currentStart = $offset;
         while (ftell($handle) < $fileSize && ($line = fgets($handle)) !== false) {
             if (!str_ends_with($line, "\n")) {
+                // The entry is still being written: it is read again, whole, on the next run.
+                if ($current !== null) {
+                    $newOffset = $currentStart;
+                    $current   = null;
+                }
+
                 break;
             }
 
-            $newOffset = ftell($handle);
             if (preg_match(self::ENTRY_HEADER_PATTERN, rtrim($line), $matches)) {
                 if ($current !== null) {
                     $entries[] = $current;
                 }
 
-                $current = ['time' => $matches[1], 'message' => $matches[2], 'text' => $line];
+                $currentStart = $newOffset;
+                $current      = ['time' => $matches[1], 'message' => $matches[2], 'text' => $line];
             } elseif ($current !== null) {
                 $current['text'] .= $line;
             }
+
+            $newOffset = ftell($handle);
         }
 
         if ($current !== null) {
