@@ -12,6 +12,7 @@ return [
     'enabled_crons.printerAutoReadCounter' => true,
     'enabled_crons.mailStockVerify' => true,
     'enabled_crons.mailCartridgeVerify' => true,
+    'enabled_crons.mailErrorLogVerify' => true,
     'data_integrity_tests.enable_header_tests' => true,
     'data_integrity_tests.date_from' => '2023-01-01',
     'data_integrity_tests.force_if_overdue' => true,
@@ -27,6 +28,7 @@ return [
     'dataintegritytests.folder' => PLUGIN_ISERVICE_DIR . "/inc/dataintegrity_tests",
     'dataintegritytests.cache_timeout' => 3600, // 60 minutes
     'folder_integrity.report_file' => PLUGIN_ISERVICE_CACHE_DIR . "/unknown_directory_entries",
+    'error_log_verifier.state_file' => PLUGIN_ISERVICE_CACHE_DIR . "/errorLogVerifierState",
     'open_ticket_limit' => 50,
     'views.show_limit' => true,
     'plugin.cleanup_on_uninstall' => false,
