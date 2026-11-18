@@ -112,6 +112,16 @@ class CronTasksInstallStep
                 'hourmin'   => 5,
                 'hourmax'   => 8,
                 'comment'   => 'financiar@expertline.ro',
+            ], [
+                'itemtype'  => 'PluginIserviceErrorLogVerifier',
+                'name'      => 'mailErrorLogVerify',
+                'mode'      => CronTask::MODE_EXTERNAL,
+                'frequency' => 86400,
+                'param'     => 0,
+                'state'     => 1,
+                'hourmin'   => 5,
+                'hourmax'   => 8,
+                'comment'   => 'hlavathy.peter@gmail.com',
             ],
         ];
 
