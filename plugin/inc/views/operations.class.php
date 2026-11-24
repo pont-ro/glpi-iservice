@@ -350,6 +350,8 @@ class Operations extends View
             $display .= ' <i class="fa fa-paperclip" aria-hidden="true"></i>';
         }
 
+        $title = htmlspecialchars($title, ENT_QUOTES);
+
         return "<span title='$title' class='$class'>$display</span>";
     }
 

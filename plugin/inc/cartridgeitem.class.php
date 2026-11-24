@@ -411,7 +411,7 @@ class PluginIserviceCartridgeItem extends CartridgeItem
             $used_condition = "";
         }
 
-        $install_date   = $options['install_date'] ?? $ticket->customfields->fields['cartridge_install_date_field'] ?? '';
+        $install_date   = PluginIserviceDB::escapeString($options['install_date'] ?? $ticket->customfields->fields['cartridge_install_date_field'] ?? '');
         $date_condition = empty($install_date) ? '' : "AND c.date_in <= '$install_date'";
 
         if ($printer_id < 1 || !empty($options['ignore_location'])) {
