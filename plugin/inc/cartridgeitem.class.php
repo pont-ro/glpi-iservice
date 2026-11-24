@@ -217,12 +217,18 @@ class PluginIserviceCartridgeItem extends CartridgeItem
 
     public static function getChangeableDropdownDataForTicket($ticket, array $dropdownOptions = []): array
     {
+        // If the installation date is empty, it will be set to the effective date on save, so only the cartridges
+        // installable at the effective date can be offered.
+        $installDate = ($ticket->customfields->fields['cartridge_install_date_field'] ?? '') ?: ($ticket->customfields->fields['effective_date_field'] ?? '');
+
+        $dropdownOptions['install_date'] = $installDate;
+
         $data                 = [];
         $changeableCartridges = self::getChangeablesForTicket($ticket, $dropdownOptions);
         $data['warning']      = '';
         if (empty($changeableCartridges)) {
             if ($dropdownOptions['used']) {
-                $unusedChangeableCartridges = self::getChangeablesForTicket($ticket);
+                $unusedChangeableCartridges = self::getChangeablesForTicket($ticket, ['install_date' => $installDate]);
                 if (empty($unusedChangeableCartridges)) {
                     $data['warning'] = _t('You have no more compatible cartridges');
                 } else {
@@ -251,8 +257,8 @@ class PluginIserviceCartridgeItem extends CartridgeItem
                 $data['warning'] = _t('You have no compatible cartridges');
             }
 
-            if (!empty($ticket->customfields->fields['cartridge_install_date_field'])) {
-                $data['warning'] .= ' (' . sprintf(_t('delivered before %s and not installed'), date('Y-m-d', strtotime($ticket->customfields->fields['cartridge_install_date_field']))) . ')';
+            if (!empty($installDate)) {
+                $data['warning'] .= ' (' . sprintf(_t('delivered before %s and not installed'), date('Y-m-d', strtotime($installDate))) . ')';
             }
 
             return $data;
@@ -392,15 +398,21 @@ class PluginIserviceCartridgeItem extends CartridgeItem
         if (!empty($options['used']) && is_array($options['used'])) {
             $mercurycodes = [];
             foreach ($options['used_data'] as $used_data) {
-                $mercurycodes = array_merge($mercurycodes, explode(',', $used_data['mercurycodes']));
+                $mercurycodes = array_merge($mercurycodes, explode(',', $used_data['mercurycodes'] ?? ''));
             }
 
+            // Empty compatible mercury codes would produce an invalid "IN ()" or "IN (1,,2)".
+            $mercurycodes = array_filter(array_map('trim', $mercurycodes), fn($code) => $code !== '');
+        }
+
+        if (!empty($mercurycodes)) {
             $used_condition = "AND ci.id NOT IN (SELECT items_id FROM glpi_plugin_fields_cartridgeitemcartridgeitemcustomfields where mercury_code_field IN (" . implode(',', $mercurycodes) . "))";
         } else {
             $used_condition = "";
         }
 
-        $date_condition = empty($ticket->customfields->fields['cartridge_install_date_field']) ? '' : "AND c.date_in <= '{$ticket->customfields->fields['cartridge_install_date_field']}'";
+        $install_date   = $options['install_date'] ?? $ticket->customfields->fields['cartridge_install_date_field'] ?? '';
+        $date_condition = empty($install_date) ? '' : "AND c.date_in <= '$install_date'";
 
         if ($printer_id < 1 || !empty($options['ignore_location'])) {
             $location_condition = '';

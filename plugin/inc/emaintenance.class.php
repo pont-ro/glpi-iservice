@@ -828,7 +828,8 @@ class PluginIserviceEmaintenance extends MailCollector
         }
 
         $cartridge_item_ids    = PluginIserviceCartridgeItem::getIdsByMercuryCode($extended_data['body_lines']['toner mercury code']['ending']);
-        $changeable_cartridges = PluginIserviceCartridgeItem::getChangeablesForTicket($ticket);
+        // Same date as the installation date used by addCartridge below.
+        $changeable_cartridges = PluginIserviceCartridgeItem::getChangeablesForTicket($ticket, ['install_date' => $extended_data['effective_date']]);
         $cartridge_item_index  = $this->getCartridgeItemIndex($cartridge_item_ids, $changeable_cartridges);
 
         $error_message = '';

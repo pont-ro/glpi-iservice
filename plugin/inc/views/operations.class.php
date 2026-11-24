@@ -10,6 +10,8 @@ use \Ticket;
 use \CommonITILObject;
 use \PluginIserviceTicket;
 use \PluginIservicePrinter;
+use \PluginIserviceCartridgeItem;
+use \PluginIserviceCartridge_Ticket;
 
 class Operations extends View
 {
@@ -140,6 +142,7 @@ class Operations extends View
                           t.status
                         , t.solvedate date_solve
                         , t.effective_date_field
+                        , t.cartridge_install_date_field
                         , t.id ticket_id
                         , t.name ticket_name
                         , t.content ticket_content
@@ -319,6 +322,27 @@ class Operations extends View
         $class   = '';
         $display = $row_data['ticket_id'];
 
+        if (!in_array($row_data['status'], Ticket::getClosedStatusArray())
+            && !self::isCartridgeInstallBlockedByNewerTicket($row_data)
+        ) {
+            // Same date and same excluded cartridge items as the ones used by the cartridge dropdown of the ticket form.
+            $installedData        = PluginIserviceCartridge_Ticket::getInstalledCartridgesDataForTicket($row_data['ticket_id']);
+            $installDate          = $row_data['cartridge_install_date_field'] ?: $row_data['effective_date_field'];
+            $changeableCartridges = PluginIserviceCartridgeItem::getChangeablesForTicket(
+                $row_data['ticket_id'],
+                [
+                    'install_date' => $installDate,
+                    'used' => $installedData['used_ids'],
+                    'used_data' => $installedData['used'],
+                ]
+            );
+            $changeableCount      = array_sum(array_map('intval', array_column($changeableCartridges, 'cpt')));
+            if ($changeableCount > 0) {
+                $title   .= sprintf(_t('%d cartridge(s) can be installed on this ticket'), $changeableCount);
+                $display .= " ($changeableCount)";
+            }
+        }
+
         if (!empty($row_data['document_id'])) {
             $title   .= !empty($title) ? "\n" : '';
             $title   .= _t('Ticket has attached document(s)');
@@ -327,6 +351,23 @@ class Operations extends View
         }
 
         return "<span title='$title' class='$class'>$display</span>";
+    }
+
+    /**
+     * Same rule as the ticket form: no cartridge can be installed while a newer ticket of the printer has installed cartridges.
+     */
+    private static function isCartridgeInstallBlockedByNewerTicket(array $row_data): bool
+    {
+        // The effective date of the last ticket with cartridges, cached per printer, as all rows usually belong to the same printer.
+        static $lastCartridgeTicketDates = [];
+
+        $printerId = $row_data['printer_id'];
+        if (!array_key_exists($printerId, $lastCartridgeTicketDates)) {
+            $lastTicketWithCartridge              =PluginIserviceTicket::getLastForPrinterOrSupplier(0, $printerId, null, '', 'JOIN glpi_plugin_iservice_cartridges_tickets ct on ct.tickets_id = t.id');
+            $lastCartridgeTicketDates[$printerId] = $lastTicketWithCartridge->customfields->fields['effective_date_field'] ?? '';
+        }
+
+        return $lastCartridgeTicketDates[$printerId] > ($row_data['effective_date_field'] ?? '');
     }
 
 }
