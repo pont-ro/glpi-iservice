@@ -1253,6 +1253,9 @@ msgstr "Vezi comenzi interne"
 msgid "Ticket has attached document(s)"
 msgstr "Tichetul are document(e) atașat(e)"
 
+msgid "%d cartridge(s) can be installed on this ticket"
+msgstr "%d cartuș(e) pot fi instalate pe acest tichet"
+
 msgid "Printer status"
 msgstr "Status aparat"
 
