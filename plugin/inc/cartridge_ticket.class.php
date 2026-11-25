@@ -206,28 +206,21 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
         return $data;
     }
 
-    public static function getDataForTicketChangeableSection(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false): array|bool
+    /**
+     * Gets the cartridges installed on the ticket, and the cartridge items whose every supported type is already
+     * covered on the ticket ("used"), so they can not be offered again for installation.
+     */
+    public static function getInstalledCartridgesDataForTicket(int $ticketId): array
     {
         global $DB;
 
-        $id = $ticket->getID();
-
-        $ticket_fields = $ticket->fields;
-        if (!$ticket->can($id, READ)) {
-            return false;
-        }
-
-        $canEdit = !$readonly && $ticket->canEdit($id);
-        $rand    = mt_rand();
-
-        $ticket->fields = $ticket_fields;
-
-        $cartridges = [];
-        $used_ids   = [];
-        $used       = [];
+        $cartridges          = [];
+        $used_ids            = [];
+        $used                = [];
+        $usedForRowDropdowns = [];
 
         $c_result = $DB->doQuery(
-            "SELECT 
+            "SELECT
                       ct.id IDD
                     , ct.plugin_fields_cartridgeitemtypedropdowns_id selected_type_id
                     , ct.cartridges_id_emptied
@@ -249,7 +242,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                  LEFT JOIN glpi_plugin_fields_cartridgecartridgecustomfields cfc on cfc.items_id = c.id and cfc.itemtype = 'Cartridge'
                  LEFT JOIN glpi_locations l ON l.id = cfc.locations_id_field
                  LEFT JOIN glpi_printers p ON p.id = c.printers_id
-                 WHERE ct.tickets_id = $id ORDER BY ct.id"
+                 WHERE ct.tickets_id = $ticketId ORDER BY ct.id"
         );
 
         if ($c_result) {
@@ -274,6 +267,37 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                 }
             }
         }
+
+        return [
+            'cartridges' => $cartridges,
+            'used_ids' => $used_ids,
+            'used' => $used,
+            'usedForRowDropdowns' => $usedForRowDropdowns,
+        ];
+    }
+
+    public static function getDataForTicketChangeableSection(PluginIserviceTicket $ticket, &$required_fields, $generate_form = true, $readonly = false): array|bool
+    {
+        global $DB;
+
+        $id = $ticket->getID();
+
+        $ticket_fields = $ticket->fields;
+        if (!$ticket->can($id, READ)) {
+            return false;
+        }
+
+        $canEdit = !$readonly && $ticket->canEdit($id);
+        $rand    = mt_rand();
+
+        $ticket->fields = $ticket_fields;
+
+        [
+            'cartridges' => $cartridges,
+            'used_ids' => $used_ids,
+            'used' => $used,
+            'usedForRowDropdowns' => $usedForRowDropdowns,
+        ] = self::getInstalledCartridgesDataForTicket($id);
 
         $data = [];
 

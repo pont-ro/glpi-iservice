@@ -2090,7 +2090,9 @@ class PluginIserviceTicket extends Ticket
         }
 
         $close_confirm_message = '';
-        $available_cartridges  = PluginIserviceCartridgeItem::getChangeablesForTicket($this);
+        // Same date as the one used by the cartridge dropdown, so consumables delivered later are not listed.
+        $install_date          = ($this->customfields->fields['cartridge_install_date_field'] ?? '') ?: ($this->customfields->fields['effective_date_field'] ?? '');
+        $available_cartridges  = PluginIserviceCartridgeItem::getChangeablesForTicket($this, ['install_date' => $install_date]);
 
         foreach (array_column($available_cartridges, 'ref') as $available_cartridge_id) {
             if (substr($available_cartridge_id, 0, 4) !== 'CTON' && substr($available_cartridge_id, 0, 2) !== 'CC') {
