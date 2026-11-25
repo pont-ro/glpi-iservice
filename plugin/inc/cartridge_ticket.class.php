@@ -116,14 +116,15 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                         'on_change' => '$("[name=\'add_cartridge\']").click();',
                         'elementsArray' => PluginIserviceCartridgeItem::getCartridgesDropdownOptions($ticket),
                         'script' => '<script>
-                            setTimeout(function() {                    
+                            $(function() {
                                 addRecurrentCheck(function() {
                                     if ($("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]").val() != 0) {
                                         $("[name=\\"add_cartridge\\"]").click();$("#page").hide();
                                         return true;
                                     }
                                     return false;
-                                });}, 1000)
+                                });
+                            });
                           </script>',
                     ],
                     'addButton' => [
@@ -319,7 +320,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                         'no_label' => true,
                     ],
                     'script' => '<script>
-                            setTimeout(function() {                    
+                            $(function() {
                                 addRecurrentCheck(function() {
                                     let $cartridgeDropdown = $("[name=\\"_plugin_iservice_cartridge[cartridgeitems_id]\"]");
                                     if ($cartridgeDropdown.val() != 0) {
@@ -332,7 +333,8 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                                         return true;
                                     }
                                     return false;
-                                });}, 1000)
+                                });
+                            });
                           </script>'
                 ];
             } else {
