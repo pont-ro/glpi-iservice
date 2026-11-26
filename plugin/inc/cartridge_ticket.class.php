@@ -455,7 +455,7 @@ class PluginIserviceCartridge_Ticket extends CommonDBRelation
                         'name' => "_plugin_iservice_cartridge_type_ids[$cartridge[IDD]]",
                         'value' => $cartridge['selected_type_id'],
                         'options' => [
-                            'condition' => ['id in (' . implode(',', $supported_types) . ')'],
+                            'condition' => ['`glpi_plugin_fields_cartridgeitemtypedropdowns`.`id` IN (' . implode(',', $supported_types) . ')'],
                             'on_click' => '$(this).closest("form").submit();',
                             'addicon' => false,
                             'comments' => false,
